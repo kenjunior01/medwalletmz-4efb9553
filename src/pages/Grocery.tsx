@@ -1,41 +1,75 @@
-import { useState } from "react";
-import { Search, Apple, Carrot, Milk, Package, Droplets, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Search, Star, Clock, ShoppingBag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
+import { useLocation } from "@/contexts/LocationContext";
+import { Tables } from "@/integrations/supabase/types";
 
-const categories = [
-  { icon: Apple, label: "Frutas", color: "text-green-600" },
-  { icon: Carrot, label: "Vegetais", color: "text-orange-500" },
-  { icon: Milk, label: "Laticínios", color: "text-blue-500" },
-  { icon: Package, label: "Mercearia", color: "text-amber-600" },
-  { icon: Droplets, label: "Bebidas", color: "text-cyan-500" },
-  { icon: Sparkles, label: "Limpeza", color: "text-purple-500" },
-];
+type Store = Tables<"stores">;
 
-const mockProducts = [
-  { id: 1, name: "Banana Madura", price: 45, unit: "kg", category: "Frutas" },
-  { id: 2, name: "Tomate Fresco", price: 80, unit: "kg", category: "Vegetais" },
-  { id: 3, name: "Leite 1L", price: 120, unit: "un", category: "Laticínios" },
-  { id: 4, name: "Arroz 5kg", price: 350, unit: "un", category: "Mercearia" },
-  { id: 5, name: "Água 5L", price: 65, unit: "un", category: "Bebidas" },
-  { id: 6, name: "Detergente", price: 95, unit: "un", category: "Limpeza" },
-];
+const filters = ["Todos", "Próximo", "Melhor Avaliado", "Ofertas"];
 
 export default function Grocery() {
+  const navigate = useNavigate();
+  const { city: selectedCity } = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState("Todos");
+  const [stores, setStores] = useState<Store[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredProducts = activeCategory
-    ? mockProducts.filter((p) => p.category === activeCategory)
-    : mockProducts;
+  useEffect(() => {
+    fetchStores();
+  }, [selectedCity]);
+
+  const fetchStores = async () => {
+    setLoading(true);
+    try {
+      let query = supabase
+        .from("stores")
+        .select("*")
+        .eq("type", "grocery")
+        .eq("is_active", true);
+
+      if (selectedCity) {
+        query = query.eq("city", selectedCity);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      setStores(data || []);
+    } catch (error) {
+      console.error("Erro ao carregar supermercados:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredStores = stores.filter((store) =>
+    store.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortedStores = [...filteredStores].sort((a, b) => {
+    switch (activeFilter) {
+      case "Melhor Avaliado":
+        return (b.rating || 0) - (a.rating || 0);
+      default:
+        return 0;
+    }
+  });
 
   return (
     <div className="flex flex-col gap-4 p-4 animate-fade-in">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">Supermercado</h1>
-        <p className="text-muted-foreground text-sm">Produtos frescos entregues em casa</p>
+        <p className="text-muted-foreground text-sm">
+          Produtos frescos {selectedCity ? `em ${selectedCity}` : "entregues em casa"}
+        </p>
       </div>
 
       {/* Search */}
@@ -44,69 +78,100 @@ export default function Grocery() {
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Pesquisar produtos..."
+          placeholder="Pesquisar supermercados..."
           className="pl-10 h-11 rounded-xl"
         />
       </div>
 
-      {/* Categories */}
-      <div className="flex overflow-x-auto gap-3 no-scrollbar -mx-4 px-4">
-        {categories.map(({ icon: Icon, label, color }) => (
-          <button
-            key={label}
-            onClick={() => setActiveCategory(activeCategory === label ? null : label)}
-            className={`flex flex-col items-center gap-1.5 p-3 min-w-[72px] rounded-xl transition-all ${
-              activeCategory === label
-                ? "bg-grocery/20 ring-2 ring-grocery"
-                : "bg-card border border-border"
-            }`}
+      {/* Filters */}
+      <div className="flex overflow-x-auto gap-2 no-scrollbar -mx-4 px-4">
+        {filters.map((filter) => (
+          <Badge
+            key={filter}
+            variant={activeFilter === filter ? "default" : "outline"}
+            className="cursor-pointer whitespace-nowrap px-4 py-2 rounded-full transition-all"
+            onClick={() => setActiveFilter(filter)}
           >
-            <Icon className={`h-6 w-6 ${color}`} />
-            <span className="text-xs font-medium">{label}</span>
-          </button>
+            {filter}
+          </Badge>
         ))}
       </div>
 
-      {/* Active filter indicator */}
-      {activeCategory && (
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="gap-1">
-            {activeCategory}
-            <button
-              onClick={() => setActiveCategory(null)}
-              className="ml-1 hover:text-destructive"
-            >
-              ×
-            </button>
-          </Badge>
-        </div>
-      )}
-
-      {/* Products Grid */}
-      <div className="grid grid-cols-2 gap-3">
-        {filteredProducts.map((product) => (
-          <div
-            key={product.id}
-            className="bg-card rounded-xl border border-border p-3 flex flex-col gap-2 transition-all hover:shadow-medium"
-          >
-            <div className="h-24 bg-gradient-to-br from-grocery/20 to-grocery/5 rounded-lg" />
-            <div>
-              <h3 className="font-medium text-sm">{product.name}</h3>
-              <p className="text-xs text-muted-foreground">{product.category}</p>
+      {/* Store List */}
+      <div className="flex flex-col gap-3">
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-card rounded-xl overflow-hidden border border-border p-3 flex gap-3">
+              <Skeleton className="w-24 h-24 rounded-lg" />
+              <div className="flex-1 flex flex-col gap-2">
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-1/3" />
+              </div>
             </div>
-            <div className="flex items-center justify-between mt-auto">
-              <span className="font-bold text-grocery">
-                {product.price} MZN
-                <span className="text-xs font-normal text-muted-foreground">
-                  /{product.unit}
-                </span>
-              </span>
-              <Button size="sm" className="h-7 w-7 p-0 rounded-full bg-grocery hover:bg-grocery/90">
-                +
-              </Button>
-            </div>
+          ))
+        ) : sortedStores.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <ShoppingBag className="h-12 w-12 mx-auto mb-2 opacity-50" />
+            <p>Nenhum supermercado encontrado</p>
+            <p className="text-sm">Tente ajustar sua pesquisa</p>
           </div>
-        ))}
+        ) : (
+          sortedStores.map((store) => (
+            <div
+              key={store.id}
+              onClick={() => navigate(`/store/${store.id}`)}
+              className="bg-card rounded-xl overflow-hidden shadow-soft border border-border p-3 flex gap-3 transition-all hover:shadow-medium active:scale-[0.99] cursor-pointer"
+            >
+              {/* Image */}
+              <div className="w-24 h-24 rounded-lg flex-shrink-0 overflow-hidden">
+                {store.image_url ? (
+                  <img
+                    src={store.image_url}
+                    alt={store.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-grocery/20 to-grocery/5 flex items-center justify-center">
+                    <ShoppingBag className="h-8 w-8 text-grocery/50" />
+                  </div>
+                )}
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-semibold text-foreground">{store.name}</h3>
+                  <p className="text-xs text-muted-foreground line-clamp-1">
+                    {store.description || "Supermercado"}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="flex items-center gap-1">
+                    <Star className="h-3 w-3 fill-grocery text-grocery" />
+                    <span className="font-medium">{store.rating || "Novo"}</span>
+                  </div>
+                  {store.delivery_time && (
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>{store.delivery_time}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    Entrega: {store.delivery_fee || 0} MZN
+                  </span>
+                  <Button size="sm" className="h-7 text-xs rounded-full bg-grocery hover:bg-grocery/90">
+                    Ver Produtos
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

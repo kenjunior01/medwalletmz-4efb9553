@@ -1,41 +1,75 @@
-import { useState } from "react";
-import { Search, Pill, Heart, Thermometer, Droplet, Shield, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Search, Pill, Star, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
+import { useLocation } from "@/contexts/LocationContext";
+import { Tables } from "@/integrations/supabase/types";
 
-const categories = [
-  { icon: Pill, label: "Dor", color: "text-red-500" },
-  { icon: Thermometer, label: "Gripe", color: "text-blue-500" },
-  { icon: Heart, label: "Coração", color: "text-pink-500" },
-  { icon: Droplet, label: "Vitaminas", color: "text-orange-500" },
-  { icon: Shield, label: "Imunidade", color: "text-green-500" },
-  { icon: Sparkles, label: "Beleza", color: "text-purple-500" },
-];
+type Store = Tables<"stores">;
 
-const mockMedicines = [
-  { id: 1, name: "Paracetamol 500mg", price: 85, category: "Dor", prescription: false },
-  { id: 2, name: "Ibuprofeno 400mg", price: 120, category: "Dor", prescription: false },
-  { id: 3, name: "Vitamina C 1000mg", price: 250, category: "Vitaminas", prescription: false },
-  { id: 4, name: "Antigripal Plus", price: 180, category: "Gripe", prescription: false },
-  { id: 5, name: "Multivitamínico", price: 450, category: "Vitaminas", prescription: false },
-  { id: 6, name: "Protetor Solar SPF50", price: 350, category: "Beleza", prescription: false },
-];
+const filters = ["Todas", "24h", "Melhor Avaliado", "Próximo"];
 
 export default function Pharmacy() {
+  const navigate = useNavigate();
+  const { city: selectedCity } = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState("Todas");
+  const [pharmacies, setPharmacies] = useState<Store[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredMedicines = activeCategory
-    ? mockMedicines.filter((m) => m.category === activeCategory)
-    : mockMedicines;
+  useEffect(() => {
+    fetchPharmacies();
+  }, [selectedCity]);
+
+  const fetchPharmacies = async () => {
+    setLoading(true);
+    try {
+      let query = supabase
+        .from("stores")
+        .select("*")
+        .eq("type", "pharmacy")
+        .eq("is_active", true);
+
+      if (selectedCity) {
+        query = query.eq("city", selectedCity);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      setPharmacies(data || []);
+    } catch (error) {
+      console.error("Erro ao carregar farmácias:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredPharmacies = pharmacies.filter((pharmacy) =>
+    pharmacy.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortedPharmacies = [...filteredPharmacies].sort((a, b) => {
+    switch (activeFilter) {
+      case "Melhor Avaliado":
+        return (b.rating || 0) - (a.rating || 0);
+      default:
+        return 0;
+    }
+  });
 
   return (
     <div className="flex flex-col gap-4 p-4 animate-fade-in">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">Farmácia</h1>
-        <p className="text-muted-foreground text-sm">Medicamentos e produtos de saúde</p>
+        <p className="text-muted-foreground text-sm">
+          Medicamentos e produtos de saúde {selectedCity ? `em ${selectedCity}` : ""}
+        </p>
       </div>
 
       {/* Express Delivery Banner */}
@@ -56,53 +90,95 @@ export default function Pharmacy() {
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Pesquisar medicamentos..."
+          placeholder="Pesquisar farmácias..."
           className="pl-10 h-11 rounded-xl"
         />
       </div>
 
-      {/* Categories */}
-      <div className="flex overflow-x-auto gap-3 no-scrollbar -mx-4 px-4">
-        {categories.map(({ icon: Icon, label, color }) => (
-          <button
-            key={label}
-            onClick={() => setActiveCategory(activeCategory === label ? null : label)}
-            className={`flex flex-col items-center gap-1.5 p-3 min-w-[72px] rounded-xl transition-all ${
-              activeCategory === label
-                ? "bg-pharmacy/20 ring-2 ring-pharmacy"
-                : "bg-card border border-border"
-            }`}
+      {/* Filters */}
+      <div className="flex overflow-x-auto gap-2 no-scrollbar -mx-4 px-4">
+        {filters.map((filter) => (
+          <Badge
+            key={filter}
+            variant={activeFilter === filter ? "default" : "outline"}
+            className="cursor-pointer whitespace-nowrap px-4 py-2 rounded-full transition-all"
+            onClick={() => setActiveFilter(filter)}
           >
-            <Icon className={`h-6 w-6 ${color}`} />
-            <span className="text-xs font-medium">{label}</span>
-          </button>
+            {filter}
+          </Badge>
         ))}
       </div>
 
-      {/* Products */}
+      {/* Pharmacy List */}
       <div className="flex flex-col gap-3">
-        {filteredMedicines.map((medicine) => (
-          <div
-            key={medicine.id}
-            className="bg-card rounded-xl border border-border p-3 flex gap-3 transition-all hover:shadow-medium"
-          >
-            <div className="w-20 h-20 bg-gradient-to-br from-pharmacy/20 to-pharmacy/5 rounded-lg flex-shrink-0 flex items-center justify-center">
-              <Pill className="h-8 w-8 text-pharmacy/50" />
-            </div>
-            <div className="flex-1 flex flex-col justify-between">
-              <div>
-                <h3 className="font-medium text-sm">{medicine.name}</h3>
-                <p className="text-xs text-muted-foreground">{medicine.category}</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-pharmacy">{medicine.price} MZN</span>
-                <Button size="sm" className="h-7 text-xs rounded-full bg-pharmacy hover:bg-pharmacy/90">
-                  Adicionar
-                </Button>
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-card rounded-xl overflow-hidden border border-border p-3 flex gap-3">
+              <Skeleton className="w-20 h-20 rounded-lg" />
+              <div className="flex-1 flex flex-col gap-2">
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-1/3" />
               </div>
             </div>
+          ))
+        ) : sortedPharmacies.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <Pill className="h-12 w-12 mx-auto mb-2 opacity-50" />
+            <p>Nenhuma farmácia encontrada</p>
+            <p className="text-sm">Tente ajustar sua pesquisa</p>
           </div>
-        ))}
+        ) : (
+          sortedPharmacies.map((pharmacy) => (
+            <div
+              key={pharmacy.id}
+              onClick={() => navigate(`/store/${pharmacy.id}`)}
+              className="bg-card rounded-xl border border-border p-3 flex gap-3 transition-all hover:shadow-medium cursor-pointer"
+            >
+              <div className="w-20 h-20 rounded-lg flex-shrink-0 overflow-hidden">
+                {pharmacy.image_url ? (
+                  <img
+                    src={pharmacy.image_url}
+                    alt={pharmacy.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-pharmacy/20 to-pharmacy/5 flex items-center justify-center">
+                    <Pill className="h-8 w-8 text-pharmacy/50" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-medium text-sm">{pharmacy.name}</h3>
+                  <p className="text-xs text-muted-foreground line-clamp-1">
+                    {pharmacy.description || "Farmácia"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="flex items-center gap-1">
+                    <Star className="h-3 w-3 fill-pharmacy text-pharmacy" />
+                    <span className="font-medium">{pharmacy.rating || "Novo"}</span>
+                  </div>
+                  {pharmacy.delivery_time && (
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>{pharmacy.delivery_time}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    Entrega: {pharmacy.delivery_fee || 0} MZN
+                  </span>
+                  <Button size="sm" className="h-7 text-xs rounded-full bg-pharmacy hover:bg-pharmacy/90">
+                    Ver Produtos
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
