@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Package, CheckCircle, Clock, MapPin, XCircle, Truck, ChefHat, RefreshCw } from "lucide-react";
+import { ClipboardList, Package, CheckCircle, Clock, MapPin, XCircle, Truck, ChefHat, RefreshCw, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ReviewModal } from "@/components/reviews/ReviewModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -51,6 +52,12 @@ export default function Orders() {
   const [orders, setOrders] = useState<OrderWithStore[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("active");
+  const [reviewModal, setReviewModal] = useState<{
+    open: boolean;
+    orderId: string;
+    storeId: string;
+    storeName: string;
+  }>({ open: false, orderId: '', storeId: '', storeName: '' });
 
   useEffect(() => {
     if (user) {
@@ -84,7 +91,8 @@ export default function Orders() {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      // Fetch orders and reviews separately
+      const { data: ordersData, error: ordersError } = await supabase
         .from("orders")
         .select(`
           id,
@@ -101,8 +109,8 @@ export default function Orders() {
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setOrders((data as unknown as OrderWithStore[]) || []);
+      if (ordersError) throw ordersError;
+      setOrders((ordersData as unknown as OrderWithStore[]) || []);
     } catch (error) {
       console.error("Erro ao carregar pedidos:", error);
     } finally {
@@ -232,6 +240,24 @@ export default function Orders() {
             <span>O seu pedido está a ser preparado</span>
           </div>
         )}
+
+        {/* Review button for delivered orders */}
+        {order.status === "delivered" && order.store && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full gap-2"
+            onClick={() => setReviewModal({
+              open: true,
+              orderId: order.id,
+              storeId: order.store!.id,
+              storeName: order.store!.name
+            })}
+          >
+            <Star className="h-4 w-4" />
+            Avaliar Pedido
+          </Button>
+        )}
       </div>
     );
   };
@@ -277,6 +303,16 @@ export default function Orders() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Review Modal */}
+      <ReviewModal
+        open={reviewModal.open}
+        onOpenChange={(open) => setReviewModal(prev => ({ ...prev, open }))}
+        orderId={reviewModal.orderId}
+        storeId={reviewModal.storeId}
+        storeName={reviewModal.storeName}
+        onSuccess={fetchOrders}
+      />
     </div>
   );
 }

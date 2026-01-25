@@ -3,18 +3,22 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
 import { useLocation } from '@/contexts/LocationContext';
+import { useFavorites } from '@/hooks/useFavorites';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import { StoreReviews } from '@/components/reviews/StoreReviews';
 import { toast } from 'sonner';
-import { ArrowLeft, Star, Clock, MapPin, Plus, Minus, Heart } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Star, Clock, MapPin, Plus, Minus, MessageSquare } from 'lucide-react';
 
 export default function StoreDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addItem, items, updateQuantity, removeItem } = useCart();
+  const { addItem, items, updateQuantity } = useCart();
   const { calculateDistance } = useLocation();
+  const { isStoreFavorite, isProductFavorite, toggleStoreFavorite, toggleProductFavorite } = useFavorites();
 
   const { data: store, isLoading: storeLoading } = useQuery({
     queryKey: ['store', id],
@@ -113,13 +117,12 @@ export default function StoreDetail() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm rounded-full"
-        >
-          <Heart className="h-5 w-5" />
-        </Button>
+        <FavoriteButton
+          isFavorite={isStoreFavorite(store.id)}
+          onToggle={() => toggleStoreFavorite(store.id)}
+          variant="overlay"
+          className="absolute top-4 right-4"
+        />
       </div>
 
       {/* Store Info */}
@@ -153,84 +156,108 @@ export default function StoreDetail() {
         </div>
       </div>
 
-      {/* Products */}
-      <div className="p-4 space-y-6">
-        {productsLoading ? (
-          Array(3).fill(0).map((_, i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="h-6 w-32" />
-              <div className="grid grid-cols-1 gap-3">
-                {Array(2).fill(0).map((_, j) => (
-                  <Skeleton key={j} className="h-24 w-full rounded-xl" />
-                ))}
-              </div>
-            </div>
-          ))
-        ) : (
-          Object.entries(productsByCategory || {}).map(([category, categoryProducts]) => (
-            <div key={category}>
-              <h2 className="text-lg font-semibold mb-3">{category}</h2>
-              <div className="space-y-3">
-                {categoryProducts?.map((product) => {
-                  const quantity = getItemQuantity(product.id);
-                  
-                  return (
-                    <div
-                      key={product.id}
-                      className="flex gap-3 bg-card rounded-xl border border-border p-3"
-                    >
-                      <img
-                        src={product.image_url || '/placeholder.svg'}
-                        alt={product.name}
-                        className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
-                      />
+      {/* Tabs for Menu and Reviews */}
+      <div className="p-4">
+        <Tabs defaultValue="menu">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="menu">Menu</TabsTrigger>
+            <TabsTrigger value="reviews" className="gap-1">
+              <MessageSquare className="h-4 w-4" />
+              Avaliações
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="menu" className="space-y-6 mt-4">
+            {productsLoading ? (
+              Array(3).fill(0).map((_, i) => (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="h-6 w-32" />
+                  <div className="grid grid-cols-1 gap-3">
+                    {Array(2).fill(0).map((_, j) => (
+                      <Skeleton key={j} className="h-24 w-full rounded-xl" />
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              Object.entries(productsByCategory || {}).map(([category, categoryProducts]) => (
+                <div key={category}>
+                  <h2 className="text-lg font-semibold mb-3">{category}</h2>
+                  <div className="space-y-3">
+                    {categoryProducts?.map((product) => {
+                      const quantity = getItemQuantity(product.id);
                       
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-sm line-clamp-1">{product.name}</h3>
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                          {product.description}
-                        </p>
-                        <p className="text-primary font-bold mt-2">{product.price} MZN</p>
-                      </div>
-                      
-                      <div className="flex flex-col justify-end">
-                        {quantity > 0 ? (
-                          <div className="flex items-center gap-2">
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              className="h-8 w-8 rounded-full"
-                              onClick={() => updateQuantity(product.id, quantity - 1)}
-                            >
-                              <Minus className="h-3 w-3" />
-                            </Button>
-                            <span className="font-medium w-6 text-center">{quantity}</span>
-                            <Button
-                              size="icon"
-                              className="h-8 w-8 rounded-full"
-                              onClick={() => handleAddItem(product)}
-                            >
-                              <Plus className="h-3 w-3" />
-                            </Button>
+                      return (
+                        <div
+                          key={product.id}
+                          className="flex gap-3 bg-card rounded-xl border border-border p-3"
+                        >
+                          <div className="relative">
+                            <img
+                              src={product.image_url || '/placeholder.svg'}
+                              alt={product.name}
+                              className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                            />
+                            <FavoriteButton
+                              isFavorite={isProductFavorite(product.id)}
+                              onToggle={() => toggleProductFavorite(product.id)}
+                              size="sm"
+                              className="absolute -top-2 -right-2 h-7 w-7 bg-background shadow-md"
+                            />
                           </div>
-                        ) : (
-                          <Button
-                            size="sm"
-                            className="rounded-full"
-                            onClick={() => handleAddItem(product)}
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Adicionar
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))
-        )}
+                          
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-sm line-clamp-1">{product.name}</h3>
+                            <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                              {product.description}
+                            </p>
+                            <p className="text-primary font-bold mt-2">{product.price} MZN</p>
+                          </div>
+                          
+                          <div className="flex flex-col justify-end">
+                            {quantity > 0 ? (
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-8 w-8 rounded-full"
+                                  onClick={() => updateQuantity(product.id, quantity - 1)}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="font-medium w-6 text-center">{quantity}</span>
+                                <Button
+                                  size="icon"
+                                  className="h-8 w-8 rounded-full"
+                                  onClick={() => handleAddItem(product)}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <Button
+                                size="sm"
+                                className="rounded-full"
+                                onClick={() => handleAddItem(product)}
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Adicionar
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            )}
+          </TabsContent>
+
+          <TabsContent value="reviews" className="mt-4">
+            <StoreReviews storeId={store.id} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

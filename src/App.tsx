@@ -19,6 +19,8 @@ import Auth from "./pages/Auth";
 import StoreDetail from "./pages/StoreDetail";
 import Checkout from "./pages/Checkout";
 import AIAssistant from "./pages/AIAssistant";
+import Favorites from "./pages/Favorites";
+import Addresses from "./pages/Addresses";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminHome from "./pages/admin/AdminHome";
 import AdminStores from "./pages/admin/AdminStores";
@@ -53,6 +55,8 @@ const App = () => (
                   <Route path="/store/:id" element={<StoreDetail />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/ai" element={<AIAssistant />} />
+                  <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/addresses" element={<Addresses />} />
                 </Route>
                 
                 {/* Auth */}

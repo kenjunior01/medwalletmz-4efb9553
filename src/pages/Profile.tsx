@@ -230,11 +230,14 @@ export default function Profile() {
           <p className="text-2xl font-bold text-primary">{stats.orders}</p>
           <p className="text-xs text-muted-foreground">Pedidos</p>
         </button>
-        <div className="bg-card rounded-xl border border-border p-3 text-center">
+        <button 
+          onClick={() => navigate("/favorites")}
+          className="bg-card rounded-xl border border-border p-3 text-center hover:bg-muted/50 transition-colors"
+        >
           <Heart className="h-6 w-6 mx-auto mb-1 text-secondary" />
           <p className="text-2xl font-bold text-secondary">{stats.favorites}</p>
           <p className="text-xs text-muted-foreground">Favoritos</p>
-        </div>
+        </button>
         <div className="bg-card rounded-xl border border-border p-3 text-center">
           <Ticket className="h-6 w-6 mx-auto mb-1 text-accent" />
           <p className="text-2xl font-bold text-accent">{stats.coupons}</p>
@@ -247,7 +250,7 @@ export default function Profile() {
         {menuItems.map(({ icon: Icon, label, href }) => (
           <button
             key={label}
-            onClick={() => toast.info("Funcionalidade em breve")}
+            onClick={() => href.startsWith('/') ? navigate(href) : toast.info("Funcionalidade em breve")}
             className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
           >
             <Icon className="h-5 w-5 text-muted-foreground" />
