@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Package, CheckCircle, Clock, MapPin, XCircle, Truck, ChefHat, RefreshCw, Star } from "lucide-react";
+import { ClipboardList, Package, CheckCircle, Clock, MapPin, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReviewModal } from "@/components/reviews/ReviewModal";
+import { DeliveryTrackingMap } from "@/components/tracking/DeliveryTrackingMap";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -228,9 +229,15 @@ export default function Orders() {
 
         {/* Tracking for active orders */}
         {order.status === "in_transit" && (
-          <div className="flex items-center gap-2 text-sm text-cyan-600 bg-cyan-50 dark:bg-cyan-950 p-2 rounded-lg">
-            <MapPin className="h-4 w-4 animate-pulse" />
-            <span>O entregador está a caminho...</span>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm text-cyan-600 bg-cyan-50 dark:bg-cyan-950 p-2 rounded-lg">
+              <Navigation className="h-4 w-4 animate-pulse" />
+              <span>O entregador está a caminho!</span>
+            </div>
+            <DeliveryTrackingMap
+              orderId={order.id}
+              deliveryAddress={order.delivery_address || undefined}
+            />
           </div>
         )}
 
