@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, MapPin, CreditCard, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, Heart, Ticket } from "lucide-react";
+import { User, MapPin, CreditCard, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, Heart, Ticket, Store, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -258,6 +258,32 @@ export default function Profile() {
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
         ))}
+      </div>
+
+      {/* Business Options */}
+      <div className="bg-card rounded-xl border border-border divide-y divide-border">
+        <button
+          onClick={() => navigate("/store/register")}
+          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+        >
+          <Store className="h-5 w-5 text-green-500" />
+          <div className="flex-1 text-left">
+            <span className="font-medium text-sm block">Cadastrar Minha Loja</span>
+            <span className="text-xs text-muted-foreground">Venda seus produtos online</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+        <button
+          onClick={() => navigate("/driver/register")}
+          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+        >
+          <Truck className="h-5 w-5 text-orange-500" />
+          <div className="flex-1 text-left">
+            <span className="font-medium text-sm block">Seja um Entregador</span>
+            <span className="text-xs text-muted-foreground">Ganhe dinheiro fazendo entregas</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
       </div>
 
       {/* Logout */}

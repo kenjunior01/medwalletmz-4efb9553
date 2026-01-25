@@ -7,6 +7,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { LocationProvider } from "@/contexts/LocationContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+
+// Main Pages
 import Home from "./pages/Home";
 import FoodDelivery from "./pages/FoodDelivery";
 import Grocery from "./pages/Grocery";
@@ -21,6 +23,10 @@ import Checkout from "./pages/Checkout";
 import AIAssistant from "./pages/AIAssistant";
 import Favorites from "./pages/Favorites";
 import Addresses from "./pages/Addresses";
+import NotFound from "./pages/NotFound";
+import RoleSelection from "./pages/RoleSelection";
+
+// Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminHome from "./pages/admin/AdminHome";
 import AdminStores from "./pages/admin/AdminStores";
@@ -28,7 +34,20 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminReports from "./pages/admin/AdminReports";
-import NotFound from "./pages/NotFound";
+
+// Store Owner Pages
+import StoreOwnerDashboard from "./pages/store/StoreOwnerDashboard";
+import StoreOwnerRegister from "./pages/store/StoreOwnerRegister";
+import StoreHome from "./pages/store/StoreHome";
+import StoreProducts from "./pages/store/StoreProducts";
+import StoreOrders from "./pages/store/StoreOrders";
+import StoreSettings from "./pages/store/StoreSettings";
+import StoreReports from "./pages/store/StoreReports";
+
+// Driver Pages
+import DriverDashboard from "./pages/driver/DriverDashboard";
+import DriverRegister from "./pages/driver/DriverRegister";
+import DriverHistory from "./pages/driver/DriverHistory";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +80,7 @@ const App = () => (
                 
                 {/* Auth */}
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/register" element={<RoleSelection />} />
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AdminDashboard />}>
@@ -71,6 +91,21 @@ const App = () => (
                   <Route path="products" element={<AdminProducts />} />
                   <Route path="reports" element={<AdminReports />} />
                 </Route>
+                
+                {/* Store Owner Routes */}
+                <Route path="/store/register" element={<StoreOwnerRegister />} />
+                <Route path="/store/dashboard" element={<StoreOwnerDashboard />}>
+                  <Route index element={<StoreHome />} />
+                  <Route path="products" element={<StoreProducts />} />
+                  <Route path="orders" element={<StoreOrders />} />
+                  <Route path="reports" element={<StoreReports />} />
+                  <Route path="settings" element={<StoreSettings />} />
+                </Route>
+
+                {/* Driver Routes */}
+                <Route path="/driver/register" element={<DriverRegister />} />
+                <Route path="/driver/dashboard" element={<DriverDashboard />} />
+                <Route path="/driver/history" element={<DriverHistory />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
