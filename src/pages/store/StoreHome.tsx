@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { 
   Package, 
   ShoppingBag, 
@@ -11,8 +12,19 @@ import {
   Star,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Plus,
+  ArrowRight
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  StatWidget, 
+  QuickActionWidget, 
+  ActivityFeedWidget,
+  ChartWidget,
+  OrderStatusWidget,
+  NotificationWidget
+} from '@/components/widgets';
 
 interface StoreContext {
   selectedStore: {
@@ -29,6 +41,8 @@ interface Stats {
   pendingOrders: number;
   totalRevenue: number;
   averageRating: number;
+  weeklyRevenue: number;
+  monthlyRevenue: number;
 }
 
 interface RecentOrder {
@@ -43,6 +57,9 @@ export default function StoreHome() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dailyData, setDailyData] = useState<{ name: string; value: number }[]>([]);
+  const [orderStatusData, setOrderStatusData] = useState<{ status: string; count: number }[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedStore) {
@@ -84,6 +101,47 @@ export default function StoreHome() {
       // Calculate revenue
       const totalRevenue = todayOrdersData?.reduce((sum, o) => sum + o.total, 0) || 0;
 
+      // Calculate order status distribution
+      const statusCounts = todayOrdersData?.reduce((acc, order) => {
+        acc[order.status] = (acc[order.status] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>) || {};
+
+      setOrderStatusData(Object.entries(statusCounts).map(([status, count]) => ({ status, count })));
+
+      // Fetch weekly orders for chart
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+
+      const { data: weeklyOrders } = await supabase
+        .from('orders')
+        .select('total, created_at')
+        .eq('store_id', selectedStore.id)
+        .gte('created_at', weekAgo.toISOString());
+
+      // Group by day
+      const dailyMap = new Map<string, number>();
+      weeklyOrders?.forEach(order => {
+        const day = new Date(order.created_at).toLocaleDateString('pt-MZ', { weekday: 'short' });
+        dailyMap.set(day, (dailyMap.get(day) || 0) + order.total);
+      });
+
+      setDailyData(Array.from(dailyMap.entries()).map(([name, value]) => ({ name, value })));
+
+      const weeklyRevenue = weeklyOrders?.reduce((sum, o) => sum + o.total, 0) || 0;
+
+      // Fetch monthly revenue
+      const monthAgo = new Date();
+      monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+      const { data: monthlyOrders } = await supabase
+        .from('orders')
+        .select('total')
+        .eq('store_id', selectedStore.id)
+        .gte('created_at', monthAgo.toISOString());
+
+      const monthlyRevenue = monthlyOrders?.reduce((sum, o) => sum + o.total, 0) || 0;
+
       // Fetch average rating
       const { data: reviews } = await supabase
         .from('reviews')
@@ -100,7 +158,7 @@ export default function StoreHome() {
         .select('id, status, total, created_at')
         .eq('store_id', selectedStore.id)
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(10);
 
       setStats({
         totalProducts: totalProducts || 0,
@@ -108,7 +166,9 @@ export default function StoreHome() {
         todayOrders,
         pendingOrders,
         totalRevenue,
-        averageRating
+        averageRating,
+        weeklyRevenue,
+        monthlyRevenue
       });
       
       setRecentOrders(orders || []);
@@ -132,6 +192,42 @@ export default function StoreHome() {
     return variants[status] || { variant: 'outline', label: status };
   };
 
+  const quickActions = [
+    { 
+      icon: Plus, 
+      label: "Novo Produto", 
+      description: "Adicionar item",
+      onClick: () => navigate('/store/dashboard/products'),
+      colorClass: "text-primary",
+      bgClass: "bg-primary/10"
+    },
+    { 
+      icon: ShoppingBag, 
+      label: "Pedidos", 
+      description: "Ver pedidos",
+      onClick: () => navigate('/store/dashboard/orders'),
+      colorClass: "text-food",
+      bgClass: "bg-food/10"
+    },
+    { 
+      icon: TrendingUp, 
+      label: "Relatórios", 
+      description: "Estatísticas",
+      onClick: () => navigate('/store/dashboard/reports'),
+      colorClass: "text-secondary",
+      bgClass: "bg-secondary/10"
+    },
+  ];
+
+  const activityItems = recentOrders.map(order => ({
+    id: order.id,
+    title: `Pedido #${order.id.slice(0, 8)}`,
+    description: `${order.total.toLocaleString()} MZN`,
+    time: new Date(order.created_at).toLocaleString('pt-MZ'),
+    type: 'order' as const,
+    status: getStatusBadge(order.status).label
+  }));
+
   if (loading) {
     return (
       <div className="p-6 space-y-6">
@@ -148,144 +244,106 @@ export default function StoreHome() {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Bem-vindo ao painel da sua loja
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Bem-vindo ao painel da sua loja
+          </p>
+        </div>
+        <Button onClick={() => navigate('/store/dashboard/products')}>
+          <Plus className="h-4 w-4 mr-2" />
+          Novo Produto
+        </Button>
       </div>
+
+      {/* Alert for pending orders */}
+      {stats?.pendingOrders && stats.pendingOrders > 0 && (
+        <Card className="border-orange-500/50 bg-orange-500/5">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                <AlertCircle className="h-6 w-6 text-orange-500" />
+              </div>
+              <div>
+                <p className="font-semibold">Atenção Necessária</p>
+                <p className="text-sm text-muted-foreground">
+                  Você tem {stats.pendingOrders} pedido(s) aguardando ação
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" onClick={() => navigate('/store/dashboard/orders')}>
+              Ver Pedidos
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Produtos</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalProducts}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.activeProducts} ativos
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Pedidos Hoje</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.todayOrders}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.pendingOrders} pendentes
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Receita Hoje</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {stats?.totalRevenue.toLocaleString()} MZN
-            </div>
-            <p className="text-xs text-muted-foreground">
-              +12% vs ontem
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Avaliação</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {stats?.averageRating.toFixed(1)} ⭐
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Média geral
-            </p>
-          </CardContent>
-        </Card>
+        <StatWidget 
+          title="Produtos"
+          value={stats?.totalProducts || 0}
+          subtitle={`${stats?.activeProducts || 0} ativos`}
+          icon={Package}
+          colorClass="text-primary"
+        />
+        <StatWidget 
+          title="Pedidos Hoje"
+          value={stats?.todayOrders || 0}
+          subtitle={`${stats?.pendingOrders || 0} pendentes`}
+          icon={ShoppingBag}
+          colorClass="text-food"
+        />
+        <StatWidget 
+          title="Receita Hoje"
+          value={`${(stats?.totalRevenue || 0).toLocaleString()} MZN`}
+          subtitle={`Semana: ${(stats?.weeklyRevenue || 0).toLocaleString()} MZN`}
+          icon={TrendingUp}
+          trend={{ value: 12, isPositive: true }}
+          colorClass="text-secondary"
+        />
+        <StatWidget 
+          title="Avaliação"
+          value={`${(stats?.averageRating || 0).toFixed(1)} ⭐`}
+          subtitle="Média geral"
+          icon={Star}
+          colorClass="text-yellow-500"
+        />
       </div>
 
-      {/* Quick Actions & Recent Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pending Orders Alert */}
-        {stats?.pendingOrders && stats.pendingOrders > 0 && (
-          <Card className="border-orange-500/50 bg-orange-500/5">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-orange-500" />
-                Atenção Necessária
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Você tem {stats.pendingOrders} pedido(s) aguardando ação.
-              </p>
-              <div className="flex gap-2">
-                <Badge variant="outline" className="gap-1">
-                  <Clock className="h-3 w-3" />
-                  {stats.pendingOrders} pendentes
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      {/* Charts and Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <ChartWidget 
+            title="Receita da Semana"
+            subtitle="Últimos 7 dias"
+            data={dailyData}
+            type="area"
+            height={280}
+          />
+          <QuickActionWidget 
+            title="Ações Rápidas"
+            actions={quickActions}
+          />
+        </div>
 
-        {/* Recent Orders */}
-        <Card className={stats?.pendingOrders && stats.pendingOrders > 0 ? '' : 'lg:col-span-2'}>
-          <CardHeader>
-            <CardTitle className="text-lg">Pedidos Recentes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {recentOrders.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                Nenhum pedido ainda
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {recentOrders.map(order => {
-                  const badge = getStatusBadge(order.status);
-                  return (
-                    <div 
-                      key={order.id}
-                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        {order.status === 'delivered' ? (
-                          <CheckCircle className="h-5 w-5 text-green-500" />
-                        ) : (
-                          <Clock className="h-5 w-5 text-muted-foreground" />
-                        )}
-                        <div>
-                          <p className="font-medium text-sm">
-                            Pedido #{order.id.slice(0, 8)}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(order.created_at).toLocaleString('pt-MZ')}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Badge variant={badge.variant}>{badge.label}</Badge>
-                        <p className="text-sm font-medium mt-1">
-                          {order.total.toLocaleString()} MZN
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          {orderStatusData.length > 0 && (
+            <OrderStatusWidget 
+              title="Status dos Pedidos"
+              statuses={orderStatusData}
+              total={stats?.todayOrders || 0}
+            />
+          )}
+          <ActivityFeedWidget 
+            title="Atividade Recente"
+            activities={activityItems}
+            maxHeight={300}
+            emptyMessage="Nenhum pedido recente"
+          />
+        </div>
       </div>
     </div>
   );

@@ -19,8 +19,18 @@ import {
   Truck,
   LogOut,
   Home,
-  User
+  User,
+  TrendingUp,
+  Star
 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { 
+  StatWidget, 
+  EarningsWidget, 
+  ActivityFeedWidget,
+  ChartWidget,
+  MapWidget
+} from '@/components/widgets';
 
 interface DriverProfile {
   full_name: string | null;
@@ -52,12 +62,15 @@ interface DeliveryAssignment {
 interface Stats {
   todayDeliveries: number;
   todayEarnings: number;
+  weekEarnings: number;
+  monthEarnings: number;
   totalDeliveries: number;
   rating: number;
 }
 
 export default function DriverDashboard() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { user, signOut, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<DriverProfile | null>(null);
   const [assignments, setAssignments] = useState<DeliveryAssignment[]>([]);
@@ -65,6 +78,7 @@ export default function DriverDashboard() {
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [weeklyData, setWeeklyData] = useState<{ name: string; value: number }[]>([]);
 
   useEffect(() => {
     if (!authLoading) {
@@ -121,12 +135,32 @@ export default function DriverDashboard() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+
+      const monthAgo = new Date();
+      monthAgo.setMonth(monthAgo.getMonth() - 1);
+
       const { data: todayData } = await supabase
         .from('driver_assignments')
         .select('order:orders(delivery_fee)')
         .eq('driver_id', user.id)
         .eq('status', 'delivered')
         .gte('delivered_at', today.toISOString());
+
+      const { data: weekData } = await supabase
+        .from('driver_assignments')
+        .select('order:orders(delivery_fee), delivered_at')
+        .eq('driver_id', user.id)
+        .eq('status', 'delivered')
+        .gte('delivered_at', weekAgo.toISOString());
+
+      const { data: monthData } = await supabase
+        .from('driver_assignments')
+        .select('order:orders(delivery_fee)')
+        .eq('driver_id', user.id)
+        .eq('status', 'delivered')
+        .gte('delivered_at', monthAgo.toISOString());
 
       const { count: totalDeliveries } = await supabase
         .from('driver_assignments')
@@ -136,10 +170,24 @@ export default function DriverDashboard() {
 
       const todayDeliveries = todayData?.length || 0;
       const todayEarnings = todayData?.reduce((sum, d) => sum + (d.order?.delivery_fee || 0), 0) || 0;
+      const weekEarnings = weekData?.reduce((sum, d) => sum + (d.order?.delivery_fee || 0), 0) || 0;
+      const monthEarnings = monthData?.reduce((sum, d) => sum + (d.order?.delivery_fee || 0), 0) || 0;
+
+      // Group weekly data by day
+      const dailyMap = new Map<string, number>();
+      weekData?.forEach(delivery => {
+        if (delivery.delivered_at) {
+          const day = new Date(delivery.delivered_at).toLocaleDateString('pt-MZ', { weekday: 'short' });
+          dailyMap.set(day, (dailyMap.get(day) || 0) + (delivery.order?.delivery_fee || 0));
+        }
+      });
+      setWeeklyData(Array.from(dailyMap.entries()).map(([name, value]) => ({ name, value })));
 
       setStats({
         todayDeliveries,
         todayEarnings,
+        weekEarnings,
+        monthEarnings,
         totalDeliveries: totalDeliveries || 0,
         rating: 4.8
       });
@@ -286,6 +334,240 @@ export default function DriverDashboard() {
     );
   }
 
+  const activityItems = assignments.map(a => ({
+    id: a.id,
+    title: a.order?.store?.name || 'Entrega',
+    description: a.order?.delivery_address || 'Endereço não informado',
+    time: new Date(a.assigned_at).toLocaleString('pt-MZ'),
+    type: 'delivery' as const,
+    status: a.status === 'picked_up' ? 'Em Entrega' : 'Aguardando'
+  }));
+
+  const mapLocations = currentLocation ? [
+    {
+      id: 'driver',
+      lat: currentLocation.lat,
+      lng: currentLocation.lng,
+      title: 'Sua Localização',
+      type: 'driver' as const
+    }
+  ] : [];
+
+  // Desktop Layout
+  if (!isMobile) {
+    return (
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+                <User className="h-8 w-8" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">{profile?.full_name || 'Entregador'}</h1>
+                <p className="text-primary-foreground/80">{profile?.default_city} • {profile?.vehicle_type}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-6">
+              {currentLocation && (
+                <div className="flex items-center gap-2 text-primary-foreground/80">
+                  <Navigation className="h-5 w-5" />
+                  <span>GPS Ativo</span>
+                </div>
+              )}
+              <div className="flex items-center gap-3 bg-primary-foreground/10 rounded-xl px-4 py-2">
+                <span>{isOnline ? 'Online' : 'Offline'}</span>
+                <Switch 
+                  checked={isOnline} 
+                  onCheckedChange={toggleOnlineStatus}
+                  className="data-[state=checked]:bg-green-500"
+                />
+              </div>
+              <Button variant="secondary" onClick={() => navigate('/')}>
+                <Home className="h-4 w-4 mr-2" />
+                Cliente
+              </Button>
+              <Button variant="ghost" className="text-primary-foreground" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto p-6 space-y-6">
+          {/* Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatWidget 
+              title="Entregas Hoje"
+              value={stats?.todayDeliveries || 0}
+              subtitle="Concluídas"
+              icon={Package}
+              colorClass="text-primary"
+            />
+            <StatWidget 
+              title="Total de Entregas"
+              value={stats?.totalDeliveries || 0}
+              subtitle="Desde o início"
+              icon={Truck}
+              colorClass="text-blue-500"
+            />
+            <StatWidget 
+              title="Avaliação"
+              value={`${stats?.rating || 0} ⭐`}
+              subtitle="Média geral"
+              icon={Star}
+              colorClass="text-yellow-500"
+            />
+            <StatWidget 
+              title="Ganhos Hoje"
+              value={`${(stats?.todayEarnings || 0).toLocaleString()} MZN`}
+              subtitle={`Semana: ${(stats?.weekEarnings || 0).toLocaleString()} MZN`}
+              icon={DollarSign}
+              colorClass="text-green-500"
+              trend={{ value: 15, isPositive: true }}
+            />
+          </div>
+
+          {/* Main Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              {/* Earnings Widget */}
+              <EarningsWidget 
+                earnings={{
+                  today: stats?.todayEarnings || 0,
+                  week: stats?.weekEarnings || 0,
+                  month: stats?.monthEarnings || 0
+                }}
+                trend={15}
+              />
+
+              {/* Active Deliveries */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    Entregas Ativas
+                    <Badge variant={isOnline ? "default" : "secondary"}>
+                      {isOnline ? 'Online' : 'Offline'}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {assignments.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p>{isOnline ? 'Aguardando novas entregas...' : 'Fique online para receber entregas'}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {assignments.map(assignment => (
+                        <Card key={assignment.id} className="border-l-4 border-l-primary">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-4">
+                              <div>
+                                <h3 className="font-semibold">{assignment.order?.store?.name}</h3>
+                                <Badge variant={assignment.status === 'picked_up' ? 'default' : 'secondary'}>
+                                  {assignment.status === 'picked_up' ? 'Em Entrega' : 'Aguardando Retirada'}
+                                </Badge>
+                              </div>
+                              <span className="text-lg font-bold text-green-500">
+                                {assignment.order?.delivery_fee?.toLocaleString()} MZN
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
+                                <MapPin className="h-5 w-5 text-primary flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Retirar em</p>
+                                  <p className="text-sm">{assignment.order?.store?.address || 'N/A'}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
+                                <Navigation className="h-5 w-5 text-green-500 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Entregar em</p>
+                                  <p className="text-sm">{assignment.order?.delivery_address || 'N/A'}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <Button 
+                              className="w-full"
+                              variant={assignment.status === 'picked_up' ? 'default' : 'secondary'}
+                              onClick={() => updateAssignmentStatus(
+                                assignment.id, 
+                                assignment.status === 'picked_up' ? 'delivered' : 'picked_up'
+                              )}
+                            >
+                              {assignment.status === 'picked_up' ? (
+                                <>
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Entrega Concluída
+                                </>
+                              ) : (
+                                <>
+                                  <Package className="h-4 w-4 mr-2" />
+                                  Retirei o Pedido
+                                </>
+                              )}
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Weekly Chart */}
+              <ChartWidget 
+                title="Ganhos da Semana"
+                subtitle="Últimos 7 dias"
+                data={weeklyData}
+                type="bar"
+                height={250}
+              />
+            </div>
+
+            <div className="space-y-6">
+              {/* Map */}
+              <MapWidget 
+                title="Sua Localização"
+                locations={mapLocations}
+                center={currentLocation || { lat: -25.9692, lng: 32.5732 }}
+                height={300}
+              />
+
+              {/* Activity */}
+              <ActivityFeedWidget 
+                title="Entregas Recentes"
+                activities={activityItems}
+                maxHeight={350}
+                emptyMessage="Nenhuma entrega ativa"
+              />
+
+              {/* Quick Actions */}
+              <Card>
+                <CardContent className="p-4 space-y-3">
+                  <Button variant="outline" className="w-full justify-start" onClick={() => navigate('/driver/history')}>
+                    <Clock className="h-4 w-4 mr-3" />
+                    Histórico de Entregas
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Phone className="h-4 w-4 mr-3" />
+                    Suporte
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Mobile Layout (existing)
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
