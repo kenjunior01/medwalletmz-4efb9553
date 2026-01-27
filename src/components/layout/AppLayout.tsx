@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { BottomNav } from "./BottomNav";
 import { Header } from "./Header";
+import { WhatsAppButton } from "@/components/support/WhatsAppButton";
 
 export function AppLayout() {
   return (
@@ -10,6 +11,7 @@ export function AppLayout() {
         <Outlet />
       </main>
       <BottomNav />
+      <WhatsAppButton />
     </div>
   );
 }

@@ -23,6 +23,7 @@ import Checkout from "./pages/Checkout";
 import AIAssistant from "./pages/AIAssistant";
 import Favorites from "./pages/Favorites";
 import Addresses from "./pages/Addresses";
+import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import RoleSelection from "./pages/RoleSelection";
 
@@ -76,6 +77,7 @@ const App = () => (
                   <Route path="/ai" element={<AIAssistant />} />
                   <Route path="/favorites" element={<Favorites />} />
                   <Route path="/addresses" element={<Addresses />} />
+                  <Route path="/help" element={<Help />} />
                 </Route>
                 
                 {/* Auth */}
