@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Package, CheckCircle, Clock, MapPin, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation } from "lucide-react";
+import { ClipboardList, Package, CheckCircle, Clock, MapPin, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation, Phone, MessageCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReviewModal } from "@/components/reviews/ReviewModal";
 import { DeliveryTrackingMap } from "@/components/tracking/DeliveryTrackingMap";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocation } from "@/contexts/LocationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -26,6 +27,8 @@ interface OrderWithStore {
     name: string;
     image_url: string | null;
     type: string;
+    latitude: number | null;
+    longitude: number | null;
   } | null;
   order_items: {
     id: string;
@@ -50,6 +53,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 export default function Orders() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { coordinates, requestLocation } = useLocation();
   const [orders, setOrders] = useState<OrderWithStore[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("active");
@@ -59,6 +63,13 @@ export default function Orders() {
     storeId: string;
     storeName: string;
   }>({ open: false, orderId: '', storeId: '', storeName: '' });
+
+  // Request location on mount for tracking
+  useEffect(() => {
+    if (!coordinates) {
+      requestLocation();
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -104,7 +115,7 @@ export default function Orders() {
           delivery_address,
           notes,
           created_at,
-          store:stores(id, name, image_url, type),
+          store:stores(id, name, image_url, type, latitude, longitude),
           order_items(id, quantity, unit_price, product:products(name))
         `)
         .eq("user_id", user.id)
@@ -230,13 +241,42 @@ export default function Orders() {
         {/* Tracking for active orders */}
         {order.status === "in_transit" && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm text-cyan-600 bg-cyan-50 dark:bg-cyan-950 p-2 rounded-lg">
-              <Navigation className="h-4 w-4 animate-pulse" />
-              <span>O entregador está a caminho!</span>
+            <div className="flex items-center justify-between gap-2 text-sm text-cyan-600 bg-cyan-50 dark:bg-cyan-950 p-2 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Navigation className="h-4 w-4 animate-pulse" />
+                <span>O entregador está a caminho!</span>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-cyan-600"
+                  onClick={() => window.open('tel:+258840000000', '_blank')}
+                >
+                  <Phone className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-green-600"
+                  onClick={() => window.open('https://wa.me/258840000000', '_blank')}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <DeliveryTrackingMap
               orderId={order.id}
               deliveryAddress={order.delivery_address || undefined}
+              storeLocation={order.store?.latitude && order.store?.longitude ? {
+                lat: order.store.latitude,
+                lng: order.store.longitude,
+                name: order.store.name
+              } : undefined}
+              userLocation={coordinates ? {
+                lat: coordinates.latitude,
+                lng: coordinates.longitude
+              } : undefined}
             />
           </div>
         )}
