@@ -9,7 +9,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, CreditCard, Smartphone, Loader2 } from 'lucide-react';
+import { ArrowLeft, Smartphone, Loader2 } from 'lucide-react';
+import { CouponInput, calculateCouponDiscount } from '@/components/checkout/CouponInput';
+
+interface AppliedCoupon {
+  id: string;
+  code: string;
+  discount_type: string;
+  discount_value: number;
+  min_order_value: number | null;
+  max_uses: number | null;
+  used_count: number | null;
+  expires_at: string | null;
+  is_active: boolean | null;
+}
 
 const paymentMethods = [
   { id: 'mpesa', name: 'M-Pesa', icon: '📱', description: 'Vodacom M-Pesa' },
@@ -27,9 +40,11 @@ export default function Checkout() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 
   const deliveryFee = 50; // Default delivery fee
-  const total = subtotal + deliveryFee;
+  const discount = calculateCouponDiscount(appliedCoupon, subtotal);
+  const total = subtotal + deliveryFee - discount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +68,7 @@ export default function Checkout() {
     setLoading(true);
 
     try {
-      // Create order
+      // Create order with discount info
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -63,7 +78,9 @@ export default function Checkout() {
           delivery_fee: deliveryFee,
           total,
           delivery_address: address,
-          notes,
+          notes: appliedCoupon 
+            ? `${notes ? notes + ' | ' : ''}Cupom: ${appliedCoupon.code} (-${discount} MZN)`
+            : notes,
           status: 'pending'
         })
         .select()
@@ -98,6 +115,27 @@ export default function Checkout() {
         });
 
       if (paymentError) throw paymentError;
+
+      // If coupon was used, increment used_count
+      if (appliedCoupon) {
+        const { error: couponError } = await supabase
+          .from('coupons')
+          .update({ used_count: (appliedCoupon.used_count || 0) + 1 })
+          .eq('id', appliedCoupon.id);
+        
+        if (couponError) {
+          console.error('Failed to update coupon count:', couponError);
+        }
+
+        // Record coupon usage by user
+        await supabase
+          .from('user_coupons')
+          .insert({
+            user_id: user.id,
+            coupon_id: appliedCoupon.id,
+            used_at: new Date().toISOString()
+          });
+      }
 
       // Clear cart and redirect
       clearCart();
@@ -156,6 +194,12 @@ export default function Checkout() {
                 <span>Taxa de Entrega</span>
                 <span>{deliveryFee} MZN</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Desconto ({appliedCoupon?.code})</span>
+                  <span>-{discount} MZN</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold text-lg pt-2">
                 <span>Total</span>
                 <span className="text-primary">{total} MZN</span>
@@ -164,6 +208,13 @@ export default function Checkout() {
           </div>
         </div>
 
+        {/* Coupon Input */}
+        <CouponInput
+          subtotal={subtotal}
+          appliedCoupon={appliedCoupon}
+          onApplyCoupon={setAppliedCoupon}
+          onRemoveCoupon={() => setAppliedCoupon(null)}
+        />
         {/* Delivery Address */}
         <div className="space-y-3">
           <Label>Endereço de Entrega *</Label>
