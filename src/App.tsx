@@ -35,6 +35,9 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminReports from "./pages/admin/AdminReports";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminDrivers from "./pages/admin/AdminDrivers";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 // Store Owner Pages
 import StoreOwnerDashboard from "./pages/store/StoreOwnerDashboard";
@@ -92,6 +95,9 @@ const App = () => (
                   <Route path="coupons" element={<AdminCoupons />} />
                   <Route path="products" element={<AdminProducts />} />
                   <Route path="reports" element={<AdminReports />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="drivers" element={<AdminDrivers />} />
+                  <Route path="settings" element={<AdminSettings />} />
                 </Route>
                 
                 {/* Store Owner Routes */}
