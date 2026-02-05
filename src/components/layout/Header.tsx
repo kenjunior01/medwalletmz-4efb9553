@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { MapPin, ChevronDown, Bell } from "lucide-react";
+import { useState, useMemo } from "react";
+import { MapPin, ChevronDown, Bell, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,27 +19,61 @@ const cities = [
   "Inhambane",
 ];
 
+function getGreeting(): { text: string; emoji: string; gradient: string } {
+  const hour = new Date().getHours();
+  
+  if (hour >= 5 && hour < 12) {
+    return { 
+      text: "Bom dia", 
+      emoji: "☀️",
+      gradient: "from-amber-400 to-orange-500"
+    };
+  } else if (hour >= 12 && hour < 18) {
+    return { 
+      text: "Boa tarde", 
+      emoji: "🌤️",
+      gradient: "from-orange-400 to-rose-500"
+    };
+  } else {
+    return { 
+      text: "Boa noite", 
+      emoji: "🌙",
+      gradient: "from-indigo-500 to-purple-600"
+    };
+  }
+}
+
 export function Header() {
   const [selectedCity, setSelectedCity] = useState("Maputo");
+  const greeting = useMemo(() => getGreeting(), []);
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border safe-area-top">
+    <header className="sticky top-0 z-50 glass border-b border-border/50 safe-area-top">
       <div className="flex items-center justify-between px-4 py-3">
         {/* Location Selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-1 px-2 h-auto py-1">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span className="font-semibold text-sm">{selectedCity}</span>
+            <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1.5 hover:bg-primary/10 rounded-xl transition-all">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <MapPin className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-[10px] text-muted-foreground font-medium">Entregar em</span>
+                <span className="font-bold text-sm">{selectedCity}</span>
+              </div>
               <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48">
+          <DropdownMenuContent align="start" className="w-52 glass rounded-xl p-1">
             {cities.map((city) => (
               <DropdownMenuItem
                 key={city}
                 onClick={() => setSelectedCity(city)}
-                className={city === selectedCity ? "bg-primary/10 text-primary" : ""}
+                className={`rounded-lg py-2.5 px-3 cursor-pointer transition-all ${
+                  city === selectedCity 
+                    ? "bg-primary text-primary-foreground" 
+                    : "hover:bg-muted"
+                }`}
               >
                 <MapPin className="h-4 w-4 mr-2" />
                 {city}
@@ -48,17 +82,25 @@ export function Header() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Logo */}
-        <div className="absolute left-1/2 -translate-x-1/2">
-          <span className="font-bold text-lg bg-gradient-to-r from-primary to-food bg-clip-text text-transparent">
-            MoçambiApp
+        {/* Logo with Greeting */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+          <span className="text-xs text-muted-foreground flex items-center gap-1">
+            {greeting.emoji} {greeting.text}
           </span>
+          <div className="flex items-center gap-1">
+            <Sparkles className="h-3.5 w-3.5 text-secondary" />
+            <span className="font-extrabold text-lg text-gradient-premium">
+              Joy
+            </span>
+          </div>
         </div>
 
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute -top-1 -right-1 h-4 w-4 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+        <Button variant="ghost" size="icon" className="relative hover:bg-primary/10 rounded-xl transition-all">
+          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+            <Bell className="h-5 w-5" />
+          </div>
+          <span className="absolute top-0 right-0 h-5 w-5 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-background shadow-md">
             3
           </span>
         </Button>

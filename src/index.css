@@ -2,107 +2,125 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MoçambiApp Design System - Cores vibrantes inspiradas em Moçambique e Meituan */
+/* MoçambiApp Design System - "The Joy Experience" Premium Local */
 
 @layer base {
   :root {
-    /* Cores principais - Amarelo dourado inspirado na bandeira de Moçambique */
-    --background: 0 0% 98%;
-    --foreground: 220 20% 10%;
+    /* Premium Local Palette - Verde Esmeralda com acentos dourados */
+    --background: 150 10% 98%;
+    --foreground: 160 25% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card-foreground: 160 25% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
+    --popover-foreground: 160 25% 8%;
 
-    /* Primary - Amarelo dourado vibrante (inspirado Meituan/Moçambique) */
-    --primary: 45 100% 50%;
-    --primary-foreground: 220 20% 10%;
+    /* Primary - Verde Esmeralda Profundo */
+    --primary: 160 84% 25%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Verde escuro (bandeira de Moçambique) */
-    --secondary: 145 60% 35%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary - Dourado Sofisticado */
+    --secondary: 42 87% 55%;
+    --secondary-foreground: 160 25% 8%;
 
-    --muted: 220 15% 95%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 150 15% 95%;
+    --muted-foreground: 150 10% 45%;
 
-    /* Accent - Vermelho (bandeira de Moçambique) */
-    --accent: 0 75% 55%;
+    /* Accent - Terracota Quente */
+    --accent: 18 76% 52%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 90%;
-    --input: 220 15% 90%;
-    --ring: 45 100% 50%;
+    --border: 150 15% 90%;
+    --input: 150 15% 90%;
+    --ring: 160 84% 25%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Service colors */
-    --food: 25 95% 55%;
+    /* Service colors - Premium */
+    --food: 18 76% 52%;
     --food-foreground: 0 0% 100%;
     
-    --grocery: 145 60% 40%;
+    --grocery: 160 84% 30%;
     --grocery-foreground: 0 0% 100%;
     
-    --pharmacy: 200 85% 50%;
+    --pharmacy: 200 85% 45%;
     --pharmacy-foreground: 0 0% 100%;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(220 20% 10% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(220 20% 10% / 0.1), 0 2px 4px -2px hsl(220 20% 10% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(220 20% 10% / 0.1), 0 4px 6px -4px hsl(220 20% 10% / 0.1);
+    /* Premium accents */
+    --gold: 42 87% 55%;
+    --gold-foreground: 160 25% 8%;
+    
+    --emerald: 160 84% 25%;
+    --emerald-foreground: 0 0% 100%;
+    
+    --terracotta: 18 76% 52%;
+    --terracotta-foreground: 0 0% 100%;
+
+    /* Glassmorphism */
+    --glass: 0 0% 100% / 0.7;
+    --glass-border: 0 0% 100% / 0.2;
+
+    /* Shadows - Premium */
+    --shadow-sm: 0 1px 2px 0 hsl(160 25% 8% / 0.03);
+    --shadow-md: 0 4px 12px -2px hsl(160 25% 8% / 0.08), 0 2px 6px -2px hsl(160 25% 8% / 0.04);
+    --shadow-lg: 0 12px 28px -6px hsl(160 25% 8% / 0.12), 0 4px 10px -4px hsl(160 25% 8% / 0.06);
+    --shadow-glow: 0 0 20px hsl(160 84% 25% / 0.15);
 
     /* Sidebar */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 220 20% 10%;
-    --sidebar-primary: 45 100% 50%;
-    --sidebar-primary-foreground: 220 20% 10%;
-    --sidebar-accent: 220 15% 95%;
-    --sidebar-accent-foreground: 220 20% 10%;
-    --sidebar-border: 220 15% 90%;
-    --sidebar-ring: 45 100% 50%;
+    --sidebar-background: 150 10% 98%;
+    --sidebar-foreground: 160 25% 8%;
+    --sidebar-primary: 160 84% 25%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 150 15% 95%;
+    --sidebar-accent-foreground: 160 25% 8%;
+    --sidebar-border: 150 15% 90%;
+    --sidebar-ring: 160 84% 25%;
   }
 
   .dark {
-    --background: 220 20% 8%;
-    --foreground: 0 0% 98%;
+    --background: 160 25% 6%;
+    --foreground: 150 10% 98%;
 
-    --card: 220 20% 12%;
-    --card-foreground: 0 0% 98%;
+    --card: 160 20% 10%;
+    --card-foreground: 150 10% 98%;
 
-    --popover: 220 20% 12%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 160 20% 10%;
+    --popover-foreground: 150 10% 98%;
 
-    --primary: 45 100% 50%;
-    --primary-foreground: 220 20% 10%;
+    --primary: 160 70% 40%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 145 50% 30%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 42 75% 50%;
+    --secondary-foreground: 160 25% 8%;
 
-    --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 160 15% 15%;
+    --muted-foreground: 150 10% 60%;
 
-    --accent: 0 75% 50%;
+    --accent: 18 70% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 30%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 150 10% 98%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 45 100% 50%;
+    --border: 160 15% 18%;
+    --input: 160 15% 18%;
+    --ring: 160 70% 40%;
 
-    --sidebar-background: 220 20% 10%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 45 100% 50%;
-    --sidebar-primary-foreground: 220 20% 10%;
-    --sidebar-accent: 220 15% 18%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 45 100% 50%;
+    --glass: 160 20% 10% / 0.8;
+    --glass-border: 0 0% 100% / 0.1;
+
+    --sidebar-background: 160 20% 8%;
+    --sidebar-foreground: 150 10% 98%;
+    --sidebar-primary: 160 70% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 160 15% 15%;
+    --sidebar-accent-foreground: 150 10% 98%;
+    --sidebar-border: 160 15% 18%;
+    --sidebar-ring: 160 70% 40%;
   }
 }
 
@@ -113,7 +131,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   /* PWA optimizations */
@@ -142,6 +160,50 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Glassmorphism utilities */
+  .glass {
+    background: hsl(var(--glass));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--glass-border));
+  }
+
+  .glass-subtle {
+    background: hsl(0 0% 100% / 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Premium gradients */
+  .gradient-premium {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(160 70% 35%) 100%);
+  }
+
+  .gradient-gold {
+    background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(38 80% 50%) 100%);
+  }
+
+  .gradient-warm {
+    background: linear-gradient(135deg, hsl(var(--terracotta)) 0%, hsl(12 70% 45%) 100%);
+  }
+
+  /* Text gradients */
+  .text-gradient-premium {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Shadow utilities */
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-premium {
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+  }
 }
 
 /* Leaflet Map Styles */
@@ -151,9 +213,39 @@
 }
 
 .leaflet-popup-content-wrapper {
-  border-radius: 0.5rem;
+  border-radius: 1rem;
 }
 
 .leaflet-popup-content {
   margin: 0.75rem;
+}
+
+/* Premium animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4); }
+  50% { box-shadow: 0 0 20px 8px hsl(var(--primary) / 0.1); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.1) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
