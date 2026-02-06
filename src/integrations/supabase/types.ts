@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          is_active: boolean | null
+          joy_coins_reward: number
+          name: string
+          requirement_type: string
+          requirement_value: number
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string
+          description: string
+          icon: string
+          id?: string
+          is_active?: boolean | null
+          joy_coins_reward?: number
+          name: string
+          requirement_type: string
+          requirement_value: number
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          is_active?: boolean | null
+          joy_coins_reward?: number
+          name?: string
+          requirement_type?: string
+          requirement_value?: number
+        }
+        Relationships: []
+      }
       addresses: {
         Row: {
           address_line: string
@@ -195,6 +237,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      joy_coin_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          reference_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      joy_events: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          event_date: string | null
+          event_time: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          is_secret: boolean | null
+          joy_coins_reward: number | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          event_date?: string | null
+          event_time?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_secret?: boolean | null
+          joy_coins_reward?: number | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          event_date?: string | null
+          event_time?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_secret?: boolean | null
+          joy_coins_reward?: number | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          title?: string
+        }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -520,6 +643,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_coupons: {
         Row: {
           coupon_id: string
@@ -551,6 +703,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_gamification: {
+        Row: {
+          created_at: string
+          current_level: number
+          experience_points: number
+          id: string
+          joy_coins: number
+          last_order_date: string | null
+          neighborhoods_explored: string[] | null
+          streak_days: number
+          total_orders: number
+          total_reviews: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_level?: number
+          experience_points?: number
+          id?: string
+          joy_coins?: number
+          last_order_date?: string | null
+          neighborhoods_explored?: string[] | null
+          streak_days?: number
+          total_orders?: number
+          total_reviews?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_level?: number
+          experience_points?: number
+          id?: string
+          joy_coins?: number
+          last_order_date?: string | null
+          neighborhoods_explored?: string[] | null
+          streak_days?: number
+          total_orders?: number
+          total_reviews?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_id?: string
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
