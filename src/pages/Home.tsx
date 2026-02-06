@@ -2,6 +2,9 @@ import { UtensilsCrossed, ShoppingBasket, Pill, Truck, Clock, Star, TrendingUp, 
 import { PromoBanner } from "@/components/home/PromoBanner";
 import { SearchBar } from "@/components/home/SearchBar";
 import { BentoGrid } from "@/components/home/BentoGrid";
+import { JoyRewardsCard } from "@/components/gamification/JoyRewardsCard";
+import { JoyEventsCard } from "@/components/guide/JoyEventsCard";
+import { SmartRecommendations } from "@/components/ai/SmartRecommendations";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { StatWidget, QuickActionWidget, TopItemsWidget } from "@/components/widgets";
@@ -271,8 +274,19 @@ export default function Home() {
         <PromoBanner />
       </div>
 
+      {/* Smart AI Recommendations */}
+      <SmartRecommendations />
+
       {/* Bento Grid Categories */}
       <BentoGrid />
+
+      {/* Joy Rewards Card */}
+      <div className="px-4">
+        <JoyRewardsCard />
+      </div>
+
+      {/* Joy Events / Guide */}
+      <JoyEventsCard />
 
       {/* Popular Near You */}
       <section className="px-4">

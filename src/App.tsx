@@ -26,6 +26,8 @@ import Addresses from "./pages/Addresses";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import RoleSelection from "./pages/RoleSelection";
+import Rewards from "./pages/Rewards";
+import Guide from "./pages/Guide";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -81,6 +83,9 @@ const App = () => (
                   <Route path="/favorites" element={<Favorites />} />
                   <Route path="/addresses" element={<Addresses />} />
                   <Route path="/help" element={<Help />} />
+                  <Route path="/rewards" element={<Rewards />} />
+                  <Route path="/guide" element={<Guide />} />
+                  <Route path="/guide/:id" element={<Guide />} />
                 </Route>
                 
                 {/* Auth */}
