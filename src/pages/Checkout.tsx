@@ -137,10 +137,10 @@ export default function Checkout() {
           });
       }
 
-      // Clear cart and redirect
+      // Clear cart and redirect to tracking
       clearCart();
       toast.success('Pedido criado com sucesso!');
-      navigate('/orders');
+      navigate(`/order/${order.id}`);
 
     } catch (error) {
       console.error('Checkout error:', error);

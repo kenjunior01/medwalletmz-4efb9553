@@ -28,6 +28,7 @@ import NotFound from "./pages/NotFound";
 import RoleSelection from "./pages/RoleSelection";
 import Rewards from "./pages/Rewards";
 import Guide from "./pages/Guide";
+import OrderTracking from "./pages/OrderTracking";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -86,6 +87,7 @@ const App = () => (
                   <Route path="/rewards" element={<Rewards />} />
                   <Route path="/guide" element={<Guide />} />
                   <Route path="/guide/:id" element={<Guide />} />
+                  <Route path="/order/:id" element={<OrderTracking />} />
                 </Route>
                 
                 {/* Auth */}
