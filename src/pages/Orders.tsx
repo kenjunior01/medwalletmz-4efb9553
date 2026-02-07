@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Package, CheckCircle, Clock, MapPin, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation, Phone, MessageCircle } from "lucide-react";
+import { ClipboardList, Package, CheckCircle, Clock, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReviewModal } from "@/components/reviews/ReviewModal";
-import { DeliveryTrackingMap } from "@/components/tracking/DeliveryTrackingMap";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocation } from "@/contexts/LocationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -53,7 +51,6 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 export default function Orders() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { coordinates, requestLocation } = useLocation();
   const [orders, setOrders] = useState<OrderWithStore[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("active");
@@ -63,13 +60,6 @@ export default function Orders() {
     storeId: string;
     storeName: string;
   }>({ open: false, orderId: '', storeId: '', storeName: '' });
-
-  // Request location on mount for tracking
-  useEffect(() => {
-    if (!coordinates) {
-      requestLocation();
-    }
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -189,11 +179,14 @@ export default function Orders() {
     const itemNames = order.order_items
       .map((item) => `${item.quantity}x ${item.product?.name || "Item"}`)
       .slice(0, 3);
+    
+    const isActiveOrder = ["pending", "confirmed", "preparing", "ready", "in_transit"].includes(order.status);
 
     return (
       <div
         key={order.id}
-        className="bg-card rounded-xl border border-border p-4 space-y-3 transition-all hover:shadow-medium"
+        className={`bg-card rounded-xl border border-border p-4 space-y-3 transition-all hover:shadow-medium ${isActiveOrder ? 'cursor-pointer' : ''}`}
+        onClick={isActiveOrder ? () => navigate(`/order/${order.id}`) : undefined}
       >
         {/* Header */}
         <div className="flex items-start justify-between">
@@ -238,51 +231,18 @@ export default function Orders() {
           <span className="font-bold text-primary">{order.total} MZN</span>
         </div>
 
-        {/* Tracking for active orders */}
+        {/* Quick status indicator for active orders */}
         {order.status === "in_transit" && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between gap-2 text-sm text-cyan-600 bg-cyan-50 dark:bg-cyan-950 p-2 rounded-lg">
-              <div className="flex items-center gap-2">
-                <Navigation className="h-4 w-4 animate-pulse" />
-                <span>O entregador está a caminho!</span>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 p-0 text-cyan-600"
-                  onClick={() => window.open('tel:+258840000000', '_blank')}
-                >
-                  <Phone className="h-4 w-4" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 p-0 text-green-600"
-                  onClick={() => window.open('https://wa.me/258840000000', '_blank')}
-                >
-                  <MessageCircle className="h-4 w-4" />
-                </Button>
-              </div>
+          <div className="flex items-center justify-between gap-2 text-sm text-primary bg-primary/10 p-2 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Navigation className="h-4 w-4 animate-pulse" />
+              <span>O entregador está a caminho! Toque para ver o mapa</span>
             </div>
-            <DeliveryTrackingMap
-              orderId={order.id}
-              deliveryAddress={order.delivery_address || undefined}
-              storeLocation={order.store?.latitude && order.store?.longitude ? {
-                lat: order.store.latitude,
-                lng: order.store.longitude,
-                name: order.store.name
-              } : undefined}
-              userLocation={coordinates ? {
-                lat: coordinates.latitude,
-                lng: coordinates.longitude
-              } : undefined}
-            />
           </div>
         )}
 
         {order.status === "preparing" && (
-          <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-50 dark:bg-orange-950 p-2 rounded-lg">
+          <div className="flex items-center gap-2 text-sm text-secondary bg-secondary/10 p-2 rounded-lg">
             <ChefHat className="h-4 w-4" />
             <span>O seu pedido está a ser preparado</span>
           </div>
