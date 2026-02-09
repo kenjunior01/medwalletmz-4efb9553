@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClipboardList, Package, CheckCircle, Clock, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation } from "lucide-react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -115,6 +116,7 @@ export default function Orders() {
       setOrders((ordersData as unknown as OrderWithStore[]) || []);
     } catch (error) {
       console.error("Erro ao carregar pedidos:", error);
+      toast.error((error as any)?.message || 'Erro ao carregar pedidos');
     } finally {
       setLoading(false);
     }
