@@ -48,7 +48,7 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast.error('Faça login para continuar');
       navigate('/auth');
@@ -60,33 +60,40 @@ export default function Checkout() {
       return;
     }
 
-    if (!currentStoreId) {
-      toast.error('Carrinho vazio');
+    // Defensive: cart can be corrupted from older versions
+    const storeId = currentStoreId || (items[0] as any)?.store_id;
+    if (!storeId) {
+      toast.error('Carrinho inválido. Limpe o carrinho e adicione os itens novamente.');
+      clearCart();
+      navigate('/cart');
       return;
     }
 
     setLoading(true);
 
     try {
-      // Create order with discount info
+      const notesWithCoupon = appliedCoupon
+        ? `${notes ? notes + ' | ' : ''}Cupom: ${appliedCoupon.code} (-${discount} MZN)`
+        : notes;
+
+      // Create order (select only id to reduce chances of SELECT/RLS issues)
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
           user_id: user.id,
-          store_id: currentStoreId,
+          store_id: storeId,
           subtotal,
           delivery_fee: deliveryFee,
           total,
           delivery_address: address,
-          notes: appliedCoupon 
-            ? `${notes ? notes + ' | ' : ''}Cupom: ${appliedCoupon.code} (-${discount} MZN)`
-            : notes,
+          notes: notesWithCoupon,
           status: 'pending'
         })
-        .select()
-        .single();
+        .select('id')
+        .maybeSingle();
 
       if (orderError) throw orderError;
+      if (!order?.id) throw new Error('Falha ao criar pedido (sem id retornado)');
 
       // Create order items
       const orderItems = items.map(item => ({
@@ -122,7 +129,7 @@ export default function Checkout() {
           .from('coupons')
           .update({ used_count: (appliedCoupon.used_count || 0) + 1 })
           .eq('id', appliedCoupon.id);
-        
+
         if (couponError) {
           console.error('Failed to update coupon count:', couponError);
         }
@@ -142,9 +149,9 @@ export default function Checkout() {
       toast.success('Pedido criado com sucesso!');
       navigate(`/order/${order.id}`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Checkout error:', error);
-      toast.error('Erro ao processar pedido');
+      toast.error(error?.message || 'Erro ao processar pedido');
     } finally {
       setLoading(false);
     }
@@ -195,7 +202,7 @@ export default function Checkout() {
                 <span>{deliveryFee} MZN</span>
               </div>
               {discount > 0 && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-primary">
                   <span>Desconto ({appliedCoupon?.code})</span>
                   <span>-{discount} MZN</span>
                 </div>
