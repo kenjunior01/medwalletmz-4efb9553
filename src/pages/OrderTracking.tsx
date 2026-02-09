@@ -124,7 +124,7 @@ export default function OrderTracking() {
 
   const fetchOrder = async () => {
     if (!id) return;
-    
+
     try {
       const { data, error } = await supabase
         .from('orders')
@@ -142,12 +142,13 @@ export default function OrderTracking() {
           order_items(id, quantity, unit_price, product:products(name, image_url))
         `)
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      setOrder(data as unknown as OrderDetails);
+      setOrder((data as unknown as OrderDetails) || null);
     } catch (error) {
       console.error('Error fetching order:', error);
+      setOrder(null);
     } finally {
       setLoading(false);
     }
@@ -155,7 +156,7 @@ export default function OrderTracking() {
 
   const fetchDriver = async () => {
     if (!id) return;
-    
+
     try {
       const { data, error } = await supabase
         .from('driver_assignments')
@@ -170,16 +171,22 @@ export default function OrderTracking() {
         .maybeSingle();
 
       if (error) throw error;
-      
+
       if (data) {
-        // Fetch driver profile
-        const { data: profile } = await supabase
+        // Fetch driver profile (may not exist)
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('full_name, phone, vehicle_type')
           .eq('user_id', data.driver_id)
-          .single();
-        
+          .maybeSingle();
+
+        if (profileError) {
+          console.warn('Failed to fetch driver profile:', profileError);
+        }
+
         setDriver({ ...data, profile });
+      } else {
+        setDriver(null);
       }
     } catch (error) {
       console.error('Error fetching driver:', error);

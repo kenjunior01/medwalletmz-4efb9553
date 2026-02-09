@@ -126,28 +126,42 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
           driver_id
         `)
         .eq('order_id', orderId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
-      if (data?.current_latitude && data?.current_longitude) {
-        // Get driver profile for name
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name, vehicle_type')
-          .eq('user_id', data.driver_id)
-          .single();
-
-        setDriverLocation({
-          lat: data.current_latitude,
-          lng: data.current_longitude,
-          status: data.status,
-          driver_name: profile?.full_name || 'Entregador',
-          vehicle_type: profile?.vehicle_type || 'motorcycle'
-        });
-        
-        updateEstimatedTime(data.current_latitude, data.current_longitude);
+      // No driver assignment yet
+      if (!data) {
+        setDriverLocation(null);
+        return;
       }
+
+      // Driver exists but hasn't shared location yet
+      if (!data.current_latitude || !data.current_longitude) {
+        setDriverLocation(null);
+        return;
+      }
+
+      // Get driver profile for name (may not exist)
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('full_name, vehicle_type')
+        .eq('user_id', data.driver_id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.warn('Failed to fetch driver profile:', profileError);
+      }
+
+      setDriverLocation({
+        lat: data.current_latitude,
+        lng: data.current_longitude,
+        status: data.status,
+        driver_name: profile?.full_name || 'Entregador',
+        vehicle_type: profile?.vehicle_type || 'motorcycle'
+      });
+
+      updateEstimatedTime(data.current_latitude, data.current_longitude);
     } catch (error) {
       console.error('Error fetching driver location:', error);
     } finally {
@@ -256,10 +270,10 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
-            <Navigation className="h-5 w-5 text-green-500" />
+            <Navigation className="h-5 w-5 text-primary" />
             Rastreamento ao Vivo
           </CardTitle>
-          <Badge variant="default" className="bg-green-500">
+          <Badge variant="default" className="bg-primary text-primary-foreground">
             {getStatusLabel(driverLocation.status)}
           </Badge>
         </div>
@@ -299,9 +313,9 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            
+
             <MapUpdater center={getMapCenter()} />
-            
+
             {/* Driver marker */}
             <Marker position={[driverLocation.lat, driverLocation.lng]} icon={driverIcon}>
               <Popup>
@@ -346,7 +360,7 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
                   [driverLocation.lat, driverLocation.lng],
                   [userLocation.lat, userLocation.lng]
                 ]}
-                color="#3b82f6"
+                color="hsl(var(--primary))"
                 weight={3}
                 opacity={0.7}
                 dashArray="10, 10"
@@ -358,18 +372,18 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
         {/* Legend */}
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500" />
+            <div className="w-3 h-3 rounded-full bg-primary" />
             <span>Entregador</span>
           </div>
           {storeLocation && (
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
+              <div className="w-3 h-3 rounded-full bg-secondary" />
               <span>Loja</span>
             </div>
           )}
           {userLocation && (
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
+              <div className="w-3 h-3 rounded-full bg-accent" />
               <span>Destino</span>
             </div>
           )}
