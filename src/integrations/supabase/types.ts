@@ -124,6 +124,7 @@ export type Database = {
           discount_value: number
           expires_at: string | null
           id: string
+          influencer_id: string | null
           is_active: boolean | null
           max_uses: number | null
           min_order_value: number | null
@@ -136,6 +137,7 @@ export type Database = {
           discount_value: number
           expires_at?: string | null
           id?: string
+          influencer_id?: string | null
           is_active?: boolean | null
           max_uses?: number | null
           min_order_value?: number | null
@@ -148,12 +150,21 @@ export type Database = {
           discount_value?: number
           expires_at?: string | null
           id?: string
+          influencer_id?: string | null
           is_active?: boolean | null
           max_uses?: number | null
           min_order_value?: number | null
           used_count?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "coupons_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       driver_assignments: {
         Row: {
@@ -231,6 +242,55 @@ export type Database = {
           },
           {
             foreignKeyName: "favorites_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      influencer_picks: {
+        Row: {
+          created_at: string
+          featured_text: string | null
+          id: string
+          influencer_id: string
+          product_id: string | null
+          store_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          featured_text?: string | null
+          id?: string
+          influencer_id: string
+          product_id?: string | null
+          store_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          featured_text?: string | null
+          id?: string
+          influencer_id?: string
+          product_id?: string | null
+          store_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "influencer_picks_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "influencer_picks_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "influencer_picks_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,7 +11,6 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Smartphone, Loader2 } from 'lucide-react';
 import { CouponInput, calculateCouponDiscount } from '@/components/checkout/CouponInput';
-
 interface AppliedCoupon {
   id: string;
   code: string;
@@ -41,8 +40,22 @@ export default function Checkout() {
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  const [deliveryFee, setDeliveryFee] = useState(0);
 
-  const deliveryFee = 50; // Default delivery fee
+  // Fetch dynamic delivery fee from the store
+  useEffect(() => {
+    const fetchDeliveryFee = async () => {
+      const storeId = currentStoreId || items[0]?.store_id;
+      if (!storeId) return;
+      const { data } = await supabase
+        .from('stores')
+        .select('delivery_fee')
+        .eq('id', storeId)
+        .maybeSingle();
+      setDeliveryFee(data?.delivery_fee ?? 50);
+    };
+    fetchDeliveryFee();
+  }, [currentStoreId, items]);
   const discount = calculateCouponDiscount(appliedCoupon, subtotal);
   const total = subtotal + deliveryFee - discount;
 

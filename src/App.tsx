@@ -55,6 +55,7 @@ import StoreReports from "./pages/store/StoreReports";
 import DriverDashboard from "./pages/driver/DriverDashboard";
 import DriverRegister from "./pages/driver/DriverRegister";
 import DriverHistory from "./pages/driver/DriverHistory";
+import InfluencerDashboard from "./pages/influencer/InfluencerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -121,6 +122,7 @@ const App = () => (
                 <Route path="/driver/register" element={<DriverRegister />} />
                 <Route path="/driver/dashboard" element={<DriverDashboard />} />
                 <Route path="/driver/history" element={<DriverHistory />} />
+                <Route path="/influencer/dashboard" element={<InfluencerDashboard />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

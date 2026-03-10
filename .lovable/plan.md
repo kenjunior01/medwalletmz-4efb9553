@@ -1,105 +1,66 @@
 
 
-## Plano: Corrigir Carrinho/Pedidos + Funcionalidades para Influenciadores
+## Plano: Corrigir Carrinho, Checkout, Pedidos e Tracking
 
-Analisei o PDF da estrategia de parcerias com influenciadores e o estado actual do codigo. Ha dois blocos de trabalho: corrigir os bugs existentes e implementar as funcionalidades pedidas no documento.
+### Problemas Identificados
 
----
+1. **Carrinho - taxa de entrega inconsistente**: O carrinho mostra 75 MZN de taxa, mas o checkout usa 50 MZN. Deveria usar a taxa da loja (`store.delivery_fee`).
 
-### Parte 1: Correcoes Criticas (Carrinho, Checkout, Pedidos, Tracking)
+2. **Checkout - perfil do utilizador nao criado**: Ao criar um pedido, nao ha garantia de que o perfil do utilizador existe na tabela `profiles`. Isso causa falhas quando o OrderTracking tenta buscar dados do perfil.
 
-**Problemas encontrados:**
+3. **Orders - RLS no SELECT usa role `public`**: As politicas de SELECT para `orders` e `order_items` usam `roles: {public}` (anon), mas a query exige `auth.uid()`. Isto funciona para utilizadores autenticados, mas seria mais correcto usar `authenticated`.
 
-1. **Trigger `handle_new_user` nao esta ligado** -- a funcao existe mas nao ha trigger em `auth.users`, entao perfis nao sao criados automaticamente no registo. Isto causa falhas em cascata.
+4. **OrderTracking - driver_assignments nao visivel**: A politica RLS de SELECT para `driver_assignments` usa `roles: {authenticated}`, o que esta correcto. Porem, o `fetchDriver` faz uma query separada ao `profiles` que falha porque a politica de `profiles` so permite ver o proprio perfil (`auth.uid() = user_id`), impedindo o cliente de ver o nome/telefone do entregador.
 
-2. **Perfis de motoristas invisiveis** -- RLS de `profiles` so permite ver o proprio perfil. O cliente nao consegue ver nome/telefone do entregador no tracking.
+5. **Falta de criacao automatica de perfil**: Nao existe trigger para criar um perfil automaticamente ao registar, o que pode causar falhas em cascata.
 
-3. **Taxa de entrega fixa no carrinho (75 MZN)** e no checkout (50 MZN) -- deveria usar `stores.delivery_fee`.
-
-4. **CouponInput usa `.single()`** -- lanca erro se o cupom nao for encontrado em vez de retornar null.
-
-**Correcoes:**
-
-- **Migracao SQL:**
-  - Criar trigger `on_auth_user_created` que chama `handle_new_user()` em `auth.users`
-  - Adicionar politica RLS em `profiles`: SELECT para `authenticated` com condicao `true` (apenas campos publicos via query selectiva no codigo)
-  - Habilitar realtime na tabela `orders`
-
-- **Cart.tsx:** Remover taxa fixa, mostrar "Taxa calculada no checkout"
-- **Checkout.tsx:** Buscar `delivery_fee` da loja via query a `stores` usando `currentStoreId`
-- **CouponInput.tsx:** `.single()` → `.maybeSingle()`
+6. **CouponInput usa `.single()` em vez de `.maybeSingle()`**: Pode lancar erro se o cupom nao existir.
 
 ---
 
-### Parte 2: Funcionalidades para Influenciadores (do PDF)
+### Alteracoes Planeadas
 
-O documento pede 3 funcionalidades no app:
+#### 1. Migracao SQL (Backend)
+- Criar trigger `on_auth_user_created` para criar automaticamente um registo em `profiles` quando um utilizador se regista.
+- Adicionar politica RLS em `profiles` para permitir que utilizadores autenticados vejam o `full_name`, `phone` e `vehicle_type` de outros perfis (necessario para ver dados do entregador). Alternativa: criar uma view publica com campos limitados.
+- Adicionar publicacao realtime para a tabela `orders` (se nao estiver ja).
 
-#### 2A. Sistema de Codigos de Afiliado
-- Ja existe a tabela `coupons` -- os codigos de influenciadores (ex: JOY10) funcionam como cupons normais
-- Adicionar campo `influencer_id` (uuid, nullable) na tabela `coupons` para ligar cupons a influenciadores
-- Rastrear pedidos feitos com cada codigo via `user_coupons`
+#### 2. Carrinho (`src/pages/Cart.tsx`)
+- Remover taxa de entrega fixa (75 MZN) do carrinho - mostrar apenas o subtotal.
+- Indicar que a taxa sera calculada no checkout.
 
-#### 2B. Pagina "Favoritos do Influenciador"
-- Criar tabela `influencer_picks` (influencer_id, product_id, store_id, featured_text)
-- Nova seccao na Home ou no StoreDetail: "Escolhas de [Nome]" com foto e pratos recomendados
-- Card visual com avatar do influenciador e lista de produtos
+#### 3. Checkout (`src/pages/Checkout.tsx`)
+- Usar a taxa de entrega real da loja (buscar `stores.delivery_fee` pelo `currentStoreId`).
+- Garantir que o perfil do utilizador existe antes de criar o pedido.
 
-#### 2C. Dashboard do Influenciador
-- Nova pagina `/influencer/dashboard`
-- Mostra: total de pedidos com o codigo, comissao acumulada, grafico de uso ao longo do tempo
-- Query: contar `user_coupons` ligados aos cupons do influenciador
-- Adicionar role `influencer` ao enum `app_role` ou usar uma flag na tabela profiles
+#### 4. Pedidos (`src/pages/Orders.tsx`)
+- Nenhuma alteracao critica necessaria - ja funciona com as correcoes anteriores.
+
+#### 5. CouponInput (`src/components/checkout/CouponInput.tsx`)
+- Substituir `.single()` por `.maybeSingle()` para evitar erro quando cupom nao existe.
+
+#### 6. OrderTracking (`src/pages/OrderTracking.tsx`)
+- Ajustar a query do motorista para funcionar com a nova politica de perfis.
 
 ---
 
 ### Secao Tecnica
 
-**Migracao SQL (Parte 1):**
-```sql
--- Trigger para criar perfil automaticamente
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+**Ficheiros a modificar:**
+- `src/pages/Cart.tsx` - remover taxa fixa, mostrar subtotal
+- `src/pages/Checkout.tsx` - buscar delivery_fee da loja, garantir perfil
+- `src/components/checkout/CouponInput.tsx` - `.single()` -> `.maybeSingle()`
+- `src/pages/OrderTracking.tsx` - ajustar fetch do perfil do motorista
 
--- Permitir leitura basica de perfis entre utilizadores autenticados
-CREATE POLICY "Authenticated users can view basic profiles"
-  ON public.profiles FOR SELECT TO authenticated
-  USING (true);
+**Migracao SQL:**
+- Trigger `handle_new_user` para criar perfil automaticamente
+- Politica RLS adicional em `profiles`: SELECT para `authenticated` com campos limitados (via view ou politica permissiva para leitura basica)
+- Verificar `supabase_realtime` para tabela `orders`
 
--- Realtime para orders
-ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
-```
-
-**Migracao SQL (Parte 2):**
-```sql
--- Campo influencer nos cupons
-ALTER TABLE public.coupons ADD COLUMN influencer_id uuid REFERENCES public.profiles(id);
-
--- Tabela de picks do influenciador
-CREATE TABLE public.influencer_picks (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  influencer_id uuid NOT NULL,
-  product_id uuid REFERENCES public.products(id),
-  store_id uuid REFERENCES public.stores(id),
-  featured_text text,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-ALTER TABLE public.influencer_picks ENABLE ROW LEVEL SECURITY;
--- Politicas RLS apropriadas
-```
-
-**Ficheiros a criar/modificar:**
-- `src/pages/Cart.tsx` -- remover taxa fixa
-- `src/pages/Checkout.tsx` -- buscar delivery_fee da loja
-- `src/components/checkout/CouponInput.tsx` -- `.maybeSingle()`
-- `src/pages/influencer/InfluencerDashboard.tsx` -- novo
-- `src/components/home/InfluencerPicks.tsx` -- novo widget na home
-- `src/App.tsx` -- adicionar rota `/influencer/dashboard`
-
-**Sequencia:**
-1. Migracoes SQL (trigger + RLS + tabelas influencer)
-2. Corrigir bugs (Cart, Checkout, CouponInput)
-3. Criar dashboard do influenciador
-4. Criar seccao "Escolhas do Influenciador" na Home
+**Sequencia de execucao:**
+1. Executar migracao SQL (trigger + politicas)
+2. Corrigir CouponInput (`.maybeSingle()`)
+3. Corrigir Cart (remover taxa fixa)
+4. Corrigir Checkout (taxa dinamica + perfil)
+5. Ajustar OrderTracking (perfil do motorista)
 
