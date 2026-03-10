@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,7 +11,6 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Smartphone, Loader2 } from 'lucide-react';
 import { CouponInput, calculateCouponDiscount } from '@/components/checkout/CouponInput';
-
 interface AppliedCoupon {
   id: string;
   code: string;
