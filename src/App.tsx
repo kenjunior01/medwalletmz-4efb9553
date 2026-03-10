@@ -122,6 +122,7 @@ const App = () => (
                 <Route path="/driver/register" element={<DriverRegister />} />
                 <Route path="/driver/dashboard" element={<DriverDashboard />} />
                 <Route path="/driver/history" element={<DriverHistory />} />
+                <Route path="/influencer/dashboard" element={<InfluencerDashboard />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -289,6 +289,9 @@ export default function Home() {
       {/* Joy Events / Guide */}
       <JoyEventsCard />
 
+      {/* Influencer Picks */}
+      <InfluencerPicks />
+
       {/* Popular Near You */}
       <section className="px-4">
         <div className="flex items-center justify-between mb-3">
