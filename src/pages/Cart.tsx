@@ -8,8 +8,7 @@ export default function Cart() {
   const navigate = useNavigate();
   const { items, removeItem, updateQuantity, subtotal, totalItems } = useCart();
   
-  const deliveryFee = items.length > 0 ? 75 : 0;
-  const total = subtotal + deliveryFee;
+  // Delivery fee is calculated at checkout based on the store
 
   if (items.length === 0) {
     return (
