@@ -55,6 +55,7 @@ import StoreReports from "./pages/store/StoreReports";
 import DriverDashboard from "./pages/driver/DriverDashboard";
 import DriverRegister from "./pages/driver/DriverRegister";
 import DriverHistory from "./pages/driver/DriverHistory";
+import InfluencerDashboard from "./pages/influencer/InfluencerDashboard";
 
 const queryClient = new QueryClient();
 
