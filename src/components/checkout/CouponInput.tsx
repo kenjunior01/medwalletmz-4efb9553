@@ -42,7 +42,7 @@ export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCo
         .from('coupons')
         .select('*')
         .eq('code', couponCode.toUpperCase().trim())
-        .single();
+        .maybeSingle();
 
       if (error || !coupon) {
         toast.error('Cupom não encontrado');
