@@ -5,6 +5,7 @@ import { BentoGrid } from "@/components/home/BentoGrid";
 import { JoyRewardsCard } from "@/components/gamification/JoyRewardsCard";
 import { JoyEventsCard } from "@/components/guide/JoyEventsCard";
 import { SmartRecommendations } from "@/components/ai/SmartRecommendations";
+import { InfluencerPicks } from "@/components/home/InfluencerPicks";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { StatWidget, QuickActionWidget, TopItemsWidget } from "@/components/widgets";
