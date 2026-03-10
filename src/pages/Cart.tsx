@@ -99,12 +99,12 @@ export default function Cart() {
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Taxa de Entrega</span>
-            <span>{deliveryFee} MZN</span>
+            <span className="text-xs text-muted-foreground">Calculada no checkout</span>
           </div>
           <Separator />
           <div className="flex justify-between font-bold text-base">
-            <span>Total</span>
-            <span className="text-primary">{total} MZN</span>
+            <span>Subtotal</span>
+            <span className="text-primary">{subtotal} MZN</span>
           </div>
         </div>
       </div>
