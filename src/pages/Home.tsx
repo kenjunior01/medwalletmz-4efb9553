@@ -6,6 +6,8 @@ import { JoyRewardsCard } from "@/components/gamification/JoyRewardsCard";
 import { JoyEventsCard } from "@/components/guide/JoyEventsCard";
 import { SmartRecommendations } from "@/components/ai/SmartRecommendations";
 import { InfluencerPicks } from "@/components/home/InfluencerPicks";
+import { WeeklyChallenges } from "@/components/gamification/WeeklyChallenges";
+import { DailyHighlights } from "@/components/home/DailyHighlights";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { StatWidget, QuickActionWidget, TopItemsWidget } from "@/components/widgets";
@@ -277,6 +279,12 @@ export default function Home() {
 
       {/* Smart AI Recommendations */}
       <SmartRecommendations />
+
+      {/* Daily Highlights */}
+      <DailyHighlights />
+
+      {/* Weekly Challenges */}
+      <WeeklyChallenges />
 
       {/* Bento Grid Categories */}
       <BentoGrid />

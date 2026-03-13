@@ -116,6 +116,54 @@ export type Database = {
         }
         Relationships: []
       }
+      challenges: {
+        Row: {
+          category: string
+          challenge_type: string
+          created_at: string
+          description: string
+          ends_at: string
+          icon: string
+          id: string
+          is_active: boolean
+          joy_coins_reward: number
+          starts_at: string
+          target_value: number
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          category?: string
+          challenge_type?: string
+          created_at?: string
+          description: string
+          ends_at: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          joy_coins_reward?: number
+          starts_at?: string
+          target_value?: number
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          category?: string
+          challenge_type?: string
+          created_at?: string
+          description?: string
+          ends_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          joy_coins_reward?: number
+          starts_at?: string
+          target_value?: number
+          title?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           code: string
@@ -162,6 +210,57 @@ export type Database = {
             columns: ["influencer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_highlights: {
+        Row: {
+          created_at: string
+          highlight_date: string
+          highlight_type: string
+          id: string
+          is_active: boolean
+          product_id: string | null
+          store_id: string | null
+          subtitle: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          highlight_date?: string
+          highlight_type?: string
+          id?: string
+          is_active?: boolean
+          product_id?: string | null
+          store_id?: string | null
+          subtitle?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          highlight_date?: string
+          highlight_type?: string
+          id?: string
+          is_active?: boolean
+          product_id?: string | null
+          store_id?: string | null
+          subtitle?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_highlights_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_highlights_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
             referencedColumns: ["id"]
           },
         ]
@@ -732,6 +831,41 @@ export type Database = {
           },
         ]
       }
+      user_challenges: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          created_at: string
+          current_value: number
+          id: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          created_at?: string
+          current_value?: number
+          id?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          created_at?: string
+          current_value?: number
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_coupons: {
         Row: {
           coupon_id: string
@@ -862,7 +996,17 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      weekly_leaderboard: {
+        Row: {
+          avatar_url: string | null
+          full_name: string | null
+          joy_coins: number | null
+          user_id: string | null
+          user_level: number | null
+          weekly_orders: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_roles: {

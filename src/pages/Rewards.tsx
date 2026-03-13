@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Coins, Trophy, Flame, Star, Gift, Users, ChevronRight, Lock } from "lucide-react";
+import { ArrowLeft, Coins, Trophy, Flame, Star, Gift, Users, ChevronRight, Lock, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
+import { WeeklyLeaderboard } from "@/components/gamification/WeeklyLeaderboard";
+import { WeeklyChallenges } from "@/components/gamification/WeeklyChallenges";
 
 export default function Rewards() {
   const { user } = useAuth();
@@ -166,11 +168,26 @@ export default function Rewards() {
       {/* Tabs */}
       <div className="px-4 mt-6">
         <Tabs defaultValue="achievements" className="w-full">
-          <TabsList className="w-full grid grid-cols-3 mb-4">
-            <TabsTrigger value="achievements">Conquistas</TabsTrigger>
-            <TabsTrigger value="history">Histórico</TabsTrigger>
-            <TabsTrigger value="referral">Indicar</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-4 mb-4">
+            <TabsTrigger value="challenges" className="text-xs">Desafios</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-xs">Ranking</TabsTrigger>
+            <TabsTrigger value="achievements" className="text-xs">Conquistas</TabsTrigger>
+            <TabsTrigger value="history" className="text-xs">Histórico</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="challenges">
+            <WeeklyChallenges />
+          </TabsContent>
+
+          <TabsContent value="leaderboard">
+            <div className="mb-3">
+              <h3 className="font-bold text-sm flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-gold" /> Ranking Semanal
+              </h3>
+              <p className="text-xs text-muted-foreground">Os utilizadores com mais pedidos esta semana</p>
+            </div>
+            <WeeklyLeaderboard />
+          </TabsContent>
 
           <TabsContent value="achievements" className="space-y-3">
             {allAchievements?.map((achievement) => {
