@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Coins, Trophy, Flame, Star, Gift, Users, ChevronRight, Lock } from "lucide-react";
+import { ArrowLeft, Coins, Trophy, Flame, Star, Gift, Users, ChevronRight, Lock, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
