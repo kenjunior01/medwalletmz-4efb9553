@@ -280,6 +280,12 @@ export default function Home() {
       {/* Smart AI Recommendations */}
       <SmartRecommendations />
 
+      {/* Daily Highlights */}
+      <DailyHighlights />
+
+      {/* Weekly Challenges */}
+      <WeeklyChallenges />
+
       {/* Bento Grid Categories */}
       <BentoGrid />
 

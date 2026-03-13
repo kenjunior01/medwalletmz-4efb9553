@@ -26,9 +26,34 @@
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="MoçambiApp" />
-    <meta name="twitter:description" content="O super-app de Moçambique" />
+    <meta name="twitter:title" content="MoçambiApp - Delivery em Maputo" />
+    <meta name="twitter:description" content="Comida, supermercado e farmácia entregues rápido em Maputo, Moçambique." />
     <meta name="twitter:image" content="/og-image.png" />
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "MoçambiApp",
+      "description": "A plataforma de delivery mais rápida de Maputo, Moçambique. Comida, supermercado e farmácia.",
+      "url": "https://pwa-maputo-joy.lovable.app",
+      "applicationCategory": "FoodService",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "description": "Delivery de comida, supermercado e farmácia em Maputo"
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": "Maputo",
+        "containedInPlace": {
+          "@type": "Country",
+          "name": "Moçambique"
+        }
+      }
+    }
+    </script>
     
     <!-- PWA Icons -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
