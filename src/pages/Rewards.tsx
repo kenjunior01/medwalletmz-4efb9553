@@ -168,11 +168,26 @@ export default function Rewards() {
       {/* Tabs */}
       <div className="px-4 mt-6">
         <Tabs defaultValue="achievements" className="w-full">
-          <TabsList className="w-full grid grid-cols-3 mb-4">
-            <TabsTrigger value="achievements">Conquistas</TabsTrigger>
-            <TabsTrigger value="history">Histórico</TabsTrigger>
-            <TabsTrigger value="referral">Indicar</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-4 mb-4">
+            <TabsTrigger value="challenges" className="text-xs">Desafios</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-xs">Ranking</TabsTrigger>
+            <TabsTrigger value="achievements" className="text-xs">Conquistas</TabsTrigger>
+            <TabsTrigger value="history" className="text-xs">Histórico</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="challenges">
+            <WeeklyChallenges />
+          </TabsContent>
+
+          <TabsContent value="leaderboard">
+            <div className="mb-3">
+              <h3 className="font-bold text-sm flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-gold" /> Ranking Semanal
+              </h3>
+              <p className="text-xs text-muted-foreground">Os utilizadores com mais pedidos esta semana</p>
+            </div>
+            <WeeklyLeaderboard />
+          </TabsContent>
 
           <TabsContent value="achievements" className="space-y-3">
             {allAchievements?.map((achievement) => {
