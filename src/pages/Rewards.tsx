@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
+import { WeeklyLeaderboard } from "@/components/gamification/WeeklyLeaderboard";
+import { WeeklyChallenges } from "@/components/gamification/WeeklyChallenges";
 
 export default function Rewards() {
   const { user } = useAuth();
