@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Store, Truck, User } from 'lucide-react';
+import { ArrowLeft, Store, Truck, User, Stethoscope } from 'lucide-react';
 
 const roleOptions = [
   {
@@ -28,6 +28,14 @@ const roleOptions = [
     icon: Truck,
     path: '/driver/register',
     color: 'bg-orange-500'
+  },
+  {
+    id: 'doctor',
+    title: 'Médico',
+    description: 'Atenda pacientes online por chat seguro',
+    icon: Stethoscope,
+    path: '/doctor/register',
+    color: 'bg-pharmacy'
   }
 ];
 
