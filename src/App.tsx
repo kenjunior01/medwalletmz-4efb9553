@@ -66,6 +66,9 @@ import HealthProfile from "./pages/health/HealthProfile";
 import DoctorRegister from "./pages/doctor/DoctorRegister";
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
 import DoctorPatients from "./pages/doctor/DoctorPatients";
+import CreatePrescription from "./pages/doctor/CreatePrescription";
+import MyPrescriptions from "./pages/health/MyPrescriptions";
+import PrescriptionDetail from "./pages/health/PrescriptionDetail";
 
 const queryClient = new QueryClient();
 
@@ -104,6 +107,8 @@ const App = () => (
                   <Route path="/health/consultations" element={<MyConsultations />} />
                   <Route path="/health/consultation/:id" element={<ConsultationChat />} />
                   <Route path="/health/profile" element={<HealthProfile />} />
+                  <Route path="/health/prescriptions" element={<MyPrescriptions />} />
+                  <Route path="/health/prescription/:id" element={<PrescriptionDetail />} />
                 </Route>
                 
                 {/* Auth */}
@@ -143,6 +148,7 @@ const App = () => (
                 <Route path="/doctor/register" element={<DoctorRegister />} />
                 <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
                 <Route path="/doctor/patients" element={<DoctorPatients />} />
+                <Route path="/doctor/prescription/new" element={<CreatePrescription />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
