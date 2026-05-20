@@ -57,6 +57,16 @@ import DriverRegister from "./pages/driver/DriverRegister";
 import DriverHistory from "./pages/driver/DriverHistory";
 import InfluencerDashboard from "./pages/influencer/InfluencerDashboard";
 
+// Health Pages
+import Doctors from "./pages/health/Doctors";
+import BookConsultation from "./pages/health/BookConsultation";
+import MyConsultations from "./pages/health/MyConsultations";
+import ConsultationChat from "./pages/health/ConsultationChat";
+import HealthProfile from "./pages/health/HealthProfile";
+import DoctorRegister from "./pages/doctor/DoctorRegister";
+import DoctorDashboard from "./pages/doctor/DoctorDashboard";
+import DoctorPatients from "./pages/doctor/DoctorPatients";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -89,6 +99,11 @@ const App = () => (
                   <Route path="/guide" element={<Guide />} />
                   <Route path="/guide/:id" element={<Guide />} />
                   <Route path="/order/:id" element={<OrderTracking />} />
+                  <Route path="/health/doctors" element={<Doctors />} />
+                  <Route path="/health/book/:doctorId" element={<BookConsultation />} />
+                  <Route path="/health/consultations" element={<MyConsultations />} />
+                  <Route path="/health/consultation/:id" element={<ConsultationChat />} />
+                  <Route path="/health/profile" element={<HealthProfile />} />
                 </Route>
                 
                 {/* Auth */}
@@ -123,6 +138,11 @@ const App = () => (
                 <Route path="/driver/dashboard" element={<DriverDashboard />} />
                 <Route path="/driver/history" element={<DriverHistory />} />
                 <Route path="/influencer/dashboard" element={<InfluencerDashboard />} />
+
+                {/* Doctor Routes */}
+                <Route path="/doctor/register" element={<DoctorRegister />} />
+                <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+                <Route path="/doctor/patients" element={<DoctorPatients />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
