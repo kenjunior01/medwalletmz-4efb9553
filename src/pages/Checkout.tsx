@@ -207,6 +207,18 @@ export default function Checkout() {
       </div>
 
       <form onSubmit={handleSubmit} className="p-4 space-y-6">
+        {prescriptionId && (
+          <div className="bg-primary/10 border border-primary/30 rounded-xl p-3 flex items-center gap-3">
+            <FileText className="h-5 w-5 text-primary" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold flex items-center gap-1">
+                <Zap className="h-3 w-3 text-pharmacy" /> Pedido com receita médica
+              </p>
+              <p className="text-xs text-muted-foreground">Entrega prioritária ativada</p>
+            </div>
+          </div>
+        )}
+
         {/* Order Summary */}
         <div className="bg-card rounded-xl border border-border p-4">
           <h2 className="font-semibold mb-3">Resumo do Pedido</h2>
