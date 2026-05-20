@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Smartphone, Loader2 } from 'lucide-react';
 import { CouponInput, calculateCouponDiscount } from '@/components/checkout/CouponInput';
+import { Zap, FileText } from 'lucide-react';
 interface AppliedCoupon {
   id: string;
   code: string;
@@ -41,6 +42,14 @@ export default function Checkout() {
   const [notes, setNotes] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [deliveryFee, setDeliveryFee] = useState(0);
+  const [prescriptionId, setPrescriptionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('active_prescription');
+    if (stored) {
+      try { setPrescriptionId(JSON.parse(stored).id); } catch {}
+    }
+  }, []);
 
   // Fetch dynamic delivery fee from the store
   useEffect(() => {
@@ -100,7 +109,9 @@ export default function Checkout() {
           total,
           delivery_address: address,
           notes: notesWithCoupon,
-          status: 'pending'
+          status: 'pending',
+          prescription_id: prescriptionId,
+          is_priority: !!prescriptionId,
         })
         .select('id')
         .maybeSingle();
@@ -159,6 +170,7 @@ export default function Checkout() {
 
       // Clear cart and redirect to tracking
       clearCart();
+      if (prescriptionId) sessionStorage.removeItem('active_prescription');
       toast.success('Pedido criado com sucesso!');
       navigate(`/order/${order.id}`);
 
