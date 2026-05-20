@@ -1,66 +1,76 @@
+## Roadmap Health SaaS — MoçambiApp
 
-
-## Plano: Corrigir Carrinho, Checkout, Pedidos e Tracking
-
-### Problemas Identificados
-
-1. **Carrinho - taxa de entrega inconsistente**: O carrinho mostra 75 MZN de taxa, mas o checkout usa 50 MZN. Deveria usar a taxa da loja (`store.delivery_fee`).
-
-2. **Checkout - perfil do utilizador nao criado**: Ao criar um pedido, nao ha garantia de que o perfil do utilizador existe na tabela `profiles`. Isso causa falhas quando o OrderTracking tenta buscar dados do perfil.
-
-3. **Orders - RLS no SELECT usa role `public`**: As politicas de SELECT para `orders` e `order_items` usam `roles: {public}` (anon), mas a query exige `auth.uid()`. Isto funciona para utilizadores autenticados, mas seria mais correcto usar `authenticated`.
-
-4. **OrderTracking - driver_assignments nao visivel**: A politica RLS de SELECT para `driver_assignments` usa `roles: {authenticated}`, o que esta correcto. Porem, o `fetchDriver` faz uma query separada ao `profiles` que falha porque a politica de `profiles` so permite ver o proprio perfil (`auth.uid() = user_id`), impedindo o cliente de ver o nome/telefone do entregador.
-
-5. **Falta de criacao automatica de perfil**: Nao existe trigger para criar um perfil automaticamente ao registar, o que pode causar falhas em cascata.
-
-6. **CouponInput usa `.single()` em vez de `.maybeSingle()`**: Pode lancar erro se o cupom nao existir.
+Transformação em hub de saúde (telemedicina + receitas digitais + farmácia integrada) em 4 fases. Esta entrega implementa a **Fase 1 completa**; as restantes ficam mapeadas para iterações futuras.
 
 ---
 
-### Alteracoes Planeadas
+### Fase 1 — Estrutura base + Portal do Médico mínimo (ESTA ENTREGA)
 
-#### 1. Migracao SQL (Backend)
-- Criar trigger `on_auth_user_created` para criar automaticamente um registo em `profiles` quando um utilizador se regista.
-- Adicionar politica RLS em `profiles` para permitir que utilizadores autenticados vejam o `full_name`, `phone` e `vehicle_type` de outros perfis (necessario para ver dados do entregador). Alternativa: criar uma view publica com campos limitados.
-- Adicionar publicacao realtime para a tabela `orders` (se nao estiver ja).
+**Backend (migração SQL)**
+- Novos valores no enum `app_role`: `doctor`, `clinic`.
+- Tabela `medical_specialties` (id, name, slug, icon) — seed inicial com 10 especialidades comuns.
+- Tabela `doctor_profiles`: user_id, license_number, specialty_id, bio, consultation_fee, years_experience, languages[], is_verified, is_available, avatar_url.
+- Tabela `patient_profiles`: user_id, date_of_birth, gender, blood_type, allergies[], chronic_conditions[], emergency_contact_name, emergency_contact_phone.
+- Tabela `consultations`: id, doctor_id, patient_id, scheduled_at, duration_minutes, status (scheduled/in_progress/completed/cancelled/no_show), consultation_type (chat/video), notes, diagnosis, created_at.
+- Tabela `consultation_messages`: id, consultation_id, sender_id, message, attachment_url, created_at — para o chat seguro.
+- Tabela `prescriptions`: id, consultation_id, doctor_id, patient_id, status (active/dispensed/expired), expires_at, notes.
+- Tabela `prescription_items`: id, prescription_id, medication_name, dosage, frequency, duration, instructions.
+- RLS: médico vê só seus pacientes/consultas; paciente vê só os seus; admin vê tudo.
+- Realtime habilitado em `consultations` e `consultation_messages`.
+- Atualizar `handle_new_user` para criar `patient_profiles` automaticamente.
 
-#### 2. Carrinho (`src/pages/Cart.tsx`)
-- Remover taxa de entrega fixa (75 MZN) do carrinho - mostrar apenas o subtotal.
-- Indicar que a taxa sera calculada no checkout.
-
-#### 3. Checkout (`src/pages/Checkout.tsx`)
-- Usar a taxa de entrega real da loja (buscar `stores.delivery_fee` pelo `currentStoreId`).
-- Garantir que o perfil do utilizador existe antes de criar o pedido.
-
-#### 4. Pedidos (`src/pages/Orders.tsx`)
-- Nenhuma alteracao critica necessaria - ja funciona com as correcoes anteriores.
-
-#### 5. CouponInput (`src/components/checkout/CouponInput.tsx`)
-- Substituir `.single()` por `.maybeSingle()` para evitar erro quando cupom nao existe.
-
-#### 6. OrderTracking (`src/pages/OrderTracking.tsx`)
-- Ajustar a query do motorista para funcionar com a nova politica de perfis.
+**Frontend (Fase 1)**
+- `src/pages/doctor/DoctorRegister.tsx` — registo com licença + especialidade.
+- `src/pages/doctor/DoctorDashboard.tsx` — agenda do dia, próximas consultas, ganhos do mês.
+- `src/pages/doctor/DoctorConsultations.tsx` — lista consultas; abrir chat.
+- `src/pages/doctor/DoctorPatients.tsx` — pacientes que já consultou.
+- `src/pages/health/Doctors.tsx` — diretório público de médicos por especialidade.
+- `src/pages/health/BookConsultation.tsx` — escolher data/hora e marcar (paciente).
+- `src/pages/health/MyConsultations.tsx` — consultas do paciente.
+- `src/pages/health/ConsultationChat.tsx` — chat em tempo real médico ↔ paciente (Realtime).
+- `src/pages/health/HealthProfile.tsx` — paciente edita dados clínicos.
+- `src/components/home/HealthCard.tsx` — novo card "Saúde" na home (mobile + desktop).
+- Rotas em `App.tsx`; `RoleSelection.tsx` ganha opção "Sou Médico".
 
 ---
 
-### Secao Tecnica
+### Fase 2 — Receita digital + integração farmácia (futuro)
+- Médico cria receita ao final da consulta (UI dedicada).
+- Paciente vê receitas em `/health/prescriptions`, botão "Pedir na farmácia" pré-popula carrinho com produtos correspondentes.
+- Matching `prescription_items.medication_name` ↔ `products.name` (busca fuzzy).
+- Validação de receita controlada antes de checkout (flag `requires_prescription` em `products`).
 
-**Ficheiros a modificar:**
-- `src/pages/Cart.tsx` - remover taxa fixa, mostrar subtotal
-- `src/pages/Checkout.tsx` - buscar delivery_fee da loja, garantir perfil
-- `src/components/checkout/CouponInput.tsx` - `.single()` -> `.maybeSingle()`
-- `src/pages/OrderTracking.tsx` - ajustar fetch do perfil do motorista
+### Fase 3 — Logística inteligente para saúde
+- Flag `is_urgent_medical` em `orders` com prioridade no algoritmo de atribuição de driver.
+- Cadeia de frio (campo `requires_cold_chain` em produtos).
+- Protocolo de entrega verificada (foto + assinatura digital).
 
-**Migracao SQL:**
-- Trigger `handle_new_user` para criar perfil automaticamente
-- Politica RLS adicional em `profiles`: SELECT para `authenticated` com campos limitados (via view ou politica permissiva para leitura basica)
-- Verificar `supabase_realtime` para tabela `orders`
+### Fase 4 — Monetização SaaS + expansão
+- Planos de assinatura para médicos (Básico/Premium/Corporativo) via Stripe.
+- Premium Health Pass para pacientes (entregas grátis + prioridade teleconsulta).
+- Vídeo nativo (Daily.co ou similar) substituindo apenas-chat.
+- Portal de clínicas (multi-médico, relatórios agregados).
 
-**Sequencia de execucao:**
-1. Executar migracao SQL (trigger + politicas)
-2. Corrigir CouponInput (`.maybeSingle()`)
-3. Corrigir Cart (remover taxa fixa)
-4. Corrigir Checkout (taxa dinamica + perfil)
-5. Ajustar OrderTracking (perfil do motorista)
+---
 
+### Secção técnica (Fase 1)
+
+**Ficheiros novos**
+- `supabase/migrations/<timestamp>_health_saas_phase1.sql`
+- `src/pages/doctor/{DoctorRegister,DoctorDashboard,DoctorConsultations,DoctorPatients}.tsx`
+- `src/pages/health/{Doctors,BookConsultation,MyConsultations,ConsultationChat,HealthProfile}.tsx`
+- `src/components/home/HealthCard.tsx`
+- `src/hooks/useDoctorProfile.ts`, `useConsultation.ts`
+
+**Ficheiros editados**
+- `src/App.tsx` — novas rotas `/health/*` e `/doctor/*`.
+- `src/pages/RoleSelection.tsx` — adicionar card "Médico".
+- `src/pages/Home.tsx` — inserir `HealthCard` no grid mobile + secção desktop.
+- `src/components/layout/BottomNav.tsx` — eventual item "Saúde" (avaliar espaço).
+
+**Sequência**
+1. Migração SQL (enum + 7 tabelas + RLS + realtime + trigger update).
+2. Páginas do paciente (Doctors, BookConsultation, MyConsultations, HealthProfile).
+3. Páginas do médico (Register, Dashboard, Consultations, Patients).
+4. Chat em tempo real (ConsultationChat com Supabase Realtime).
+5. Integração na Home + RoleSelection + rotas.

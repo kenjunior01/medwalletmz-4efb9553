@@ -164,6 +164,89 @@ export type Database = {
         }
         Relationships: []
       }
+      consultation_messages: {
+        Row: {
+          attachment_url: string | null
+          consultation_id: string
+          created_at: string
+          id: string
+          message: string
+          sender_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          consultation_id: string
+          created_at?: string
+          id?: string
+          message: string
+          sender_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          consultation_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_messages_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consultations: {
+        Row: {
+          consultation_type: string
+          created_at: string
+          diagnosis: string | null
+          doctor_id: string
+          duration_minutes: number
+          fee: number
+          id: string
+          notes: string | null
+          patient_id: string
+          reason: string | null
+          scheduled_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          consultation_type?: string
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id: string
+          duration_minutes?: number
+          fee?: number
+          id?: string
+          notes?: string | null
+          patient_id: string
+          reason?: string | null
+          scheduled_at: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          consultation_type?: string
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id?: string
+          duration_minutes?: number
+          fee?: number
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          reason?: string | null
+          scheduled_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           code: string
@@ -261,6 +344,68 @@ export type Database = {
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          consultation_fee: number
+          created_at: string
+          id: string
+          is_available: boolean
+          is_verified: boolean
+          languages: string[] | null
+          license_number: string
+          rating: number | null
+          specialty_id: string | null
+          total_consultations: number
+          updated_at: string
+          user_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          consultation_fee?: number
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          is_verified?: boolean
+          languages?: string[] | null
+          license_number: string
+          rating?: number | null
+          specialty_id?: string | null
+          total_consultations?: number
+          updated_at?: string
+          user_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          consultation_fee?: number
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          is_verified?: boolean
+          languages?: string[] | null
+          license_number?: string
+          rating?: number | null
+          specialty_id?: string | null
+          total_consultations?: number
+          updated_at?: string
+          user_id?: string
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_profiles_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "medical_specialties"
             referencedColumns: ["id"]
           },
         ]
@@ -478,6 +623,33 @@ export type Database = {
         }
         Relationships: []
       }
+      medical_specialties: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -570,6 +742,51 @@ export type Database = {
           },
         ]
       }
+      patient_profiles: {
+        Row: {
+          allergies: string[] | null
+          blood_type: string | null
+          chronic_conditions: string[] | null
+          created_at: string
+          current_medications: string[] | null
+          date_of_birth: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          gender: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allergies?: string[] | null
+          blood_type?: string | null
+          chronic_conditions?: string[] | null
+          created_at?: string
+          current_medications?: string[] | null
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          gender?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allergies?: string[] | null
+          blood_type?: string | null
+          chronic_conditions?: string[] | null
+          created_at?: string
+          current_medications?: string[] | null
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          gender?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -613,6 +830,88 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescription_items: {
+        Row: {
+          created_at: string
+          dosage: string | null
+          duration: string | null
+          frequency: string | null
+          id: string
+          instructions: string | null
+          medication_name: string
+          prescription_id: string
+        }
+        Insert: {
+          created_at?: string
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          medication_name: string
+          prescription_id: string
+        }
+        Update: {
+          created_at?: string
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          medication_name?: string
+          prescription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_items_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          consultation_id: string | null
+          created_at: string
+          doctor_id: string
+          expires_at: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          status: string
+        }
+        Insert: {
+          consultation_id?: string | null
+          created_at?: string
+          doctor_id: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          status?: string
+        }
+        Update: {
+          consultation_id?: string | null
+          created_at?: string
+          doctor_id?: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
             referencedColumns: ["id"]
           },
         ]
@@ -1022,7 +1321,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "customer" | "store_owner" | "driver" | "admin"
+      app_role:
+        | "customer"
+        | "store_owner"
+        | "driver"
+        | "admin"
+        | "doctor"
+        | "clinic"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1150,7 +1455,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["customer", "store_owner", "driver", "admin"],
+      app_role: [
+        "customer",
+        "store_owner",
+        "driver",
+        "admin",
+        "doctor",
+        "clinic",
+      ],
     },
   },
 } as const
