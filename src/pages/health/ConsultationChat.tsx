@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Send, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Send, ShieldCheck, FileSignature, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Msg { id: string; sender_id: string; message: string; created_at: string }
@@ -86,9 +86,21 @@ export default function ConsultationChat() {
         {consultation && <Badge variant="outline">{consultation.status}</Badge>}
       </header>
 
-      {isDoctor && consultation?.status === 'scheduled' && (
-        <div className="p-3 bg-primary/5 border-b">
-          <Button size="sm" onClick={startConsult} className="w-full">Iniciar consulta</Button>
+      {consultation && (
+        <div className="p-3 bg-primary/5 border-b flex gap-2">
+          {isDoctor && consultation.status === 'scheduled' && (
+            <Button size="sm" onClick={startConsult} className="flex-1">Iniciar consulta</Button>
+          )}
+          {isDoctor && (
+            <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate(`/doctor/prescription/new?consultationId=${consultation.id}`)}>
+              <FileSignature className="h-4 w-4 mr-1" /> Emitir receita
+            </Button>
+          )}
+          {!isDoctor && (
+            <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate('/health/prescriptions')}>
+              <FileText className="h-4 w-4 mr-1" /> Minhas receitas
+            </Button>
+          )}
         </div>
       )}
 
