@@ -698,7 +698,9 @@ export type Database = {
           delivery_address: string | null
           delivery_fee: number
           id: string
+          is_priority: boolean
           notes: string | null
+          prescription_id: string | null
           status: string
           store_id: string
           subtotal: number
@@ -711,7 +713,9 @@ export type Database = {
           delivery_address?: string | null
           delivery_fee?: number
           id?: string
+          is_priority?: boolean
           notes?: string | null
+          prescription_id?: string | null
           status?: string
           store_id: string
           subtotal: number
@@ -724,7 +728,9 @@ export type Database = {
           delivery_address?: string | null
           delivery_fee?: number
           id?: string
+          is_priority?: boolean
           notes?: string | null
+          prescription_id?: string | null
           status?: string
           store_id?: string
           subtotal?: number
@@ -884,6 +890,7 @@ export type Database = {
           id: string
           notes: string | null
           patient_id: string
+          pharmacy_store_id: string | null
           status: string
         }
         Insert: {
@@ -894,6 +901,7 @@ export type Database = {
           id?: string
           notes?: string | null
           patient_id: string
+          pharmacy_store_id?: string | null
           status?: string
         }
         Update: {
@@ -904,6 +912,7 @@ export type Database = {
           id?: string
           notes?: string | null
           patient_id?: string
+          pharmacy_store_id?: string | null
           status?: string
         }
         Relationships: [
