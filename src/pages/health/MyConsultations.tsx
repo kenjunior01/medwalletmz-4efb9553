@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MessageCircle, Stethoscope } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Stethoscope, FileText } from 'lucide-react';
 
 const statusColor: Record<string, string> = {
   scheduled: 'bg-primary/20 text-primary',
@@ -48,7 +48,10 @@ export default function MyConsultations() {
     <div className="min-h-screen bg-background pb-24">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-4 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
-        <h1 className="font-bold">Minhas consultas</h1>
+        <h1 className="font-bold flex-1">Minhas consultas</h1>
+        <Button variant="outline" size="sm" onClick={() => navigate('/health/prescriptions')}>
+          <FileText className="h-4 w-4 mr-1" /> Receitas
+        </Button>
       </header>
       <div className="p-4 space-y-3">
         {loading && <p className="text-muted-foreground">A carregar...</p>}

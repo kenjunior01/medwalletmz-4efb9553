@@ -1,11 +1,11 @@
-import { Stethoscope, ArrowRight } from 'lucide-react';
+import { Stethoscope, ArrowRight, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 
 export function HealthCard() {
   const navigate = useNavigate();
   return (
-    <section className="px-4">
+    <section className="px-4 space-y-2">
       <Card
         onClick={() => navigate('/health/doctors')}
         className="cursor-pointer overflow-hidden border-none bg-gradient-to-br from-pharmacy via-pharmacy/90 to-primary p-5 text-pharmacy-foreground shadow-premium transition-all active:scale-[0.98]"
@@ -24,6 +24,12 @@ export function HealthCard() {
           <ArrowRight className="h-5 w-5 opacity-80" />
         </div>
       </Card>
+      <button
+        onClick={(e) => { e.stopPropagation(); navigate('/health/prescriptions'); }}
+        className="w-full flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition py-1"
+      >
+        <FileText className="h-3 w-3" /> Ver minhas receitas digitais
+      </button>
     </section>
   );
 }
