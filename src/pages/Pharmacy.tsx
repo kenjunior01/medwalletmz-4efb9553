@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, Pill, Star, Clock } from "lucide-react";
+import { useNavigate, useLocation as useRouterLocation } from "react-router-dom";
+import { Search, Pill, Star, Clock, FileText, X, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,11 +15,31 @@ const filters = ["Todas", "24h", "Melhor Avaliado", "Próximo"];
 
 export default function Pharmacy() {
   const navigate = useNavigate();
+  const routerLocation = useRouterLocation();
   const { city: selectedCity } = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todas");
   const [pharmacies, setPharmacies] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activePrescription, setActivePrescription] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fromState = (routerLocation.state as any)?.prescription_id as string | undefined;
+    if (fromState) {
+      sessionStorage.setItem('active_prescription', JSON.stringify({ id: fromState, priority: true }));
+      setActivePrescription(fromState);
+      return;
+    }
+    const stored = sessionStorage.getItem('active_prescription');
+    if (stored) {
+      try { setActivePrescription(JSON.parse(stored).id); } catch {}
+    }
+  }, [routerLocation.state]);
+
+  const clearPrescription = () => {
+    sessionStorage.removeItem('active_prescription');
+    setActivePrescription(null);
+  };
 
   useEffect(() => {
     fetchPharmacies();
@@ -71,6 +91,23 @@ export default function Pharmacy() {
           Medicamentos e produtos de saúde {selectedCity ? `em ${selectedCity}` : ""}
         </p>
       </div>
+
+      {activePrescription && (
+        <div className="bg-primary/10 border border-primary/30 rounded-xl p-3 flex items-center gap-3 animate-fade-in">
+          <div className="p-2 bg-primary/20 rounded-lg">
+            <FileText className="h-5 w-5 text-primary" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold flex items-center gap-1">
+              <Zap className="h-3 w-3 text-pharmacy" /> Encomenda com receita
+            </p>
+            <p className="text-xs text-muted-foreground">Será marcada como prioritária no checkout</p>
+          </div>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={clearPrescription}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Express Delivery Banner */}
       <div className="bg-pharmacy/10 rounded-xl p-4 flex items-center gap-3">
