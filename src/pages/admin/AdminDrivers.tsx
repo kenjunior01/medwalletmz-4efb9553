@@ -235,6 +235,12 @@ export default function AdminDrivers() {
                       <Badge variant={driver.is_available ? 'default' : 'secondary'}>
                         {driver.is_available ? 'Disponível' : 'Indisponível'}
                       </Badge>
+                      {driver.is_verified_driver && (
+                        <Badge className="bg-green-500 text-white gap-1"><ShieldCheck className="h-3 w-3" /> Verificado</Badge>
+                      )}
+                      {driver.health_certified && (
+                        <Badge className="bg-blue-500 text-white gap-1"><Snowflake className="h-3 w-3" /> Saúde</Badge>
+                      )}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
