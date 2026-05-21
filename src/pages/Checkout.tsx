@@ -225,8 +225,12 @@ export default function Checkout() {
               <p className="text-sm font-semibold flex items-center gap-1">
                 <Zap className="h-3 w-3 text-pharmacy" /> Pedido com receita médica
               </p>
-              <p className="text-xs text-muted-foreground">Entrega prioritária ativada</p>
+              <p className="text-xs text-muted-foreground">
+                Fila prioritária • Motorista verificado
+                {requiresColdChain && ' • Cadeia de frio (friagem)'}
+              </p>
             </div>
+            {requiresColdChain && <Snowflake className="h-5 w-5 text-blue-500" />}
           </div>
         )}
 
