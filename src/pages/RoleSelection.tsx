@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Store, Truck, User, Stethoscope } from 'lucide-react';
+import { ArrowLeft, Store, Truck, User, Stethoscope, Building2 } from 'lucide-react';
 
 const roleOptions = [
   {
@@ -36,6 +36,14 @@ const roleOptions = [
     icon: Stethoscope,
     path: '/doctor/register',
     color: 'bg-pharmacy'
+  },
+  {
+    id: 'clinic',
+    title: 'Clínica',
+    description: 'Gerir equipa de médicos e agenda da clínica',
+    icon: Building2,
+    path: '/clinic/register',
+    color: 'bg-gold'
   }
 ];
 
