@@ -69,6 +69,13 @@ import DoctorPatients from "./pages/doctor/DoctorPatients";
 import CreatePrescription from "./pages/doctor/CreatePrescription";
 import MyPrescriptions from "./pages/health/MyPrescriptions";
 import PrescriptionDetail from "./pages/health/PrescriptionDetail";
+import HealthPlans from "./pages/health/HealthPlans";
+import Subscribe from "./pages/subscribe/Subscribe";
+import MySubscriptions from "./pages/MySubscriptions";
+import ClinicRegister from "./pages/clinic/ClinicRegister";
+import ClinicDashboard from "./pages/clinic/ClinicDashboard";
+import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
+import AdminPaymentAccounts from "./pages/admin/AdminPaymentAccounts";
 
 const queryClient = new QueryClient();
 
@@ -109,6 +116,9 @@ const App = () => (
                   <Route path="/health/profile" element={<HealthProfile />} />
                   <Route path="/health/prescriptions" element={<MyPrescriptions />} />
                   <Route path="/health/prescription/:id" element={<PrescriptionDetail />} />
+                  <Route path="/health/plans" element={<HealthPlans />} />
+                  <Route path="/subscribe/:planId" element={<Subscribe />} />
+                  <Route path="/subscriptions" element={<MySubscriptions />} />
                 </Route>
                 
                 {/* Auth */}
@@ -125,6 +135,8 @@ const App = () => (
                   <Route path="reports" element={<AdminReports />} />
                   <Route path="users" element={<AdminUsers />} />
                   <Route path="drivers" element={<AdminDrivers />} />
+                  <Route path="subscriptions" element={<AdminSubscriptions />} />
+                  <Route path="payment-accounts" element={<AdminPaymentAccounts />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
                 
@@ -149,6 +161,10 @@ const App = () => (
                 <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
                 <Route path="/doctor/patients" element={<DoctorPatients />} />
                 <Route path="/doctor/prescription/new" element={<CreatePrescription />} />
+
+                {/* Clinic Routes */}
+                <Route path="/clinic/register" element={<ClinicRegister />} />
+                <Route path="/clinic/dashboard" element={<ClinicDashboard />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
