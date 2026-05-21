@@ -264,6 +264,25 @@ export default function OrderTracking() {
       </div>
 
       <div className="p-4 space-y-4">
+        {(order.is_priority || order.requires_cold_chain) && (
+          <Card className="border-orange-300 bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-950/30 dark:to-blue-950/30">
+            <CardContent className="p-3 flex items-center gap-3">
+              {order.is_priority && <Zap className="h-5 w-5 text-orange-500" />}
+              {order.requires_cold_chain && <Snowflake className="h-5 w-5 text-blue-500" />}
+              <div className="flex-1">
+                <p className="text-sm font-semibold">
+                  {order.is_priority && 'Entrega prioritária'}
+                  {order.is_priority && order.requires_cold_chain && ' • '}
+                  {order.requires_cold_chain && 'Cadeia de frio (friagem)'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Motorista verificado{order.requires_cold_chain ? ' e certificado para friagem' : ''} • Fila acelerada
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Status Card */}
         <Card className="overflow-hidden">
           <div className={`p-4 ${isDelivered ? 'bg-green-500' : isCancelled ? 'bg-red-500' : 'bg-primary'} text-white`}>
