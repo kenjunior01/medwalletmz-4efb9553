@@ -11,7 +11,9 @@ import {
   Tag, 
   Settings,
   LogOut,
-  BarChart3
+  BarChart3,
+  Crown,
+  Wallet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,6 +26,8 @@ const menuItems = [
   { icon: Users, label: 'Usuários', path: '/admin/users' },
   { icon: Truck, label: 'Entregadores', path: '/admin/drivers' },
   { icon: Tag, label: 'Cupons', path: '/admin/coupons' },
+  { icon: Crown, label: 'Subscrições', path: '/admin/subscriptions' },
+  { icon: Wallet, label: 'Contas Pagamento', path: '/admin/payment-accounts' },
   { icon: BarChart3, label: 'Relatórios', path: '/admin/reports' },
   { icon: Settings, label: 'Configurações', path: '/admin/settings' },
 ];
