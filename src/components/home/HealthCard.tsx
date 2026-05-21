@@ -1,4 +1,4 @@
-import { Stethoscope, ArrowRight, FileText } from 'lucide-react';
+import { Stethoscope, ArrowRight, FileText, Crown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 
@@ -24,12 +24,20 @@ export function HealthCard() {
           <ArrowRight className="h-5 w-5 opacity-80" />
         </div>
       </Card>
-      <button
-        onClick={(e) => { e.stopPropagation(); navigate('/health/prescriptions'); }}
-        className="w-full flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition py-1"
-      >
-        <FileText className="h-3 w-3" /> Ver minhas receitas digitais
-      </button>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => navigate('/health/prescriptions')}
+          className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition py-1.5 rounded-lg border border-border"
+        >
+          <FileText className="h-3 w-3" /> Receitas
+        </button>
+        <button
+          onClick={() => navigate('/health/plans')}
+          className="flex items-center justify-center gap-1.5 text-xs text-gold hover:text-gold/80 transition py-1.5 rounded-lg border border-gold/30 bg-gold/5"
+        >
+          <Crown className="h-3 w-3" /> Health Pass
+        </button>
+      </div>
     </section>
   );
 }
