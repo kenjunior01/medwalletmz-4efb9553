@@ -164,6 +164,86 @@ export type Database = {
         }
         Relationships: []
       }
+      clinic_doctors: {
+        Row: {
+          clinic_id: string
+          doctor_id: string
+          id: string
+          joined_at: string
+          role: string
+        }
+        Insert: {
+          clinic_id: string
+          doctor_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+        }
+        Update: {
+          clinic_id?: string
+          doctor_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_doctors_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinics: {
+        Row: {
+          address: string | null
+          city: string
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          is_active: boolean
+          is_verified: boolean
+          logo_url: string | null
+          name: string
+          owner_id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       consultation_messages: {
         Row: {
           attachment_url: string | null
@@ -846,6 +926,36 @@ export type Database = {
           },
         ]
       }
+      platform_payment_accounts: {
+        Row: {
+          account_name: string
+          account_number: string
+          created_at: string
+          id: string
+          instructions: string | null
+          is_active: boolean
+          method: string
+        }
+        Insert: {
+          account_name: string
+          account_number: string
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          is_active?: boolean
+          method: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          is_active?: boolean
+          method?: string
+        }
+        Relationships: []
+      }
       prescription_items: {
         Row: {
           created_at: string
@@ -983,12 +1093,15 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           default_city: string | null
+          emola_number: string | null
           full_name: string | null
           health_certified: boolean
           id: string
           is_available: boolean | null
           is_verified_driver: boolean
           license_plate: string | null
+          mkesh_number: string | null
+          mpesa_number: string | null
           phone: string | null
           updated_at: string
           user_id: string
@@ -999,12 +1112,15 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           default_city?: string | null
+          emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
           id?: string
           is_available?: boolean | null
           is_verified_driver?: boolean
           license_plate?: string | null
+          mkesh_number?: string | null
+          mpesa_number?: string | null
           phone?: string | null
           updated_at?: string
           user_id: string
@@ -1015,12 +1131,15 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           default_city?: string | null
+          emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
           id?: string
           is_available?: boolean | null
           is_verified_driver?: boolean
           license_plate?: string | null
+          mkesh_number?: string | null
+          mpesa_number?: string | null
           phone?: string | null
           updated_at?: string
           user_id?: string
@@ -1127,6 +1246,119 @@ export type Database = {
           type?: string
         }
         Relationships: []
+      }
+      subscription_plans: {
+        Row: {
+          badge: string | null
+          billing_period: string
+          created_at: string
+          description: string | null
+          features: Json
+          id: string
+          is_active: boolean
+          name: string
+          price_mzn: number
+          slug: string
+          sort_order: number
+          target_audience: string
+          updated_at: string
+        }
+        Insert: {
+          badge?: string | null
+          billing_period?: string
+          created_at?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          name: string
+          price_mzn?: number
+          slug: string
+          sort_order?: number
+          target_audience: string
+          updated_at?: string
+        }
+        Update: {
+          badge?: string | null
+          billing_period?: string
+          created_at?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_mzn?: number
+          slug?: string
+          sort_order?: number
+          target_audience?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          admin_notes: string | null
+          amount_paid: number | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          payment_method: string | null
+          payment_phone: string | null
+          payment_proof_url: string | null
+          payment_reference: string | null
+          plan_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          started_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount_paid?: number | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          payment_method?: string | null
+          payment_phone?: string | null
+          payment_proof_url?: string | null
+          payment_reference?: string | null
+          plan_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount_paid?: number | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          payment_method?: string | null
+          payment_phone?: string | null
+          payment_proof_url?: string | null
+          payment_reference?: string | null
+          plan_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_achievements: {
         Row: {
@@ -1338,6 +1570,10 @@ export type Database = {
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
+      }
+      has_active_subscription: {
+        Args: { _audience: string; _user_id: string }
+        Returns: boolean
       }
       has_role: {
         Args: {
