@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Search, Truck, Phone, MapPin, Calendar, CheckCircle, XCircle, Clock, Package } from 'lucide-react';
+import { Search, Truck, Phone, MapPin, Calendar, CheckCircle, XCircle, Clock, Package, ShieldCheck, Snowflake } from 'lucide-react';
 
 interface Driver {
   id: string;
@@ -23,6 +23,8 @@ interface Driver {
   is_available: boolean | null;
   created_at: string;
   default_city: string | null;
+  is_verified_driver?: boolean | null;
+  health_certified?: boolean | null;
 }
 
 interface DriverStats {
@@ -80,6 +82,21 @@ export default function AdminDrivers() {
     onError: () => {
       toast.error('Erro ao atualizar');
     }
+  });
+
+  const updateCertMutation = useMutation({
+    mutationFn: async ({ id, field, value }: { id: string; field: 'is_verified_driver' | 'health_certified'; value: boolean }) => {
+      const patch: any = { [field]: value };
+      if (field === 'is_verified_driver' && value) patch.verified_at = new Date().toISOString();
+      const { error } = await supabase.from('profiles').update(patch).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-drivers'] });
+      setSelectedDriver(prev => prev ? { ...prev, [vars.field]: vars.value } : null);
+      toast.success('Certificação atualizada');
+    },
+    onError: () => toast.error('Erro ao atualizar certificação'),
   });
 
   const openDriverDetails = async (driver: Driver) => {
