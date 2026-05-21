@@ -135,6 +135,15 @@ export default function CreatePrescription() {
           <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Recomendações adicionais..." rows={3} />
         </div>
 
+        <Card className="p-4 flex items-start gap-3 border-blue-200 bg-blue-50/40 dark:bg-blue-950/20">
+          <Snowflake className="h-5 w-5 text-blue-500 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold text-sm">Requer cadeia de frio (friagem)</p>
+            <p className="text-xs text-muted-foreground">Insulina, vacinas, biológicos. O entregador precisa de bolsa térmica certificada.</p>
+          </div>
+          <Switch checked={coldChain} onCheckedChange={setColdChain} />
+        </Card>
+
         <Button onClick={save} disabled={saving} className="w-full h-12">
           {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Emitir Receita'}
         </Button>
