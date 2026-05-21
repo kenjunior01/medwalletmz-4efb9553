@@ -361,6 +361,34 @@ export default function AdminDrivers() {
 
               {/* Actions */}
               <div className="flex gap-2">
+              </div>
+
+              {/* Certifications */}
+              <div className="space-y-2 p-3 border rounded-lg">
+                <p className="text-sm font-semibold">Certificações</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm">
+                    <ShieldCheck className="h-4 w-4 text-green-600" />
+                    <span>Motorista verificado</span>
+                  </div>
+                  <Switch
+                    checked={!!selectedDriver.is_verified_driver}
+                    onCheckedChange={(v) => updateCertMutation.mutate({ id: selectedDriver.id, field: 'is_verified_driver', value: v })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Snowflake className="h-4 w-4 text-blue-500" />
+                    <span>Apto para friagem / saúde</span>
+                  </div>
+                  <Switch
+                    checked={!!selectedDriver.health_certified}
+                    onCheckedChange={(v) => updateCertMutation.mutate({ id: selectedDriver.id, field: 'health_certified', value: v })}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2">
                 <Button 
                   variant="outline" 
                   className="flex-1"
