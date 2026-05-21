@@ -692,6 +692,20 @@ export default function DriverDashboard() {
                       {assignment.status === 'picked_up' ? 'Em Entrega' : 'Aguardando Retirada'}
                     </Badge>
                   </div>
+                  {(assignment.order?.is_priority || assignment.order?.requires_cold_chain) && (
+                    <div className="flex gap-1 mt-2">
+                      {assignment.order?.is_priority && (
+                        <Badge className="bg-orange-500 text-white text-[10px] h-5 gap-1">
+                          <Zap className="h-3 w-3" /> Prioritário
+                        </Badge>
+                      )}
+                      {assignment.order?.requires_cold_chain && (
+                        <Badge className="bg-blue-500 text-white text-[10px] h-5 gap-1">
+                          <Snowflake className="h-3 w-3" /> Friagem
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {/* Pickup Location */}
