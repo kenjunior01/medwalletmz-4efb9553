@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Phone, MessageCircle, CheckCircle, Clock, ChefHat, Package, Truck, MapPin, Store, User, Navigation } from 'lucide-react';
+import { ArrowLeft, Phone, MessageCircle, CheckCircle, Clock, ChefHat, Package, Truck, MapPin, Store, User, Navigation, Zap, Snowflake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,8 @@ interface OrderDetails {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  is_priority?: boolean | null;
+  requires_cold_chain?: boolean | null;
   store: {
     id: string;
     name: string;
@@ -138,6 +140,8 @@ export default function OrderTracking() {
           notes,
           created_at,
           updated_at,
+          is_priority,
+          requires_cold_chain,
           store:stores(id, name, image_url, type, latitude, longitude, address),
           order_items(id, quantity, unit_price, product:products(name, image_url))
         `)
@@ -260,6 +264,25 @@ export default function OrderTracking() {
       </div>
 
       <div className="p-4 space-y-4">
+        {(order.is_priority || order.requires_cold_chain) && (
+          <Card className="border-orange-300 bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-950/30 dark:to-blue-950/30">
+            <CardContent className="p-3 flex items-center gap-3">
+              {order.is_priority && <Zap className="h-5 w-5 text-orange-500" />}
+              {order.requires_cold_chain && <Snowflake className="h-5 w-5 text-blue-500" />}
+              <div className="flex-1">
+                <p className="text-sm font-semibold">
+                  {order.is_priority && 'Entrega prioritária'}
+                  {order.is_priority && order.requires_cold_chain && ' • '}
+                  {order.requires_cold_chain && 'Cadeia de frio (friagem)'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Motorista verificado{order.requires_cold_chain ? ' e certificado para friagem' : ''} • Fila acelerada
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Status Card */}
         <Card className="overflow-hidden">
           <div className={`p-4 ${isDelivered ? 'bg-green-500' : isCancelled ? 'bg-red-500' : 'bg-primary'} text-white`}>

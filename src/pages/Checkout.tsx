@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Smartphone, Loader2 } from 'lucide-react';
 import { CouponInput, calculateCouponDiscount } from '@/components/checkout/CouponInput';
-import { Zap, FileText } from 'lucide-react';
+import { Zap, FileText, Snowflake } from 'lucide-react';
 interface AppliedCoupon {
   id: string;
   code: string;
@@ -43,11 +43,20 @@ export default function Checkout() {
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [prescriptionId, setPrescriptionId] = useState<string | null>(null);
+  const [requiresColdChain, setRequiresColdChain] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('active_prescription');
     if (stored) {
-      try { setPrescriptionId(JSON.parse(stored).id); } catch {}
+      try {
+        const parsed = JSON.parse(stored);
+        setPrescriptionId(parsed.id);
+        // Fetch cold-chain flag from prescription
+        if (parsed.id) {
+          supabase.from('prescriptions').select('requires_cold_chain').eq('id', parsed.id).maybeSingle()
+            .then(({ data }) => setRequiresColdChain(!!data?.requires_cold_chain));
+        }
+      } catch {}
     }
   }, []);
 
@@ -112,6 +121,8 @@ export default function Checkout() {
           status: 'pending',
           prescription_id: prescriptionId,
           is_priority: !!prescriptionId,
+          requires_cold_chain: requiresColdChain,
+          priority_level: requiresColdChain ? 10 : (prescriptionId ? 5 : 0),
         })
         .select('id')
         .maybeSingle();
@@ -214,8 +225,12 @@ export default function Checkout() {
               <p className="text-sm font-semibold flex items-center gap-1">
                 <Zap className="h-3 w-3 text-pharmacy" /> Pedido com receita médica
               </p>
-              <p className="text-xs text-muted-foreground">Entrega prioritária ativada</p>
+              <p className="text-xs text-muted-foreground">
+                Fila prioritária • Motorista verificado
+                {requiresColdChain && ' • Cadeia de frio (friagem)'}
+              </p>
             </div>
+            {requiresColdChain && <Snowflake className="h-5 w-5 text-blue-500" />}
           </div>
         )}
 

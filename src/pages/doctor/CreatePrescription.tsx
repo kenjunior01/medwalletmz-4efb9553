@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Plus, Trash2, FileSignature, Loader2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { ArrowLeft, Plus, Trash2, FileSignature, Loader2, Snowflake } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Item {
@@ -29,6 +30,7 @@ export default function CreatePrescription() {
   const [patientName, setPatientName] = useState('');
   const [items, setItems] = useState<Item[]>([empty()]);
   const [notes, setNotes] = useState('');
+  const [coldChain, setColdChain] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -59,6 +61,7 @@ export default function CreatePrescription() {
         consultation_id: consultation.id,
         notes: notes || null,
         status: 'active',
+        requires_cold_chain: coldChain,
       }).select('id').single();
       if (error) throw error;
       const { error: itemsErr } = await supabase.from('prescription_items').insert(
@@ -131,6 +134,15 @@ export default function CreatePrescription() {
           <Label>Observações gerais</Label>
           <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Recomendações adicionais..." rows={3} />
         </div>
+
+        <Card className="p-4 flex items-start gap-3 border-blue-200 bg-blue-50/40 dark:bg-blue-950/20">
+          <Snowflake className="h-5 w-5 text-blue-500 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold text-sm">Requer cadeia de frio (friagem)</p>
+            <p className="text-xs text-muted-foreground">Insulina, vacinas, biológicos. O entregador precisa de bolsa térmica certificada.</p>
+          </div>
+          <Switch checked={coldChain} onCheckedChange={setColdChain} />
+        </Card>
 
         <Button onClick={save} disabled={saving} className="w-full h-12">
           {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Emitir Receita'}

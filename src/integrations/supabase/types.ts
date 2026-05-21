@@ -701,6 +701,8 @@ export type Database = {
           is_priority: boolean
           notes: string | null
           prescription_id: string | null
+          priority_level: number
+          requires_cold_chain: boolean
           status: string
           store_id: string
           subtotal: number
@@ -716,6 +718,8 @@ export type Database = {
           is_priority?: boolean
           notes?: string | null
           prescription_id?: string | null
+          priority_level?: number
+          requires_cold_chain?: boolean
           status?: string
           store_id: string
           subtotal: number
@@ -731,6 +735,8 @@ export type Database = {
           is_priority?: boolean
           notes?: string | null
           prescription_id?: string | null
+          priority_level?: number
+          requires_cold_chain?: boolean
           status?: string
           store_id?: string
           subtotal?: number
@@ -891,6 +897,7 @@ export type Database = {
           notes: string | null
           patient_id: string
           pharmacy_store_id: string | null
+          requires_cold_chain: boolean
           status: string
         }
         Insert: {
@@ -902,6 +909,7 @@ export type Database = {
           notes?: string | null
           patient_id: string
           pharmacy_store_id?: string | null
+          requires_cold_chain?: boolean
           status?: string
         }
         Update: {
@@ -913,6 +921,7 @@ export type Database = {
           notes?: string | null
           patient_id?: string
           pharmacy_store_id?: string | null
+          requires_cold_chain?: boolean
           status?: string
         }
         Relationships: [
@@ -975,39 +984,48 @@ export type Database = {
           created_at: string
           default_city: string | null
           full_name: string | null
+          health_certified: boolean
           id: string
           is_available: boolean | null
+          is_verified_driver: boolean
           license_plate: string | null
           phone: string | null
           updated_at: string
           user_id: string
           vehicle_type: string | null
+          verified_at: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           default_city?: string | null
           full_name?: string | null
+          health_certified?: boolean
           id?: string
           is_available?: boolean | null
+          is_verified_driver?: boolean
           license_plate?: string | null
           phone?: string | null
           updated_at?: string
           user_id: string
           vehicle_type?: string | null
+          verified_at?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           default_city?: string | null
           full_name?: string | null
+          health_certified?: boolean
           id?: string
           is_available?: boolean | null
+          is_verified_driver?: boolean
           license_plate?: string | null
           phone?: string | null
           updated_at?: string
           user_id?: string
           vehicle_type?: string | null
+          verified_at?: string | null
         }
         Relationships: []
       }
