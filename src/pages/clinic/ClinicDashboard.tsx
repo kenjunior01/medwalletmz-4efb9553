@@ -29,9 +29,21 @@ export default function ClinicDashboard() {
     if (c) {
       const { data: cd } = await supabase
         .from('clinic_doctors')
-        .select('*, doctor:profiles!clinic_doctors_doctor_id_fkey(full_name, phone)')
+        .select('*')
         .eq('clinic_id', c.id);
-      setDoctors(cd ?? []);
+      const list = cd ?? [];
+      if (list.length) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('user_id, full_name, phone')
+          .in('user_id', list.map((d: any) => d.doctor_id));
+        setDoctors(list.map((d: any) => ({
+          ...d,
+          doctor: profs?.find((p: any) => p.user_id === d.doctor_id),
+        })));
+      } else {
+        setDoctors([]);
+      }
     }
 
     const { data: sub } = await supabase
