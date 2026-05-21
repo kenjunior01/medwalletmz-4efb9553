@@ -76,6 +76,7 @@ import ClinicRegister from "./pages/clinic/ClinicRegister";
 import ClinicDashboard from "./pages/clinic/ClinicDashboard";
 import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
 import AdminPaymentAccounts from "./pages/admin/AdminPaymentAccounts";
+import PaymentSettings from "./pages/PaymentSettings";
 
 const queryClient = new QueryClient();
 
@@ -119,6 +120,7 @@ const App = () => (
                   <Route path="/health/plans" element={<HealthPlans />} />
                   <Route path="/subscribe/:planId" element={<Subscribe />} />
                   <Route path="/subscriptions" element={<MySubscriptions />} />
+                  <Route path="/payment-settings" element={<PaymentSettings />} />
                 </Route>
                 
                 {/* Auth */}
