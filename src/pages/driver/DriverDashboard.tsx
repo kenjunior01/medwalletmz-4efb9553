@@ -23,6 +23,7 @@ import {
   TrendingUp,
   Star
 } from 'lucide-react';
+import { Snowflake, Zap, ShieldCheck } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { 
   StatWidget, 
@@ -38,6 +39,8 @@ interface DriverProfile {
   default_city: string | null;
   vehicle_type: string | null;
   is_available: boolean | null;
+  is_verified_driver?: boolean | null;
+  health_certified?: boolean | null;
 }
 
 interface DeliveryAssignment {
@@ -52,6 +55,9 @@ interface DeliveryAssignment {
     total: number;
     delivery_fee: number;
     delivery_address: string | null;
+    is_priority?: boolean | null;
+    requires_cold_chain?: boolean | null;
+    priority_level?: number | null;
     store: {
       name: string;
       address: string | null;
@@ -98,7 +104,7 @@ export default function DriverDashboard() {
       // Fetch profile
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('full_name, phone, default_city, vehicle_type, is_available')
+        .select('full_name, phone, default_city, vehicle_type, is_available, is_verified_driver, health_certified')
         .eq('user_id', user.id)
         .single();
 
@@ -122,12 +128,23 @@ export default function DriverDashboard() {
             total,
             delivery_fee,
             delivery_address,
+            is_priority,
+            requires_cold_chain,
+            priority_level,
             store:stores(name, address)
           )
         `)
         .eq('driver_id', user.id)
         .in('status', ['assigned', 'picked_up'])
         .order('assigned_at', { ascending: false });
+
+      // Sort by priority desc then assigned date
+      (assignmentsData || []).sort((a: any, b: any) => {
+        const pa = a.order?.priority_level || 0;
+        const pb = b.order?.priority_level || 0;
+        if (pb !== pa) return pb - pa;
+        return new Date(b.assigned_at).getTime() - new Date(a.assigned_at).getTime();
+      });
 
       setAssignments(assignmentsData || []);
 
