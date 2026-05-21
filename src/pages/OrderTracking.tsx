@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Phone, MessageCircle, CheckCircle, Clock, ChefHat, Package, Truck, MapPin, Store, User, Navigation } from 'lucide-react';
+import { ArrowLeft, Phone, MessageCircle, CheckCircle, Clock, ChefHat, Package, Truck, MapPin, Store, User, Navigation, Zap, Snowflake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,8 @@ interface OrderDetails {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  is_priority?: boolean | null;
+  requires_cold_chain?: boolean | null;
   store: {
     id: string;
     name: string;
@@ -138,6 +140,8 @@ export default function OrderTracking() {
           notes,
           created_at,
           updated_at,
+          is_priority,
+          requires_cold_chain,
           store:stores(id, name, image_url, type, latitude, longitude, address),
           order_items(id, quantity, unit_price, product:products(name, image_url))
         `)
