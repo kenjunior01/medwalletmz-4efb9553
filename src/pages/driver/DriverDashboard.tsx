@@ -597,6 +597,18 @@ export default function DriverDashboard() {
             <div>
               <h1 className="font-bold">{profile?.full_name || 'Entregador'}</h1>
               <p className="text-sm opacity-80">{profile?.default_city}</p>
+              <div className="flex gap-1 mt-1">
+                {profile?.is_verified_driver && (
+                  <Badge className="bg-green-500/20 text-white text-[10px] h-4 px-1.5 gap-0.5">
+                    <ShieldCheck className="h-2.5 w-2.5" /> Verificado
+                  </Badge>
+                )}
+                {profile?.health_certified && (
+                  <Badge className="bg-blue-500/20 text-white text-[10px] h-4 px-1.5 gap-0.5">
+                    <Snowflake className="h-2.5 w-2.5" /> Saúde
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
