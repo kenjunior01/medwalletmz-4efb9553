@@ -573,6 +573,36 @@ export type Database = {
           },
         ]
       }
+      health_referral_rewards: {
+        Row: {
+          active: boolean
+          coupon_code: string | null
+          created_at: string
+          id: string
+          joy_coins_referred: number
+          joy_coins_referrer: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          coupon_code?: string | null
+          created_at?: string
+          id?: string
+          joy_coins_referred?: number
+          joy_coins_referrer?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          coupon_code?: string | null
+          created_at?: string
+          id?: string
+          joy_coins_referred?: number
+          joy_coins_referrer?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       influencer_picks: {
         Row: {
           created_at: string
@@ -700,6 +730,93 @@ export type Database = {
           location?: string
           longitude?: number | null
           title?: string
+        }
+        Relationships: []
+      }
+      medical_record_shares: {
+        Row: {
+          consultation_id: string | null
+          doctor_id: string
+          id: string
+          patient_id: string
+          record_id: string
+          revoked_at: string | null
+          shared_at: string
+        }
+        Insert: {
+          consultation_id?: string | null
+          doctor_id: string
+          id?: string
+          patient_id: string
+          record_id: string
+          revoked_at?: string | null
+          shared_at?: string
+        }
+        Update: {
+          consultation_id?: string | null
+          doctor_id?: string
+          id?: string
+          patient_id?: string
+          record_id?: string
+          revoked_at?: string | null
+          shared_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_record_shares_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medical_record_shares_record_id_fkey"
+            columns: ["record_id"]
+            isOneToOne: false
+            referencedRelation: "medical_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medical_records: {
+        Row: {
+          created_at: string
+          description: string | null
+          file_mime: string | null
+          file_url: string | null
+          id: string
+          issued_at: string | null
+          issued_by: string | null
+          patient_id: string
+          record_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          file_mime?: string | null
+          file_url?: string | null
+          id?: string
+          issued_at?: string | null
+          issued_by?: string | null
+          patient_id: string
+          record_type?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          file_mime?: string | null
+          file_url?: string | null
+          id?: string
+          issued_at?: string | null
+          issued_by?: string | null
+          patient_id?: string
+          record_type?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1103,6 +1220,8 @@ export type Database = {
           mkesh_number: string | null
           mpesa_number: string | null
           phone: string | null
+          referral_code: string | null
+          referred_by: string | null
           updated_at: string
           user_id: string
           vehicle_type: string | null
@@ -1122,6 +1241,8 @@ export type Database = {
           mkesh_number?: string | null
           mpesa_number?: string | null
           phone?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           updated_at?: string
           user_id: string
           vehicle_type?: string | null
@@ -1141,10 +1262,42 @@ export type Database = {
           mkesh_number?: string | null
           mpesa_number?: string | null
           phone?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           updated_at?: string
           user_id?: string
           vehicle_type?: string | null
           verified_at?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1360,6 +1513,45 @@ export type Database = {
           },
         ]
       }
+      triage_logs: {
+        Row: {
+          age: number | null
+          ai_response: Json | null
+          created_at: string
+          duration: string | null
+          id: string
+          patient_id: string
+          recommendation: string | null
+          severity: string | null
+          suggested_specialty: string | null
+          symptoms: string
+        }
+        Insert: {
+          age?: number | null
+          ai_response?: Json | null
+          created_at?: string
+          duration?: string | null
+          id?: string
+          patient_id: string
+          recommendation?: string | null
+          severity?: string | null
+          suggested_specialty?: string | null
+          symptoms: string
+        }
+        Update: {
+          age?: number | null
+          ai_response?: Json | null
+          created_at?: string
+          duration?: string | null
+          id?: string
+          patient_id?: string
+          recommendation?: string | null
+          severity?: string | null
+          suggested_specialty?: string | null
+          symptoms?: string
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -1551,6 +1743,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      video_sessions: {
+        Row: {
+          consultation_id: string
+          created_at: string
+          ended_at: string | null
+          id: string
+          room_id: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          consultation_id: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          room_id: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          consultation_id?: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          room_id?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_sessions_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

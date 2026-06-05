@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Send, ShieldCheck, FileSignature, FileText } from 'lucide-react';
+import { ArrowLeft, Send, ShieldCheck, FileSignature, FileText, Video } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Msg { id: string; sender_id: string; message: string; created_at: string }
@@ -91,6 +91,9 @@ export default function ConsultationChat() {
           {isDoctor && consultation.status === 'scheduled' && (
             <Button size="sm" onClick={startConsult} className="flex-1">Iniciar consulta</Button>
           )}
+          <Button size="sm" variant="default" className="flex-1" onClick={() => navigate(`/health/video/${consultation.id}`)}>
+            <Video className="h-4 w-4 mr-1" /> Vídeo
+          </Button>
           {isDoctor && (
             <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate(`/doctor/prescription/new?consultationId=${consultation.id}`)}>
               <FileSignature className="h-4 w-4 mr-1" /> Emitir receita

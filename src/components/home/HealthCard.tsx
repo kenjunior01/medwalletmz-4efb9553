@@ -1,4 +1,4 @@
-import { Stethoscope, ArrowRight, FileText, Crown } from 'lucide-react';
+import { Stethoscope, ArrowRight, FileText, Crown, Sparkles, FolderHeart, Gift } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 
@@ -26,6 +26,18 @@ export function HealthCard() {
       </Card>
       <div className="grid grid-cols-2 gap-2">
         <button
+          onClick={() => navigate('/health/triage')}
+          className="flex items-center justify-center gap-1.5 text-xs text-primary hover:text-primary/80 transition py-1.5 rounded-lg border border-primary/30 bg-primary/5"
+        >
+          <Sparkles className="h-3 w-3" /> Triagem IA
+        </button>
+        <button
+          onClick={() => navigate('/health/records')}
+          className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition py-1.5 rounded-lg border border-border"
+        >
+          <FolderHeart className="h-3 w-3" /> Exames
+        </button>
+        <button
           onClick={() => navigate('/health/prescriptions')}
           className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition py-1.5 rounded-lg border border-border"
         >
@@ -36,6 +48,12 @@ export function HealthCard() {
           className="flex items-center justify-center gap-1.5 text-xs text-gold hover:text-gold/80 transition py-1.5 rounded-lg border border-gold/30 bg-gold/5"
         >
           <Crown className="h-3 w-3" /> Health Pass
+        </button>
+        <button
+          onClick={() => navigate('/referrals')}
+          className="col-span-2 flex items-center justify-center gap-1.5 text-xs text-pharmacy hover:text-pharmacy/80 transition py-1.5 rounded-lg border border-pharmacy/30 bg-pharmacy/5"
+        >
+          <Gift className="h-3 w-3" /> Convida amigos e ganha Joy Coins
         </button>
       </div>
     </section>

@@ -9,6 +9,7 @@ import { InfluencerPicks } from "@/components/home/InfluencerPicks";
 import { WeeklyChallenges } from "@/components/gamification/WeeklyChallenges";
 import { DailyHighlights } from "@/components/home/DailyHighlights";
 import { HealthCard } from "@/components/home/HealthCard";
+import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { StatWidget, QuickActionWidget, TopItemsWidget } from "@/components/widgets";
@@ -286,6 +287,8 @@ export default function Home() {
 
       {/* Health entry point */}
       <HealthCard />
+
+      <EnableNotificationsBanner />
 
       {/* Weekly Challenges */}
       <WeeklyChallenges />
