@@ -77,6 +77,10 @@ import ClinicDashboard from "./pages/clinic/ClinicDashboard";
 import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
 import AdminPaymentAccounts from "./pages/admin/AdminPaymentAccounts";
 import PaymentSettings from "./pages/PaymentSettings";
+import Triage from "./pages/health/Triage";
+import MedicalRecords from "./pages/health/MedicalRecords";
+import VideoConsultation from "./pages/health/VideoConsultation";
+import Referrals from "./pages/Referrals";
 
 const queryClient = new QueryClient();
 
@@ -121,11 +125,17 @@ const App = () => (
                   <Route path="/subscribe/:planId" element={<Subscribe />} />
                   <Route path="/subscriptions" element={<MySubscriptions />} />
                   <Route path="/payment-settings" element={<PaymentSettings />} />
+                  <Route path="/health/triage" element={<Triage />} />
+                  <Route path="/health/records" element={<MedicalRecords />} />
+                  <Route path="/referrals" element={<Referrals />} />
                 </Route>
                 
                 {/* Auth */}
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/register" element={<RoleSelection />} />
+
+                {/* Vídeo-consulta (fullscreen, sem layout) */}
+                <Route path="/health/video/:id" element={<VideoConsultation />} />
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AdminDashboard />}>
