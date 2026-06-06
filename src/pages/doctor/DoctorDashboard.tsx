@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Calendar, MessageCircle, DollarSign, Users, Stethoscope } from 'lucide-react';
+import { Calendar, MessageCircle, DollarSign, Users, Stethoscope, CalendarClock } from 'lucide-react';
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
@@ -130,6 +130,9 @@ export default function DoctorDashboard() {
           ))}
         </section>
 
+        <Button variant="outline" className="w-full" onClick={() => navigate('/doctor/availability')}>
+          <CalendarClock className="h-4 w-4 mr-2" /> Gerir horários disponíveis
+        </Button>
         <Button variant="outline" className="w-full" onClick={() => navigate('/doctor/patients')}>Ver pacientes</Button>
       </div>
     </div>
