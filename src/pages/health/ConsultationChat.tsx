@@ -5,10 +5,19 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Send, ShieldCheck, FileSignature, FileText, Video } from 'lucide-react';
+import { ArrowLeft, Send, ShieldCheck, FileSignature, FileText, Video, Paperclip, CheckCircle2, Loader2, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { PostConsultationReview } from '@/components/health/PostConsultationReview';
 
-interface Msg { id: string; sender_id: string; message: string; created_at: string }
+interface Msg {
+  id: string;
+  sender_id: string;
+  message: string;
+  created_at: string;
+  attachment_url?: string | null;
+  attachment_type?: string | null;
+  attachment_name?: string | null;
+}
 
 export default function ConsultationChat() {
   const { id } = useParams();
@@ -18,7 +27,11 @@ export default function ConsultationChat() {
   const [otherName, setOtherName] = useState<string>('');
   const [messages, setMessages] = useState<Msg[]>([]);
   const [text, setText] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [completing, setCompleting] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -62,6 +75,42 @@ export default function ConsultationChat() {
     if (error) { toast.error(error.message); setText(msg); }
   };
 
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !id) return;
+    if (file.size > 10 * 1024 * 1024) { toast.error('Máx. 10MB'); return; }
+    setUploading(true);
+    const ext = file.name.split('.').pop() || 'bin';
+    const path = `${user.id}/${id}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from('consultation-attachments').upload(path, file);
+    if (upErr) { toast.error(upErr.message); setUploading(false); return; }
+    const { data: signed } = await supabase.storage.from('consultation-attachments').createSignedUrl(path, 60 * 60 * 24 * 30);
+    const isImage = file.type.startsWith('image/');
+    await supabase.from('consultation_messages').insert({
+      consultation_id: id,
+      sender_id: user.id,
+      message: isImage ? '📷 Imagem partilhada' : `📎 ${file.name}`,
+      attachment_url: signed?.signedUrl || path,
+      attachment_type: isImage ? 'image' : 'file',
+      attachment_name: file.name,
+    });
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const completeConsult = async () => {
+    if (!consultation) return;
+    setCompleting(true);
+    const { error } = await supabase
+      .from('consultations')
+      .update({ status: 'completed' })
+      .eq('id', consultation.id);
+    setCompleting(false);
+    if (error) { toast.error(error.message); return; }
+    setConsultation({ ...consultation, status: 'completed' });
+    toast.success('Consulta concluída. Lembretes de acompanhamento criados.');
+  };
+
   const startConsult = async () => {
     if (!consultation) return;
     await supabase.from('consultations').update({ status: 'in_progress' }).eq('id', consultation.id);
@@ -69,6 +118,20 @@ export default function ConsultationChat() {
   };
 
   const isDoctor = consultation?.doctor_id === user?.id;
+
+  // Auto-prompt review for patient when completed
+  useEffect(() => {
+    if (!consultation || isDoctor) return;
+    if (consultation.status !== 'completed') return;
+    (async () => {
+      const { data: existing } = await supabase
+        .from('doctor_reviews')
+        .select('id')
+        .eq('consultation_id', consultation.id)
+        .maybeSingle();
+      if (!existing) setReviewOpen(true);
+    })();
+  }, [consultation?.status, isDoctor]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -90,6 +153,12 @@ export default function ConsultationChat() {
         <div className="p-3 bg-primary/5 border-b flex gap-2">
           {isDoctor && consultation.status === 'scheduled' && (
             <Button size="sm" onClick={startConsult} className="flex-1">Iniciar consulta</Button>
+          )}
+          {isDoctor && consultation.status === 'in_progress' && (
+            <Button size="sm" variant="outline" className="flex-1" onClick={completeConsult} disabled={completing}>
+              {completing ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-1" />}
+              Concluir
+            </Button>
           )}
           <Button size="sm" variant="default" className="flex-1" onClick={() => navigate(`/health/video/${consultation.id}`)}>
             <Video className="h-4 w-4 mr-1" /> Vídeo
@@ -118,7 +187,18 @@ export default function ConsultationChat() {
           return (
             <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${mine ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                {m.message}
+                {m.attachment_url && m.attachment_type === 'image' && (
+                  <a href={m.attachment_url} target="_blank" rel="noreferrer">
+                    <img src={m.attachment_url} alt={m.attachment_name || ''} className="rounded-lg mb-1 max-h-60 object-cover" />
+                  </a>
+                )}
+                {m.attachment_url && m.attachment_type !== 'image' && (
+                  <a href={m.attachment_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 underline">
+                    <FileText className="h-4 w-4" /> {m.attachment_name || 'Ficheiro'}
+                  </a>
+                )}
+                {!m.attachment_url && m.message}
+                {m.attachment_url && <div className="text-xs opacity-80 mt-1">{m.message}</div>}
                 <div className={`text-[10px] mt-1 ${mine ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                   {new Date(m.created_at).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
                 </div>
@@ -130,6 +210,10 @@ export default function ConsultationChat() {
       </div>
 
       <div className="border-t p-3 flex gap-2">
+        <input ref={fileRef} type="file" accept="image/*,application/pdf" hidden onChange={handleFile} />
+        <Button variant="ghost" size="icon" onClick={() => fileRef.current?.click()} disabled={uploading}>
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
+        </Button>
         <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -138,6 +222,16 @@ export default function ConsultationChat() {
         />
         <Button onClick={send} disabled={!text.trim()}><Send className="h-4 w-4" /></Button>
       </div>
+
+      {consultation && !isDoctor && (
+        <PostConsultationReview
+          open={reviewOpen}
+          onOpenChange={setReviewOpen}
+          consultationId={consultation.id}
+          doctorId={consultation.doctor_id}
+          doctorName={otherName}
+        />
+      )}
     </div>
   );
 }
