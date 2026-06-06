@@ -1,4 +1,4 @@
-import { Stethoscope, ArrowRight, FileText, Crown, Sparkles, FolderHeart, Gift } from 'lucide-react';
+import { Stethoscope, ArrowRight, FileText, Crown, Sparkles, FolderHeart, Gift, CalendarCheck, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 
@@ -25,6 +25,18 @@ export function HealthCard() {
         </div>
       </Card>
       <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => navigate('/health/consultations')}
+          className="flex items-center justify-center gap-1.5 text-xs text-pharmacy hover:text-pharmacy/80 transition py-1.5 rounded-lg border border-pharmacy/30 bg-pharmacy/5"
+        >
+          <MessageCircle className="h-3 w-3" /> Consultas
+        </button>
+        <button
+          onClick={() => navigate('/health/doctors')}
+          className="flex items-center justify-center gap-1.5 text-xs text-primary hover:text-primary/80 transition py-1.5 rounded-lg border border-primary/30 bg-primary/5"
+        >
+          <CalendarCheck className="h-3 w-3" /> Marcar
+        </button>
         <button
           onClick={() => navigate('/health/triage')}
           className="flex items-center justify-center gap-1.5 text-xs text-primary hover:text-primary/80 transition py-1.5 rounded-lg border border-primary/30 bg-primary/5"

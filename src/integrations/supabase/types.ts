@@ -244,8 +244,64 @@ export type Database = {
         }
         Relationships: []
       }
+      consultation_followups: {
+        Row: {
+          consultation_id: string
+          created_at: string
+          dismissed_at: string | null
+          doctor_id: string
+          due_at: string
+          id: string
+          kind: string
+          message: string
+          patient_id: string
+          rebooked_consultation_id: string | null
+        }
+        Insert: {
+          consultation_id: string
+          created_at?: string
+          dismissed_at?: string | null
+          doctor_id: string
+          due_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          patient_id: string
+          rebooked_consultation_id?: string | null
+        }
+        Update: {
+          consultation_id?: string
+          created_at?: string
+          dismissed_at?: string | null
+          doctor_id?: string
+          due_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          patient_id?: string
+          rebooked_consultation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_followups_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultation_followups_rebooked_consultation_id_fkey"
+            columns: ["rebooked_consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consultation_messages: {
         Row: {
+          attachment_name: string | null
+          attachment_type: string | null
           attachment_url: string | null
           consultation_id: string
           created_at: string
@@ -254,6 +310,8 @@ export type Database = {
           sender_id: string
         }
         Insert: {
+          attachment_name?: string | null
+          attachment_type?: string | null
           attachment_url?: string | null
           consultation_id: string
           created_at?: string
@@ -262,6 +320,8 @@ export type Database = {
           sender_id: string
         }
         Update: {
+          attachment_name?: string | null
+          attachment_type?: string | null
           attachment_url?: string | null
           consultation_id?: string
           created_at?: string
@@ -428,6 +488,44 @@ export type Database = {
           },
         ]
       }
+      doctor_availability_slots: {
+        Row: {
+          consultation_id: string | null
+          created_at: string
+          doctor_id: string
+          ends_at: string
+          id: string
+          is_booked: boolean
+          starts_at: string
+        }
+        Insert: {
+          consultation_id?: string | null
+          created_at?: string
+          doctor_id: string
+          ends_at: string
+          id?: string
+          is_booked?: boolean
+          starts_at: string
+        }
+        Update: {
+          consultation_id?: string | null
+          created_at?: string
+          doctor_id?: string
+          ends_at?: string
+          id?: string
+          is_booked?: boolean
+          starts_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_availability_slots_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_profiles: {
         Row: {
           avatar_url: string | null
@@ -486,6 +584,44 @@ export type Database = {
             columns: ["specialty_id"]
             isOneToOne: false
             referencedRelation: "medical_specialties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_reviews: {
+        Row: {
+          comment: string | null
+          consultation_id: string
+          created_at: string
+          doctor_id: string
+          id: string
+          patient_id: string
+          rating: number
+        }
+        Insert: {
+          comment?: string | null
+          consultation_id: string
+          created_at?: string
+          doctor_id: string
+          id?: string
+          patient_id: string
+          rating: number
+        }
+        Update: {
+          comment?: string | null
+          consultation_id?: string
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          patient_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_reviews_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: true
+            referencedRelation: "consultations"
             referencedColumns: ["id"]
           },
         ]

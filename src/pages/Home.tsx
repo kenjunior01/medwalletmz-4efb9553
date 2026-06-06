@@ -10,6 +10,7 @@ import { WeeklyChallenges } from "@/components/gamification/WeeklyChallenges";
 import { DailyHighlights } from "@/components/home/DailyHighlights";
 import { HealthCard } from "@/components/home/HealthCard";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
+import { FollowUpReminders } from "@/components/health/FollowUpReminders";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { StatWidget, QuickActionWidget, TopItemsWidget } from "@/components/widgets";
@@ -289,6 +290,9 @@ export default function Home() {
       <HealthCard />
 
       <EnableNotificationsBanner />
+
+      {/* Follow-up reminders after consultations */}
+      <FollowUpReminders />
 
       {/* Weekly Challenges */}
       <WeeklyChallenges />

@@ -9,49 +9,39 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft, Calendar, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-function nextSlots(days = 5) {
-  const slots: { date: string; time: string; iso: string }[] = [];
-  const now = new Date();
-  for (let d = 0; d < days; d++) {
-    const day = new Date(now);
-    day.setDate(now.getDate() + d);
-    for (const h of [9, 10, 11, 14, 15, 16, 17]) {
-      const dt = new Date(day);
-      dt.setHours(h, 0, 0, 0);
-      if (dt > now) {
-        slots.push({
-          date: dt.toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: 'short' }),
-          time: `${h}:00`,
-          iso: dt.toISOString(),
-        });
-      }
-    }
-  }
-  return slots;
-}
+interface Slot { id: string; starts_at: string }
 
 export default function BookConsultation() {
   const { doctorId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [doctor, setDoctor] = useState<any>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [selected, setSelected] = useState<Slot | null>(null);
   const [reason, setReason] = useState('');
   const [saving, setSaving] = useState(false);
-  const slots = nextSlots(5);
 
   useEffect(() => {
     if (!doctorId) return;
-    supabase
-      .from('doctor_profiles')
-      .select('*, medical_specialties(name, icon)')
-      .eq('id', doctorId)
-      .maybeSingle()
-      .then(async ({ data }) => {
-        if (!data) return;
-        const { data: prof } = await supabase.from('profiles').select('full_name').eq('user_id', data.user_id).maybeSingle();
-        setDoctor({ ...data, full_name: prof?.full_name });
-      });
+    (async () => {
+      const { data } = await supabase
+        .from('doctor_profiles')
+        .select('*, medical_specialties(name, icon)')
+        .eq('id', doctorId)
+        .maybeSingle();
+      if (!data) return;
+      const { data: prof } = await supabase.from('profiles').select('full_name').eq('user_id', data.user_id).maybeSingle();
+      setDoctor({ ...data, full_name: prof?.full_name });
+      const { data: s } = await supabase
+        .from('doctor_availability_slots')
+        .select('id, starts_at')
+        .eq('doctor_id', data.user_id)
+        .eq('is_booked', false)
+        .gte('starts_at', new Date().toISOString())
+        .order('starts_at')
+        .limit(40);
+      setSlots((s as Slot[]) || []);
+    })();
   }, [doctorId]);
 
   const handleBook = async () => {
@@ -63,7 +53,7 @@ export default function BookConsultation() {
       .insert({
         doctor_id: doctor.user_id,
         patient_id: user.id,
-        scheduled_at: selected,
+        scheduled_at: selected.starts_at,
         consultation_type: 'chat',
         reason,
         fee: doctor.consultation_fee,
@@ -73,7 +63,11 @@ export default function BookConsultation() {
       .single();
     setSaving(false);
     if (error) { toast.error(error.message); return; }
-    toast.success('Consulta marcada!');
+    await supabase
+      .from('doctor_availability_slots')
+      .update({ is_booked: true, consultation_id: data.id })
+      .eq('id', selected.id);
+    toast.success('Consulta marcada! Aguarda confirmação por notificação.');
     navigate(`/health/consultation/${data.id}`);
   };
 
@@ -102,20 +96,29 @@ export default function BookConsultation() {
 
         <div>
           <h2 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-4 w-4" /> Escolha um horário</h2>
-          <div className="grid grid-cols-3 gap-2">
-            {slots.map((s) => (
-              <button
-                key={s.iso}
-                onClick={() => setSelected(s.iso)}
-                className={`p-2 rounded-lg border text-xs transition ${
-                  selected === s.iso ? 'border-primary bg-primary/10 font-semibold' : 'border-border'
-                }`}
-              >
-                <div>{s.date}</div>
-                <div className="text-sm font-bold">{s.time}</div>
-              </button>
-            ))}
-          </div>
+          {slots.length === 0 ? (
+            <p className="text-sm text-muted-foreground p-3 rounded-lg border border-dashed">
+              Este médico ainda não publicou horários. Tenta outro profissional ou volta mais tarde.
+            </p>
+          ) : (
+            <div className="grid grid-cols-3 gap-2">
+              {slots.map((s) => {
+                const d = new Date(s.starts_at);
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setSelected(s)}
+                    className={`p-2 rounded-lg border text-xs transition ${
+                      selected?.id === s.id ? 'border-primary bg-primary/10 font-semibold' : 'border-border'
+                    }`}
+                  >
+                    <div>{d.toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: 'short' })}</div>
+                    <div className="text-sm font-bold">{d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}</div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div>
