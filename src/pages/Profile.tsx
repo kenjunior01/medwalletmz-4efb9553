@@ -69,11 +69,9 @@ export default function Profile() {
     if (!user) return;
 
     try {
-      const [ordersRes, rxRes, couponsRes] = await Promise.all([
-        supabase.from("orders").select("id", { count: "exact", head: true }).eq("customer_id", user.id),
-        supabase.from("prescriptions").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
-        supabase.from("user_coupons").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("used_at", null),
-      ]);
+      const ordersRes = await supabase.from("orders").select("id", { count: "exact", head: true }).eq("user_id", user.id);
+      const rxRes = await supabase.from("prescriptions").select("id", { count: "exact", head: true }).eq("patient_id", user.id);
+      const couponsRes = await supabase.from("user_coupons").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("used_at", null);
 
       setStats({
         orders: ordersRes.count || 0,
