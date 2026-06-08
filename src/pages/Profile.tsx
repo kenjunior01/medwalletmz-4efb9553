@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, MapPin, CreditCard, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, Heart, Ticket, Store, Truck, Crown, Wallet } from "lucide-react";
+import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,7 +30,7 @@ export default function Profile() {
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [saving, setSaving] = useState(false);
-  const [stats, setStats] = useState({ orders: 0, favorites: 0, coupons: 0 });
+  const [stats, setStats] = useState({ orders: 0, prescriptions: 0, coupons: 0 });
 
   useEffect(() => {
     if (user) {
@@ -69,15 +69,15 @@ export default function Profile() {
     if (!user) return;
 
     try {
-      const [ordersRes, favoritesRes, couponsRes] = await Promise.all([
-        supabase.from("orders").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-        supabase.from("favorites").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      const [ordersRes, rxRes, couponsRes] = await Promise.all([
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("customer_id", user.id),
+        supabase.from("prescriptions").select("id", { count: "exact", head: true }).eq("patient_id", user.id),
         supabase.from("user_coupons").select("id", { count: "exact", head: true }).eq("user_id", user.id).is("used_at", null),
       ]);
 
       setStats({
         orders: ordersRes.count || 0,
-        favorites: favoritesRes.count || 0,
+        prescriptions: rxRes.count || 0,
         coupons: couponsRes.count || 0,
       });
     } catch (error) {
@@ -141,9 +141,9 @@ export default function Profile() {
             <p className="text-xs text-muted-foreground">Pedidos</p>
           </div>
           <div className="bg-card rounded-xl border border-border p-3 text-center">
-            <Heart className="h-6 w-6 mx-auto mb-1 text-secondary" />
+            <FileText className="h-6 w-6 mx-auto mb-1 text-secondary" />
             <p className="text-2xl font-bold text-secondary">0</p>
-            <p className="text-xs text-muted-foreground">Favoritos</p>
+            <p className="text-xs text-muted-foreground">Receitas</p>
           </div>
           <div className="bg-card rounded-xl border border-border p-3 text-center">
             <Ticket className="h-6 w-6 mx-auto mb-1 text-accent" />
@@ -232,12 +232,12 @@ export default function Profile() {
           <p className="text-xs text-muted-foreground">Pedidos</p>
         </button>
         <button 
-          onClick={() => navigate("/favorites")}
+          onClick={() => navigate("/health/prescriptions")}
           className="bg-card rounded-xl border border-border p-3 text-center hover:bg-muted/50 transition-colors"
         >
-          <Heart className="h-6 w-6 mx-auto mb-1 text-secondary" />
-          <p className="text-2xl font-bold text-secondary">{stats.favorites}</p>
-          <p className="text-xs text-muted-foreground">Favoritos</p>
+          <FileText className="h-6 w-6 mx-auto mb-1 text-secondary" />
+          <p className="text-2xl font-bold text-secondary">{stats.prescriptions}</p>
+          <p className="text-xs text-muted-foreground">Receitas</p>
         </button>
         <div className="bg-card rounded-xl border border-border p-3 text-center">
           <Ticket className="h-6 w-6 mx-auto mb-1 text-accent" />
@@ -264,13 +264,35 @@ export default function Profile() {
       {/* Business Options */}
       <div className="bg-card rounded-xl border border-border divide-y divide-border">
         <button
+          onClick={() => navigate("/doctor/register")}
+          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+        >
+          <Stethoscope className="h-5 w-5 text-pharmacy" />
+          <div className="flex-1 text-left">
+            <span className="font-medium text-sm block">Seja Médico Parceiro</span>
+            <span className="text-xs text-muted-foreground">Atenda pacientes online</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+        <button
+          onClick={() => navigate("/clinic/register")}
+          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+        >
+          <Building2 className="h-5 w-5 text-gold" />
+          <div className="flex-1 text-left">
+            <span className="font-medium text-sm block">Registar Clínica</span>
+            <span className="text-xs text-muted-foreground">Gerir equipa de médicos</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+        <button
           onClick={() => navigate("/store/register")}
           className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
         >
           <Store className="h-5 w-5 text-green-500" />
           <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">Cadastrar Minha Loja</span>
-            <span className="text-xs text-muted-foreground">Venda seus produtos online</span>
+            <span className="font-medium text-sm block">Registar Farmácia</span>
+            <span className="text-xs text-muted-foreground">Venda medicamentos online</span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
@@ -281,7 +303,7 @@ export default function Profile() {
           <Truck className="h-5 w-5 text-orange-500" />
           <div className="flex-1 text-left">
             <span className="font-medium text-sm block">Seja um Entregador</span>
-            <span className="text-xs text-muted-foreground">Ganhe dinheiro fazendo entregas</span>
+            <span className="text-xs text-muted-foreground">Entregue medicamentos com prioridade</span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
