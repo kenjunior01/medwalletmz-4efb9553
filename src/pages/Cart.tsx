@@ -20,7 +20,7 @@ export default function Cart() {
         <p className="text-muted-foreground text-center text-sm">
           Adicione itens ao carrinho para fazer um pedido
         </p>
-        <Button className="mt-6 rounded-full" onClick={() => navigate("/food")}>
+        <Button className="mt-6 rounded-full" onClick={() => navigate("/pharmacy")}>
           Explorar Restaurantes
         </Button>
       </div>

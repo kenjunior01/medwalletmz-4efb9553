@@ -6,7 +6,7 @@ export function SearchBar() {
 
   return (
     <div
-      onClick={() => navigate("/search")}
+      onClick={() => navigate("/health/doctors")}
       className="relative cursor-pointer group"
     >
       <div className="glass rounded-2xl border border-border/50 overflow-hidden transition-all group-hover:shadow-medium group-hover:border-primary/30">

@@ -10,24 +10,18 @@ import { AppLayout } from "@/components/layout/AppLayout";
 
 // Main Pages
 import Home from "./pages/Home";
-import FoodDelivery from "./pages/FoodDelivery";
-import Grocery from "./pages/Grocery";
 import Pharmacy from "./pages/Pharmacy";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
-import Search from "./pages/Search";
 import Auth from "./pages/Auth";
 import StoreDetail from "./pages/StoreDetail";
 import Checkout from "./pages/Checkout";
-import AIAssistant from "./pages/AIAssistant";
-import Favorites from "./pages/Favorites";
 import Addresses from "./pages/Addresses";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import RoleSelection from "./pages/RoleSelection";
 import Rewards from "./pages/Rewards";
-import Guide from "./pages/Guide";
 import OrderTracking from "./pages/OrderTracking";
 
 // Admin Pages
@@ -55,7 +49,6 @@ import StoreReports from "./pages/store/StoreReports";
 import DriverDashboard from "./pages/driver/DriverDashboard";
 import DriverRegister from "./pages/driver/DriverRegister";
 import DriverHistory from "./pages/driver/DriverHistory";
-import InfluencerDashboard from "./pages/influencer/InfluencerDashboard";
 
 // Health Pages
 import Doctors from "./pages/health/Doctors";
@@ -98,22 +91,15 @@ const App = () => (
                 {/* Main App Routes */}
                 <Route element={<AppLayout />}>
                   <Route path="/" element={<Home />} />
-                  <Route path="/food" element={<FoodDelivery />} />
-                  <Route path="/grocery" element={<Grocery />} />
                   <Route path="/pharmacy" element={<Pharmacy />} />
-                  <Route path="/search" element={<Search />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/orders" element={<Orders />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/store/:id" element={<StoreDetail />} />
                   <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/ai" element={<AIAssistant />} />
-                  <Route path="/favorites" element={<Favorites />} />
                   <Route path="/addresses" element={<Addresses />} />
                   <Route path="/help" element={<Help />} />
                   <Route path="/rewards" element={<Rewards />} />
-                  <Route path="/guide" element={<Guide />} />
-                  <Route path="/guide/:id" element={<Guide />} />
                   <Route path="/order/:id" element={<OrderTracking />} />
                   <Route path="/health/doctors" element={<Doctors />} />
                   <Route path="/health/book/:doctorId" element={<BookConsultation />} />
@@ -167,7 +153,6 @@ const App = () => (
                 <Route path="/driver/register" element={<DriverRegister />} />
                 <Route path="/driver/dashboard" element={<DriverDashboard />} />
                 <Route path="/driver/history" element={<DriverHistory />} />
-                <Route path="/influencer/dashboard" element={<InfluencerDashboard />} />
 
                 {/* Doctor Routes */}
                 <Route path="/doctor/register" element={<DoctorRegister />} />

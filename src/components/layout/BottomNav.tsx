@@ -1,11 +1,11 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Search, ShoppingCart, ClipboardList, User } from "lucide-react";
+import { Home, Stethoscope, FileText, ClipboardList, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { path: "/", icon: Home, label: "Início" },
-  { path: "/search", icon: Search, label: "Explorar" },
-  { path: "/cart", icon: ShoppingCart, label: "Carrinho" },
+  { path: "/health/doctors", icon: Stethoscope, label: "Médicos" },
+  { path: "/health/prescriptions", icon: FileText, label: "Receitas" },
   { path: "/orders", icon: ClipboardList, label: "Pedidos" },
   { path: "/profile", icon: User, label: "Perfil" },
 ];

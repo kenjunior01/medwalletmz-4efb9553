@@ -170,7 +170,7 @@ export default function Orders() {
         <p className="text-muted-foreground text-center text-sm mb-4">
           Ainda não fizeste nenhum pedido
         </p>
-        <Button onClick={() => navigate("/food")}>Explorar Restaurantes</Button>
+        <Button onClick={() => navigate("/pharmacy")}>Explorar Farmácias</Button>
       </div>
     );
   }
