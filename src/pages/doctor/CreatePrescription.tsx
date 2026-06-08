@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Plus, Trash2, FileSignature, Loader2, Snowflake } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, FileSignature, Loader2, Snowflake, Pill } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
 interface Item {
@@ -31,6 +32,8 @@ export default function CreatePrescription() {
   const [items, setItems] = useState<Item[]>([empty()]);
   const [notes, setNotes] = useState('');
   const [coldChain, setColdChain] = useState(false);
+  const [pharmacies, setPharmacies] = useState<{id:string; name:string; city?:string|null}[]>([]);
+  const [pharmacyId, setPharmacyId] = useState<string>('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -44,6 +47,18 @@ export default function CreatePrescription() {
       }
     })();
   }, [consultationId]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('stores')
+        .select('id, name, city')
+        .eq('is_active', true)
+        .eq('type', 'pharmacy')
+        .order('name');
+      setPharmacies(data || []);
+    })();
+  }, []);
 
   const update = (i: number, field: keyof Item, value: string) => {
     setItems(prev => prev.map((it, idx) => idx === i ? { ...it, [field]: value } : it));
@@ -62,16 +77,18 @@ export default function CreatePrescription() {
         notes: notes || null,
         status: 'active',
         requires_cold_chain: coldChain,
+        suggested_pharmacy_id: pharmacyId || null,
       }).select('id').single();
       if (error) throw error;
       const { error: itemsErr } = await supabase.from('prescription_items').insert(
         valid.map(i => ({ prescription_id: presc.id, ...i }))
       );
       if (itemsErr) throw itemsErr;
+      const pharmName = pharmacies.find(p => p.id === pharmacyId)?.name;
       await supabase.from('consultation_messages').insert({
         consultation_id: consultation.id,
         sender_id: user.id,
-        message: `📄 Receita digital emitida com ${valid.length} medicamento(s).`,
+        message: `📄 Receita digital emitida com ${valid.length} medicamento(s).${pharmName ? ` Farmácia sugerida: ${pharmName}.` : ''}`,
       });
       toast.success('Receita emitida!');
       navigate(`/health/consultation/${consultation.id}`);
@@ -142,6 +159,22 @@ export default function CreatePrescription() {
             <p className="text-xs text-muted-foreground">Insulina, vacinas, biológicos. O entregador precisa de bolsa térmica certificada.</p>
           </div>
           <Switch checked={coldChain} onCheckedChange={setColdChain} />
+        </Card>
+
+        <Card className="p-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <Pill className="h-4 w-4 text-pharmacy" />
+            <Label className="m-0">Farmácia sugerida (paciente confirma)</Label>
+          </div>
+          <Select value={pharmacyId} onValueChange={setPharmacyId}>
+            <SelectTrigger><SelectValue placeholder="Sem sugestão (paciente escolhe)" /></SelectTrigger>
+            <SelectContent>
+              {pharmacies.map(p => (
+                <SelectItem key={p.id} value={p.id}>{p.name}{p.city ? ` • ${p.city}` : ''}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-[11px] text-muted-foreground">O paciente verá esta sugestão e pode confirmar ou trocar antes de pedir.</p>
         </Card>
 
         <Button onClick={save} disabled={saving} className="w-full h-12">
