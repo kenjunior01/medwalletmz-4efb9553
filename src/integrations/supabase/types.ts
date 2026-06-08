@@ -255,6 +255,7 @@ export type Database = {
           kind: string
           message: string
           patient_id: string
+          rebooked_at: string | null
           rebooked_consultation_id: string | null
         }
         Insert: {
@@ -267,6 +268,7 @@ export type Database = {
           kind?: string
           message?: string
           patient_id: string
+          rebooked_at?: string | null
           rebooked_consultation_id?: string | null
         }
         Update: {
@@ -279,6 +281,7 @@ export type Database = {
           kind?: string
           message?: string
           patient_id?: string
+          rebooked_at?: string | null
           rebooked_consultation_id?: string | null
         }
         Relationships: [
@@ -1252,6 +1255,7 @@ export type Database = {
       }
       prescriptions: {
         Row: {
+          chosen_pharmacy_id: string | null
           consultation_id: string | null
           created_at: string
           doctor_id: string
@@ -1259,11 +1263,14 @@ export type Database = {
           id: string
           notes: string | null
           patient_id: string
+          pharmacy_confirmed_at: string | null
           pharmacy_store_id: string | null
           requires_cold_chain: boolean
           status: string
+          suggested_pharmacy_id: string | null
         }
         Insert: {
+          chosen_pharmacy_id?: string | null
           consultation_id?: string | null
           created_at?: string
           doctor_id: string
@@ -1271,11 +1278,14 @@ export type Database = {
           id?: string
           notes?: string | null
           patient_id: string
+          pharmacy_confirmed_at?: string | null
           pharmacy_store_id?: string | null
           requires_cold_chain?: boolean
           status?: string
+          suggested_pharmacy_id?: string | null
         }
         Update: {
+          chosen_pharmacy_id?: string | null
           consultation_id?: string | null
           created_at?: string
           doctor_id?: string
@@ -1283,16 +1293,32 @@ export type Database = {
           id?: string
           notes?: string | null
           patient_id?: string
+          pharmacy_confirmed_at?: string | null
           pharmacy_store_id?: string | null
           requires_cold_chain?: boolean
           status?: string
+          suggested_pharmacy_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "prescriptions_chosen_pharmacy_id_fkey"
+            columns: ["chosen_pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "prescriptions_consultation_id_fkey"
             columns: ["consultation_id"]
             isOneToOne: false
             referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_suggested_pharmacy_id_fkey"
+            columns: ["suggested_pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
             referencedColumns: ["id"]
           },
         ]
