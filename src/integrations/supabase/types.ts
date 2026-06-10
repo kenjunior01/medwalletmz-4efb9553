@@ -342,6 +342,47 @@ export type Database = {
           },
         ]
       }
+      consultation_reminders: {
+        Row: {
+          consultation_id: string
+          created_at: string
+          doctor_id: string
+          id: string
+          patient_id: string
+          remind_at: string
+          scheduled_at: string
+          sent_at: string | null
+        }
+        Insert: {
+          consultation_id: string
+          created_at?: string
+          doctor_id: string
+          id?: string
+          patient_id: string
+          remind_at: string
+          scheduled_at: string
+          sent_at?: string | null
+        }
+        Update: {
+          consultation_id?: string
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          patient_id?: string
+          remind_at?: string
+          scheduled_at?: string
+          sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultation_reminders_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consultations: {
         Row: {
           consultation_type: string

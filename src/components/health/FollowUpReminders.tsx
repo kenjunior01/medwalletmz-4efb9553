@@ -92,8 +92,20 @@ export function FollowUpReminders() {
         .from('consultation_followups')
         .update({ rebooked_consultation_id: consult.id, rebooked_at: new Date().toISOString(), dismissed_at: new Date().toISOString() })
         .eq('id', active.id);
+      // Agendar lembrete 1h antes (entregue por Realtime via edge cron)
+      const remindAt = new Date(new Date(slot.starts_at).getTime() - 60 * 60 * 1000);
+      await supabase.from('consultation_reminders').insert({
+        consultation_id: consult.id,
+        patient_id: user.id,
+        doctor_id: active.doctor_id,
+        remind_at: remindAt.toISOString(),
+        scheduled_at: slot.starts_at,
+      });
       if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-        new Notification('Consulta agendada', { body: `Confirmada para ${new Date(slot.starts_at).toLocaleString('pt-PT')}.` });
+        new Notification('Consulta confirmada', {
+          body: `Marcada para ${new Date(slot.starts_at).toLocaleString('pt-PT')}. Receberás lembrete 1h antes.`,
+          icon: '/icon.svg',
+        });
       }
       toast.success('Nova consulta agendada!');
       setOpen(false);
