@@ -1,4 +1,4 @@
-import { Stethoscope, CalendarCheck, Sparkles, FileText, FolderHeart, Pill, MessageCircle, ArrowRight, Crown, Gift, Bell } from "lucide-react";
+import { Stethoscope, CalendarCheck, Sparkles, FileText, FolderHeart, Pill, MessageCircle, ArrowRight, Crown, Gift, Bell, Wallet, Plus } from "lucide-react";
 import { HealthCard } from "@/components/home/HealthCard";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useWallet } from "@/hooks/useWallet";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 export default function Home() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { wallet } = useWallet();
 
   const { data: upcoming } = useQuery({
     queryKey: ['upcoming-consultations', user?.id],
@@ -65,6 +67,23 @@ export default function Home() {
       </section>
 
       <EnableNotificationsBanner />
+
+      {user && (
+        <section className="px-4">
+          <Card onClick={() => navigate('/wallet')} className="p-4 cursor-pointer bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/30 flex items-center gap-3 active:scale-[0.98] transition">
+            <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
+              <Wallet className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <div className="flex-1">
+              <p className="text-xs text-muted-foreground">Saldo da carteira</p>
+              <p className="font-bold text-lg">{(wallet?.balance_mzn ?? 0).toLocaleString('pt-MZ', { minimumFractionDigits: 2 })} MZN</p>
+            </div>
+            <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); navigate('/wallet'); }}>
+              <Plus className="h-3 w-3 mr-1" /> Depositar
+            </Button>
+          </Card>
+        </section>
+      )}
 
       {/* Próximas consultas */}
       {upcoming && upcoming.length > 0 && (
