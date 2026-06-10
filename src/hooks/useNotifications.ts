@@ -70,6 +70,18 @@ export function useNotifications() {
             notify('Nova receita', 'O médico emitiu uma receita para ti.', `/health/prescription/${p.new.id}`);
           })
         .subscribe(),
+      supabase
+        .channel(`notif-reminders-${user.id}`)
+        .on('postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'consultation_reminders', filter: `patient_id=eq.${user.id}` },
+          (p: any) => {
+            const n = p.new;
+            if (n.sent_at && !p.old?.sent_at) {
+              const when = new Date(n.scheduled_at).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+              notify('Consulta em 1 hora', `Lembrete: tens consulta às ${when}.`, `/health/consultation/${n.consultation_id}`);
+            }
+          })
+        .subscribe(),
     ];
 
     return () => { channels.forEach(c => supabase.removeChannel(c)); };
