@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Search, Tag, Percent, Calendar } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Tag, Percent, Calendar, Layers, Download } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface CouponFormData {
   code: string;
@@ -19,6 +20,10 @@ interface CouponFormData {
   max_uses: number | null;
   expires_at: string;
   is_active: boolean;
+  event_type?: string;
+  target_roles?: string[];
+  target_services?: string[];
+  description?: string;
 }
 
 const initialFormData: CouponFormData = {
@@ -28,13 +33,30 @@ const initialFormData: CouponFormData = {
   min_order_value: 0,
   max_uses: null,
   expires_at: '',
-  is_active: true
+  is_active: true,
+  event_type: 'manual',
+  target_roles: [],
+  target_services: [],
+  description: '',
 };
+
+const ALL_ROLES = ['customer','doctor','clinic','store_owner','driver'];
+const ALL_SERVICES = ['consultation','prescription','pharmacy_order','delivery','subscription'];
+const EVENT_TYPES = [
+  { v: 'manual', l: 'Manual' },
+  { v: 'welcome', l: 'Boas-vindas' },
+  { v: 'first_purchase', l: '1.ª compra' },
+  { v: 'birthday', l: 'Aniversário' },
+  { v: 'referral', l: 'Convite' },
+  { v: 'campaign', l: 'Campanha' },
+];
 
 export default function AdminCoupons() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [batchOpen, setBatchOpen] = useState(false);
+  const [batchForm, setBatchForm] = useState({ name: '', prefix: 'CAMP', count: 50, discount_value: 100, discount_type: 'fixed' as 'percentage'|'fixed' });
   const [editingCoupon, setEditingCoupon] = useState<any>(null);
   const [formData, setFormData] = useState<CouponFormData>(initialFormData);
 
@@ -58,6 +80,8 @@ export default function AdminCoupons() {
       const payload: any = { ...data };
       if (!payload.expires_at) delete payload.expires_at;
       if (!payload.max_uses) delete payload.max_uses;
+      if (!payload.target_roles?.length) payload.target_roles = null;
+      if (!payload.target_services?.length) payload.target_services = null;
       
       const { error } = await supabase.from('coupons').insert(payload);
       if (error) throw error;
@@ -75,7 +99,10 @@ export default function AdminCoupons() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<CouponFormData> }) => {
-      const { error } = await supabase.from('coupons').update(data).eq('id', id);
+      const payload: any = { ...data };
+      if (!payload.target_roles?.length) payload.target_roles = null;
+      if (!payload.target_services?.length) payload.target_services = null;
+      const { error } = await supabase.from('coupons').update(payload).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -104,6 +131,38 @@ export default function AdminCoupons() {
     }
   });
 
+  const batchMutation = useMutation({
+    mutationFn: async () => {
+      const { data: batch, error: be } = await supabase.from('coupon_batches').insert({
+        name: batchForm.name, prefix: batchForm.prefix, total_codes: batchForm.count,
+      }).select().single();
+      if (be) throw be;
+      const codes = Array.from({ length: batchForm.count }, () => {
+        const r = Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+        return `${batchForm.prefix}-${r}`;
+      });
+      const rows = codes.map(code => ({
+        code, discount_type: batchForm.discount_type, discount_value: batchForm.discount_value,
+        max_uses: 1, is_active: true, event_type: 'campaign', batch_id: batch.id,
+      }));
+      const { error } = await supabase.from('coupons').insert(rows);
+      if (error) throw error;
+      // Download CSV
+      const csv = 'code\n' + codes.join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `${batchForm.name}-coupons.csv`; a.click();
+      URL.revokeObjectURL(url);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-coupons'] });
+      toast.success(`${batchForm.count} cupões criados e CSV descarregado`);
+      setBatchOpen(false);
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingCoupon) {
@@ -122,7 +181,11 @@ export default function AdminCoupons() {
       min_order_value: coupon.min_order_value || 0,
       max_uses: coupon.max_uses,
       expires_at: coupon.expires_at ? coupon.expires_at.split('T')[0] : '',
-      is_active: coupon.is_active
+      is_active: coupon.is_active,
+      event_type: coupon.event_type || 'manual',
+      target_roles: coupon.target_roles || [],
+      target_services: coupon.target_services || [],
+      description: coupon.description || '',
     });
     setIsDialogOpen(true);
   };
@@ -140,6 +203,10 @@ export default function AdminCoupons() {
           <p className="text-muted-foreground">Gerencie cupons de desconto</p>
         </div>
         
+        <div className="flex gap-2">
+        <Button variant="outline" onClick={() => setBatchOpen(true)}>
+          <Layers className="h-4 w-4 mr-2" /> Gerar Lote
+        </Button>
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
           if (!open) {
@@ -153,7 +220,7 @@ export default function AdminCoupons() {
               Novo Cupom
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingCoupon ? 'Editar Cupom' : 'Novo Cupom'}</DialogTitle>
             </DialogHeader>
@@ -166,6 +233,11 @@ export default function AdminCoupons() {
                   placeholder="EX: PROMO20"
                   required
                 />
+              </div>
+
+              <div>
+                <Label>Descrição (opcional)</Label>
+                <Input value={formData.description || ''} onChange={e => setFormData(p => ({ ...p, description: e.target.value }))} placeholder="Promoção primavera" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -188,6 +260,44 @@ export default function AdminCoupons() {
                     onChange={(e) => setFormData(prev => ({ ...prev, discount_value: parseInt(e.target.value) || 0 }))}
                     required
                   />
+                </div>
+              </div>
+
+              <div>
+                <Label>Tipo de evento</Label>
+                <select className="w-full h-10 px-3 border rounded-md" value={formData.event_type}
+                  onChange={e => setFormData(p => ({ ...p, event_type: e.target.value }))}>
+                  {EVENT_TYPES.map(t => <option key={t.v} value={t.v}>{t.l}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <Label>Segmento — Tipos de utilizador (vazio = todos)</Label>
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {ALL_ROLES.map(r => (
+                    <label key={r} className="flex items-center gap-2 text-sm">
+                      <Checkbox checked={formData.target_roles?.includes(r)}
+                        onCheckedChange={(c) => setFormData(p => ({
+                          ...p, target_roles: c ? [...(p.target_roles || []), r] : (p.target_roles || []).filter(x => x !== r)
+                        }))} />
+                      {r}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label>Segmento — Serviços (vazio = todos)</Label>
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {ALL_SERVICES.map(s => (
+                    <label key={s} className="flex items-center gap-2 text-sm">
+                      <Checkbox checked={formData.target_services?.includes(s)}
+                        onCheckedChange={(c) => setFormData(p => ({
+                          ...p, target_services: c ? [...(p.target_services || []), s] : (p.target_services || []).filter(x => x !== s)
+                        }))} />
+                      {s}
+                    </label>
+                  ))}
                 </div>
               </div>
 
@@ -234,7 +344,35 @@ export default function AdminCoupons() {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
+
+      <Dialog open={batchOpen} onOpenChange={setBatchOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Gerar lote de cupões</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div><Label>Nome do lote</Label><Input value={batchForm.name} onChange={e => setBatchForm({ ...batchForm, name: e.target.value })} placeholder="Campanha Natal" /></div>
+            <div className="grid grid-cols-2 gap-2">
+              <div><Label>Prefixo</Label><Input value={batchForm.prefix} onChange={e => setBatchForm({ ...batchForm, prefix: e.target.value.toUpperCase() })} /></div>
+              <div><Label>Quantidade</Label><Input type="number" value={batchForm.count} onChange={e => setBatchForm({ ...batchForm, count: Math.min(parseInt(e.target.value) || 0, 1000) })} max={1000} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>Tipo</Label>
+                <select className="w-full h-10 px-3 border rounded-md" value={batchForm.discount_type}
+                  onChange={e => setBatchForm({ ...batchForm, discount_type: e.target.value as any })}>
+                  <option value="fixed">Fixo (MZN)</option>
+                  <option value="percentage">% Percentagem</option>
+                </select>
+              </div>
+              <div><Label>Valor</Label><Input type="number" value={batchForm.discount_value} onChange={e => setBatchForm({ ...batchForm, discount_value: parseInt(e.target.value) || 0 })} /></div>
+            </div>
+            <Button className="w-full" onClick={() => batchMutation.mutate()} disabled={batchMutation.isPending || !batchForm.name}>
+              <Download className="h-4 w-4 mr-1" /> Gerar e descarregar CSV
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Search */}
       <div className="relative mb-6">

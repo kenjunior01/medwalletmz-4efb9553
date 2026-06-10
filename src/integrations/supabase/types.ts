@@ -352,6 +352,7 @@ export type Database = {
           remind_at: string
           scheduled_at: string
           sent_at: string | null
+          status: string
         }
         Insert: {
           consultation_id: string
@@ -362,6 +363,7 @@ export type Database = {
           remind_at: string
           scheduled_at: string
           sent_at?: string | null
+          status?: string
         }
         Update: {
           consultation_id?: string
@@ -372,6 +374,7 @@ export type Database = {
           remind_at?: string
           scheduled_at?: string
           sent_at?: string | null
+          status?: string
         }
         Relationships: [
           {
@@ -431,47 +434,102 @@ export type Database = {
         }
         Relationships: []
       }
+      coupon_batches: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          prefix: string
+          total_codes: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          prefix: string
+          total_codes?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          prefix?: string
+          total_codes?: number
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
+          assigned_to_user: string | null
+          batch_id: string | null
           code: string
           created_at: string
+          description: string | null
           discount_type: string
           discount_value: number
+          event_type: string | null
           expires_at: string | null
           id: string
           influencer_id: string | null
           is_active: boolean | null
           max_uses: number | null
           min_order_value: number | null
+          target_roles: Database["public"]["Enums"]["app_role"][] | null
+          target_services: string[] | null
           used_count: number | null
         }
         Insert: {
+          assigned_to_user?: string | null
+          batch_id?: string | null
           code: string
           created_at?: string
+          description?: string | null
           discount_type?: string
           discount_value: number
+          event_type?: string | null
           expires_at?: string | null
           id?: string
           influencer_id?: string | null
           is_active?: boolean | null
           max_uses?: number | null
           min_order_value?: number | null
+          target_roles?: Database["public"]["Enums"]["app_role"][] | null
+          target_services?: string[] | null
           used_count?: number | null
         }
         Update: {
+          assigned_to_user?: string | null
+          batch_id?: string | null
           code?: string
           created_at?: string
+          description?: string | null
           discount_type?: string
           discount_value?: number
+          event_type?: string | null
           expires_at?: string | null
           id?: string
           influencer_id?: string | null
           is_active?: boolean | null
           max_uses?: number | null
           min_order_value?: number | null
+          target_roles?: Database["public"]["Enums"]["app_role"][] | null
+          target_services?: string[] | null
           used_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "coupons_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "coupon_batches"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "coupons_influencer_id_fkey"
             columns: ["influencer_id"]
@@ -1253,6 +1311,30 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_settings: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       prescription_items: {
         Row: {
           created_at: string
@@ -1548,6 +1630,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      service_commissions: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          percentage: number
+          role: Database["public"]["Enums"]["app_role"]
+          service_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          percentage: number
+          role: Database["public"]["Enums"]["app_role"]
+          service_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          percentage?: number
+          role?: Database["public"]["Enums"]["app_role"]
+          service_type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       stores: {
         Row: {
@@ -1898,27 +2010,36 @@ export type Database = {
       }
       user_referrals: {
         Row: {
+          bonus_coins: number | null
+          bonus_mzn: number | null
           completed_at: string | null
           created_at: string
           id: string
+          paid_at: string | null
           referral_code: string
           referred_id: string
           referrer_id: string
           status: string
         }
         Insert: {
+          bonus_coins?: number | null
+          bonus_mzn?: number | null
           completed_at?: string | null
           created_at?: string
           id?: string
+          paid_at?: string | null
           referral_code: string
           referred_id: string
           referrer_id: string
           status?: string
         }
         Update: {
+          bonus_coins?: number | null
+          bonus_mzn?: number | null
           completed_at?: string | null
           created_at?: string
           id?: string
+          paid_at?: string | null
           referral_code?: string
           referred_id?: string
           referrer_id?: string
@@ -1988,6 +2109,81 @@ export type Database = {
           },
         ]
       }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          payment_method: string | null
+          reference_id: string | null
+          reference_type: string | null
+          status: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          balance_mzn: number
+          created_at: string
+          currency: string
+          total_deposited: number
+          total_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance_mzn?: number
+          created_at?: string
+          currency?: string
+          total_deposited?: number
+          total_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance_mzn?: number
+          created_at?: string
+          currency?: string
+          total_deposited?: number
+          total_spent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       weekly_leaderboard: {
@@ -2003,6 +2199,24 @@ export type Database = {
       }
     }
     Functions: {
+      ensure_wallet: {
+        Args: { _user_id: string }
+        Returns: {
+          balance_mzn: number
+          created_at: string
+          currency: string
+          total_deposited: number
+          total_spent: number
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "wallets"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
@@ -2017,6 +2231,35 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      wallet_credit: {
+        Args: {
+          _amount: number
+          _description?: string
+          _ref_id?: string
+          _type?: string
+          _user_id: string
+        }
+        Returns: Json
+      }
+      wallet_debit: {
+        Args: {
+          _amount: number
+          _description?: string
+          _ref_id: string
+          _service_type: string
+          _user_id: string
+        }
+        Returns: Json
+      }
+      wallet_deposit: {
+        Args: {
+          _amount: number
+          _method?: string
+          _ref?: string
+          _user_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {

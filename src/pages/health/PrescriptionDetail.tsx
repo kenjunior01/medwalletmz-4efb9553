@@ -6,6 +6,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, FileText, Pill, Zap, ShieldCheck, Download, CheckCircle2, Share2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { toast } from 'sonner';
@@ -21,6 +24,9 @@ export default function PrescriptionDetail() {
   const [pharmacies, setPharmacies] = useState<{id:string; name:string; city?:string|null}[]>([]);
   const [chosenId, setChosenId] = useState<string>('');
   const [confirming, setConfirming] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareTitle, setShareTitle] = useState('');
+  const [shareText, setShareText] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -108,26 +114,39 @@ export default function PrescriptionDetail() {
 
   const downloadPdf = () => buildPdf().save(fileName());
 
-  const sharePdf = async () => {
+  const openShareDialog = () => {
+    setShareTitle(`Receita Digital — Dr(a). ${doctorName}`);
+    setShareText(
+      `Olá! Partilho contigo a minha receita digital emitida por Dr(a). ${doctorName} a ${new Date(presc.created_at).toLocaleDateString('pt-PT')}.\n\nMedicamentos: ${items.length} item(ns).\n${chosen ? `Farmácia: ${chosen.name}\n` : ''}\nMoçambiApp Health Hub`
+    );
+    setShareOpen(true);
+  };
+
+  const doShare = async (channel: 'native' | 'whatsapp' | 'sms') => {
     const doc = buildPdf();
     const blob = doc.output('blob');
     const file = new File([blob], fileName(), { type: 'application/pdf' });
-    const shareText = `Receita Digital — Dr(a). ${doctorName}`;
+    setShareOpen(false);
     try {
       const navAny = navigator as any;
-      if (navAny.canShare && navAny.canShare({ files: [file] })) {
-        await navAny.share({ files: [file], title: 'Receita Digital', text: shareText });
+      if (channel === 'native' && navAny.canShare && navAny.canShare({ files: [file] })) {
+        await navAny.share({ files: [file], title: shareTitle, text: shareText });
+        return;
+      }
+      if (channel === 'whatsapp') {
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareTitle + '\n\n' + shareText)}`, '_blank');
+        doc.save(fileName());
+        toast.info('PDF descarregado. Anexa-o na conversa do WhatsApp.');
+        return;
+      }
+      if (channel === 'sms') {
+        window.location.href = `sms:?body=${encodeURIComponent(shareTitle + ' ' + shareText)}`;
+        doc.save(fileName());
         return;
       }
       if (navAny.share) {
-        await navAny.share({ title: 'Receita Digital', text: shareText });
-        return;
+        await navAny.share({ title: shareTitle, text: shareText });
       }
-      // Fallback: WhatsApp web link com texto
-      const url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-      window.open(url, '_blank');
-      doc.save(fileName());
-      toast.info('PDF descarregado. Anexa-o na conversa.');
     } catch (e: any) {
       if (e?.name !== 'AbortError') toast.error('Não foi possível partilhar');
     }
@@ -227,9 +246,35 @@ export default function PrescriptionDetail() {
         <Download className="h-4 w-4 mr-2" /> Descarregar PDF
       </Button>
 
-      <Button variant="outline" className="w-full" onClick={sharePdf}>
+      <Button variant="outline" className="w-full" onClick={openShareDialog}>
         <Share2 className="h-4 w-4 mr-2" /> Partilhar (WhatsApp / SMS)
       </Button>
+
+      <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Personalizar partilha</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm font-medium">Título</label>
+              <Input value={shareTitle} onChange={e => setShareTitle(e.target.value)} maxLength={120} />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Mensagem</label>
+              <Textarea rows={6} value={shareText} onChange={e => setShareText(e.target.value)} maxLength={1000} />
+              <p className="text-[10px] text-muted-foreground mt-1">{shareText.length}/1000 caracteres</p>
+            </div>
+          </div>
+          <DialogFooter className="flex-col sm:flex-col gap-2">
+            <Button className="w-full" onClick={() => doShare('native')}>
+              <Share2 className="h-4 w-4 mr-1" /> Partilhar (sistema)
+            </Button>
+            <div className="grid grid-cols-2 gap-2 w-full">
+              <Button variant="outline" onClick={() => doShare('whatsapp')}>WhatsApp</Button>
+              <Button variant="outline" onClick={() => doShare('sms')}>SMS</Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

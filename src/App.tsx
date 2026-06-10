@@ -75,6 +75,11 @@ import Triage from "./pages/health/Triage";
 import MedicalRecords from "./pages/health/MedicalRecords";
 import VideoConsultation from "./pages/health/VideoConsultation";
 import Referrals from "./pages/Referrals";
+import Wallet from "./pages/Wallet";
+import AdminWallets from "./pages/admin/AdminWallets";
+import AdminCommissions from "./pages/admin/AdminCommissions";
+import AdminPlatformSettings from "./pages/admin/AdminPlatformSettings";
+import AdminReferrals from "./pages/admin/AdminReferrals";
 
 const queryClient = new QueryClient();
 
@@ -115,6 +120,7 @@ const App = () => (
                   <Route path="/health/triage" element={<Triage />} />
                   <Route path="/health/records" element={<MedicalRecords />} />
                   <Route path="/referrals" element={<Referrals />} />
+                  <Route path="/wallet" element={<Wallet />} />
                 </Route>
                 
                 {/* Auth */}
@@ -137,6 +143,10 @@ const App = () => (
                   <Route path="subscriptions" element={<AdminSubscriptions />} />
                   <Route path="payment-accounts" element={<AdminPaymentAccounts />} />
                   <Route path="settings" element={<AdminSettings />} />
+                  <Route path="wallets" element={<AdminWallets />} />
+                  <Route path="commissions" element={<AdminCommissions />} />
+                  <Route path="platform-settings" element={<AdminPlatformSettings />} />
+                  <Route path="referrals" element={<AdminReferrals />} />
                 </Route>
                 
                 {/* Store Owner Routes */}

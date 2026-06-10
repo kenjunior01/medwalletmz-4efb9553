@@ -71,6 +71,14 @@ export function FollowUpReminders() {
     if (!active || !user) return;
     setBooking(slot.id);
     try {
+      // If this followup already rebooked another consultation, cancel that one first
+      if (active.rebooked_consultation_id) {
+        await supabase.from('consultations').update({ status: 'cancelled' }).eq('id', active.rebooked_consultation_id);
+        await supabase.from('consultation_reminders').update({ status: 'cancelled' })
+          .eq('consultation_id', active.rebooked_consultation_id).is('sent_at', null);
+        await supabase.from('doctor_availability_slots').update({ is_booked: false, consultation_id: null })
+          .eq('consultation_id', active.rebooked_consultation_id);
+      }
       const { data: consult, error } = await supabase
         .from('consultations')
         .insert({
@@ -116,6 +124,19 @@ export function FollowUpReminders() {
     } finally { setBooking(null); }
   };
 
+  const cancelRebooked = async (f: FU) => {
+    if (!f.rebooked_consultation_id) return;
+    if (!confirm('Cancelar a consulta reagendada e remover o lembrete?')) return;
+    await supabase.from('consultations').update({ status: 'cancelled' }).eq('id', f.rebooked_consultation_id);
+    await supabase.from('consultation_reminders').update({ status: 'cancelled' })
+      .eq('consultation_id', f.rebooked_consultation_id).is('sent_at', null);
+    await supabase.from('doctor_availability_slots').update({ is_booked: false, consultation_id: null })
+      .eq('consultation_id', f.rebooked_consultation_id);
+    await supabase.from('consultation_followups').update({ rebooked_consultation_id: null, rebooked_at: null }).eq('id', f.id);
+    setItems(prev => prev.map(i => i.id === f.id ? { ...i, rebooked_consultation_id: null } : i));
+    toast.success('Reagendamento cancelado');
+  };
+
   if (items.length === 0) return null;
 
   return (
@@ -139,11 +160,22 @@ export function FollowUpReminders() {
             </div>
             <div className="flex gap-2 mt-2">
               <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate(`/health/consultation/${f.consultation_id}`)}>
-                Abrir consulta
+                Abrir
               </Button>
-              <Button size="sm" className="flex-1" onClick={() => openRebook(f)}>
-                <Calendar className="h-3 w-3 mr-1" /> Nova consulta
-              </Button>
+              {f.rebooked_consultation_id ? (
+                <>
+                  <Button size="sm" variant="outline" className="flex-1" onClick={() => openRebook(f)}>
+                    <Calendar className="h-3 w-3 mr-1" /> Alterar
+                  </Button>
+                  <Button size="sm" variant="outline" className="text-destructive" onClick={() => cancelRebooked(f)}>
+                    <X className="h-3 w-3" />
+                  </Button>
+                </>
+              ) : (
+                <Button size="sm" className="flex-1" onClick={() => openRebook(f)}>
+                  <Calendar className="h-3 w-3 mr-1" /> Reagendar
+                </Button>
+              )}
             </div>
           </Card>
         ))}

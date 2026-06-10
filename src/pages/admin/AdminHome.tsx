@@ -15,7 +15,11 @@ import {
   CheckCircle,
   Plus,
   Truck,
-  AlertTriangle
+  AlertTriangle,
+  Wallet,
+  Stethoscope,
+  Pill,
+  Gift
 } from 'lucide-react';
 import {
   StatWidget,
@@ -32,11 +36,15 @@ export default function AdminHome() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const [stores, products, orders, drivers] = await Promise.all([
+      const [stores, products, orders, drivers, consults, prescs, wallets, referrals] = await Promise.all([
         supabase.from('stores').select('id', { count: 'exact', head: true }),
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('orders').select('id, status, total, created_at', { count: 'exact' }),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).not('vehicle_type', 'is', null)
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).not('vehicle_type', 'is', null),
+        supabase.from('consultations').select('id, status', { count: 'exact' }),
+        supabase.from('prescriptions').select('id', { count: 'exact', head: true }),
+        supabase.from('wallets').select('balance_mzn, total_deposited'),
+        supabase.from('user_referrals').select('id, status', { count: 'exact' }),
       ]);
 
       const pendingOrders = orders.data?.filter(o => o.status === 'pending').length || 0;
@@ -49,6 +57,11 @@ export default function AdminHome() {
       const todayOrders = orders.data?.filter(o => new Date(o.created_at) >= today) || [];
       const todayRevenue = todayOrders.reduce((sum, o) => sum + (o.total || 0), 0);
 
+      const walletTotal = (wallets.data || []).reduce((a: number, w: any) => a + Number(w.balance_mzn || 0), 0);
+      const walletDeposited = (wallets.data || []).reduce((a: number, w: any) => a + Number(w.total_deposited || 0), 0);
+      const activeConsults = (consults.data || []).filter((c: any) => ['scheduled','confirmed','in_progress'].includes(c.status)).length;
+      const completedReferrals = (referrals.data || []).filter((r: any) => r.status === 'completed').length;
+
       // Group orders by status
       const statusCounts = orders.data?.reduce((acc, order) => {
         acc[order.status] = (acc[order.status] || 0) + 1;
@@ -60,6 +73,12 @@ export default function AdminHome() {
         totalProducts: products.count || 0,
         totalOrders: orders.count || 0,
         totalDrivers: drivers.count || 0,
+        totalConsults: consults.count || 0,
+        activeConsults,
+        totalPrescs: prescs.count || 0,
+        walletTotal, walletDeposited,
+        totalReferrals: referrals.count || 0,
+        completedReferrals,
         pendingOrders,
         completedOrders,
         totalRevenue,
@@ -231,25 +250,25 @@ export default function AdminHome() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatWidget 
-          title="Total de Lojas"
-          value={stats?.totalStores || 0}
-          subtitle="Ativas na plataforma"
-          icon={Store}
-          colorClass="text-food"
+          title="Saldo em Carteira"
+          value={`${(stats?.walletTotal || 0).toLocaleString()} MZN`}
+          subtitle={`Depositado: ${(stats?.walletDeposited || 0).toLocaleString()} MZN`}
+          icon={Wallet}
+          colorClass="text-primary"
         />
         <StatWidget 
-          title="Produtos Cadastrados"
-          value={stats?.totalProducts?.toLocaleString() || '0'}
-          subtitle="Em todas as lojas"
-          icon={Package}
-          colorClass="text-grocery"
-        />
-        <StatWidget 
-          title="Entregadores"
-          value={stats?.totalDrivers || 0}
-          subtitle="Registrados"
-          icon={Truck}
+          title="Consultas Ativas"
+          value={stats?.activeConsults || 0}
+          subtitle={`Total: ${stats?.totalConsults || 0}`}
+          icon={Stethoscope}
           colorClass="text-pharmacy"
+        />
+        <StatWidget 
+          title="Receitas Emitidas"
+          value={stats?.totalPrescs || 0}
+          subtitle="Total histórico"
+          icon={Pill}
+          colorClass="text-secondary"
         />
         <StatWidget 
           title="Receita Total"
@@ -257,8 +276,27 @@ export default function AdminHome() {
           subtitle={`Hoje: ${(stats?.todayRevenue || 0).toLocaleString()} MZN`}
           icon={DollarSign}
           trend={{ value: 18, isPositive: true }}
-          colorClass="text-primary"
+          colorClass="text-gold"
         />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card><CardContent className="p-4 flex items-center gap-3">
+          <Store className="h-8 w-8 text-food" />
+          <div><p className="text-xs text-muted-foreground">Lojas</p><p className="text-xl font-bold">{stats?.totalStores || 0}</p></div>
+        </CardContent></Card>
+        <Card><CardContent className="p-4 flex items-center gap-3">
+          <Package className="h-8 w-8 text-grocery" />
+          <div><p className="text-xs text-muted-foreground">Produtos</p><p className="text-xl font-bold">{stats?.totalProducts || 0}</p></div>
+        </CardContent></Card>
+        <Card><CardContent className="p-4 flex items-center gap-3">
+          <Truck className="h-8 w-8 text-orange-500" />
+          <div><p className="text-xs text-muted-foreground">Entregadores</p><p className="text-xl font-bold">{stats?.totalDrivers || 0}</p></div>
+        </CardContent></Card>
+        <Card><CardContent className="p-4 flex items-center gap-3">
+          <Gift className="h-8 w-8 text-gold" />
+          <div><p className="text-xs text-muted-foreground">Convites concluídos</p><p className="text-xl font-bold">{stats?.completedReferrals || 0}/{stats?.totalReferrals || 0}</p></div>
+        </CardContent></Card>
       </div>
 
       {/* Quick Stats Row */}

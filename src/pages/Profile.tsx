@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2 } from "lucide-react";
+import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,7 +13,9 @@ import { Tables } from "@/integrations/supabase/types";
 type Profile = Tables<"profiles">;
 
 const menuItems = [
+  { icon: Wallet, label: "Minha Carteira", href: "/wallet" },
   { icon: MapPin, label: "Meus Endereços", href: "/addresses" },
+  { icon: Gift, label: "Convidar Amigos", href: "/referrals" },
   { icon: Crown, label: "Minhas Subscrições", href: "/subscriptions" },
   { icon: Wallet, label: "Dados de Pagamento", href: "/payment-settings" },
   { icon: Bell, label: "Notificações", href: "/notifications" },
