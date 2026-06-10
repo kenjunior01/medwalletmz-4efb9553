@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, FileText, Pill, Zap, ShieldCheck, Download, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, FileText, Pill, Zap, ShieldCheck, Download, CheckCircle2, Share2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { toast } from 'sonner';
 
@@ -66,7 +66,7 @@ export default function PrescriptionDetail() {
     toast.success('Farmácia confirmada');
   };
 
-  const downloadPdf = () => {
+  const buildPdf = () => {
     const doc = new jsPDF();
     const pageW = doc.internal.pageSize.getWidth();
     let y = 18;
@@ -101,7 +101,36 @@ export default function PrescriptionDetail() {
     doc.setFontSize(8); doc.setTextColor(120);
     doc.text(`ID: ${presc.id}`, 15, 285);
     doc.text('Documento assinado digitalmente.', pageW - 15, 285, { align: 'right' });
-    doc.save(`receita-${presc.id.slice(0,8)}.pdf`);
+    return doc;
+  };
+
+  const fileName = () => `receita-${presc.id.slice(0,8)}.pdf`;
+
+  const downloadPdf = () => buildPdf().save(fileName());
+
+  const sharePdf = async () => {
+    const doc = buildPdf();
+    const blob = doc.output('blob');
+    const file = new File([blob], fileName(), { type: 'application/pdf' });
+    const shareText = `Receita Digital — Dr(a). ${doctorName}`;
+    try {
+      const navAny = navigator as any;
+      if (navAny.canShare && navAny.canShare({ files: [file] })) {
+        await navAny.share({ files: [file], title: 'Receita Digital', text: shareText });
+        return;
+      }
+      if (navAny.share) {
+        await navAny.share({ title: 'Receita Digital', text: shareText });
+        return;
+      }
+      // Fallback: WhatsApp web link com texto
+      const url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+      window.open(url, '_blank');
+      doc.save(fileName());
+      toast.info('PDF descarregado. Anexa-o na conversa.');
+    } catch (e: any) {
+      if (e?.name !== 'AbortError') toast.error('Não foi possível partilhar');
+    }
   };
 
   return (
@@ -196,6 +225,10 @@ export default function PrescriptionDetail() {
 
       <Button variant="outline" className="w-full" onClick={downloadPdf}>
         <Download className="h-4 w-4 mr-2" /> Descarregar PDF
+      </Button>
+
+      <Button variant="outline" className="w-full" onClick={sharePdf}>
+        <Share2 className="h-4 w-4 mr-2" /> Partilhar (WhatsApp / SMS)
       </Button>
     </div>
   );
