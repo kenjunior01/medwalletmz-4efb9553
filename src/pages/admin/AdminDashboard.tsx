@@ -13,7 +13,10 @@ import {
   LogOut,
   BarChart3,
   Crown,
-  Wallet
+  Wallet,
+  Percent,
+  Gift,
+  Sliders
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -26,6 +29,10 @@ const menuItems = [
   { icon: Users, label: 'Usuários', path: '/admin/users' },
   { icon: Truck, label: 'Entregadores', path: '/admin/drivers' },
   { icon: Tag, label: 'Cupons', path: '/admin/coupons' },
+  { icon: Gift, label: 'Convites', path: '/admin/referrals' },
+  { icon: Wallet, label: 'Carteiras', path: '/admin/wallets' },
+  { icon: Percent, label: 'Comissões', path: '/admin/commissions' },
+  { icon: Sliders, label: 'Carteira & Bónus', path: '/admin/platform-settings' },
   { icon: Crown, label: 'Subscrições', path: '/admin/subscriptions' },
   { icon: Wallet, label: 'Contas Pagamento', path: '/admin/payment-accounts' },
   { icon: BarChart3, label: 'Relatórios', path: '/admin/reports' },
