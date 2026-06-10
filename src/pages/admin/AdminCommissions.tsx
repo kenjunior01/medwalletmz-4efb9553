@@ -39,7 +39,7 @@ export default function AdminCommissions() {
 
   const create = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('service_commissions').insert(form);
+      const { error } = await supabase.from('service_commissions').insert(form as any);
       if (error) throw error;
     },
     onSuccess: () => {
