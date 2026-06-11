@@ -50,11 +50,13 @@ export default function Home() {
   const { data: topDoctors } = useQuery({
     queryKey: ['top-doctors-home'],
     queryFn: async () => {
-      const { data: docs } = await supabase.from('doctor_profiles')
-        .select('id, user_id, rating, consultation_fee, medical_specialties(name, icon)') as any;
-      const dd: any[] = (docs as any[]) || [];
-      const top = dd
-        .eq('is_active', true).order('rating', { ascending: false }).limit(6);
+      const res: any = await supabase
+        .from('doctor_profiles')
+        .select('id, user_id, rating, consultation_fee, medical_specialties(name, icon)')
+        .eq('is_active', true)
+        .order('rating', { ascending: false })
+        .limit(6);
+      const dd: any[] = res.data || [];
       const ids = dd.map((d: any) => d.user_id);
       const { data: profs } = await supabase.from('profiles').select('user_id, full_name').in('user_id', ids);
       return dd.map((d: any) => ({ ...d, full_name: (profs as any[])?.find((p: any) => p.user_id === d.user_id)?.full_name }));
