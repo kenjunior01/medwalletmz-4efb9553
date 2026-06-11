@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Tag, X, Loader2, Check } from 'lucide-react';
 
@@ -10,11 +11,13 @@ interface Coupon {
   code: string;
   discount_type: string;
   discount_value: number;
-  min_order_value: number | null;
-  max_uses: number | null;
-  used_count: number | null;
-  expires_at: string | null;
-  is_active: boolean | null;
+  min_order_value?: number | null;
+  max_uses?: number | null;
+  used_count?: number | null;
+  expires_at?: string | null;
+  is_active?: boolean | null;
+  discount?: number;
+  final_value?: number;
 }
 
 interface CouponInputProps {
@@ -22,9 +25,12 @@ interface CouponInputProps {
   appliedCoupon: Coupon | null;
   onApplyCoupon: (coupon: Coupon) => void;
   onRemoveCoupon: () => void;
+  serviceType?: string;  // e.g. 'consultation', 'pharmacy', 'delivery'
+  eventType?: string;    // e.g. 'first_purchase', 'birthday'
 }
 
-export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCoupon }: CouponInputProps) {
+export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCoupon, serviceType = 'order', eventType }: CouponInputProps) {
+  const { user } = useAuth();
   const [couponCode, setCouponCode] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -33,34 +39,26 @@ export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCo
       toast.error('Digite um código de cupom');
       return;
     }
-
+    if (!user) { toast.error('Inicia sessão primeiro'); return; }
     setLoading(true);
-    
     try {
-      // Fetch coupon by code
-      const { data: coupon, error } = await supabase
-        .from('coupons')
-        .select('*')
-        .eq('code', couponCode.toUpperCase().trim())
-        .maybeSingle();
-
-      if (error || !coupon) {
-        toast.error('Cupom não encontrado');
-        return;
-      }
-
-      // Validate coupon
-      const validationError = validateCouponRules(coupon, subtotal);
-      if (validationError) {
-        toast.error(validationError);
-        return;
-      }
-
-      // Apply coupon
-      onApplyCoupon(coupon);
+      const { data, error } = await supabase.rpc('validate_coupon', {
+        _code: couponCode.toUpperCase().trim(),
+        _user_id: user.id,
+        _service_type: serviceType,
+        _event_type: eventType ?? null,
+        _order_value: subtotal,
+      });
+      if (error) { toast.error(error.message); return; }
+      const r: any = data;
+      if (!r?.valid) { toast.error(r?.error || 'Cupão inválido'); return; }
+      onApplyCoupon({
+        id: r.coupon_id, code: r.code,
+        discount_type: r.discount_type, discount_value: r.discount_value,
+        discount: r.discount, final_value: r.final_value,
+      });
       setCouponCode('');
-      toast.success(`Cupom "${coupon.code}" aplicado com sucesso!`);
-      
+      toast.success(`Cupom "${r.code}" aplicado — desconto de ${r.discount} MZN`);
     } catch (error) {
       console.error('Coupon validation error:', error);
       toast.error('Erro ao validar cupom');
@@ -69,31 +67,8 @@ export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCo
     }
   };
 
-  const validateCouponRules = (coupon: Coupon, orderSubtotal: number): string | null => {
-    // Check if active
-    if (!coupon.is_active) {
-      return 'Este cupom está inativo';
-    }
-
-    // Check expiration
-    if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
-      return 'Este cupom expirou';
-    }
-
-    // Check max uses
-    if (coupon.max_uses && (coupon.used_count || 0) >= coupon.max_uses) {
-      return 'Este cupom atingiu o limite máximo de usos';
-    }
-
-    // Check minimum order value
-    if (coupon.min_order_value && orderSubtotal < coupon.min_order_value) {
-      return `Pedido mínimo de ${coupon.min_order_value} MZN para usar este cupom`;
-    }
-
-    return null;
-  };
-
   const calculateDiscount = (coupon: Coupon): number => {
+    if (coupon.discount != null) return coupon.discount;
     if (coupon.discount_type === 'percentage') {
       return Math.round((subtotal * coupon.discount_value) / 100);
     }
