@@ -17,11 +17,13 @@ interface AppliedCoupon {
   code: string;
   discount_type: string;
   discount_value: number;
-  min_order_value: number | null;
-  max_uses: number | null;
-  used_count: number | null;
-  expires_at: string | null;
-  is_active: boolean | null;
+  min_order_value?: number | null;
+  max_uses?: number | null;
+  used_count?: number | null;
+  expires_at?: string | null;
+  is_active?: boolean | null;
+  discount?: number;
+  final_value?: number;
 }
 
 const paymentMethods = [

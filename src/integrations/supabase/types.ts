@@ -2232,6 +2232,41 @@ export type Database = {
         }
         Returns: boolean
       }
+      pay_service: {
+        Args: {
+          _coupon_id?: string
+          _description?: string
+          _gross_amount: number
+          _provider_id?: string
+          _ref_id: string
+          _service_type: string
+          _user_id: string
+        }
+        Returns: Json
+      }
+      redeem_coupon: {
+        Args: { _coupon_id: string; _user_id: string }
+        Returns: undefined
+      }
+      validate_coupon: {
+        Args: {
+          _code: string
+          _event_type?: string
+          _order_value?: number
+          _service_type: string
+          _user_id: string
+        }
+        Returns: Json
+      }
+      wallet_admin_adjust: {
+        Args: {
+          _amount: number
+          _direction: string
+          _reason: string
+          _user_id: string
+        }
+        Returns: Json
+      }
       wallet_credit: {
         Args: {
           _amount: number
@@ -2259,6 +2294,10 @@ export type Database = {
           _ref?: string
           _user_id: string
         }
+        Returns: Json
+      }
+      wallet_refund: {
+        Args: { _reason?: string; _tx_id: string }
         Returns: Json
       }
     }

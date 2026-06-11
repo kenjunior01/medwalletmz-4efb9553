@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWallet } from '@/hooks/useWallet';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Calendar, Loader2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Loader2, Wallet, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { CouponInput } from '@/components/checkout/CouponInput';
 
 interface Slot { id: string; starts_at: string }
 
@@ -15,11 +17,13 @@ export default function BookConsultation() {
   const { doctorId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { wallet, reload } = useWallet();
   const [doctor, setDoctor] = useState<any>(null);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [selected, setSelected] = useState<Slot | null>(null);
   const [reason, setReason] = useState('');
   const [saving, setSaving] = useState(false);
+  const [coupon, setCoupon] = useState<any>(null);
 
   useEffect(() => {
     if (!doctorId) return;
@@ -47,6 +51,14 @@ export default function BookConsultation() {
   const handleBook = async () => {
     if (!user) { navigate('/auth'); return; }
     if (!selected || !doctor) return;
+    const gross = Number(doctor.consultation_fee || 0);
+    const discount = coupon?.discount ?? 0;
+    const finalAmount = Math.max(gross - discount, 0);
+    if ((wallet?.balance_mzn ?? 0) < finalAmount) {
+      toast.error(`Saldo insuficiente. Faltam ${(finalAmount - (wallet?.balance_mzn ?? 0)).toFixed(2)} MZN`);
+      navigate('/wallet');
+      return;
+    }
     setSaving(true);
     const { data, error } = await supabase
       .from('consultations')
@@ -56,22 +68,46 @@ export default function BookConsultation() {
         scheduled_at: selected.starts_at,
         consultation_type: 'chat',
         reason,
-        fee: doctor.consultation_fee,
+        fee: finalAmount,
         status: 'scheduled',
       })
       .select()
       .single();
+    if (error) { setSaving(false); toast.error(error.message); return; }
+
+    // Charge wallet via pay_service (handles coupon redeem + commission to doctor)
+    const { error: payErr } = await supabase.rpc('pay_service', {
+      _user_id: user.id,
+      _service_type: 'consultation',
+      _ref_id: data.id,
+      _gross_amount: gross,
+      _coupon_id: coupon?.id ?? null,
+      _description: `Consulta com Dr(a). ${doctor.full_name}`,
+      _provider_id: doctor.user_id,
+    });
+    if (payErr) {
+      setSaving(false);
+      await supabase.from('consultations').delete().eq('id', data.id);
+      toast.error('Falha ao processar pagamento: ' + payErr.message);
+      return;
+    }
+    await reload();
     setSaving(false);
-    if (error) { toast.error(error.message); return; }
+
     await supabase
       .from('doctor_availability_slots')
       .update({ is_booked: true, consultation_id: data.id })
       .eq('id', selected.id);
-    toast.success('Consulta marcada! Aguarda confirmação por notificação.');
+    toast.success(`Consulta paga (${finalAmount} MZN) — aguarda confirmação.`);
     navigate(`/health/consultation/${data.id}`);
   };
 
   if (!doctor) return <div className="p-6">A carregar...</div>;
+
+  const gross = Number(doctor.consultation_fee || 0);
+  const discount = coupon?.discount ?? 0;
+  const finalAmount = Math.max(gross - discount, 0);
+  const lowBalance = (wallet?.balance_mzn ?? 0) < finalAmount;
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -131,12 +167,40 @@ export default function BookConsultation() {
             rows={4}
           />
         </div>
+
+        <CouponInput
+          subtotal={gross}
+          appliedCoupon={coupon}
+          onApplyCoupon={setCoupon}
+          onRemoveCoupon={() => setCoupon(null)}
+          serviceType="consultation"
+        />
+
+        <Card className="bg-muted/30">
+          <CardContent className="p-4 text-sm space-y-1">
+            <div className="flex justify-between"><span>Subtotal</span><span>{gross.toFixed(2)} MZN</span></div>
+            {discount > 0 && (
+              <div className="flex justify-between text-emerald"><span>Desconto cupão</span><span>-{discount.toFixed(2)} MZN</span></div>
+            )}
+            <div className="flex justify-between font-bold text-base pt-2 border-t mt-2">
+              <span>Total a debitar</span><span>{finalAmount.toFixed(2)} MZN</span>
+            </div>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground pt-1">
+              <Wallet className="h-3 w-3" /> Saldo: {(wallet?.balance_mzn ?? 0).toFixed(2)} MZN
+            </div>
+            {lowBalance && (
+              <div className="flex items-center gap-1 text-xs text-destructive pt-1">
+                <AlertTriangle className="h-3 w-3" /> Saldo insuficiente — deposita primeiro.
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <div className="fixed bottom-0 inset-x-0 p-4 bg-background border-t">
-        <Button className="w-full" size="lg" disabled={!selected || saving} onClick={handleBook}>
+        <Button className="w-full" size="lg" disabled={!selected || saving || lowBalance} onClick={handleBook}>
           {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-          Confirmar consulta ({doctor.consultation_fee} MZN)
+          {lowBalance ? 'Depositar saldo' : `Confirmar e pagar (${finalAmount.toFixed(2)} MZN)`}
         </Button>
       </div>
     </div>
