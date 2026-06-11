@@ -6,58 +6,58 @@
 
 @layer base {
   :root {
-    /* Premium Local Palette - Verde Esmeralda com acentos dourados */
-    --background: 150 10% 98%;
-    --foreground: 160 25% 8%;
+    /* Ocean Trust Palette — Navy profundo + Teal + Cream */
+    --background: 45 35% 97%;
+    --foreground: 215 65% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 160 25% 8%;
+    --card-foreground: 215 65% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 160 25% 8%;
+    --popover-foreground: 215 65% 12%;
 
-    /* Primary - Verde Esmeralda Profundo */
-    --primary: 160 84% 25%;
+    /* Primary - Navy Profundo */
+    --primary: 215 65% 15%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Dourado Sofisticado */
-    --secondary: 42 87% 55%;
-    --secondary-foreground: 160 25% 8%;
+    /* Secondary - Teal vibrante */
+    --secondary: 190 56% 40%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 150 15% 95%;
-    --muted-foreground: 150 10% 45%;
+    --muted: 200 25% 94%;
+    --muted-foreground: 215 15% 42%;
 
-    /* Accent - Terracota Quente */
-    --accent: 18 76% 52%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Aqua Soft */
+    --accent: 178 38% 55%;
+    --accent-foreground: 215 65% 12%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 150 15% 90%;
-    --input: 150 15% 90%;
-    --ring: 160 84% 25%;
+    --border: 200 20% 88%;
+    --input: 200 20% 88%;
+    --ring: 190 56% 40%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
 
     /* Service colors - Premium */
-    --food: 18 76% 52%;
+    --food: 18 80% 55%;
     --food-foreground: 0 0% 100%;
     
-    --grocery: 160 84% 30%;
+    --grocery: 145 55% 38%;
     --grocery-foreground: 0 0% 100%;
     
-    --pharmacy: 200 85% 45%;
+    --pharmacy: 190 56% 40%;
     --pharmacy-foreground: 0 0% 100%;
 
     /* Premium accents */
-    --gold: 42 87% 55%;
-    --gold-foreground: 160 25% 8%;
+    --gold: 42 80% 55%;
+    --gold-foreground: 215 65% 12%;
     
-    --emerald: 160 84% 25%;
+    --emerald: 178 38% 45%;
     --emerald-foreground: 0 0% 100%;
     
-    --terracotta: 18 76% 52%;
+    --terracotta: 18 80% 55%;
     --terracotta-foreground: 0 0% 100%;
 
     /* Glassmorphism */
@@ -65,62 +65,62 @@
     --glass-border: 0 0% 100% / 0.2;
 
     /* Shadows - Premium */
-    --shadow-sm: 0 1px 2px 0 hsl(160 25% 8% / 0.03);
-    --shadow-md: 0 4px 12px -2px hsl(160 25% 8% / 0.08), 0 2px 6px -2px hsl(160 25% 8% / 0.04);
-    --shadow-lg: 0 12px 28px -6px hsl(160 25% 8% / 0.12), 0 4px 10px -4px hsl(160 25% 8% / 0.06);
-    --shadow-glow: 0 0 20px hsl(160 84% 25% / 0.15);
+    --shadow-sm: 0 1px 2px 0 hsl(215 65% 12% / 0.04);
+    --shadow-md: 0 6px 16px -2px hsl(215 65% 12% / 0.10), 0 2px 6px -2px hsl(215 65% 12% / 0.05);
+    --shadow-lg: 0 20px 40px -10px hsl(215 65% 12% / 0.18), 0 8px 16px -6px hsl(215 65% 12% / 0.08);
+    --shadow-glow: 0 0 32px hsl(190 56% 40% / 0.25);
 
     /* Sidebar */
-    --sidebar-background: 150 10% 98%;
-    --sidebar-foreground: 160 25% 8%;
-    --sidebar-primary: 160 84% 25%;
+    --sidebar-background: 45 35% 97%;
+    --sidebar-foreground: 215 65% 12%;
+    --sidebar-primary: 215 65% 15%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 150 15% 95%;
-    --sidebar-accent-foreground: 160 25% 8%;
-    --sidebar-border: 150 15% 90%;
-    --sidebar-ring: 160 84% 25%;
+    --sidebar-accent: 200 25% 94%;
+    --sidebar-accent-foreground: 215 65% 12%;
+    --sidebar-border: 200 20% 88%;
+    --sidebar-ring: 190 56% 40%;
   }
 
   .dark {
-    --background: 160 25% 6%;
-    --foreground: 150 10% 98%;
+    --background: 215 50% 6%;
+    --foreground: 45 35% 97%;
 
-    --card: 160 20% 10%;
-    --card-foreground: 150 10% 98%;
+    --card: 215 40% 10%;
+    --card-foreground: 45 35% 97%;
 
-    --popover: 160 20% 10%;
-    --popover-foreground: 150 10% 98%;
+    --popover: 215 40% 10%;
+    --popover-foreground: 45 35% 97%;
 
-    --primary: 160 70% 40%;
+    --primary: 190 60% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 42 75% 50%;
-    --secondary-foreground: 160 25% 8%;
+    --secondary: 178 45% 55%;
+    --secondary-foreground: 215 65% 12%;
 
-    --muted: 160 15% 15%;
-    --muted-foreground: 150 10% 60%;
+    --muted: 215 25% 16%;
+    --muted-foreground: 200 15% 65%;
 
-    --accent: 18 70% 50%;
+    --accent: 178 38% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 30%;
-    --destructive-foreground: 150 10% 98%;
+    --destructive-foreground: 45 35% 97%;
 
-    --border: 160 15% 18%;
-    --input: 160 15% 18%;
-    --ring: 160 70% 40%;
+    --border: 215 25% 18%;
+    --input: 215 25% 18%;
+    --ring: 190 60% 50%;
 
-    --glass: 160 20% 10% / 0.8;
+    --glass: 215 40% 10% / 0.8;
     --glass-border: 0 0% 100% / 0.1;
 
-    --sidebar-background: 160 20% 8%;
-    --sidebar-foreground: 150 10% 98%;
-    --sidebar-primary: 160 70% 40%;
+    --sidebar-background: 215 40% 8%;
+    --sidebar-foreground: 45 35% 97%;
+    --sidebar-primary: 190 60% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 160 15% 15%;
-    --sidebar-accent-foreground: 150 10% 98%;
-    --sidebar-border: 160 15% 18%;
-    --sidebar-ring: 160 70% 40%;
+    --sidebar-accent: 215 25% 16%;
+    --sidebar-accent-foreground: 45 35% 97%;
+    --sidebar-border: 215 25% 18%;
+    --sidebar-ring: 190 60% 50%;
   }
 }
 
@@ -131,7 +131,12 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.02em;
   }
 
   /* PWA optimizations */
@@ -177,7 +182,7 @@
 
   /* Premium gradients */
   .gradient-premium {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(160 70% 35%) 100%);
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--pharmacy)) 100%);
   }
 
   .gradient-gold {
@@ -187,6 +192,24 @@
   .gradient-warm {
     background: linear-gradient(135deg, hsl(var(--terracotta)) 0%, hsl(12 70% 45%) 100%);
   }
+
+  .gradient-ocean {
+    background: linear-gradient(135deg, hsl(215 65% 15%) 0%, hsl(190 56% 40%) 60%, hsl(178 38% 55%) 100%);
+  }
+
+  .gradient-mesh {
+    background:
+      radial-gradient(at 0% 0%, hsl(190 56% 40% / 0.35) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsl(178 38% 55% / 0.3) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, hsl(215 65% 15% / 0.5) 0px, transparent 50%),
+      hsl(var(--background));
+  }
+
+  .bento-card {
+    @apply rounded-3xl border bg-card relative overflow-hidden transition-all;
+    box-shadow: var(--shadow-md);
+  }
+  .bento-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 
   /* Text gradients */
   .text-gradient-premium {
