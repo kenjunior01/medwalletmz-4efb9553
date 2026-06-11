@@ -51,11 +51,13 @@ export default function Home() {
     queryKey: ['top-doctors-home'],
     queryFn: async () => {
       const { data: docs } = await supabase.from('doctor_profiles')
-        .select('id, user_id, rating, consultation_fee, medical_specialties(name, icon)')
+        .select('id, user_id, rating, consultation_fee, medical_specialties(name, icon)') as any;
+      const dd: any[] = (docs as any[]) || [];
+      const top = dd
         .eq('is_active', true).order('rating', { ascending: false }).limit(6);
-      const ids = (docs || []).map(d => d.user_id);
+      const ids = dd.map((d: any) => d.user_id);
       const { data: profs } = await supabase.from('profiles').select('user_id, full_name').in('user_id', ids);
-      return (docs || []).map(d => ({ ...d, full_name: profs?.find(p => p.user_id === d.user_id)?.full_name }));
+      return dd.map((d: any) => ({ ...d, full_name: (profs as any[])?.find((p: any) => p.user_id === d.user_id)?.full_name }));
     },
   });
 
