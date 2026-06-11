@@ -17,6 +17,8 @@ import {
   Percent,
   Gift,
   Sliders
+  ,
+  Receipt
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -31,6 +33,7 @@ const menuItems = [
   { icon: Tag, label: 'Cupons', path: '/admin/coupons' },
   { icon: Gift, label: 'Convites', path: '/admin/referrals' },
   { icon: Wallet, label: 'Carteiras', path: '/admin/wallets' },
+  { icon: Receipt, label: 'Transações', path: '/admin/transactions' },
   { icon: Percent, label: 'Comissões', path: '/admin/commissions' },
   { icon: Sliders, label: 'Carteira & Bónus', path: '/admin/platform-settings' },
   { icon: Crown, label: 'Subscrições', path: '/admin/subscriptions' },
