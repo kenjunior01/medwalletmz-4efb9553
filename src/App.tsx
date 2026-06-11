@@ -80,6 +80,7 @@ import AdminWallets from "./pages/admin/AdminWallets";
 import AdminCommissions from "./pages/admin/AdminCommissions";
 import AdminPlatformSettings from "./pages/admin/AdminPlatformSettings";
 import AdminReferrals from "./pages/admin/AdminReferrals";
+import AdminTransactions from "./pages/admin/AdminTransactions";
 
 const queryClient = new QueryClient();
 
@@ -147,6 +148,7 @@ const App = () => (
                   <Route path="commissions" element={<AdminCommissions />} />
                   <Route path="platform-settings" element={<AdminPlatformSettings />} />
                   <Route path="referrals" element={<AdminReferrals />} />
+                  <Route path="transactions" element={<AdminTransactions />} />
                 </Route>
                 
                 {/* Store Owner Routes */}
