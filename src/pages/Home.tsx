@@ -29,21 +29,24 @@ export default function Home() {
 
   const isProvider = roles.some(r => ['doctor', 'clinic', 'store_owner', 'driver'].includes(r));
 
-  const { data: profile } = useQuery({
+  const { data: profile } = useQuery<any>({
     queryKey: ['profile-name', user?.id],
     enabled: !!user,
-    queryFn: async () => (await supabase.from('profiles').select('full_name').eq('user_id', user!.id).maybeSingle()).data,
+    queryFn: async () => {
+      const r: any = await supabase.from('profiles').select('full_name').eq('user_id', user!.id).maybeSingle();
+      return r.data;
+    },
   });
 
-  const { data: upcoming } = useQuery({
+  const { data: upcoming } = useQuery<any>({
     queryKey: ['upcoming-c', user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from('consultations')
+      const res: any = await supabase.from('consultations')
         .select('id, scheduled_at, status').eq('patient_id', user!.id)
         .in('status', ['scheduled', 'confirmed', 'in_progress'])
         .order('scheduled_at').limit(1);
-      return data?.[0];
+      return res.data?.[0];
     },
   });
 
