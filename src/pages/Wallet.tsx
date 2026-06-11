@@ -121,13 +121,20 @@ export default function Wallet() {
                       <Icon className="h-4 w-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{t.description || t.type}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium truncate">{t.description || t.type}</p>
+                        <Badge variant="outline" className={`text-[9px] px-1.5 py-0 capitalize ${
+                          t.status === 'confirmed' ? 'border-emerald/40 text-emerald' :
+                          t.status === 'refunded' ? 'border-destructive/40 text-destructive' :
+                          'border-gold/40'
+                        }`}>{t.status || 'confirmed'}</Badge>
+                      </div>
                       <p className="text-[11px] text-muted-foreground">
                         {new Date(t.created_at).toLocaleString('pt-PT')}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className={`text-sm font-bold ${isOut ? 'text-destructive' : 'text-pharmacy'}`}>
+                      <p className={`text-sm font-bold ${isOut ? 'text-destructive' : 'text-pharmacy'} ${t.status === 'refunded' ? 'line-through opacity-60' : ''}`}>
                         {isOut ? '-' : '+'}{Number(t.amount).toFixed(2)}
                       </p>
                       <p className="text-[10px] text-muted-foreground">{Number(t.balance_after).toFixed(2)} MZN</p>
