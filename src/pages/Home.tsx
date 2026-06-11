@@ -50,11 +50,11 @@ export default function Home() {
     },
   });
 
-  const { data: topDoctors } = useQuery({
+  const { data: topDoctors } = useQuery<any[]>({
     queryKey: ['top-doctors-home'],
     queryFn: async () => {
       const res: any = await supabase
-        .from('doctor_profiles')
+        .from('doctor_profiles' as any)
         .select('id, user_id, rating, consultation_fee, medical_specialties(name, icon)')
         .eq('is_active', true)
         .order('rating', { ascending: false })
