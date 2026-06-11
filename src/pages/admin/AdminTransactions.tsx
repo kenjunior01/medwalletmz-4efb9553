@@ -47,7 +47,7 @@ export default function AdminTransactions() {
     refetchInterval: 15000,
   });
 
-  const totals = data?.reduce((a, t) => {
+  const totals = data?.reduce((a: any, t: any) => {
     if (t.status !== 'confirmed') return a;
     if (['debit', 'commission'].includes(t.type)) a.out += Number(t.amount);
     else if (['deposit', 'bonus', 'credit', 'refund', 'referral'].includes(t.type)) a.in += Number(t.amount);
