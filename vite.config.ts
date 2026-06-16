@@ -51,6 +51,8 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        navigateFallback: "/index.html",
+        navigateFallbackDenylist: [/^\/api/, /^\/~oauth/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -78,6 +80,34 @@ export default defineConfig(({ mode }) => ({
               cacheableResponse: {
                 statuses: [0, 200],
               },
+            },
+          },
+          {
+            // Cache de leitura da API Supabase — stale-while-revalidate (24h)
+            urlPattern: ({ url, request }) =>
+              request.method === "GET" && /\/rest\/v1\//.test(url.pathname),
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "supabase-rest-cache",
+              networkTimeoutSeconds: 4,
+              expiration: {
+                maxEntries: 80,
+                maxAgeSeconds: 60 * 60 * 24,
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Imagens externas (Unsplash, storage público)
+            urlPattern: /\.(?:png|jpg|jpeg|webp|gif|svg)$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "images-cache",
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 14,
+              },
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
         ],

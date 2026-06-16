@@ -292,3 +292,17 @@
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+  /* Modo baixo consumo — esconde imagens decorativas e blurs */
+  html.data-saver .blur-3xl,
+  html.data-saver .blur-2xl {
+    display: none !important;
+  }
+  html.data-saver .animate-float,
+  html.data-saver .animate-shimmer,
+  html.data-saver .animate-pulse-glow {
+    animation: none !important;
+  }
+  html.data-saver img[data-decorative="true"] {
+    display: none !important;
+  }
