@@ -24,6 +24,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { getNeighborhoodsForCity } from '@/lib/maputo-neighborhoods';
 
 const cities = [
   'Maputo', 'Matola', 'Beira', 'Nampula', 'Quelimane',
@@ -54,6 +55,7 @@ export default function Addresses() {
     city: 'Maputo',
     is_default: false
   });
+  const [neighborhood, setNeighborhood] = useState<string>('');
 
   const { data: addresses, isLoading } = useQuery({
     queryKey: ['addresses', user?.id],
@@ -147,6 +149,7 @@ export default function Addresses() {
 
   const resetForm = () => {
     setForm({ label: 'Casa', address_line: '', city: 'Maputo', is_default: false });
+    setNeighborhood('');
     setEditingId(null);
     setIsOpen(false);
   };
@@ -168,7 +171,10 @@ export default function Addresses() {
       toast.error('Preencha o endereço');
       return;
     }
-    saveMutation.mutate(form);
+    const finalLine = neighborhood
+      ? `${neighborhood} — ${form.address_line.replace(new RegExp(`^${neighborhood}\\s*—\\s*`), '')}`
+      : form.address_line;
+    saveMutation.mutate({ ...form, address_line: finalLine });
   };
 
   if (!user) {
@@ -229,7 +235,7 @@ export default function Addresses() {
 
               <div className="space-y-2">
                 <Label>Cidade</Label>
-                <Select value={form.city} onValueChange={(v) => setForm(f => ({ ...f, city: v }))}>
+                <Select value={form.city} onValueChange={(v) => { setForm(f => ({ ...f, city: v })); setNeighborhood(''); }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -240,6 +246,25 @@ export default function Addresses() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {getNeighborhoodsForCity(form.city).length > 0 && (
+                <div className="space-y-2">
+                  <Label>Bairro</Label>
+                  <Select value={neighborhood} onValueChange={setNeighborhood}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Escolhe o bairro" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {getNeighborhoodsForCity(form.city).map(b => (
+                        <SelectItem key={b} value={b}>{b}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-[10px] text-muted-foreground">
+                    Ajuda os motoristas a encontrar a tua casa mais rápido.
+                  </p>
+                </div>
+              )}
 
               <div className="flex items-center gap-2">
                 <input

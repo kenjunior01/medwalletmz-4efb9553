@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { LocationProvider } from "@/contexts/LocationContext";
+import { DataSaverProvider } from "@/contexts/DataSaverContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 
 // Main Pages
@@ -73,6 +74,7 @@ import AdminPaymentAccounts from "./pages/admin/AdminPaymentAccounts";
 import PaymentSettings from "./pages/PaymentSettings";
 import Triage from "./pages/health/Triage";
 import MedicalRecords from "./pages/health/MedicalRecords";
+import Exams from "./pages/health/Exams";
 import VideoConsultation from "./pages/health/VideoConsultation";
 import Referrals from "./pages/Referrals";
 import Wallet from "./pages/Wallet";
@@ -89,7 +91,8 @@ const App = () => (
     <AuthProvider>
       <CartProvider>
         <LocationProvider>
-          <TooltipProvider>
+          <DataSaverProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -120,6 +123,7 @@ const App = () => (
                   <Route path="/payment-settings" element={<PaymentSettings />} />
                   <Route path="/health/triage" element={<Triage />} />
                   <Route path="/health/records" element={<MedicalRecords />} />
+                  <Route path="/health/exams" element={<Exams />} />
                   <Route path="/referrals" element={<Referrals />} />
                   <Route path="/wallet" element={<Wallet />} />
                 </Route>
@@ -180,7 +184,8 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
-          </TooltipProvider>
+            </TooltipProvider>
+          </DataSaverProvider>
         </LocationProvider>
       </CartProvider>
     </AuthProvider>

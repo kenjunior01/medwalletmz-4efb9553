@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { MapPin, ChevronDown, Bell, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "./ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -95,15 +96,16 @@ export function Header() {
           </div>
         </div>
 
-        {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative hover:bg-primary/10 rounded-xl transition-all">
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-            <Bell className="h-5 w-5" />
-          </div>
-          <span className="absolute top-0 right-0 h-5 w-5 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-background shadow-md">
-            3
-          </span>
-        </Button>
+        {/* Actions */}
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <Button variant="ghost" size="icon" className="relative hover:bg-primary/10 rounded-xl transition-all h-10 w-10">
+            <Bell className="h-4 w-4" />
+            <span className="absolute top-1 right-1 h-4 w-4 bg-accent text-accent-foreground text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-background shadow-md">
+              3
+            </span>
+          </Button>
+        </div>
       </div>
     </header>
   );

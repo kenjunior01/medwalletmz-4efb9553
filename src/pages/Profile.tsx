@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
+import { LowDataToggle } from "@/components/profile/LowDataToggle";
 
 type Profile = Tables<"profiles">;
 
@@ -260,6 +261,9 @@ export default function Profile() {
           </button>
         ))}
       </div>
+
+      {/* Preferências locais */}
+      <LowDataToggle />
 
       {/* Business Options */}
       <div className="bg-card rounded-xl border border-border divide-y divide-border">

@@ -1,76 +1,54 @@
-## Roadmap Health SaaS — MoçambiApp
+## Plano de execução — Relatório MoçambiApp
 
-Transformação em hub de saúde (telemedicina + receitas digitais + farmácia integrada) em 4 fases. Esta entrega implementa a **Fase 1 completa**; as restantes ficam mapeadas para iterações futuras.
-
----
-
-### Fase 1 — Estrutura base + Portal do Médico mínimo (ESTA ENTREGA)
-
-**Backend (migração SQL)**
-- Novos valores no enum `app_role`: `doctor`, `clinic`.
-- Tabela `medical_specialties` (id, name, slug, icon) — seed inicial com 10 especialidades comuns.
-- Tabela `doctor_profiles`: user_id, license_number, specialty_id, bio, consultation_fee, years_experience, languages[], is_verified, is_available, avatar_url.
-- Tabela `patient_profiles`: user_id, date_of_birth, gender, blood_type, allergies[], chronic_conditions[], emergency_contact_name, emergency_contact_phone.
-- Tabela `consultations`: id, doctor_id, patient_id, scheduled_at, duration_minutes, status (scheduled/in_progress/completed/cancelled/no_show), consultation_type (chat/video), notes, diagnosis, created_at.
-- Tabela `consultation_messages`: id, consultation_id, sender_id, message, attachment_url, created_at — para o chat seguro.
-- Tabela `prescriptions`: id, consultation_id, doctor_id, patient_id, status (active/dispensed/expired), expires_at, notes.
-- Tabela `prescription_items`: id, prescription_id, medication_name, dosage, frequency, duration, instructions.
-- RLS: médico vê só seus pacientes/consultas; paciente vê só os seus; admin vê tudo.
-- Realtime habilitado em `consultations` e `consultation_messages`.
-- Atualizar `handle_new_user` para criar `patient_profiles` automaticamente.
-
-**Frontend (Fase 1)**
-- `src/pages/doctor/DoctorRegister.tsx` — registo com licença + especialidade.
-- `src/pages/doctor/DoctorDashboard.tsx` — agenda do dia, próximas consultas, ganhos do mês.
-- `src/pages/doctor/DoctorConsultations.tsx` — lista consultas; abrir chat.
-- `src/pages/doctor/DoctorPatients.tsx` — pacientes que já consultou.
-- `src/pages/health/Doctors.tsx` — diretório público de médicos por especialidade.
-- `src/pages/health/BookConsultation.tsx` — escolher data/hora e marcar (paciente).
-- `src/pages/health/MyConsultations.tsx` — consultas do paciente.
-- `src/pages/health/ConsultationChat.tsx` — chat em tempo real médico ↔ paciente (Realtime).
-- `src/pages/health/HealthProfile.tsx` — paciente edita dados clínicos.
-- `src/components/home/HealthCard.tsx` — novo card "Saúde" na home (mobile + desktop).
-- Rotas em `App.tsx`; `RoleSelection.tsx` ganha opção "Sou Médico".
+Vou implementar em **4 fases sequenciais**, com check de qualidade entre cada uma. Estilo: subtil e premium (sem peso de dados). Foco contexto-MZ.
 
 ---
 
-### Fase 2 — Receita digital + integração farmácia (futuro)
-- Médico cria receita ao final da consulta (UI dedicada).
-- Paciente vê receitas em `/health/prescriptions`, botão "Pedir na farmácia" pré-popula carrinho com produtos correspondentes.
-- Matching `prescription_items.medication_name` ↔ `products.name` (busca fuzzy).
-- Validação de receita controlada antes de checkout (flag `requires_prescription` em `products`).
+### Fase 1 — Estabilizar navegação (crítico, rápido)
+**Objetivo:** zero 404 + confiança imediata.
 
-### Fase 3 — Logística inteligente para saúde
-- Flag `is_urgent_medical` em `orders` com prioridade no algoritmo de atribuição de driver.
-- Cadeia de frio (campo `requires_cold_chain` em produtos).
-- Protocolo de entrega verificada (foto + assinatura digital).
+- Auditar todas as rotas em `App.tsx` vs links em `Home.tsx`, `BottomNav`, `Header`.
+- Rotas com página existente mas link partido → corrigir path.
+- Funcionalidades sem página pronta (ex.: Exames) → criar **stub "Em Breve"** elegante (`ComingSoon.tsx`) com CTA de notificação, em vez de remover.
+- Confirmar: Triagem IA (`/health/triage`), Planos (`/health/plans`), Receitas, Pedidos, Carteira, Convites todos acessíveis.
 
-### Fase 4 — Monetização SaaS + expansão
-- Planos de assinatura para médicos (Básico/Premium/Corporativo) via Stripe.
-- Premium Health Pass para pacientes (entregas grátis + prioridade teleconsulta).
-- Vídeo nativo (Daily.co ou similar) substituindo apenas-chat.
-- Portal de clínicas (multi-médico, relatórios agregados).
+### Fase 2 — Design refinado (subtil e premium)
+**Objetivo:** elevar percepção sem mudar identidade Ocean Trust.
+
+- **Cards:** micro-interações (hover-lift, gradiente sutil no border, ícone com leve scale, shimmer no skeleton). Sem vídeos nem carrosséis pesados.
+- **Desktop (≥1024px):** Home Bento passa a usar largura real (max-w-7xl), grid de 12 colunas, coluna lateral com widget de carteira + atividade + convites sticky. Mobile permanece intocado.
+- **Profile/Wallet/Admin:** aplicar `bento-card`, espaçamento consistente, tipografia Outfit já definida.
+- **Tema:** botão toggle claro/escuro no Header (dark já existe em CSS).
+
+### Fase 3 — Contexto Moçambique
+**Objetivo:** leve, local, offline-tolerante.
+
+- **Imagens:** substituir Unsplash por `<img loading="lazy" decoding="async">` + `srcset` quando possível; placeholders blur. Configurar `vite-imagetools` para conversão WebP nos assets bundled.
+- **Modo baixo consumo:** toggle em Profile que: desativa imagens decorativas, usa `prefers-reduced-data`, persiste em localStorage, expõe via Context.
+- **Bairros Maputo:** adicionar lista (Polana, Sommerschield, Alto-Maé, Coop, Malhangalene, Costa do Sol, Maxaquene, Mafalala, Chamanculo, Magoanine, Zimpeto, Matola-A/B/C, Machava, Infulene) ao formulário de Address e ao filtro de busca. Tipo `MaputoNeighborhood`.
+- **Offline-first:** revisar `vite.config.ts` Workbox — `NetworkFirst` para HTML; `CacheFirst` p/ assets hashed; cache runtime para `GET /rest/v1/doctor_profiles`, `prescriptions`, `orders` (StaleWhileRevalidate, 24h). Banner "Está offline — a mostrar dados em cache".
+- **Linguagem PT-MZ:** rever microcopy ("Manda mensagem", "Já tens", "Bué", saudações com hora do dia).
+
+### Fase 4 — Pagamentos + tracking visual
+**Objetivo:** tornar fluxo M-Pesa/e-Mola confiável e o tracking vivo.
+
+- **Checkout:** stepper visual (Método → Confirmar telefone → STK Push → Estado). Componentes `PaymentMethodCard` para M-Pesa, e-Mola, Mkesh, Carteira. Texto de ajuda contextual + número de suporte.
+- **Order tracking:** timeline animada (placed → confirmed → preparing → on_the_way → delivered) com pulse no estado atual, ETA, botão WhatsApp p/ motorista. Leaflet já existente integrado com refresh realtime.
+- **Push notifications** nos eventos-chave de pedido (já há subscription table).
 
 ---
 
-### Secção técnica (Fase 1)
+### Detalhes técnicos
+- Novos componentes: `ComingSoon.tsx`, `ThemeToggle.tsx`, `LowDataToggle.tsx`, `NeighborhoodSelect.tsx`, `OfflineBanner.tsx`, `PaymentStepper.tsx`, `OrderTimeline.tsx`.
+- Novo context: `DataSaverContext`.
+- Hook: `useOnlineStatus`.
+- Migração SQL: adicionar coluna `neighborhood text` em `addresses` (+ index).
+- Sem mudanças destrutivas em tabelas existentes.
 
-**Ficheiros novos**
-- `supabase/migrations/<timestamp>_health_saas_phase1.sql`
-- `src/pages/doctor/{DoctorRegister,DoctorDashboard,DoctorConsultations,DoctorPatients}.tsx`
-- `src/pages/health/{Doctors,BookConsultation,MyConsultations,ConsultationChat,HealthProfile}.tsx`
-- `src/components/home/HealthCard.tsx`
-- `src/hooks/useDoctorProfile.ts`, `useConsultation.ts`
+### Ordem & validação
+1. Fase 1 (sem build pesado) → smoke test rotas.
+2. Fase 2 → screenshot desktop+mobile.
+3. Fase 3 → testar offline no preview publicado.
+4. Fase 4 → fluxo end-to-end de pedido.
 
-**Ficheiros editados**
-- `src/App.tsx` — novas rotas `/health/*` e `/doctor/*`.
-- `src/pages/RoleSelection.tsx` — adicionar card "Médico".
-- `src/pages/Home.tsx` — inserir `HealthCard` no grid mobile + secção desktop.
-- `src/components/layout/BottomNav.tsx` — eventual item "Saúde" (avaliar espaço).
-
-**Sequência**
-1. Migração SQL (enum + 7 tabelas + RLS + realtime + trigger update).
-2. Páginas do paciente (Doctors, BookConsultation, MyConsultations, HealthProfile).
-3. Páginas do médico (Register, Dashboard, Consultations, Patients).
-4. Chat em tempo real (ConsultationChat com Supabase Realtime).
-5. Integração na Home + RoleSelection + rotas.
+Aprovas? Posso começar pela **Fase 1** imediatamente após o "sim".
