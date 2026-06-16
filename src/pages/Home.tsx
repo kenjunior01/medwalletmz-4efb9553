@@ -260,7 +260,7 @@ export default function Home() {
           {[
             { icon: Stethoscope, label: 'Médicos', color: 'pharmacy', to: '/health/doctors' },
             { icon: Pill, label: 'Farmácia', color: 'emerald', to: '/pharmacy' },
-            { icon: Activity, label: 'Exames', color: 'secondary', to: '/health/records' },
+            { icon: Activity, label: 'Exames', color: 'secondary', to: '/health/exams' },
             { icon: Heart, label: 'Planos', color: 'destructive', to: '/health/plans' },
           ].map(c => (
             <button key={c.label} onClick={() => navigate(c.to)}
