@@ -310,14 +310,22 @@ export default function OrderTracking() {
                 
                 return (
                   <div key={step.key} className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    <div className={`relative w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                       isComplete ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                    } ${isCurrent ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
+                    } ${isCurrent && !isDelivered && !isCancelled ? 'ring-2 ring-primary ring-offset-2 animate-pulse-glow' : ''}`}>
+                      {isCurrent && !isDelivered && !isCancelled && (
+                        <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping" />
+                      )}
                       <StepIcon className="h-4 w-4" />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className={`font-medium ${isComplete ? '' : 'text-muted-foreground'}`}>{step.label}</p>
                       <p className="text-xs text-muted-foreground">{step.description}</p>
+                      {isCurrent && !isDelivered && !isCancelled && order.updated_at && (
+                        <p className="text-[10px] text-primary font-semibold mt-0.5">
+                          Actualizado {format(new Date(order.updated_at), "HH:mm", { locale: pt })}
+                        </p>
+                      )}
                     </div>
                     {isComplete && index < getCurrentStepIndex() && (
                       <CheckCircle className="h-5 w-5 text-green-500" />
