@@ -70,7 +70,7 @@ export default function StoreOwnerDashboard() {
       }
     } catch (error) {
       console.error('Error fetching stores:', error);
-      toast.error('Erro ao carregar lojas');
+      toast.error('Erro ao carregar farmácias');
     } finally {
       setLoading(false);
     }
@@ -123,7 +123,7 @@ export default function StoreOwnerDashboard() {
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="font-semibold text-sm truncate">
-                {selectedStore?.name || 'Minha Loja'}
+                {selectedStore?.name || 'Minha Farmácia'}
               </h1>
               <p className="text-xs text-muted-foreground capitalize">
                 {selectedStore?.type}
@@ -177,7 +177,7 @@ export default function StoreOwnerDashboard() {
               className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               <Plus className="h-4 w-4" />
-              Adicionar Loja
+              Adicionar Farmácia
             </Link>
           </div>
         </nav>

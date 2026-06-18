@@ -107,11 +107,11 @@ export default function StoreOwnerRegister() {
         .update({ phone: formData.phone })
         .eq('user_id', user.id);
 
-      toast.success('Loja criada com sucesso!');
+      toast.success('Farmácia criada com sucesso!');
       navigate('/store/dashboard');
     } catch (error: any) {
       console.error('Error creating store:', error);
-      toast.error('Erro ao criar loja: ' + error.message);
+      toast.error('Erro ao criar farmácia: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -126,7 +126,7 @@ export default function StoreOwnerRegister() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="font-semibold">Cadastrar Loja</h1>
+            <h1 className="font-semibold">Cadastrar Farmácia</h1>
             <p className="text-sm text-muted-foreground">Passo {step} de 3</p>
           </div>
         </div>
@@ -151,13 +151,13 @@ export default function StoreOwnerRegister() {
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Store className="h-8 w-8 text-primary" />
               </div>
-              <h2 className="text-xl font-bold">Informações da Loja</h2>
+              <h2 className="text-xl font-bold">Informações da Farmácia</h2>
               <p className="text-muted-foreground">Conte-nos sobre o seu negócio</p>
             </div>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="storeName">Nome da Loja *</Label>
+                <Label htmlFor="storeName">Nome da Farmácia *</Label>
                 <Input
                   id="storeName"
                   placeholder="Ex: Restaurante Sabores de Maputo"
@@ -202,7 +202,7 @@ export default function StoreOwnerRegister() {
                 <Label htmlFor="description">Descrição</Label>
                 <Textarea
                   id="description"
-                  placeholder="Descreva sua loja, especialidades, etc."
+                  placeholder="Descreva sua farmácia, especialidades, etc."
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   rows={3}
@@ -223,7 +223,7 @@ export default function StoreOwnerRegister() {
                 <MapPin className="h-8 w-8 text-primary" />
               </div>
               <h2 className="text-xl font-bold">Localização e Contato</h2>
-              <p className="text-muted-foreground">Onde podemos encontrar sua loja?</p>
+              <p className="text-muted-foreground">Onde podemos encontrar sua farmácia?</p>
             </div>
 
             <div className="space-y-4">
@@ -250,7 +250,7 @@ export default function StoreOwnerRegister() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="imageUrl">URL da Imagem da Loja</Label>
+                <Label htmlFor="imageUrl">URL da Imagem da Farmácia</Label>
                 <div className="flex gap-2">
                   <Input
                     id="imageUrl"
@@ -314,7 +314,7 @@ export default function StoreOwnerRegister() {
 
             {/* Summary Card */}
             <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-              <h3 className="font-semibold">Resumo da Loja</h3>
+              <h3 className="font-semibold">Resumo da Farmácia</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Nome:</span>
@@ -341,10 +341,10 @@ export default function StoreOwnerRegister() {
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Criando loja...
+                  Criando farmácia...
                 </>
               ) : (
-                'Criar Minha Loja'
+                'Criar Minha Farmácia'
               )}
             </Button>
           </div>

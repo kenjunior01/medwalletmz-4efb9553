@@ -224,10 +224,10 @@ export default function AdminProducts() {
           </div>
           <Select value={selectedStore} onValueChange={setSelectedStore}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="Loja" />
+              <SelectValue placeholder="Farmácia" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas as lojas</SelectItem>
+              <SelectItem value="all">Todas as farmácias</SelectItem>
               {stores.map((store) => (
                 <SelectItem key={store.id} value={store.id}>
                   {store.name}
@@ -292,7 +292,7 @@ export default function AdminProducts() {
                     <div className="min-w-0">
                       <h3 className="font-medium text-sm truncate">{product.name}</h3>
                       <p className="text-xs text-muted-foreground truncate">
-                        {product.store?.name || "Sem loja"}
+                        {product.store?.name || "Sem farmácia"}
                       </p>
                     </div>
                     <Badge variant={product.is_available ? "default" : "secondary"}>
@@ -355,13 +355,13 @@ export default function AdminProducts() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Loja *</label>
+              <label className="text-sm font-medium mb-1.5 block">Farmácia *</label>
               <Select
                 value={formData.store_id}
                 onValueChange={(value) => setFormData({ ...formData, store_id: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma loja" />
+                  <SelectValue placeholder="Selecione uma farmácia" />
                 </SelectTrigger>
                 <SelectContent>
                   {stores.map((store) => (

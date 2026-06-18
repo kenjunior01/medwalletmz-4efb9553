@@ -60,7 +60,7 @@ interface DriverInfo {
 
 const statusSteps = [
   { key: 'pending', label: 'Pendente', icon: Clock, description: 'Aguardando confirmação' },
-  { key: 'confirmed', label: 'Confirmado', icon: CheckCircle, description: 'Pedido aceite pela loja' },
+  { key: 'confirmed', label: 'Confirmado', icon: CheckCircle, description: 'Pedido aceite pela farmácia' },
   { key: 'preparing', label: 'A Preparar', icon: ChefHat, description: 'Seu pedido está a ser preparado' },
   { key: 'ready', label: 'Pronto', icon: Package, description: 'Pronto para recolha' },
   { key: 'in_transit', label: 'A Caminho', icon: Truck, description: 'Entregador a caminho' },
@@ -293,6 +293,11 @@ export default function OrderTracking() {
               <div className="flex-1">
                 <h2 className="text-lg font-bold">{currentStep.label}</h2>
                 <p className="text-sm opacity-90">{currentStep.description}</p>
+              {order.updated_at && !isCancelled && (
+                <p className="text-[11px] opacity-75 mt-1">
+                  Actualizado às {format(new Date(order.updated_at), "HH:mm", { locale: pt })} · {format(new Date(order.updated_at), "d MMM", { locale: pt })}
+                </p>
+              )}
               </div>
             </div>
           </div>
@@ -349,7 +354,7 @@ export default function OrderTracking() {
                   <h3 className="font-semibold">{driver.profile?.full_name || 'Entregador'}</h3>
                   <p className="text-sm text-muted-foreground">{getVehicleLabel(driver.profile?.vehicle_type)}</p>
                   <Badge variant="secondary" className="mt-1 text-xs">
-                    {driver.status === 'assigned' ? 'A caminho da loja' : 'A caminho de você'}
+                    {driver.status === 'assigned' ? 'A caminho da farmácia' : 'A caminho de você'}
                   </Badge>
                 </div>
                 <div className="flex gap-2">
@@ -400,7 +405,7 @@ export default function OrderTracking() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3 mb-3">
               <Store className="h-5 w-5 text-muted-foreground" />
-              <h3 className="font-semibold">Loja</h3>
+              <h3 className="font-semibold">Farmácia</h3>
             </div>
             <div className="flex items-center gap-3">
               {order.store?.image_url ? (

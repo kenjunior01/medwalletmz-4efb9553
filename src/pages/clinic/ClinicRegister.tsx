@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Building2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { LicenseUpload } from '@/components/upload/LicenseUpload';
 
 export default function ClinicRegister() {
   const navigate = useNavigate();
@@ -20,12 +21,14 @@ export default function ClinicRegister() {
     city: 'Maputo',
     phone: '',
     email: '',
+    license_url: '',
   });
   const [saving, setSaving] = useState(false);
 
   const submit = async () => {
     if (!user) return navigate('/auth');
     if (!form.name) return toast.error('Nome da clínica obrigatório');
+    if (!form.license_url) return toast.error('Carrega a licença MISAU');
     setSaving(true);
     try {
       const { data, error } = await supabase
@@ -86,6 +89,13 @@ export default function ClinicRegister() {
             <Label>Email</Label>
             <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
           </div>
+          <LicenseUpload
+            slot="misau"
+            label="Licença de funcionamento (MISAU) *"
+            description="Foto ou PDF do alvará da clínica"
+            value={form.license_url}
+            onUploaded={(p) => setForm({ ...form, license_url: p })}
+          />
         </div>
         <Button className="w-full" onClick={submit} disabled={saving}>
           {saving ? 'A guardar...' : 'Criar clínica'}

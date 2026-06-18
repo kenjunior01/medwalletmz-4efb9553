@@ -59,11 +59,11 @@ const faqCategories = [
     questions: [
       {
         q: 'Como faço um pedido?',
-        a: 'Basta escolher um restaurante ou loja, adicionar itens ao carrinho e finalizar o checkout com o seu endereço e método de pagamento preferido.',
+        a: 'Basta escolher um restaurante ou farmácia, adicionar itens ao carrinho e finalizar o checkout com o seu endereço e método de pagamento preferido.',
       },
       {
         q: 'Posso cancelar um pedido?',
-        a: 'Sim, você pode cancelar antes do pedido ser confirmado pela loja. Após a confirmação, entre em contacto com o suporte.',
+        a: 'Sim, você pode cancelar antes do pedido ser confirmado pela farmácia. Após a confirmação, entre em contacto com o suporte.',
       },
       {
         q: 'Como vejo o histórico de pedidos?',

@@ -91,7 +91,7 @@ export default function StoreDetail() {
   if (!store) {
     return (
       <div className="flex flex-col items-center justify-center p-8">
-        <p className="text-muted-foreground">Loja não encontrada</p>
+        <p className="text-muted-foreground">Farmácia não encontrada</p>
         <Button variant="link" onClick={() => navigate(-1)}>Voltar</Button>
       </div>
     );

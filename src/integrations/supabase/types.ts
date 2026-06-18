@@ -206,6 +206,7 @@ export type Database = {
           id: string
           is_active: boolean
           is_verified: boolean
+          license_url: string | null
           logo_url: string | null
           name: string
           owner_id: string
@@ -221,6 +222,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_verified?: boolean
+          license_url?: string | null
           logo_url?: string | null
           name: string
           owner_id: string
@@ -236,6 +238,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_verified?: boolean
+          license_url?: string | null
           logo_url?: string | null
           name?: string
           owner_id?: string
@@ -638,7 +641,10 @@ export type Database = {
           is_available: boolean
           is_verified: boolean
           languages: string[] | null
+          latitude: number | null
           license_number: string
+          license_url: string | null
+          longitude: number | null
           rating: number | null
           specialty_id: string | null
           total_consultations: number
@@ -655,7 +661,10 @@ export type Database = {
           is_available?: boolean
           is_verified?: boolean
           languages?: string[] | null
+          latitude?: number | null
           license_number: string
+          license_url?: string | null
+          longitude?: number | null
           rating?: number | null
           specialty_id?: string | null
           total_consultations?: number
@@ -672,7 +681,10 @@ export type Database = {
           is_available?: boolean
           is_verified?: boolean
           languages?: string[] | null
+          latitude?: number | null
           license_number?: string
+          license_url?: string | null
+          longitude?: number | null
           rating?: number | null
           specialty_id?: string | null
           total_consultations?: number
@@ -1501,7 +1513,9 @@ export type Database = {
           id: string
           is_available: boolean | null
           is_verified_driver: boolean
+          license_carta_url: string | null
           license_plate: string | null
+          license_viatura_url: string | null
           mkesh_number: string | null
           mpesa_number: string | null
           phone: string | null
@@ -1522,7 +1536,9 @@ export type Database = {
           id?: string
           is_available?: boolean | null
           is_verified_driver?: boolean
+          license_carta_url?: string | null
           license_plate?: string | null
+          license_viatura_url?: string | null
           mkesh_number?: string | null
           mpesa_number?: string | null
           phone?: string | null
@@ -1543,7 +1559,9 @@ export type Database = {
           id?: string
           is_available?: boolean | null
           is_verified_driver?: boolean
+          license_carta_url?: string | null
           license_plate?: string | null
+          license_viatura_url?: string | null
           mkesh_number?: string | null
           mpesa_number?: string | null
           phone?: string | null

@@ -151,7 +151,7 @@ export default function AdminHome() {
   const quickActions = [
     { 
       icon: Store, 
-      label: "Lojas", 
+      label: "Farmácias", 
       description: "Gerenciar",
       onClick: () => navigate('/admin/stores'),
       colorClass: "text-food",
@@ -186,7 +186,7 @@ export default function AdminHome() {
   const activityItems = (recentOrders || []).map((order: any) => ({
     id: order.id,
     title: `Pedido #${order.id.slice(0, 8)}`,
-    description: `${order.stores?.name || 'Loja'} - ${order.total.toLocaleString()} MZN`,
+    description: `${order.stores?.name || 'Farmácia'} - ${order.total.toLocaleString()} MZN`,
     time: new Date(order.created_at).toLocaleString('pt-MZ'),
     type: 'order' as const,
     status: statusLabels[order.status] || order.status
@@ -216,7 +216,7 @@ export default function AdminHome() {
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => navigate('/admin/stores')}>
             <Plus className="h-4 w-4 mr-2" />
-            Nova Loja
+            Nova Farmácia
           </Button>
           <Button onClick={() => navigate('/admin/reports')}>
             <TrendingUp className="h-4 w-4 mr-2" />
@@ -283,7 +283,7 @@ export default function AdminHome() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent className="p-4 flex items-center gap-3">
           <Store className="h-8 w-8 text-food" />
-          <div><p className="text-xs text-muted-foreground">Lojas</p><p className="text-xl font-bold">{stats?.totalStores || 0}</p></div>
+          <div><p className="text-xs text-muted-foreground">Farmácias</p><p className="text-xl font-bold">{stats?.totalStores || 0}</p></div>
         </CardContent></Card>
         <Card><CardContent className="p-4 flex items-center gap-3">
           <Package className="h-8 w-8 text-grocery" />
@@ -373,7 +373,7 @@ export default function AdminHome() {
 
           {/* Top Stores */}
           <TopItemsWidget 
-            title="Top Lojas"
+            title="Top Farmácias"
             items={topStores?.map(store => ({
               id: store.id,
               name: store.name,

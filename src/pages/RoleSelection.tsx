@@ -15,8 +15,8 @@ const roleOptions = [
   },
   {
     id: 'store_owner',
-    title: 'Dono de Loja',
-    description: 'Cadastre sua loja e venda online',
+    title: 'Dono de Farmácia',
+    description: 'Cadastre sua farmácia e venda online',
     icon: Store,
     path: '/store/register',
     color: 'bg-green-500'

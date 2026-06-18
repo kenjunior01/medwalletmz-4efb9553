@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
+import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRole";
@@ -218,6 +219,8 @@ export default function Home() {
 
       <FollowUpReminders />
 
+      <NearbyProvidersWidget />
+
       {/* ============ TOP MÉDICOS ============ */}
       {topDoctors && topDoctors.length > 0 && (
         <section className="mt-6">
@@ -290,7 +293,7 @@ export default function Home() {
               )}
               {roles.includes('store_owner') && (
                 <Button size="sm" variant="secondary" onClick={() => navigate('/store/dashboard')}>
-                  <Building2 className="h-3.5 w-3.5 mr-1" /> Loja
+                  <Building2 className="h-3.5 w-3.5 mr-1" /> Farmácia
                 </Button>
               )}
               {roles.includes('driver') && (
@@ -324,7 +327,7 @@ export default function Home() {
                   <Stethoscope className="h-3.5 w-3.5 mr-1" /> Sou médico
                 </Button>
                 <Button size="sm" variant="secondary" onClick={() => navigate('/store/register')}>
-                  <Building2 className="h-3.5 w-3.5 mr-1" /> Tenho loja
+                  <Building2 className="h-3.5 w-3.5 mr-1" /> Tenho farmácia
                 </Button>
                 <Button size="sm" variant="secondary" onClick={() => navigate('/driver/register')}>
                   <Truck className="h-3.5 w-3.5 mr-1" /> Faço entregas

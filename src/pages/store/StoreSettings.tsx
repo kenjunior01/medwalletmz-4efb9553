@@ -144,11 +144,11 @@ export default function StoreSettings() {
 
       if (error) throw error;
 
-      toast.success('Loja excluída com sucesso');
+      toast.success('Farmácia excluída com sucesso');
       navigate('/');
     } catch (error: any) {
       console.error('Error deleting store:', error);
-      toast.error('Erro ao excluir loja');
+      toast.error('Erro ao excluir farmácia');
     } finally {
       setDeleting(false);
     }
@@ -172,7 +172,7 @@ export default function StoreSettings() {
       <div>
         <h1 className="text-2xl font-bold">Configurações</h1>
         <p className="text-muted-foreground">
-          Gerencie as informações da sua loja
+          Gerencie as informações da sua farmácia
         </p>
       </div>
 
@@ -183,7 +183,7 @@ export default function StoreSettings() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nome da Loja *</Label>
+            <Label htmlFor="name">Nome da Farmácia *</Label>
             <Input
               id="name"
               value={formData.name}
@@ -313,9 +313,9 @@ export default function StoreSettings() {
         <CardContent>
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Loja Ativa</p>
+              <p className="font-medium">Farmácia Ativa</p>
               <p className="text-sm text-muted-foreground">
-                Desative para ocultar sua loja dos clientes
+                Desative para ocultar sua farmácia dos clientes
               </p>
             </div>
             <Switch
@@ -353,20 +353,20 @@ export default function StoreSettings() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">
-            Excluir sua loja removerá permanentemente todos os produtos e dados associados.
+            Excluir sua farmácia removerá permanentemente todos os produtos e dados associados.
           </p>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" disabled={deleting}>
                 <Trash2 className="h-4 w-4 mr-2" />
-                Excluir Loja
+                Excluir Farmácia
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Tem certeza absoluta?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Esta ação não pode ser desfeita. Isso excluirá permanentemente sua loja
+                  Esta ação não pode ser desfeita. Isso excluirá permanentemente sua farmácia
                   "{selectedStore?.name}" e todos os produtos associados.
                 </AlertDialogDescription>
               </AlertDialogHeader>

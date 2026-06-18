@@ -213,7 +213,7 @@ export default function AdminReports() {
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Store className="h-4 w-4 text-blue-500" />
-                    <span className="text-xs text-muted-foreground">Lojas Ativas</span>
+                    <span className="text-xs text-muted-foreground">Farmácias Ativas</span>
                   </div>
                   <p className="text-2xl font-bold">{stats.totalStores}</p>
                 </CardContent>
@@ -318,7 +318,7 @@ export default function AdminReports() {
         {/* Top Stores */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Top Lojas por Receita</CardTitle>
+            <CardTitle className="text-base">Top Farmácias por Receita</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
