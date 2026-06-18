@@ -33,7 +33,7 @@ export function NearbyProvidersWidget() {
   const { data: doctors } = useQuery<any[]>({
     queryKey: ['nearby-doctors', city],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('doctor_profiles')
         .select('id, user_id, latitude, longitude, rating, consultation_fee, medical_specialties(name, icon)')
         .eq('is_active', true)
