@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Stethoscope, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { LicenseUpload } from '@/components/upload/LicenseUpload';
 
 export default function DoctorRegister() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function DoctorRegister() {
     bio: '',
     consultation_fee: '500',
     years_experience: '0',
+    license_url: '',
   });
 
   useEffect(() => {
@@ -33,6 +35,9 @@ export default function DoctorRegister() {
     if (!user) { navigate('/auth'); return; }
     if (!form.license_number || !form.specialty_id || !form.full_name) {
       toast.error('Preencha os campos obrigatórios'); return;
+    }
+    if (!form.license_url) {
+      toast.error('Carrega a cédula da Ordem dos Médicos'); return;
     }
     setSaving(true);
     try {
@@ -45,6 +50,7 @@ export default function DoctorRegister() {
         consultation_fee: parseInt(form.consultation_fee) || 500,
         years_experience: parseInt(form.years_experience) || 0,
         is_available: true,
+        license_url: form.license_url || null,
       }, { onConflict: 'user_id' });
       if (pErr) throw pErr;
       await supabase.from('user_roles').upsert({ user_id: user.id, role: 'doctor' }, { onConflict: 'user_id,role' });
@@ -83,6 +89,13 @@ export default function DoctorRegister() {
           </Select>
         </div>
         <div><Label>Bio (apresentação ao paciente)</Label><Textarea value={form.bio} onChange={e => setForm({...form, bio: e.target.value})} rows={3} /></div>
+        <LicenseUpload
+          slot="cedula"
+          label="Cédula da Ordem dos Médicos *"
+          description="Foto ou PDF do documento oficial"
+          value={form.license_url}
+          onUploaded={(p) => setForm({ ...form, license_url: p })}
+        />
         <div className="grid grid-cols-2 gap-3">
           <div><Label>Preço da consulta (MZN)</Label><Input type="number" value={form.consultation_fee} onChange={e => setForm({...form, consultation_fee: e.target.value})} /></div>
           <div><Label>Anos de experiência</Label><Input type="number" value={form.years_experience} onChange={e => setForm({...form, years_experience: e.target.value})} /></div>
