@@ -1,0 +1,15 @@
+{
+  "name": "MedWallet",
+  "short_name": "MedWallet",
+  "description": "Consultas médicas, farmácia 24h e carteira MZN.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F172A",
+  "theme_color": "#047857",
+  "lang": "pt-MZ",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
