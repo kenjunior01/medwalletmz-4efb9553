@@ -14,7 +14,7 @@ export function DesktopRail() {
       <aside className="hidden lg:flex sticky top-20 self-start w-[320px] flex-col gap-3">
         <div className="bento-card p-5 gradient-ocean text-white">
           <Sparkles className="h-5 w-5 mb-2" />
-          <h3 className="font-black text-lg leading-tight">Entra na MoçambiApp</h3>
+          <h3 className="font-black text-lg leading-tight">Entra na MedWallet</h3>
           <p className="text-xs opacity-85 mt-1.5">
             Carteira MZN, médicos verificados e farmácia 24h num só sítio.
           </p>

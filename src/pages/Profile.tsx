@@ -168,7 +168,7 @@ export default function Profile() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground">
-          MoçambiApp v1.0.0
+          MedWallet v1.0.0
         </p>
       </div>
     );
@@ -325,7 +325,7 @@ export default function Profile() {
 
       {/* App Version */}
       <p className="text-center text-xs text-muted-foreground">
-        MoçambiApp v1.0.0
+        MedWallet v1.0.0
       </p>
 
       {/* Edit Profile Dialog */}

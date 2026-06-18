@@ -72,7 +72,7 @@ export default function DoctorRegister() {
           <div className="w-16 h-16 mx-auto rounded-2xl bg-pharmacy/10 flex items-center justify-center mb-3">
             <Stethoscope className="h-8 w-8 text-pharmacy" />
           </div>
-          <h2 className="text-xl font-bold">Junte-se ao MoçambiHealth</h2>
+          <h2 className="text-xl font-bold">Junte-se ao MedWallet</h2>
           <p className="text-sm text-muted-foreground">Atenda pacientes online por chat seguro</p>
         </div>
 

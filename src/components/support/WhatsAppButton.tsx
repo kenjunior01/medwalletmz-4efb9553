@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-const WHATSAPP_NUMBER = '258840000000'; // Número de suporte do MoçambiApp
+const WHATSAPP_NUMBER = '258840000000'; // Número de suporte do MedWallet
 const SUPPORT_MESSAGES = [
   { text: 'Preciso de ajuda com um pedido', icon: HelpCircle },
   { text: 'Quero rastrear minha entrega', icon: Phone },
@@ -17,7 +17,7 @@ export function WhatsAppButton() {
 
   const openWhatsApp = (message?: string) => {
     const encodedMessage = encodeURIComponent(
-      message || 'Olá! Preciso de ajuda com o MoçambiApp.'
+      message || 'Olá! Preciso de ajuda com o MedWallet.'
     );
     window.open(
       `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`,

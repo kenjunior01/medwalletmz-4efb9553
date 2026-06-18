@@ -81,7 +81,7 @@ export default function RoleSelection() {
           <span className="text-3xl font-bold text-primary-foreground">M</span>
         </div>
         
-        <h1 className="text-2xl font-bold mb-2 text-center">Como deseja usar o MoçambiApp?</h1>
+        <h1 className="text-2xl font-bold mb-2 text-center">Como deseja usar o MedWallet?</h1>
         <p className="text-muted-foreground mb-8 text-center">
           Escolha seu perfil para começar
         </p>
