@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
+import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRole";
@@ -217,6 +218,8 @@ export default function Home() {
       </section>
 
       <FollowUpReminders />
+
+      <NearbyProvidersWidget />
 
       {/* ============ TOP MÉDICOS ============ */}
       {topDoctors && topDoctors.length > 0 && (

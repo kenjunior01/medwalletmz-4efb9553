@@ -293,6 +293,11 @@ export default function OrderTracking() {
               <div className="flex-1">
                 <h2 className="text-lg font-bold">{currentStep.label}</h2>
                 <p className="text-sm opacity-90">{currentStep.description}</p>
+              {order.updated_at && !isCancelled && (
+                <p className="text-[11px] opacity-75 mt-1">
+                  Actualizado às {format(new Date(order.updated_at), "HH:mm", { locale: pt })} · {format(new Date(order.updated_at), "d MMM", { locale: pt })}
+                </p>
+              )}
               </div>
             </div>
           </div>
