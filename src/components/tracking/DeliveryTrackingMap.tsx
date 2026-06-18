@@ -207,7 +207,7 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      assigned: 'A caminho da loja',
+      assigned: 'A caminho da farmácia',
       picked_up: 'A caminho de você',
       delivered: 'Entregue'
     };
@@ -334,7 +334,7 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
                   <div className="text-center">
                     <strong>{storeLocation.name}</strong>
                     <br />
-                    <span className="text-sm">Loja</span>
+                    <span className="text-sm">Farmácia</span>
                   </div>
                 </Popup>
               </Marker>
@@ -378,7 +378,7 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
           {storeLocation && (
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-secondary" />
-              <span>Loja</span>
+              <span>Farmácia</span>
             </div>
           )}
           {userLocation && (

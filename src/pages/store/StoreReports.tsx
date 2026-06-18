@@ -154,7 +154,7 @@ export default function StoreReports() {
       <div>
         <h1 className="text-2xl font-bold">Relatórios</h1>
         <p className="text-muted-foreground">
-          Acompanhe o desempenho da sua loja
+          Acompanhe o desempenho da sua farmácia
         </p>
       </div>
 

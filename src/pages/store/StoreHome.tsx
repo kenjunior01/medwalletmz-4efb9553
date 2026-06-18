@@ -248,7 +248,7 @@ export default function StoreHome() {
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">
-            Bem-vindo ao painel da sua loja
+            Bem-vindo ao painel da sua farmácia
           </p>
         </div>
         <Button onClick={() => navigate('/store/dashboard/products')}>

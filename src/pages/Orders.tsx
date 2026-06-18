@@ -207,7 +207,7 @@ export default function Orders() {
               )}
             </div>
             <div>
-              <h3 className="font-semibold">{order.store?.name || "Loja"}</h3>
+              <h3 className="font-semibold">{order.store?.name || "Farmácia"}</h3>
               <p className="text-xs text-muted-foreground">
                 {format(new Date(order.created_at), "dd MMM yyyy 'às' HH:mm", { locale: pt })}
               </p>

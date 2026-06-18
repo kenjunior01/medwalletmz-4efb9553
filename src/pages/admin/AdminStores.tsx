@@ -64,12 +64,12 @@ export default function AdminStores() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-stores'] });
-      toast.success('Loja criada com sucesso');
+      toast.success('Farmácia criada com sucesso');
       setIsDialogOpen(false);
       setFormData(initialFormData);
     },
     onError: () => {
-      toast.error('Erro ao criar loja');
+      toast.error('Erro ao criar farmácia');
     }
   });
 
@@ -80,13 +80,13 @@ export default function AdminStores() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-stores'] });
-      toast.success('Loja atualizada');
+      toast.success('Farmácia atualizada');
       setIsDialogOpen(false);
       setEditingStore(null);
       setFormData(initialFormData);
     },
     onError: () => {
-      toast.error('Erro ao atualizar loja');
+      toast.error('Erro ao atualizar farmácia');
     }
   });
 
@@ -97,10 +97,10 @@ export default function AdminStores() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-stores'] });
-      toast.success('Loja removida');
+      toast.success('Farmácia removida');
     },
     onError: () => {
-      toast.error('Erro ao remover loja');
+      toast.error('Erro ao remover farmácia');
     }
   });
 
@@ -146,7 +146,7 @@ export default function AdminStores() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Lojas</h1>
+          <h1 className="text-2xl font-bold">Farmácias</h1>
           <p className="text-muted-foreground">Gerencie restaurantes, supermercados e farmácias</p>
         </div>
         
@@ -160,12 +160,12 @@ export default function AdminStores() {
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Nova Loja
+              Nova Farmácia
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingStore ? 'Editar Loja' : 'Nova Loja'}</DialogTitle>
+              <DialogTitle>{editingStore ? 'Editar Farmácia' : 'Nova Farmácia'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -280,7 +280,7 @@ export default function AdminStores() {
               </div>
 
               <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
-                {editingStore ? 'Atualizar' : 'Criar'} Loja
+                {editingStore ? 'Atualizar' : 'Criar'} Farmácia
               </Button>
             </form>
           </DialogContent>
@@ -291,7 +291,7 @@ export default function AdminStores() {
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Pesquisar lojas..."
+          placeholder="Pesquisar farmácias..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-10 max-w-sm"
@@ -356,7 +356,7 @@ export default function AdminStores() {
                     size="sm"
                     className="text-destructive hover:text-destructive"
                     onClick={() => {
-                      if (confirm('Tem certeza que deseja remover esta loja?')) {
+                      if (confirm('Tem certeza que deseja remover esta farmácia?')) {
                         deleteMutation.mutate(store.id);
                       }
                     }}
@@ -372,8 +372,8 @@ export default function AdminStores() {
         <Card>
           <CardContent className="p-12 text-center">
             <Store className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="font-semibold mb-2">Nenhuma loja encontrada</h3>
-            <p className="text-muted-foreground">Comece adicionando sua primeira loja</p>
+            <h3 className="font-semibold mb-2">Nenhuma farmácia encontrada</h3>
+            <p className="text-muted-foreground">Comece adicionando sua primeira farmácia</p>
           </CardContent>
         </Card>
       )}

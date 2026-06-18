@@ -205,7 +205,7 @@ export default function StoreOrders() {
       <div>
         <h1 className="text-2xl font-bold">Pedidos</h1>
         <p className="text-muted-foreground">
-          Gerencie os pedidos da sua loja
+          Gerencie os pedidos da sua farmácia
         </p>
       </div>
 

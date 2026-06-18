@@ -186,14 +186,14 @@ export default function AdminSettings() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Store className="h-5 w-5" />
-              Lojas & Entregadores
+              Farmácias & Entregadores
             </CardTitle>
             <CardDescription>Controle de registos</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
               <div>
-                <p className="font-medium">Permitir Registo de Novas Lojas</p>
+                <p className="font-medium">Permitir Registo de Novas Farmácias</p>
                 <p className="text-sm text-muted-foreground">
                   Novos lojistas podem se registrar na plataforma
                 </p>

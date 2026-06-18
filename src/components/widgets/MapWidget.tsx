@@ -124,7 +124,7 @@ export function MapWidget({
             <div className="flex gap-3 text-xs">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded-full bg-food" />
-                <span>Lojas</span>
+                <span>Farmácias</span>
               </div>
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded-full bg-green-500" />

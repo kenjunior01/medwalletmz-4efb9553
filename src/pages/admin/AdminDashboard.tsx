@@ -25,7 +25,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-  { icon: Store, label: 'Lojas', path: '/admin/stores' },
+  { icon: Store, label: 'Farmácias', path: '/admin/stores' },
   { icon: Package, label: 'Produtos', path: '/admin/products' },
   { icon: ShoppingBag, label: 'Pedidos', path: '/admin/orders' },
   { icon: Users, label: 'Usuários', path: '/admin/users' },
