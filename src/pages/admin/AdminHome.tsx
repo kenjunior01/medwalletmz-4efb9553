@@ -211,7 +211,7 @@ export default function AdminHome() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard Administrativo</h1>
-          <p className="text-muted-foreground">Visão geral da plataforma MoçambiApp</p>
+          <p className="text-muted-foreground">Visão geral da plataforma MedWallet</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => navigate('/admin/stores')}>

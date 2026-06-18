@@ -22,7 +22,7 @@ import {
 
 // Platform settings (would normally be stored in a settings table)
 const defaultSettings = {
-  platformName: 'MoçambiApp',
+  platformName: 'MedWallet',
   supportWhatsApp: '258841234567',
   supportEmail: 'suporte@mocambiapp.co.mz',
   defaultDeliveryFee: 50,

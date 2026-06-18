@@ -63,9 +63,9 @@ export default function Referrals() {
 
   const copy = () => { navigator.clipboard.writeText(link); toast.success('Link copiado!'); };
   const share = async () => {
-    const text = `Junta-te ao MoçambiApp Health Hub e ganha bónus de boas-vindas (saldo + Joy Coins)! ${link}`;
+    const text = `Junta-te ao MedWallet e ganha bónus de boas-vindas (saldo + Joy Coins)! ${link}`;
     if (navigator.share) {
-      try { await navigator.share({ title: 'MoçambiApp', text }); } catch {}
+      try { await navigator.share({ title: 'MedWallet', text }); } catch {}
     } else {
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }

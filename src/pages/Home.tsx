@@ -318,7 +318,7 @@ export default function Home() {
             <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-secondary/30 blur-2xl" />
             <div className="relative">
               <Badge className="bg-gold text-gold-foreground border-0 mb-2">PARA PROFISSIONAIS</Badge>
-              <h3 className="text-2xl font-black leading-tight">Trabalha com a MoçambiApp</h3>
+              <h3 className="text-2xl font-black leading-tight">Trabalha com a MedWallet</h3>
               <p className="text-sm opacity-90 mt-2 max-w-[260px]">
                 Médico, farmácia, motorista ou clínica — recebe pacientes/pedidos e a tua carteira em MZN.
               </p>

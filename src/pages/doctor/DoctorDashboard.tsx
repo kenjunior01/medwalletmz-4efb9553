@@ -60,7 +60,7 @@ export default function DoctorDashboard() {
     return (
       <div className="min-h-screen p-6 flex flex-col items-center justify-center text-center gap-4">
         <Stethoscope className="h-12 w-12 text-muted-foreground" />
-        <h2 className="text-xl font-bold">Ainda não és médico no MoçambiHealth</h2>
+        <h2 className="text-xl font-bold">Ainda não és médico no MedWallet</h2>
         <Button onClick={() => navigate('/doctor/register')}>Registar como médico</Button>
       </div>
     );

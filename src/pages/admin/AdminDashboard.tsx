@@ -88,7 +88,7 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <aside className="w-64 bg-card border-r border-border flex flex-col">
         <div className="p-6 border-b border-border">
-          <h1 className="text-xl font-bold text-primary">MoçambiApp</h1>
+          <h1 className="text-xl font-bold text-primary">MedWallet</h1>
           <p className="text-xs text-muted-foreground">Painel Administrativo</p>
         </div>
 

@@ -127,7 +127,7 @@ export default function Auth() {
           <span className="text-3xl font-bold text-primary-foreground">M</span>
         </div>
         
-        <h1 className="text-2xl font-bold mb-2">MoçambiApp</h1>
+        <h1 className="text-2xl font-bold mb-2">MedWallet</h1>
         <p className="text-muted-foreground mb-8">Entregas rápidas em Moçambique</p>
 
         {/* Auth Form */}

@@ -80,7 +80,7 @@ export default function PrescriptionDetail() {
     doc.text('Receita Medica Digital', pageW / 2, y, { align: 'center' });
     y += 8;
     doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    doc.text('MocambiApp Health Hub', pageW / 2, y, { align: 'center' });
+    doc.text('MedWallet Health Hub', pageW / 2, y, { align: 'center' });
     y += 10;
     doc.setDrawColor(180); doc.line(15, y, pageW - 15, y); y += 8;
     doc.setFontSize(11);
@@ -117,7 +117,7 @@ export default function PrescriptionDetail() {
   const openShareDialog = () => {
     setShareTitle(`Receita Digital — Dr(a). ${doctorName}`);
     setShareText(
-      `Olá! Partilho contigo a minha receita digital emitida por Dr(a). ${doctorName} a ${new Date(presc.created_at).toLocaleDateString('pt-PT')}.\n\nMedicamentos: ${items.length} item(ns).\n${chosen ? `Farmácia: ${chosen.name}\n` : ''}\nMoçambiApp Health Hub`
+      `Olá! Partilho contigo a minha receita digital emitida por Dr(a). ${doctorName} a ${new Date(presc.created_at).toLocaleDateString('pt-PT')}.\n\nMedicamentos: ${items.length} item(ns).\n${chosen ? `Farmácia: ${chosen.name}\n` : ''}\nMedWallet`
     );
     setShareOpen(true);
   };
