@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,11 +20,10 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-// Platform settings (would normally be stored in a settings table)
 const defaultSettings = {
   platformName: 'MedWallet',
   supportWhatsApp: '258841234567',
-  supportEmail: 'suporte@mocambiapp.co.mz',
+  supportEmail: 'suporte@medwallet.co.mz',
   defaultDeliveryFee: 50,
   minOrderValue: 100,
   maxDeliveryRadius: 10,
@@ -41,13 +40,40 @@ const defaultSettings = {
 export default function AdminSettings() {
   const [settings, setSettings] = useState(defaultSettings);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from('platform_settings').select('key, value');
+      if (data && data.length) {
+        const loaded: any = { ...defaultSettings };
+        data.forEach((r: any) => {
+          if (r.key in defaultSettings) {
+            const v = r.value;
+            loaded[r.key] = typeof v === 'string' ? v.replace(/^"|"$/g, '') : v;
+          }
+        });
+        setSettings(loaded);
+      }
+      setLoading(false);
+    })();
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
-    // Simulate saving (in real app, save to Supabase settings table)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    toast.success('Configurações salvas com sucesso!');
-    setSaving(false);
+    try {
+      const rows = Object.entries(settings).map(([key, value]) => ({
+        key,
+        value: value as any,
+      }));
+      const { error } = await supabase.from('platform_settings').upsert(rows, { onConflict: 'key' });
+      if (error) throw error;
+      toast.success('Configurações guardadas');
+    } catch (e: any) {
+      toast.error('Erro ao guardar: ' + e.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const updateSetting = <K extends keyof typeof defaultSettings>(
