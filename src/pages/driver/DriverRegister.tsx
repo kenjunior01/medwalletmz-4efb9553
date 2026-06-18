@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { ArrowLeft, Truck, Loader2, User, Phone, Bike, Car } from 'lucide-react';
+import { LicenseUpload } from '@/components/upload/LicenseUpload';
 
 const vehicleTypes = [
   { value: 'bicycle', label: 'Bicicleta', icon: Bike },
@@ -31,7 +32,9 @@ export default function DriverRegister() {
     phone: '',
     city: '',
     vehicleType: '',
-    licensePlate: ''
+    licensePlate: '',
+    licenseCartaUrl: '',
+    licenseViaturaUrl: '',
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -55,6 +58,14 @@ export default function DriverRegister() {
       toast.error('Placa do veículo é obrigatória');
       return false;
     }
+    if (!formData.licenseCartaUrl) {
+      toast.error('Carrega a tua carta de condução');
+      return false;
+    }
+    if (formData.vehicleType !== 'bicycle' && !formData.licenseViaturaUrl) {
+      toast.error('Carrega o registo da viatura');
+      return false;
+    }
     return true;
   };
 
@@ -76,7 +87,9 @@ export default function DriverRegister() {
           default_city: formData.city,
           vehicle_type: formData.vehicleType,
           license_plate: formData.licensePlate || null,
-          is_available: true
+          is_available: true,
+          license_carta_url: formData.licenseCartaUrl || null,
+          license_viatura_url: formData.licenseViaturaUrl || null,
         })
         .eq('user_id', user.id);
 
