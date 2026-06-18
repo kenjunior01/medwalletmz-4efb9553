@@ -276,6 +276,25 @@ export default function DriverRegister() {
                   />
                 </div>
               )}
+
+              <div className="pt-2 space-y-3">
+                <LicenseUpload
+                  slot="carta"
+                  label="Carta de condução *"
+                  description="Foto nítida da frente da tua carta"
+                  value={formData.licenseCartaUrl}
+                  onUploaded={(p) => handleInputChange('licenseCartaUrl', p)}
+                />
+                {formData.vehicleType && formData.vehicleType !== 'bicycle' && (
+                  <LicenseUpload
+                    slot="viatura"
+                    label="Registo da viatura *"
+                    description="Livrete ou documento oficial da viatura"
+                    value={formData.licenseViaturaUrl}
+                    onUploaded={(p) => handleInputChange('licenseViaturaUrl', p)}
+                  />
+                )}
+              </div>
             </div>
 
             {/* Summary Card */}
