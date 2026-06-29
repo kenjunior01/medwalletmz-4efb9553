@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
+import { z } from 'zod';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Settings, 
   Bell, 
@@ -34,13 +36,28 @@ const defaultSettings = {
   allowNewStoreRegistrations: true,
   allowNewDriverRegistrations: true,
   defaultCity: 'Maputo',
-  currency: 'MZN'
+  currency: 'MZN',
+  nearby_radius_km: 25,
+  nearby_ranking: 'distance' as 'distance' | 'rating' | 'price',
 };
+
+const settingsSchema = z.object({
+  platformName: z.string().trim().min(2, 'Nome muito curto').max(60),
+  supportWhatsApp: z.string().trim().regex(/^\d{9,15}$/, 'Apenas dígitos (9-15)'),
+  supportEmail: z.string().trim().email('Email inválido').max(120),
+  defaultDeliveryFee: z.number().min(0).max(10000),
+  minOrderValue: z.number().min(0).max(100000),
+  maxDeliveryRadius: z.number().min(1).max(200),
+  nearby_radius_km: z.number().min(1, 'Raio mínimo 1 km').max(200, 'Raio máximo 200 km'),
+  nearby_ranking: z.enum(['distance', 'rating', 'price']),
+  defaultCity: z.string().trim().min(2).max(40),
+});
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState(defaultSettings);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     (async () => {
@@ -50,16 +67,58 @@ export default function AdminSettings() {
         data.forEach((r: any) => {
           if (r.key in defaultSettings) {
             const v = r.value;
-            loaded[r.key] = typeof v === 'string' ? v.replace(/^"|"$/g, '') : v;
+            let parsed: any = v;
+            if (typeof v === 'string') {
+              const s = v.replace(/^"|"$/g, '');
+              if (s === 'true') parsed = true;
+              else if (s === 'false') parsed = false;
+              else if (!Number.isNaN(Number(s)) && s.trim() !== '' && typeof (defaultSettings as any)[r.key] === 'number') parsed = Number(s);
+              else parsed = s;
+            }
+            loaded[r.key] = parsed;
           }
         });
         setSettings(loaded);
       }
       setLoading(false);
     })();
+
+    // Realtime: refresh on remote changes
+    const ch = supabase.channel('admin-settings-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'platform_settings' }, async () => {
+        const { data } = await supabase.from('platform_settings').select('key, value');
+        if (!data) return;
+        const loaded: any = { ...defaultSettings };
+        data.forEach((r: any) => {
+          if (r.key in defaultSettings) {
+            const v = r.value;
+            let parsed: any = v;
+            if (typeof v === 'string') {
+              const s = v.replace(/^"|"$/g, '');
+              if (s === 'true') parsed = true;
+              else if (s === 'false') parsed = false;
+              else if (!Number.isNaN(Number(s)) && s.trim() !== '' && typeof (defaultSettings as any)[r.key] === 'number') parsed = Number(s);
+              else parsed = s;
+            }
+            loaded[r.key] = parsed;
+          }
+        });
+        setSettings(loaded);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
   }, []);
 
   const handleSave = async () => {
+    const parsed = settingsSchema.safeParse(settings);
+    if (!parsed.success) {
+      const fe: Record<string, string> = {};
+      parsed.error.issues.forEach(i => { fe[i.path[0] as string] = i.message; });
+      setErrors(fe);
+      toast.error('Corrige os campos destacados antes de guardar');
+      return;
+    }
+    setErrors({});
     setSaving(true);
     try {
       const rows = Object.entries(settings).map(([key, value]) => ({
@@ -136,6 +195,7 @@ export default function AdminSettings() {
                   onChange={(e) => updateSetting('supportWhatsApp', e.target.value)}
                   placeholder="258xxxxxxxxx"
                 />
+                {errors.supportWhatsApp && <p className="text-xs text-destructive">{errors.supportWhatsApp}</p>}
               </div>
               <div className="space-y-2">
                 <Label>Email Suporte</Label>
@@ -144,6 +204,7 @@ export default function AdminSettings() {
                   value={settings.supportEmail}
                   onChange={(e) => updateSetting('supportEmail', e.target.value)}
                 />
+                {errors.supportEmail && <p className="text-xs text-destructive">{errors.supportEmail}</p>}
               </div>
             </div>
             <div className="space-y-2">
@@ -152,6 +213,32 @@ export default function AdminSettings() {
                 value={settings.defaultCity}
                 onChange={(e) => updateSetting('defaultCity', e.target.value)}
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 pt-2 border-t">
+              <div className="space-y-2">
+                <Label>Raio máximo "Perto de ti" (km)</Label>
+                <Input
+                  type="number" min={1} max={200}
+                  value={settings.nearby_radius_km}
+                  onChange={(e) => updateSetting('nearby_radius_km', parseInt(e.target.value) || 0)}
+                />
+                {errors.nearby_radius_km && <p className="text-xs text-destructive">{errors.nearby_radius_km}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label>Método de ranking de prestadores</Label>
+                <Select
+                  value={settings.nearby_ranking}
+                  onValueChange={(v) => updateSetting('nearby_ranking', v as any)}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="distance">Distância (mais perto primeiro)</SelectItem>
+                    <SelectItem value="rating">Avaliação (melhor primeiro)</SelectItem>
+                    <SelectItem value="price">Preço (mais barato primeiro)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardContent>
         </Card>
