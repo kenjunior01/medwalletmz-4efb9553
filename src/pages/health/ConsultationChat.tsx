@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Send, ShieldCheck, FileSignature, FileText, Video, Paperclip, CheckCircle2, Loader2, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { PostConsultationReview } from '@/components/health/PostConsultationReview';
+import { KlipyStickerPicker } from '@/components/klipy/KlipyStickerPicker';
 
 interface Msg {
   id: string;
@@ -214,6 +215,21 @@ export default function ConsultationChat() {
         <Button variant="ghost" size="icon" onClick={() => fileRef.current?.click()} disabled={uploading}>
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
         </Button>
+        {user && consultation && (
+          <KlipyStickerPicker
+            customerId={user.id}
+            onPick={async (url, title) => {
+              await supabase.from('consultation_messages').insert({
+                consultation_id: consultation.id,
+                sender_id: user.id,
+                message: `✨ ${title}`,
+                attachment_url: url,
+                attachment_type: 'image',
+                attachment_name: title,
+              });
+            }}
+          />
+        )}
         <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
