@@ -369,6 +369,8 @@ export default function OrderTracking() {
           </CardContent>
         </Card>
 
+        {isDelivered && user && <CelebrationSticker userId={user.id} />}
+
         {/* Driver Info */}
         {driver && ['ready', 'in_transit'].includes(order.status) && (
           <Card>
