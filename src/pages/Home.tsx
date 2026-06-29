@@ -222,6 +222,8 @@ export default function Home() {
 
       <NearbyProvidersWidget />
 
+      <KlipyBanner query="healthcare smile" />
+
       {/* ============ TOP MÉDICOS ============ */}
       {topDoctors && topDoctors.length > 0 && (
         <section className="mt-6">
