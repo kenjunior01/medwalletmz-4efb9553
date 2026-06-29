@@ -13,6 +13,33 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
+function CelebrationSticker({ userId }: { userId: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.functions.invoke('klipy', {
+        body: { kind: 'search', media: 'stickers', query: 'thank you celebration', per_page: 6, customer_id: userId },
+      });
+      const items = data?.data?.data || [];
+      const pick = items[Math.floor(Math.random() * Math.min(items.length, 6))];
+      const u = pick?.file?.md?.gif?.url || pick?.file?.sm?.gif?.url;
+      if (u) setUrl(u);
+    })();
+  }, [userId]);
+  if (!url) return null;
+  return (
+    <Card className="overflow-hidden border-green-200 bg-green-50/40 dark:bg-green-950/20">
+      <CardContent className="p-4 flex items-center gap-3">
+        <img src={url} alt="Obrigado!" className="h-24 w-24 rounded-lg object-cover" />
+        <div>
+          <p className="font-bold text-green-700 dark:text-green-300">Obrigado pela tua compra! 🎉</p>
+          <p className="text-xs text-muted-foreground">Esperamos ver-te novamente em breve.</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 interface OrderDetails {
   id: string;
   status: string;
