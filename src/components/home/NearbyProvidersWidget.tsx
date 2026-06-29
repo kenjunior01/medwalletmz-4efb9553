@@ -5,12 +5,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLocation } from '@/contexts/LocationContext';
 import { MapPin, Stethoscope, Pill, Navigation, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-const PAGE_KM = 25;
+import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 
 export function NearbyProvidersWidget() {
   const navigate = useNavigate();
   const { coordinates, city, requestLocation, loading, calculateDistance } = useLocation();
+  const { settings } = usePlatformSettings();
+  const radiusKm = Number(settings.nearby_radius_km) || 25;
+  const ranking = (settings.nearby_ranking as string) || 'distance';
 
   useEffect(() => {
     if (!coordinates) requestLocation();
@@ -55,16 +57,18 @@ export function NearbyProvidersWidget() {
         return { ...it, kind, distance: dist };
       });
     const all = [...enrich(pharmacies || [], 'pharmacy'), ...enrich(doctors || [], 'doctor')];
-    return all
-      .sort((a, b) => {
-        if (a.distance == null && b.distance == null) return 0;
-        if (a.distance == null) return 1;
-        if (b.distance == null) return -1;
-        return a.distance - b.distance;
-      })
-      .filter(it => it.distance == null || it.distance <= PAGE_KM)
-      .slice(0, 8);
-  }, [pharmacies, doctors, calculateDistance]);
+    const filtered = all.filter(it => it.distance == null || it.distance <= radiusKm);
+    const sorter = (a: any, b: any) => {
+      if (ranking === 'rating') return (Number(b.rating) || 0) - (Number(a.rating) || 0);
+      if (ranking === 'price') return (Number(a.consultation_fee || a.delivery_fee) || 0) - (Number(b.consultation_fee || b.delivery_fee) || 0);
+      // distance
+      if (a.distance == null && b.distance == null) return 0;
+      if (a.distance == null) return 1;
+      if (b.distance == null) return -1;
+      return a.distance - b.distance;
+    };
+    return filtered.sort(sorter).slice(0, 8);
+  }, [pharmacies, doctors, calculateDistance, radiusKm, ranking]);
 
   return (
     <section className="px-4 mt-6">
@@ -74,7 +78,7 @@ export function NearbyProvidersWidget() {
             <Navigation className="h-4 w-4 text-primary" /> Perto de ti
           </h2>
           <p className="text-xs text-muted-foreground">
-            {coordinates ? `Prestadores ordenados por distância · ${city}` : 'Ativa a localização para resultados precisos'}
+            {coordinates ? `Raio ${radiusKm} km · ordenado por ${ranking === 'rating' ? 'avaliação' : ranking === 'price' ? 'preço' : 'distância'} · ${city}` : 'Ativa a localização para resultados precisos'}
           </p>
         </div>
         {!coordinates && (
