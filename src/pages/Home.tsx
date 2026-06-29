@@ -6,6 +6,7 @@ import {
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
 import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
+import { KlipyBanner } from "@/components/klipy/KlipyBanner";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRole";
