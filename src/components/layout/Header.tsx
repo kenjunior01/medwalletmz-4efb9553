@@ -59,12 +59,10 @@ export function Header() {
     let cancelled = false;
     const load = async () => {
       const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const [{ count: rxC }, { count: orC }] = await Promise.all([
-        supabase.from('prescriptions').select('id', { count: 'exact', head: true })
-          .eq('patient_id', user.id).gte('created_at', since),
-        supabase.from('orders').select('id', { count: 'exact', head: true })
-          .eq('customer_id', user.id).in('status', ['out_for_delivery', 'ready', 'in_transit']),
-      ]);
+      const rxQ: any = (supabase as any).from('prescriptions').select('id', { count: 'exact', head: true }).eq('patient_id', user.id).gte('created_at', since);
+      const orQ: any = (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('customer_id', user.id).in('status', ['out_for_delivery', 'ready', 'in_transit']);
+      const [rxR, orR] = await Promise.all([rxQ, orQ]);
+      const rxC = rxR?.count || 0; const orC = orR?.count || 0;
       if (!cancelled) setUnread((rxC || 0) + (orC || 0));
     };
     load();
