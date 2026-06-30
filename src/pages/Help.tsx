@@ -15,6 +15,11 @@ import {
   Star,
   Shield,
   Clock,
+  Wallet,
+  Handshake,
+  BookOpen,
+  Bell,
+  Stethoscope,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +30,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 const WHATSAPP_NUMBER = '258840000000';
 
@@ -59,7 +65,7 @@ const faqCategories = [
     questions: [
       {
         q: 'Como faço um pedido?',
-        a: 'Basta escolher um restaurante ou farmácia, adicionar itens ao carrinho e finalizar o checkout com o seu endereço e método de pagamento preferido.',
+        a: 'Basta escolher uma farmácia, adicionar itens ao carrinho e finalizar o checkout com o seu endereço e método de pagamento preferido.',
       },
       {
         q: 'Posso cancelar um pedido?',
@@ -91,19 +97,41 @@ const faqCategories = [
   },
   {
     icon: CreditCard,
-    title: 'Pagamentos',
+    title: 'Pagamentos & M-Pesa',
     questions: [
       {
-        q: 'Quais métodos de pagamento são aceitos?',
-        a: 'Aceitamos M-Pesa, e-Mola e Mkesh. O pagamento é feito na confirmação do pedido.',
+        q: 'Quais métodos de pagamento são aceites?',
+        a: 'Aceitamos M-Pesa, e-Mola, Mkesh e a carteira MedWallet (MZN). O pagamento é feito na confirmação do pedido ou da consulta.',
+      },
+      {
+        q: 'Como deposito na minha carteira MedWallet via M-Pesa?',
+        a: 'Abre M-Pesa → "Enviar dinheiro" → insere o número MedWallet → mete o valor → confirma. O saldo é creditado em segundos. Vê o passo-a-passo ilustrado abaixo.',
       },
       {
         q: 'É seguro pagar pelo app?',
-        a: 'Sim! Usamos encriptação de ponta a ponta e não armazenamos dados sensíveis.',
+        a: 'Sim! Usamos encriptação de ponta a ponta e não armazenamos dados sensíveis. As transações M-Pesa são processadas pela Vodacom.',
       },
       {
         q: 'Posso pedir reembolso?',
-        a: 'Sim, em caso de problemas com o pedido. Entre em contacto com o suporte para solicitar.',
+        a: 'Sim, em caso de problemas com o pedido ou consulta. Entre em contacto com o suporte via WhatsApp para solicitar.',
+      },
+    ],
+  },
+  {
+    icon: Stethoscope,
+    title: 'Consultas & Telemedicina',
+    questions: [
+      {
+        q: 'Como funciona a teleconsulta por vídeo?',
+        a: 'Marca a consulta, e na hora agendada recebes um botão "Iniciar vídeo" no chat. Funciona directamente no browser, sem instalar nada.',
+      },
+      {
+        q: 'Posso avaliar o médico depois?',
+        a: 'Sim! Após cada consulta, podes dar 1–5 estrelas e deixar um comentário. A tua avaliação ajuda outros pacientes.',
+      },
+      {
+        q: 'Não há médico na minha especialidade. O que faço?',
+        a: 'Podes juntar-te à lista de espera — avisamos-te assim que houver profissional disponível. Entretanto, fala com clínico geral ou faz triagem com IA.',
       },
     ],
   },
@@ -217,6 +245,56 @@ export default function Help() {
           </CardContent>
         </Card>
 
+        {/* M-Pesa Quick Guide (rec 5.3 — integração M-Pesa) */}
+        <Card className="overflow-hidden border-amber-500/30 bg-amber-500/5">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-9 w-9 rounded-xl bg-amber-500/15 flex items-center justify-center">
+                <Wallet className="h-4 w-4 text-amber-600" />
+              </div>
+              <div>
+                <p className="font-bold text-sm">M-Pesa em 4 passos</p>
+                <p className="text-[11px] text-muted-foreground">Como depositar na tua carteira MedWallet</p>
+              </div>
+              <Badge className="ml-auto bg-amber-500/20 text-amber-700 border-amber-500/30 text-[9px]">RECOMENDADO</Badge>
+            </div>
+            <ol className="text-xs space-y-1.5 mt-2 list-decimal pl-5 text-foreground/90">
+              <li>Abre o <strong>M-Pesa</strong> e escolhe <strong>Enviar dinheiro</strong>.</li>
+              <li>Insere o número MedWallet: <strong>84 000 0000</strong>.</li>
+              <li>Indica o valor (mín. 50 MZN) e confirma com o teu PIN.</li>
+              <li>Recebes o saldo na carteira MedWallet em segundos.</li>
+            </ol>
+            <p className="text-[10px] text-muted-foreground mt-2 italic">
+              Também aceitamos <strong>e-Mola</strong> e <strong>Mkesh</strong> nas consultas e farmácia.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Quick actions (rec 5.2 / 5.3 — parcerias + educação + lista de espera) */}
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={() => navigate('/health/education')}
+            className="bento-card p-3 flex flex-col items-center gap-1 text-center hover:shadow-md transition"
+          >
+            <BookOpen className="h-5 w-5 text-primary" />
+            <span className="text-[10px] font-semibold">Saúde MZ</span>
+          </button>
+          <button
+            onClick={() => navigate('/partners')}
+            className="bento-card p-3 flex flex-col items-center gap-1 text-center hover:shadow-md transition"
+          >
+            <Handshake className="h-5 w-5 text-secondary" />
+            <span className="text-[10px] font-semibold">Parcerias</span>
+          </button>
+          <button
+            onClick={() => navigate('/referrals')}
+            className="bento-card p-3 flex flex-col items-center gap-1 text-center hover:shadow-md transition"
+          >
+            <Bell className="h-5 w-5 text-gold" />
+            <span className="text-[10px] font-semibold">Convida</span>
+          </button>
+        </div>
+
         {/* FAQ */}
         <div className="space-y-4">
           <h3 className="font-semibold text-lg">Perguntas Frequentes</h3>
@@ -261,7 +339,7 @@ export default function Help() {
           </div>
           <div className="text-center">
             <MapPin className="h-8 w-8 mx-auto text-primary mb-2" />
-            <p className="text-xs font-medium">6 Cidades</p>
+            <p className="text-xs font-medium">Maputo & mais</p>
           </div>
         </div>
       </div>

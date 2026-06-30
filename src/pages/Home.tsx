@@ -1,12 +1,14 @@
 import {
   Stethoscope, Sparkles, FileText, Pill, MessageCircle, ArrowRight, Gift, Wallet,
   Plus, Briefcase, Star, TrendingUp, Calendar, Activity, Zap, Heart, ShieldCheck,
-  Truck, Building2, ChevronRight,
+  Truck, Building2, ChevronRight, BookOpen,
 } from "lucide-react";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
 import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
 import { KlipyBanner } from "@/components/klipy/KlipyBanner";
+import { PersonalizedForYou } from "@/components/health/PersonalizedForYou";
+import { ReferralBanner } from "@/components/referrals/ReferralBanner";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRole";
@@ -221,6 +223,27 @@ export default function Home() {
       <FollowUpReminders />
 
       <NearbyProvidersWidget />
+
+      <PersonalizedForYou />
+
+      {/* Educational content strip (rec 4.1 — Conteúdo Educacional Localizado) */}
+      <section className="px-4 mt-5">
+        <button
+          onClick={() => navigate('/health/education')}
+          className="w-full bento-card p-4 flex items-center gap-3 bg-gradient-to-r from-amber-500/10 via-transparent to-secondary/10 border-amber-500/30"
+        >
+          <div className="h-11 w-11 rounded-xl bg-amber-500/15 flex items-center justify-center shrink-0">
+            <BookOpen className="h-5 w-5 text-amber-600" />
+          </div>
+          <div className="flex-1 text-left min-w-0">
+            <p className="font-bold text-sm">Saúde em Moçambique</p>
+            <p className="text-[11px] text-muted-foreground">Malária, HIV, hipertensão e mais — pela equipa clínica</p>
+          </div>
+          <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+        </button>
+      </section>
+
+      <ReferralBanner />
 
       <KlipyBanner query="healthcare smile" />
 

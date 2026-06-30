@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Stethoscope, Star, Clock, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Stethoscope, Star, Clock, CheckCircle2, ArrowLeft, Bell, Sparkles, Video, MessageCircle } from 'lucide-react';
+import WaitlistDialog from '@/components/providers/WaitlistDialog';
 
 interface Specialty { id: string; name: string; slug: string; icon: string }
 interface Doctor {
@@ -29,6 +30,12 @@ export default function Doctors() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+
+  const activeSpec = useMemo(
+    () => specialties.find(s => s.id === selectedSpecialty) ?? null,
+    [specialties, selectedSpecialty]
+  );
 
   useEffect(() => {
     supabase.from('medical_specialties').select('*').order('name').then(({ data }) => {
@@ -93,10 +100,12 @@ export default function Doctors() {
       <div className="p-4 space-y-3">
         {loading && Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
         {!loading && doctors.length === 0 && (
-          <div className="text-center py-12">
-            <Stethoscope className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-            <p className="text-muted-foreground">Nenhum médico disponível nesta especialidade.</p>
-          </div>
+          <EmptyState
+            onJoinWaitlist={() => setWaitlistOpen(true)}
+            onTriage={() => navigate('/health/triage')}
+            onEducation={() => navigate('/health/education')}
+            onChat={() => navigate('/health/consultations')}
+          />
         )}
         {doctors.map((d) => (
           <Card key={d.id} className="overflow-hidden">
@@ -130,6 +139,102 @@ export default function Doctors() {
           </Card>
         ))}
       </div>
+
+      <WaitlistDialog
+        open={waitlistOpen}
+        onOpenChange={setWaitlistOpen}
+        kind="doctor"
+        specialtyId={activeSpec?.id}
+        specialtyName={activeSpec?.name}
+      />
     </div>
+  );
+}
+
+/**
+ * EmptyState — Recomendação 1.2 do relatório estratégico:
+ * "Sem médicos disponíveis nesta especialidade" pode ser desmotivador.
+ * Oferecemos alternativas concretas em vez de uma tela morta.
+ */
+function EmptyState({
+  onJoinWaitlist, onTriage, onEducation, onChat,
+}: {
+  onJoinWaitlist: () => void;
+  onTriage: () => void;
+  onEducation: () => void;
+  onChat: () => void;
+}) {
+  return (
+    <Card className="overflow-hidden border-none shadow-md">
+      <div className="bg-gradient-to-br from-primary/10 via-secondary/5 to-pharmacy/10 p-6 text-center">
+        <div className="h-16 w-16 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-3">
+          <Stethoscope className="h-8 w-8 text-primary" />
+        </div>
+        <h3 className="font-black text-lg">Ainda sem médicos nesta especialidade</h3>
+        <p className="text-xs text-muted-foreground mt-1.5 max-w-xs mx-auto">
+          Estamos a expandir a rede de profissionais em Maputo. Entretanto, há formas de obter ajuda já.
+        </p>
+      </div>
+
+      <CardContent className="p-4 space-y-2.5">
+        <button
+          onClick={onJoinWaitlist}
+          className="w-full flex items-center gap-3 p-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition"
+        >
+          <div className="h-9 w-9 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+            <Bell className="h-4 w-4" />
+          </div>
+          <div className="text-left flex-1">
+            <p className="font-bold text-sm">Avisa-me quando houver</p>
+            <p className="text-[11px] opacity-90">Notificação imediata assim que estiver disponível</p>
+          </div>
+        </button>
+
+        <button
+          onClick={onTriage}
+          className="w-full flex items-center gap-3 p-3 rounded-xl bg-secondary/15 hover:bg-secondary/25 transition"
+        >
+          <div className="h-9 w-9 rounded-lg bg-secondary/30 flex items-center justify-center shrink-0">
+            <Sparkles className="h-4 w-4 text-secondary-foreground" />
+          </div>
+          <div className="text-left flex-1">
+            <p className="font-bold text-sm">Fazer triagem com IA agora</p>
+            <p className="text-[11px] text-muted-foreground">Avaliação inicial dos sintomas em segundos</p>
+          </div>
+        </button>
+
+        <button
+          onClick={onChat}
+          className="w-full flex items-center gap-3 p-3 rounded-xl bg-muted/50 hover:bg-muted transition"
+        >
+          <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+            <MessageCircle className="h-4 w-4 text-foreground" />
+          </div>
+          <div className="text-left flex-1">
+            <p className="font-bold text-sm">Chat médico geral</p>
+            <p className="text-[11px] text-muted-foreground">Fala com clínico geral (qualquer especialidade)</p>
+          </div>
+        </button>
+
+        <button
+          onClick={onEducation}
+          className="w-full flex items-center gap-3 p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition"
+        >
+          <div className="h-9 w-9 rounded-lg bg-amber-500/15 flex items-center justify-center shrink-0">
+            <Video className="h-4 w-4 text-amber-600" />
+          </div>
+          <div className="text-left flex-1">
+            <p className="font-bold text-sm">Ler artigos de saúde</p>
+            <p className="text-[11px] text-muted-foreground">Conteúdo educativo sobre a sua condição</p>
+          </div>
+        </button>
+      </CardContent>
+
+      <div className="px-4 pb-4 pt-1">
+        <p className="text-[10px] text-muted-foreground text-center">
+          És médico? <button className="text-primary underline" onClick={() => window.location.assign('/doctor/register')}>Junta-te à MedWallet</button>
+        </p>
+      </div>
+    </Card>
   );
 }

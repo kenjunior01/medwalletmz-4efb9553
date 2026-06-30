@@ -75,6 +75,9 @@ import PaymentSettings from "./pages/PaymentSettings";
 import Triage from "./pages/health/Triage";
 import MedicalRecords from "./pages/health/MedicalRecords";
 import Exams from "./pages/health/Exams";
+import HealthEducation from "./pages/health/HealthEducation";
+import Partners from "./pages/Partners";
+import WaitlistDialog from "@/components/providers/WaitlistDialog";
 import VideoConsultation from "./pages/health/VideoConsultation";
 import Referrals from "./pages/Referrals";
 import Wallet from "./pages/Wallet";
@@ -125,6 +128,9 @@ const App = () => (
                   <Route path="/health/triage" element={<Triage />} />
                   <Route path="/health/records" element={<MedicalRecords />} />
                   <Route path="/health/exams" element={<Exams />} />
+                  <Route path="/health/education" element={<HealthEducation />} />
+                  <Route path="/health/education/:slug" element={<HealthEducation />} />
+                  <Route path="/partners" element={<Partners />} />
                   <Route path="/referrals" element={<Referrals />} />
                   <Route path="/wallet" element={<Wallet />} />
                 </Route>
