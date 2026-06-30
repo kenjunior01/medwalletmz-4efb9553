@@ -377,6 +377,54 @@ export default function AdminSettings() {
                 onCheckedChange={(checked) => updateSetting('enablePromotions', checked)}
               />
             </div>
+
+            <Separator />
+            <p className="text-xs uppercase font-bold tracking-wider text-muted-foreground">Tipos de notificação push</p>
+            {[
+              { k: 'notify_new_prescription', label: 'Nova receita emitida', desc: 'Avisar pacientes quando o médico emite receita' },
+              { k: 'notify_order_in_transit', label: 'Pedido em trânsito', desc: 'Pedidos a caminho / saíram para entrega' },
+              { k: 'notify_order_delivered', label: 'Pedido entregue', desc: 'Confirmar entrega ao cliente' },
+              { k: 'notify_consultation_status', label: 'Estado da consulta', desc: 'Confirmação e início pelo médico' },
+              { k: 'notify_reminders', label: 'Lembretes', desc: 'Lembretes de consulta 1 hora antes' },
+              { k: 'notify_promotions', label: 'Promoções', desc: 'Cupões e campanhas (opt-in)' },
+            ].map(t => (
+              <div key={t.k} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div>
+                  <p className="font-medium text-sm">{t.label}</p>
+                  <p className="text-xs text-muted-foreground">{t.desc}</p>
+                </div>
+                <Switch
+                  checked={!!(settings as any)[t.k]}
+                  onCheckedChange={(v) => updateSetting(t.k as any, v as any)}
+                />
+              </div>
+            ))}
+
+            <Separator />
+            <p className="text-xs uppercase font-bold tracking-wider text-muted-foreground">Regras e limites</p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Início silêncio (h)</Label>
+                <Input type="number" min={0} max={23}
+                  value={settings.notify_quiet_hours_start}
+                  onChange={(e) => updateSetting('notify_quiet_hours_start', parseInt(e.target.value) || 0)} />
+                {errors.notify_quiet_hours_start && <p className="text-xs text-destructive">{errors.notify_quiet_hours_start}</p>}
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Fim silêncio (h)</Label>
+                <Input type="number" min={0} max={23}
+                  value={settings.notify_quiet_hours_end}
+                  onChange={(e) => updateSetting('notify_quiet_hours_end', parseInt(e.target.value) || 0)} />
+                {errors.notify_quiet_hours_end && <p className="text-xs text-destructive">{errors.notify_quiet_hours_end}</p>}
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Máx. por dia / utilizador</Label>
+                <Input type="number" min={1} max={200}
+                  value={settings.notify_max_per_day}
+                  onChange={(e) => updateSetting('notify_max_per_day', parseInt(e.target.value) || 0)} />
+                {errors.notify_max_per_day && <p className="text-xs text-destructive">{errors.notify_max_per_day}</p>}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
