@@ -16,9 +16,9 @@ import {
   Wallet,
   Percent,
   Gift,
-  Sliders
-  ,
-  Receipt
+  Sliders,
+  Receipt,
+  Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -39,6 +39,7 @@ const menuItems = [
   { icon: Crown, label: 'Subscrições', path: '/admin/subscriptions' },
   { icon: Wallet, label: 'Contas Pagamento', path: '/admin/payment-accounts' },
   { icon: BarChart3, label: 'Relatórios', path: '/admin/reports' },
+  { icon: Upload, label: 'Importar Dados', path: '/admin/import' },
   { icon: Settings, label: 'Configurações', path: '/admin/settings' },
 ];
 

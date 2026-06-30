@@ -83,6 +83,7 @@ import AdminCommissions from "./pages/admin/AdminCommissions";
 import AdminPlatformSettings from "./pages/admin/AdminPlatformSettings";
 import AdminReferrals from "./pages/admin/AdminReferrals";
 import AdminTransactions from "./pages/admin/AdminTransactions";
+import AdminImport from "./pages/admin/AdminImport";
 
 const queryClient = new QueryClient();
 
@@ -153,6 +154,7 @@ const App = () => (
                   <Route path="platform-settings" element={<AdminPlatformSettings />} />
                   <Route path="referrals" element={<AdminReferrals />} />
                   <Route path="transactions" element={<AdminTransactions />} />
+                  <Route path="import" element={<AdminImport />} />
                 </Route>
                 
                 {/* Store Owner Routes */}
