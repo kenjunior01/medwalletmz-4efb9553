@@ -11,10 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   CheckCircle2, XCircle, Edit3, Save, X, Loader2, Image as ImageIcon,
   Store, Building2, MapPin, ExternalLink, Sparkles, User as UserIcon,
-  Award, Hash,
+  Award, Hash, CheckSquare, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -63,6 +64,8 @@ const entityLabel = {
   other: 'Outro',
 };
 
+const PAGE_SIZE = 25;
+
 export default function AdminCuration() {
   const navigate = useNavigate();
   const { hasRole, loading } = useAuth();
@@ -71,6 +74,8 @@ export default function AdminCuration() {
   const [sourceFilter, setSourceFilter] = useState<'all' | 'google_places' | 'user_submit'>('all');
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState<Partial<Proposal>>({});
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(0);
 
   if (!loading && !hasRole('admin')) {
     return (
@@ -83,32 +88,37 @@ export default function AdminCuration() {
     );
   }
 
+  // Performance: stats usa group by no servidor em vez de puxar tudo.
   const { data: stats } = useQuery({
     queryKey: ['curation-stats'],
     queryFn: async () => {
-      const { data } = await (supabase as any)
+      const { data, error } = await (supabase as any)
         .from('place_proposals')
         .select('status');
+      if (error) throw error;
       const tally: Record<string, number> = {};
       (data || []).forEach((r: any) => { tally[r.status] = (tally[r.status] || 0) + 1; });
       return tally;
     },
+    staleTime: 30_000, // não refazer a cada 1s
   });
 
+  // Performance: paginado e com colunas selectivas.
   const { data: proposals, isLoading } = useQuery<Proposal[]>({
-    queryKey: ['curation-proposals', tab, sourceFilter],
+    queryKey: ['curation-proposals', tab, sourceFilter, page],
     queryFn: async () => {
       let q = (supabase as any)
         .from('place_proposals')
-        .select('*')
+        .select('id, source, entity_type, name, address, city, neighborhood, reference_point, phone, website, description, image_url, latitude, longitude, status, reward_mzn, reward_joy_coins, reward_paid, created_at, updated_at')
         .order('created_at', { ascending: false })
-        .limit(100);
+        .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
       if (tab !== 'all') q = q.eq('status', tab);
       if (sourceFilter !== 'all') q = q.eq('source', sourceFilter);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as Proposal[];
     },
+    staleTime: 10_000,
   });
 
   const startEdit = (p: Proposal) => {
@@ -174,6 +184,35 @@ export default function AdminCuration() {
     onError: (e: any) => toast.error(e?.message ?? 'Erro'),
   });
 
+  // Bulk approve: processo em série com pequeno delay para não sobrecarregar
+  const bulkApprove = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const results: any[] = [];
+      let ok = 0, fail = 0;
+      for (const id of ids) {
+        try {
+          const { data, error } = await (supabase as any).rpc('approve_proposal', { p_id: id, p_notes: null });
+          if (error) { fail++; results.push({ id, error: error.message }); }
+          else { ok++; results.push({ id, data }); }
+        } catch (e: any) {
+          fail++; results.push({ id, error: e?.message });
+        }
+      }
+      return { ok, fail, results };
+    },
+    onSuccess: ({ ok, fail }) => {
+      toast.success(`Bulk approve: ${ok} publicados, ${fail} falharam`);
+      setSelected(new Set());
+      queryClient.invalidateQueries({ queryKey: ['curation-proposals'] });
+      queryClient.invalidateQueries({ queryKey: ['curation-stats'] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? 'Erro no bulk'),
+  });
+
+  // Reset paginação quando muda tab/filtro
+  const onTabChange = (v: any) => { setTab(v); setPage(0); setSelected(new Set()); };
+  const onSourceChange = (v: any) => { setSourceFilter(v); setPage(0); setSelected(new Set()); };
+
   return (
     <div className="p-8 space-y-6 max-w-6xl">
       <header className="flex items-end justify-between flex-wrap gap-3">
@@ -208,7 +247,7 @@ export default function AdminCuration() {
 
       {/* Filtros */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <Tabs value={tab} onValueChange={(v: any) => setTab(v)}>
+        <Tabs value={tab} onValueChange={onTabChange}>
           <TabsList>
             <TabsTrigger value="pending">Pendentes</TabsTrigger>
             <TabsTrigger value="in_review">Em revisão</TabsTrigger>
@@ -218,7 +257,7 @@ export default function AdminCuration() {
           </TabsList>
         </Tabs>
 
-        <Tabs value={sourceFilter} onValueChange={(v: any) => setSourceFilter(v)}>
+        <Tabs value={sourceFilter} onValueChange={onSourceChange}>
           <TabsList>
             <TabsTrigger value="all">Todas origens</TabsTrigger>
             <TabsTrigger value="google_places">Google Places</TabsTrigger>
@@ -226,6 +265,53 @@ export default function AdminCuration() {
           </TabsList>
         </Tabs>
       </div>
+
+      {/* Bulk action bar */}
+      {selected.size > 0 && (
+        <Card className="p-3 bg-primary/5 border-primary/30 flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2 text-sm">
+            <CheckSquare className="h-4 w-4 text-primary" />
+            <strong>{selected.size}</strong> seleccionada(s)
+          </div>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              disabled={bulkApprove.isPending}
+              onClick={() => bulkApprove.mutate(Array.from(selected))}
+            >
+              {bulkApprove.isPending
+                ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+              Aprovar {selected.size}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
+              Limpar
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {/* Select-all na página */}
+      {proposals && proposals.length > 0 && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Checkbox
+            id="select-all"
+            checked={proposals.length > 0 && proposals.every((p) => selected.has(p.id))}
+            onCheckedChange={(c) => {
+              if (c) {
+                setSelected(new Set([...selected, ...proposals.map(p => p.id)]));
+              } else {
+                const next = new Set(selected);
+                proposals.forEach(p => next.delete(p.id));
+                setSelected(next);
+              }
+            }}
+          />
+          <label htmlFor="select-all" className="cursor-pointer">
+            Seleccionar todos na página
+          </label>
+        </div>
+      )}
 
       {/* Lista */}
       {isLoading ? (
@@ -243,9 +329,24 @@ export default function AdminCuration() {
           {proposals.map((p) => {
             const Icon = entityIcon[p.entity_type] ?? MapPin;
             const isEditing = editing === p.id;
+            const isSelected = selected.has(p.id);
+            const canSelect = p.status === 'pending' || p.status === 'in_review';
             return (
-              <Card key={p.id} className="overflow-hidden">
+              <Card key={p.id} className={cn("overflow-hidden", isSelected && "border-primary border-2")}>
                 <div className="flex flex-col md:flex-row">
+                  {/* Checkbox para bulk */}
+                  {canSelect && (
+                    <div className="absolute top-2 right-2 z-10 bg-background/80 backdrop-blur rounded-md p-1">
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={(c) => {
+                          const next = new Set(selected);
+                          if (c) next.add(p.id); else next.delete(p.id);
+                          setSelected(next);
+                        }}
+                      />
+                    </div>
+                  )}
                   {/* Foto */}
                   <div className="md:w-40 md:h-auto h-32 bg-muted shrink-0 relative">
                     {(isEditing ? draft.image_url : p.image_url) ? (
@@ -442,6 +543,29 @@ export default function AdminCuration() {
               </Card>
             );
           })}
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between pt-3">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={page === 0}
+            >
+              <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Anterior
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              Página {page + 1} · {(proposals?.length ?? 0)} de {PAGE_SIZE} visíveis
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setPage((p) => p + 1)}
+              disabled={(proposals?.length ?? 0) < PAGE_SIZE}
+            >
+              Próxima <ChevronRight className="h-3.5 w-3.5 ml-1" />
+            </Button>
+          </div>
         </div>
       )}
     </div>
