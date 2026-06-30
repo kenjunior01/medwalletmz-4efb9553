@@ -39,6 +39,15 @@ const defaultSettings = {
   currency: 'MZN',
   nearby_radius_km: 25,
   nearby_ranking: 'distance' as 'distance' | 'rating' | 'price',
+  notify_new_prescription: true,
+  notify_order_in_transit: true,
+  notify_order_delivered: true,
+  notify_consultation_status: true,
+  notify_reminders: true,
+  notify_promotions: false,
+  notify_quiet_hours_start: 22,
+  notify_quiet_hours_end: 7,
+  notify_max_per_day: 20,
 };
 
 const settingsSchema = z.object({
@@ -51,6 +60,9 @@ const settingsSchema = z.object({
   nearby_radius_km: z.number().min(1, 'Raio mínimo 1 km').max(200, 'Raio máximo 200 km'),
   nearby_ranking: z.enum(['distance', 'rating', 'price']),
   defaultCity: z.string().trim().min(2).max(40),
+  notify_quiet_hours_start: z.number().min(0).max(23),
+  notify_quiet_hours_end: z.number().min(0).max(23),
+  notify_max_per_day: z.number().min(1).max(200),
 });
 
 export default function AdminSettings() {
