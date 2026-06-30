@@ -1,24 +1,20 @@
 -- ============================================================================
--- MedWallet MZ — Round 2: instalação completa (cola no SQL Editor → Run)
+-- MedWallet MZ — INSTALL COMPLETO v2 (Round 2 + fix wallet_transactions)
 -- ============================================================================
+-- Este script é IDEMPOTENTE. Podes correr várias vezes sem estragar nada.
+--
+-- Já inclui o fix: approve_proposal() usa a schema real de wallet_transactions
+-- (user_id, type, balance_after, reference_type, reference_id, status).
+--
 -- ⚠️ INSTRUÇÕES:
 --   1. Supabase Dashboard → SQL Editor → New query
---   2. Cola TODO este bloco (Ctrl+A → Ctrl+C no editor → Ctrl+V no SQL Editor)
---   3. Clica "Run" (ou Ctrl+Enter)
---   4. Se aparecer "Success. No rows returned", está OK.
---      Se der erro, copia-me o texto exacto e eu ajusto.
---
--- Cria:
---   • Tabelas: place_proposals, place_distance_cache, place_proposal_settings
---   • Funções SQL: bootstrap_admin(), approve_proposal(uuid,text), reject_proposal(uuid,text)
---   • Policies RLS para todas as tabelas novas
---   • Trigger updated_at (com helper incluído)
---   • Seed inicial de configurações (reward 25 MZN + 50 coins por aprovação)
+--   2. Cola TODO este bloco (Ctrl+A no ficheiro → Ctrl+V no editor)
+--   3. Clica "Run" (Ctrl+Enter)
+--   4. Deves ver "Success. No rows returned"
 -- ============================================================================
 
 -- ============================================================
--- 0) Helper: função updated_at — inclui CREATE OR REPLACE por segurança
---    (não substitui se já existir uma versão compatível)
+-- 0) Helper: set_updated_at (CREATE OR REPLACE — seguro)
 -- ============================================================
 create or replace function public.set_updated_at()
 returns trigger language plpgsql as $$
@@ -28,7 +24,7 @@ begin
 end; $$;
 
 -- ============================================================
--- 1) place_proposals — curadoria unificada (Google Places + utilizadores)
+-- 1) place_proposals — curadoria unificada
 -- ============================================================
 create table if not exists public.place_proposals (
   id uuid primary key default gen_random_uuid(),
@@ -122,7 +118,7 @@ create policy "proposals_admin_delete" on public.place_proposals
   );
 
 -- ============================================================
--- 3) bootstrap_admin() — auto-promove o caller a admin se não existir nenhum
+-- 3) bootstrap_admin() — auto-promove o caller (se não existir admin)
 -- ============================================================
 create or replace function public.bootstrap_admin()
 returns jsonb
@@ -156,7 +152,9 @@ end; $$;
 grant execute on function public.bootstrap_admin to authenticated;
 
 -- ============================================================
--- 4) approve_proposal() — publica e credita reward
+-- 4) approve_proposal() — COM FIX wallet_transactions
+--    Schema correcta: user_id, type, balance_after (NOT NULL),
+--    reference_type, reference_id, status, payment_method.
 -- ============================================================
 create or replace function public.approve_proposal(p_id uuid, p_notes text default null)
 returns jsonb
@@ -170,7 +168,9 @@ declare
   prop public.place_proposals;
   target_table text;
   new_id uuid;
-  wallet_id uuid;
+  new_balance numeric(12,2);
+  reward_amount numeric(10,2);
+  reward_coins int;
 begin
   if caller is null then
     raise exception 'not authenticated';
@@ -192,6 +192,12 @@ begin
     raise exception 'proposal already in terminal status: %', prop.status;
   end if;
 
+  reward_amount := coalesce(prop.reward_mzn, 25);
+  reward_coins  := coalesce(prop.reward_joy_coins, 50);
+
+  -- ============================================================
+  -- Publicar na tabela final (stores / clinics)
+  -- ============================================================
   if prop.entity_type = 'pharmacy' then
     target_table := 'stores';
     insert into public.stores (
@@ -234,22 +240,42 @@ begin
     review_notes = coalesce(p_notes, review_notes)
   where id = p_id;
 
+  -- ============================================================
+  -- Recompensa (só para submissões de utilizadores)
+  -- ============================================================
   if prop.source = 'user_submit' and prop.proposed_by is not null and not prop.reward_paid then
-    select id into wallet_id from public.wallets where user_id = prop.proposed_by limit 1;
-    if wallet_id is not null and coalesce(prop.reward_mzn,0) > 0 then
-      update public.wallets set balance_mzn = coalesce(balance_mzn,0) + prop.reward_mzn
-      where id = wallet_id;
 
-      insert into public.wallet_transactions (wallet_id, amount, kind, description, ref)
-      values (wallet_id, prop.reward_mzn, 'credit', 'Sugestao aprovada: ' || prop.name, 'place_proposal:'||p_id::text);
+    if reward_amount > 0 then
+      -- upsert defensivo
+      insert into public.wallets (user_id, balance_mzn, total_deposited, total_spent)
+      values (prop.proposed_by, 0, 0, 0)
+      on conflict (user_id) do nothing;
+
+      update public.wallets
+         set balance_mzn = coalesce(balance_mzn, 0) + reward_amount
+       where user_id = prop.proposed_by
+      returning balance_mzn into new_balance;
+
+      insert into public.wallet_transactions (
+        user_id, type, amount, balance_after,
+        reference_type, reference_id, description, status, payment_method
+      ) values (
+        prop.proposed_by, 'credit', reward_amount, new_balance,
+        'place_proposal', p_id::text,
+        'Sugestao aprovada: ' || prop.name,
+        'completed', 'system'
+      );
     end if;
 
-    insert into public.joy_coin_transactions (user_id, amount, transaction_type, description)
-    values (prop.proposed_by, coalesce(prop.reward_joy_coins, 50), 'earn', 'Sugestao aprovada: ' || prop.name);
+    if reward_coins > 0 then
+      insert into public.joy_coin_transactions (user_id, amount, transaction_type, description, reference_id)
+      values (prop.proposed_by, reward_coins, 'earn', 'Sugestao aprovada: ' || prop.name, p_id);
 
-    update public.user_gamification
-       set joy_coins = coalesce(joy_coins,0) + coalesce(prop.reward_joy_coins,50)
-     where user_id = prop.proposed_by;
+      insert into public.user_gamification (user_id, joy_coins)
+      values (prop.proposed_by, reward_coins)
+      on conflict (user_id) do update
+        set joy_coins = public.user_gamification.joy_coins + reward_coins;
+    end if;
 
     update public.place_proposals set reward_paid = true where id = p_id;
   end if;
@@ -258,14 +284,16 @@ begin
     'ok', true,
     'published_id', new_id,
     'publish_target', target_table,
-    'reward_paid', prop.source = 'user_submit' and prop.proposed_by is not null
+    'reward_paid', prop.source = 'user_submit' and prop.proposed_by is not null,
+    'reward_amount_mzn', reward_amount,
+    'reward_joy_coins', reward_coins
   );
 end; $$;
 
 grant execute on function public.approve_proposal(uuid,text) to authenticated;
 
 -- ============================================================
--- 5) reject_proposal() — rejeita sem publicar
+-- 5) reject_proposal()
 -- ============================================================
 create or replace function public.reject_proposal(p_id uuid, p_notes text default null)
 returns jsonb
@@ -295,7 +323,7 @@ end; $$;
 grant execute on function public.reject_proposal(uuid,text) to authenticated;
 
 -- ============================================================
--- 6) place_distance_cache — cache Distance Matrix (1h TTL)
+-- 6) place_distance_cache
 -- ============================================================
 create table if not exists public.place_distance_cache (
   id uuid primary key default gen_random_uuid(),
@@ -327,7 +355,7 @@ create policy "distance_cache_admin_write" on public.place_distance_cache
   );
 
 -- ============================================================
--- 7) place_proposal_settings — configurações editáveis (admin)
+-- 7) place_proposal_settings (com seed)
 -- ============================================================
 create table if not exists public.place_proposal_settings (
   key text primary key,
@@ -353,15 +381,15 @@ create policy "pps_admin_write" on public.place_proposal_settings for all using 
 );
 
 -- ============================================================
--- 8) Comentários (changelog)
+-- 8) Comentários
 -- ============================================================
-comment on table public.place_proposals is 'Propostas curadas de locais (Google Places + submissoes de utilizadores). Status pending/approved/rejected.';
+comment on table public.place_proposals is 'Propostas curadas de locais (Google Places + submissoes de utilizadores).';
 comment on function public.bootstrap_admin is 'Auto-promove o caller a admin APENAS se nao existir nenhum admin ainda.';
-comment on function public.approve_proposal is 'Publica a proposta na tabela final (stores/clinics) e, se for submissao de utilizador, credita MZN+JoyCoins.';
+comment on function public.approve_proposal is 'Publica a proposta na tabela final e, se for submissao de utilizador, credita MZN+JoyCoins.';
 comment on function public.reject_proposal is 'Rejeita uma proposta sem publicar (admin only).';
-comment on table public.place_distance_cache is 'Cache de chamadas Distance Matrix para ordenar prestadores por rota/tempo real.';
+comment on table public.place_distance_cache is 'Cache de chamadas Distance Matrix.';
 comment on table public.place_proposal_settings is 'Configuracoes editaveis (admin): rewards, limites, auto-dedupe.';
 
 -- ============================================================================
--- FIM. Deves ver "Success. No rows returned" no log.
+-- FIM. Deves ver "Success. No rows returned".
 -- ============================================================================
