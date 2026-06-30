@@ -9,6 +9,7 @@ import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
 import { KlipyBanner } from "@/components/klipy/KlipyBanner";
 import { PersonalizedForYou } from "@/components/health/PersonalizedForYou";
 import { ReferralBanner } from "@/components/referrals/ReferralBanner";
+import { MeddyWelcomeCard } from "@/components/mascot/MeddyWelcomeCard";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRole";
@@ -111,6 +112,9 @@ export default function Home() {
       </section>
 
       <div className="px-4 mt-4"><EnableNotificationsBanner /></div>
+
+      {/* ============ MEDDY (mascote) ============ */}
+      <MeddyWelcomeCard message="Posso ajudar-te a encontrar médico, farmácia ou marcar teleconsulta." />
 
       {/* ============ BENTO GRID ============ */}
       <section className="px-4 mt-5 grid grid-cols-6 auto-rows-[80px] gap-3">

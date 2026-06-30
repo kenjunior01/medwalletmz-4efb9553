@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Stethoscope, Star, Clock, CheckCircle2, ArrowLeft, Bell, Sparkles, Video, MessageCircle } from 'lucide-react';
 import WaitlistDialog from '@/components/providers/WaitlistDialog';
+import { MeddyEmptyState } from '@/components/mascot/MeddyEmptyState';
 
 interface Specialty { id: string; name: string; slug: string; icon: string }
 interface Doctor {
@@ -166,14 +167,14 @@ function EmptyState({
 }) {
   return (
     <Card className="overflow-hidden border-none shadow-md">
-      <div className="bg-gradient-to-br from-primary/10 via-secondary/5 to-pharmacy/10 p-6 text-center">
-        <div className="h-16 w-16 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-3">
-          <Stethoscope className="h-8 w-8 text-primary" />
-        </div>
-        <h3 className="font-black text-lg">Ainda sem médicos nesta especialidade</h3>
-        <p className="text-xs text-muted-foreground mt-1.5 max-w-xs mx-auto">
-          Estamos a expandir a rede de profissionais em Maputo. Entretanto, há formas de obter ajuda já.
-        </p>
+      {/* Meddy aparece a olhar e a pensar */}
+      <div className="bg-gradient-to-br from-primary/10 via-secondary/5 to-pharmacy/10 pt-4">
+        <MeddyEmptyState
+          role="doctor"
+          state="thinking"
+          title="Ainda sem médicos nesta especialidade"
+          message="Estamos a expandir a rede. Entretanto, há alternativas já disponíveis — escolhe uma:"
+        />
       </div>
 
       <CardContent className="p-4 space-y-2.5">
