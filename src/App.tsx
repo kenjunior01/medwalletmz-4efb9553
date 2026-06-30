@@ -87,6 +87,9 @@ import AdminPlatformSettings from "./pages/admin/AdminPlatformSettings";
 import AdminReferrals from "./pages/admin/AdminReferrals";
 import AdminTransactions from "./pages/admin/AdminTransactions";
 import AdminImport from "./pages/admin/AdminImport";
+import AdminCuration from "./pages/admin/AdminCuration";
+import AdminBootstrap from "./pages/AdminBootstrap";
+import SuggestPlace from "./pages/SuggestPlace";
 
 const queryClient = new QueryClient();
 
@@ -133,7 +136,11 @@ const App = () => (
                   <Route path="/partners" element={<Partners />} />
                   <Route path="/referrals" element={<Referrals />} />
                   <Route path="/wallet" element={<Wallet />} />
+                  <Route path="/suggest-place" element={<SuggestPlace />} />
                 </Route>
+
+                {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
+                <Route path="/admin/bootstrap" element={<AdminBootstrap />} />
                 
                 {/* Auth */}
                 <Route path="/auth" element={<Auth />} />
@@ -161,6 +168,7 @@ const App = () => (
                   <Route path="referrals" element={<AdminReferrals />} />
                   <Route path="transactions" element={<AdminTransactions />} />
                   <Route path="import" element={<AdminImport />} />
+                  <Route path="curation" element={<AdminCuration />} />
                 </Route>
                 
                 {/* Store Owner Routes */}

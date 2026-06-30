@@ -1,7 +1,7 @@
 import {
   Stethoscope, Sparkles, FileText, Pill, MessageCircle, ArrowRight, Gift, Wallet,
   Plus, Briefcase, Star, TrendingUp, Calendar, Activity, Zap, Heart, ShieldCheck,
-  Truck, Building2, ChevronRight, BookOpen,
+  Truck, Building2, ChevronRight, BookOpen, MapPinPlus, Award,
 } from "lucide-react";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
@@ -369,6 +369,33 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* ============ SUGGEST A PLACE ============ */}
+      <section className="px-4 mt-6">
+        <button
+          onClick={() => navigate('/suggest-place')}
+          className="w-full bento-card p-5 text-left bg-gradient-to-br from-gold/15 via-gold/5 to-secondary/10 border-gold/30 relative overflow-hidden group"
+        >
+          <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gold/20 blur-2xl" />
+          <div className="relative flex items-center gap-3">
+            <div className="h-12 w-12 rounded-2xl bg-gold flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+              <MapPinPlus className="h-6 w-6 text-gold-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <p className="font-black text-base">Conheces uma farmácia ou clínica?</p>
+                <Badge className="bg-gold text-gold-foreground border-0 text-[9px]">
+                  <Award className="h-3 w-3 mr-0.5" /> +25 MZN
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Sugere e, quando publicarmos, recebes saldo + JoyCoins automaticamente.
+              </p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-gold group-hover:translate-x-1 transition" />
+          </div>
+        </button>
+      </section>
     </div>
   );
 }

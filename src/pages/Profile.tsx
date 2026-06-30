@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2, Gift } from "lucide-react";
+import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2, Gift, PlusCircle, Award, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,12 +10,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
 import { LowDataToggle } from "@/components/profile/LowDataToggle";
+import { UserProposalsWidget } from "@/components/places/UserProposalsWidget";
 
 type Profile = Tables<"profiles">;
 
 const menuItems = [
   { icon: Wallet, label: "Minha Carteira", href: "/wallet" },
   { icon: MapPin, label: "Meus Endereços", href: "/addresses" },
+  { icon: PlusCircle, label: "Sugerir farmácia ou clínica", href: "/suggest-place", highlight: true, reward: true },
   { icon: Gift, label: "Convidar Amigos", href: "/referrals" },
   { icon: Crown, label: "Minhas Subscrições", href: "/subscriptions" },
   { icon: Wallet, label: "Dados de Pagamento", href: "/payment-settings" },
@@ -248,19 +250,38 @@ export default function Profile() {
       </div>
 
       {/* Menu */}
-      <div className="bg-card rounded-xl border border-border divide-y divide-border">
-        {menuItems.map(({ icon: Icon, label, href }) => (
+      <div className="bg-card rounded-xl border border-border divide-y divide-border overflow-hidden">
+        {menuItems.map(({ icon: Icon, label, href, highlight, reward }) => (
           <button
             key={label}
             onClick={() => href.startsWith('/') ? navigate(href) : toast.info("Funcionalidade em breve")}
-            className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+            className={`w-full flex items-center gap-3 p-4 transition-colors ${
+              highlight
+                ? "bg-gradient-to-r from-gold/10 via-transparent to-secondary/10 hover:from-gold/15"
+                : "hover:bg-muted/50"
+            }`}
           >
-            <Icon className="h-5 w-5 text-muted-foreground" />
-            <span className="flex-1 text-left font-medium text-sm">{label}</span>
+            <Icon className={`h-5 w-5 ${highlight ? "text-gold" : "text-muted-foreground"}`} />
+            <div className="flex-1 text-left">
+              <span className="font-medium text-sm block">{label}</span>
+              {reward && (
+                <span className="text-[10px] text-gold font-bold inline-flex items-center gap-0.5">
+                  <Award className="h-3 w-3" /> +25 MZN por aprovação
+                </span>
+              )}
+            </div>
+            {highlight ? (
+              <span className="text-[9px] font-bold bg-gold/20 text-gold px-1.5 py-0.5 rounded">NOVO</span>
+            ) : null}
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
         ))}
       </div>
+
+      {/* Sugestões submetidas */}
+      {user && (
+        <UserProposalsWidget userId={user.id} />
+      )}
 
       {/* Preferências locais */}
       <LowDataToggle />

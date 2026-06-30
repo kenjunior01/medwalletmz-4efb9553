@@ -16,6 +16,14 @@ const QUERIES: Record<Entity, string> = {
   hospital: 'hospital',
 };
 
+/**
+ * Round 2 (curadoria Places):
+ * Esta função agora grava em `place_proposals` (status='pending') em vez
+ * de inserir directamente em stores/clinics. O admin revê/editar/aprova
+ * na página /admin/curation antes de publicar.
+ *
+ * Comportamento mantido: deduplicação por external_id+city+entity_type.
+ */
 async function searchText(query: string, city: string) {
   const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
   const GOOGLE_MAPS_API_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY');
@@ -45,16 +53,22 @@ function photoUrl(photoName?: string) {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   try {
-    const { cities = ['Maputo'], entities = ['pharmacy', 'clinic', 'hospital'] } = await req.json();
+    const {
+      cities = ['Maputo'],
+      entities = ['pharmacy', 'clinic', 'hospital'],
+      // 'commit' = publica direto (legacy behaviour).  default 'draft' = grava em place_proposals.
+      mode = 'draft',
+    } = await req.json();
 
     const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
-    // find an admin owner for clinics (owner_id NOT NULL)
+    // Procurar admin existente para clinics.owner_id (legacy mode)
     const { data: adminRow } = await sb.from('user_roles').select('user_id').eq('role', 'admin').limit(1).maybeSingle();
     const ownerId = adminRow?.user_id;
 
-    let createdStores = 0, createdClinics = 0, skipped = 0;
+    let createdStores = 0, createdClinics = 0, proposed = 0, skipped = 0;
     const log: string[] = [];
+    const errors: string[] = [];
 
     for (const city of cities as string[]) {
       for (const entity of entities as Entity[]) {
@@ -65,35 +79,86 @@ Deno.serve(async (req) => {
           const lat = p.location?.latitude ?? null;
           const lng = p.location?.longitude ?? null;
           const phone = p.internationalPhoneNumber ?? p.nationalPhoneNumber ?? null;
+          const website = p.websiteUri ?? null;
           const image = photoUrl(p.photos?.[0]?.name);
+          const externalId = p.id ?? null;
 
-          if (entity === 'pharmacy') {
-            // dedupe by name + city
-            const { data: existing } = await sb.from('stores').select('id').eq('name', name).eq('city', city).maybeSingle();
-            if (existing) { skipped++; continue; }
-            const { error } = await sb.from('stores').insert({
-              name, type: 'pharmacy', city, address, image_url: image,
-              latitude: lat, longitude: lng, is_active: true,
-              description: phone ? `Tel: ${phone}` : null,
-              delivery_fee: 50, delivery_time: '30-45 min', rating: p.rating ?? 0,
-            });
-            if (error) { log.push(`stores ${name}: ${error.message}`); skipped++; } else createdStores++;
+          // Deduplicação: procurar por (external_id OR name+city+entity_type) já existente
+          let existingProposal: any = null;
+          if (externalId) {
+            const { data } = await sb.from('place_proposals')
+              .select('id').eq('external_id', externalId).eq('source', 'google_places').maybeSingle();
+            existingProposal = data;
+          }
+          if (!existingProposal) {
+            const { data } = await sb.from('place_proposals')
+              .select('id').eq('name', name).eq('city', city).eq('entity_type', entity)
+              .maybeSingle();
+            existingProposal = data;
+          }
+          // Também verifica se já está publicado (stores/clinics)
+          const { data: existingStore } = await sb.from('stores')
+            .select('id').eq('name', name).eq('city', city).maybeSingle();
+          const { data: existingClinic } = await sb.from('clinics')
+            .select('id').eq('name', name).eq('city', city).maybeSingle();
+
+          if (existingProposal || existingStore || existingClinic) {
+            skipped++;
+            log.push(`dup: ${name} (${city})`);
+            continue;
+          }
+
+          if (mode === 'commit') {
+            // LEGACY: publicar direto (mantido para retro-compat)
+            if (entity === 'pharmacy') {
+              const { error } = await sb.from('stores').insert({
+                name, type: 'pharmacy', city, address, image_url: image,
+                latitude: lat, longitude: lng, is_active: true,
+                description: phone ? `Tel: ${phone}` : null,
+                delivery_fee: 50, delivery_time: '30-45 min', rating: p.rating ?? 0,
+              });
+              if (error) { errors.push(`stores ${name}: ${error.message}`); skipped++; }
+              else createdStores++;
+            } else {
+              if (!ownerId) { skipped++; continue; }
+              const { error } = await sb.from('clinics').insert({
+                owner_id: ownerId, name, city, address, phone, logo_url: image,
+                latitude: lat, longitude: lng, is_active: true, is_verified: false,
+                description: entity === 'hospital' ? 'Hospital' : 'Clínica',
+              });
+              if (error) { errors.push(`clinics ${name}: ${error.message}`); skipped++; }
+              else createdClinics++;
+            }
           } else {
-            if (!ownerId) { skipped++; continue; }
-            const { data: existing } = await sb.from('clinics').select('id').eq('name', name).eq('city', city).maybeSingle();
-            if (existing) { skipped++; continue; }
-            const { error } = await sb.from('clinics').insert({
-              owner_id: ownerId, name, city, address, phone, logo_url: image,
-              latitude: lat, longitude: lng, is_active: true, is_verified: false,
-              description: entity === 'hospital' ? 'Hospital' : 'Clínica',
+            // DEFAULT: gravar como proposta pendente para curadoria
+            const { error } = await sb.from('place_proposals').insert({
+              source: 'google_places',
+              entity_type: entity,
+              external_id: externalId,
+              name, address, city,
+              phone, website, image_url: image,
+              latitude: lat, longitude: lng,
+              description: phone ? `Tel: ${phone}` : null,
+              raw_payload: p,
+              search_meta: { city, query: QUERIES[entity], imported_at: new Date().toISOString() },
+              status: 'pending',
             });
-            if (error) { log.push(`clinics ${name}: ${error.message}`); skipped++; } else createdClinics++;
+            if (error) { errors.push(`proposal ${name}: ${error.message}`); skipped++; }
+            else proposed++;
           }
         }
       }
     }
 
-    return new Response(JSON.stringify({ createdStores, createdClinics, skipped, log }), {
+    return new Response(JSON.stringify({
+      mode,
+      proposed,
+      createdStores,
+      createdClinics,
+      skipped,
+      errors: errors.slice(0, 20),
+      log: log.slice(0, 30),
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {

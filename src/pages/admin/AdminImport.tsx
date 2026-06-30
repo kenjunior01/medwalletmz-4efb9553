@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Download, Upload, Sparkles, MapPin, Info } from 'lucide-react';
+import { Download, Upload, Sparkles, MapPin, Info, ArrowRight, History } from 'lucide-react';
 import { toast } from 'sonner';
 
 type EntityKey = 'pharmacies' | 'clinics' | 'hospitals' | 'doctors';
@@ -102,12 +103,23 @@ export default function AdminImport() {
     setResult(null);
     try {
       const cityList = cities.split(',').map((s) => s.trim()).filter(Boolean);
+      // mode: 'draft' (default) coloca em place_proposals para curadoria.
+      // muda para 'commit' se quiseres publicar direto (legacy).
       const { data, error } = await supabase.functions.invoke('import-places', {
-        body: { cities: cityList, entities: ['pharmacy', 'clinic', 'hospital'] },
+        body: { cities: cityList, entities: ['pharmacy', 'clinic', 'hospital'], mode: 'draft' },
       });
       if (error) throw error;
       setResult(data);
-      toast.success(`Importação concluída: ${data.createdStores} farmácias, ${data.createdClinics} clínicas/hospitais`);
+      const proposed = data?.proposed ?? 0;
+      const stores = data?.createdStores ?? 0;
+      const clinics = data?.createdClinics ?? 0;
+      const skipped = data?.skipped ?? 0;
+      const mode = data?.mode ?? 'draft';
+      if (mode === 'draft') {
+        toast.success(`Importação concluída — ${proposed} proposta(s) em rascunhos (${skipped} duplicadas)`);
+      } else {
+        toast.success(`Importação concluída: ${stores} farmácias, ${clinics} clínicas/hospitais`);
+      }
     } catch (e: any) {
       toast.error(e.message || 'Erro na importação');
     } finally {
@@ -130,8 +142,9 @@ export default function AdminImport() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Procura farmácias, clínicas e hospitais no Google Places nas cidades indicadas e adiciona à base de dados.
-            Itens duplicados (mesmo nome + cidade) são ignorados.
+            Procura farmácias, clínicas e hospitais no Google Places nas cidades indicadas.
+            Itens vão para <strong>rascunhos curados</strong> — revê e aprova em <Link to="/admin/curation" className="text-primary underline font-semibold">/admin/curation</Link> antes de publicar.
+            Itens duplicados (mesmo nome + cidade ou mesmo external_id) são ignorados.
           </p>
           <div className="flex gap-2 items-end">
             <div className="flex-1">
@@ -143,6 +156,20 @@ export default function AdminImport() {
               {busy === 'auto' ? 'A importar...' : 'Importar agora'}
             </Button>
           </div>
+
+          {result && (
+            <Alert className="bg-secondary/10 border-secondary/30 mt-2">
+              <History className="h-4 w-4 text-secondary" />
+              <AlertTitle className="text-sm">Importação concluída</AlertTitle>
+              <AlertDescription className="text-xs">
+                <strong>{result.proposed ?? 0}</strong> proposta(s) novas em rascunhos ·{' '}
+                <strong>{result.skipped ?? 0}</strong> já existente(s) (deduplicado).
+                <Link to="/admin/curation" className="inline-flex items-center gap-1 ml-2 text-primary font-semibold underline">
+                  Ir para a curadoria <ArrowRight className="h-3 w-3" />
+                </Link>
+              </AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
 

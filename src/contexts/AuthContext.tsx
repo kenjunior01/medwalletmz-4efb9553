@@ -13,6 +13,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
+  refreshRoles: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,70 +29,72 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .from('user_roles')
       .select('role')
       .eq('user_id', userId);
-    
+
     if (!error && data) {
       setRoles(data.map(r => r.role as AppRole));
+    } else {
+      setRoles([]);
     }
   };
 
+  const refreshRoles = async () => {
+    if (user) await fetchUserRoles(user.id);
+  };
+
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
+        if (!mounted) return;
         setSession(session);
         setUser(session?.user ?? null);
-        
+
+        // Carrega roles ANTES de soltar o loading — evita race que
+        // fazia AdminDashboard redirecionar antes de saber se era admin.
         if (session?.user) {
-          // Defer role fetching with setTimeout
-          setTimeout(() => {
-            fetchUserRoles(session.user.id);
-          }, 0);
+          await fetchUserRoles(session.user.id);
         } else {
           setRoles([]);
         }
-        
-        setLoading(false);
+
+        if (mounted) setLoading(false);
       }
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!mounted) return;
       setSession(session);
       setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        fetchUserRoles(session.user.id);
-      }
-      
-      setLoading(false);
-    });
 
-    return () => subscription.unsubscribe();
+      if (session?.user) {
+        await fetchUserRoles(session.user.id);
+      }
+
+      if (mounted) setLoading(false);
+    })();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const redirectUrl = `${window.location.origin}/`;
-    
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName
-        }
-      }
+      options: { emailRedirectTo: redirectUrl, data: { full_name: fullName } },
     });
-    
     return { error: error as Error | null };
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-    
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error as Error | null };
   };
 
@@ -106,14 +109,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={{
-      user,
-      session,
-      roles,
-      loading,
-      signUp,
-      signIn,
-      signOut,
-      hasRole
+      user, session, roles, loading,
+      signUp, signIn, signOut, hasRole,
+      refreshRoles,
     }}>
       {children}
     </AuthContext.Provider>

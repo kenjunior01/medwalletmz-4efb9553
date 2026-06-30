@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  LayoutDashboard, 
-  Store, 
-  Package, 
-  ShoppingBag, 
-  Users, 
-  Truck, 
-  Tag, 
+import {
+  LayoutDashboard,
+  Store,
+  Package,
+  ShoppingBag,
+  Users,
+  Truck,
+  Tag,
   Settings,
   LogOut,
   BarChart3,
@@ -18,13 +18,15 @@ import {
   Gift,
   Sliders,
   Receipt,
-  Upload
+  Upload,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
+  { icon: Sparkles, label: 'Curadoria', path: '/admin/curation', highlight: true },
   { icon: Store, label: 'Farmácias', path: '/admin/stores' },
   { icon: Package, label: 'Produtos', path: '/admin/products' },
   { icon: ShoppingBag, label: 'Pedidos', path: '/admin/orders' },
@@ -95,22 +97,27 @@ export default function AdminDashboard() {
 
         <nav className="flex-1 p-4">
           <ul className="space-y-1">
-            {menuItems.map(({ icon: Icon, label, path }) => {
-              const isActive = location.pathname === path || 
+            {menuItems.map(({ icon: Icon, label, path, highlight }) => {
+              const isActive = location.pathname === path ||
                 (path !== '/admin' && location.pathname.startsWith(path));
-              
+
               return (
                 <li key={path}>
                   <Link
                     to={path}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-                      isActive 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                      isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : highlight
+                          ? 'hover:bg-secondary/15 text-secondary hover:text-secondary bg-secondary/5'
+                          : 'hover:bg-muted text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
                     {label}
+                    {highlight && !isActive && (
+                      <span className="ml-auto text-[9px] font-bold bg-secondary/20 text-secondary px-1.5 py-0.5 rounded">NEW</span>
+                    )}
                   </Link>
                 </li>
               );
