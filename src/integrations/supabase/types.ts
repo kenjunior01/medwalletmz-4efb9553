@@ -1293,6 +1293,165 @@ export type Database = {
           },
         ]
       }
+      place_distance_cache: {
+        Row: {
+          dest_id: string
+          dest_kind: string
+          distance_meters: number | null
+          duration_seconds: number | null
+          expires_at: string
+          fetched_at: string
+          id: string
+          origin_lat: number
+          origin_lng: number
+        }
+        Insert: {
+          dest_id: string
+          dest_kind: string
+          distance_meters?: number | null
+          duration_seconds?: number | null
+          expires_at?: string
+          fetched_at?: string
+          id?: string
+          origin_lat: number
+          origin_lng: number
+        }
+        Update: {
+          dest_id?: string
+          dest_kind?: string
+          distance_meters?: number | null
+          duration_seconds?: number | null
+          expires_at?: string
+          fetched_at?: string
+          id?: string
+          origin_lat?: number
+          origin_lng?: number
+        }
+        Relationships: []
+      }
+      place_proposal_settings: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      place_proposals: {
+        Row: {
+          address: string | null
+          city: string
+          created_at: string
+          description: string | null
+          entity_type: string
+          external_id: string | null
+          id: string
+          image_url: string | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          neighborhood: string | null
+          phone: string | null
+          proposed_by: string | null
+          publish_target: string | null
+          published_id: string | null
+          raw_payload: Json | null
+          reference_point: string | null
+          reports_count: number | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reward_joy_coins: number | null
+          reward_mzn: number | null
+          reward_paid: boolean | null
+          search_meta: Json | null
+          source: string
+          status: string
+          updated_at: string
+          views_count: number | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city: string
+          created_at?: string
+          description?: string | null
+          entity_type: string
+          external_id?: string | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          neighborhood?: string | null
+          phone?: string | null
+          proposed_by?: string | null
+          publish_target?: string | null
+          published_id?: string | null
+          raw_payload?: Json | null
+          reference_point?: string | null
+          reports_count?: number | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reward_joy_coins?: number | null
+          reward_mzn?: number | null
+          reward_paid?: boolean | null
+          search_meta?: Json | null
+          source?: string
+          status?: string
+          updated_at?: string
+          views_count?: number | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          entity_type?: string
+          external_id?: string | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          neighborhood?: string | null
+          phone?: string | null
+          proposed_by?: string | null
+          publish_target?: string | null
+          published_id?: string | null
+          raw_payload?: Json | null
+          reference_point?: string | null
+          reports_count?: number | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reward_joy_coins?: number | null
+          reward_mzn?: number | null
+          reward_paid?: boolean | null
+          search_meta?: Json | null
+          source?: string
+          status?: string
+          updated_at?: string
+          views_count?: number | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       platform_payment_accounts: {
         Row: {
           account_name: string
@@ -2217,6 +2376,11 @@ export type Database = {
       }
     }
     Functions: {
+      approve_proposal: {
+        Args: { p_id: string; p_notes?: string }
+        Returns: Json
+      }
+      bootstrap_admin: { Args: never; Returns: Json }
       ensure_wallet: {
         Args: { _user_id: string }
         Returns: {
@@ -2265,6 +2429,10 @@ export type Database = {
       redeem_coupon: {
         Args: { _coupon_id: string; _user_id: string }
         Returns: undefined
+      }
+      reject_proposal: {
+        Args: { p_id: string; p_notes?: string }
+        Returns: Json
       }
       validate_coupon: {
         Args: {
