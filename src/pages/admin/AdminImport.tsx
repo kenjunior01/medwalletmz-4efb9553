@@ -106,7 +106,7 @@ export default function AdminImport() {
       // mode: 'draft' (default) coloca em place_proposals para curadoria.
       // muda para 'commit' se quiseres publicar direto (legacy).
       const { data, error } = await supabase.functions.invoke('import-places', {
-        body: { cities: cityList, entities: ['pharmacy', 'clinic', 'hospital'], mode: 'draft' },
+        body: { cities: cityList, entities: ['pharmacy', 'clinic', 'hospital', 'laboratory'], mode: 'draft' },
       });
       if (error) throw error;
       setResult(data);
