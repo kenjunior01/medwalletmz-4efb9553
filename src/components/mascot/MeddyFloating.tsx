@@ -121,9 +121,9 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
     return String(source).trim().split(/\s+/)[0];
   }, [profile?.full_name, user.email]);
   const personalizedText = message?.text
-    .replaceAll('XXXX', String(metric))
-    .replaceAll('{{name}}', firstName)
-    .replaceAll('{{city}}', profile?.default_city || 'Moçambique');
+    .replace(/XXXX/g, String(metric))
+    .replace(/{{name}}/g, firstName)
+    .replace(/{{city}}/g, profile?.default_city || 'Moçambique');
 
   const cycleMessage = () => {
     if (message) setLastText(message.text);
