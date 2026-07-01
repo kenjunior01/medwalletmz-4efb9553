@@ -1,4 +1,29 @@
 import { cn } from '@/lib/utils';
+import meddyPatient from '@/assets/meddy/meddy-patient.png';
+import meddyDoctor from '@/assets/meddy/meddy-doctor.png';
+import meddyPharmacist from '@/assets/meddy/meddy-pharmacist.png';
+import meddyDriver from '@/assets/meddy/meddy-driver.png';
+import meddyClinic from '@/assets/meddy/meddy-clinic.png';
+import meddyAdmin from '@/assets/meddy/meddy-admin.png';
+
+const MEDDY_IMAGES: Record<MeddyRole, string> = {
+  patient: meddyPatient,
+  doctor: meddyDoctor,
+  pharmacist: meddyPharmacist,
+  driver: meddyDriver,
+  clinic: meddyClinic,
+  admin: meddyAdmin,
+};
+
+const STATE_ANIM: Record<MeddyState, string> = {
+  idle: '',
+  happy: 'animate-[meddy-bounce_1.6s_ease-in-out_infinite]',
+  thinking: 'opacity-90',
+  encouraging: 'animate-[meddy-bounce_1.2s_ease-in-out_infinite]',
+  concerned: 'saturate-75',
+  celebrating: 'animate-[meddy-wiggle_0.6s_ease-in-out_infinite]',
+  waving: 'animate-[meddy-wiggle_1.4s_ease-in-out_infinite]',
+};
 
 export type MeddyRole = 'patient' | 'doctor' | 'pharmacist' | 'driver' | 'clinic' | 'admin';
 export type MeddyState = 'idle' | 'happy' | 'thinking' | 'encouraging' | 'concerned' | 'celebrating' | 'waving';
