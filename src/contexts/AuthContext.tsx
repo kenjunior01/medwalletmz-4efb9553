@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin';
+type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic';
 
 interface AuthContextType {
   user: User | null;
@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchUserRoles = async (userId: string) => {
+  const fetchUserRoles = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from('user_roles')
       .select('role')
@@ -35,31 +35,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setRoles([]);
     }
-  };
+  }, []);
 
-  const refreshRoles = async () => {
+  const refreshRoles = useCallback(async () => {
     if (user) await fetchUserRoles(user.id);
-  };
+  }, [fetchUserRoles, user]);
 
   useEffect(() => {
     let mounted = true;
 
-    // Set up auth state listener FIRST
+    let roleRequest = 0;
+
+    const loadRoles = async (nextUser: User | null) => {
+      const requestId = ++roleRequest;
+      if (!nextUser) {
+        if (mounted && requestId === roleRequest) setRoles([]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', nextUser.id);
+
+      if (!mounted || requestId !== roleRequest) return;
+      setRoles(!error && data ? data.map(r => r.role as AppRole) : []);
+    };
+
+    // Set up auth state listener FIRST, without awaiting backend calls in the callback.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (_event, session) => {
         if (!mounted) return;
         setSession(session);
         setUser(session?.user ?? null);
-
-        // Carrega roles ANTES de soltar o loading — evita race que
-        // fazia AdminDashboard redirecionar antes de saber se era admin.
-        if (session?.user) {
-          await fetchUserRoles(session.user.id);
-        } else {
-          setRoles([]);
-        }
-
-        if (mounted) setLoading(false);
+        void loadRoles(session?.user ?? null);
       }
     );
 
@@ -70,9 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
 
-      if (session?.user) {
-        await fetchUserRoles(session.user.id);
-      }
+      await loadRoles(session?.user ?? null);
 
       if (mounted) setLoading(false);
     })();
@@ -105,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRoles([]);
   };
 
-  const hasRole = (role: AppRole) => roles.includes(role);
+  const hasRole = useCallback((role: AppRole) => roles.includes(role), [roles]);
 
   return (
     <AuthContext.Provider value={{

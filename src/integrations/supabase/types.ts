@@ -1329,6 +1329,47 @@ export type Database = {
         }
         Relationships: []
       }
+      place_proposal_audit_logs: {
+        Row: {
+          action: string
+          changed_by: string | null
+          changes: Json
+          created_at: string
+          id: string
+          proposal_id: string
+          snapshot_after: Json | null
+          snapshot_before: Json | null
+        }
+        Insert: {
+          action?: string
+          changed_by?: string | null
+          changes?: Json
+          created_at?: string
+          id?: string
+          proposal_id: string
+          snapshot_after?: Json | null
+          snapshot_before?: Json | null
+        }
+        Update: {
+          action?: string
+          changed_by?: string | null
+          changes?: Json
+          created_at?: string
+          id?: string
+          proposal_id?: string
+          snapshot_after?: Json | null
+          snapshot_before?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "place_proposal_audit_logs_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "place_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       place_proposal_settings: {
         Row: {
           description: string | null
