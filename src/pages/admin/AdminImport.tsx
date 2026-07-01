@@ -52,7 +52,7 @@ function downloadTemplate(key: EntityKey) {
 export default function AdminImport() {
   const [busy, setBusy] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
-  const [cities, setCities] = useState('Maputo,Sofala,Nampula');
+  const [cities, setCities] = useState('Maputo,Matola,Beira,Nampula,Quelimane,Tete,Chimoio,Xai-Xai,Pemba,Inhambane,Lichinga');
 
   const handleUpload = async (key: EntityKey, file: File) => {
     setBusy(key);
@@ -106,7 +106,7 @@ export default function AdminImport() {
       // mode: 'draft' (default) coloca em place_proposals para curadoria.
       // muda para 'commit' se quiseres publicar direto (legacy).
       const { data, error } = await supabase.functions.invoke('import-places', {
-        body: { cities: cityList, entities: ['pharmacy', 'clinic', 'hospital'], mode: 'draft' },
+        body: { cities: cityList, entities: ['pharmacy', 'clinic', 'hospital', 'laboratory'], mode: 'draft' },
       });
       if (error) throw error;
       setResult(data);
@@ -142,7 +142,7 @@ export default function AdminImport() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Procura farmácias, clínicas e hospitais no Google Places nas cidades indicadas.
+            Procura farmácias, clínicas, hospitais e laboratórios no Google Places nas cidades indicadas.
             Itens vão para <strong>rascunhos curados</strong> — revê e aprova em <Link to="/admin/curation" className="text-primary underline font-semibold">/admin/curation</Link> antes de publicar.
             Itens duplicados (mesmo nome + cidade ou mesmo external_id) são ignorados.
           </p>

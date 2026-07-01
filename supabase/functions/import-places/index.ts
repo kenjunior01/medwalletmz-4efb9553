@@ -8,12 +8,13 @@ const corsHeaders = {
 
 const GATEWAY = 'https://connector-gateway.lovable.dev/google_maps';
 
-type Entity = 'pharmacy' | 'clinic' | 'hospital';
+type Entity = 'pharmacy' | 'clinic' | 'hospital' | 'laboratory';
 
 const QUERIES: Record<Entity, string> = {
   pharmacy: 'farmácia',
   clinic: 'clínica médica',
   hospital: 'hospital',
+  laboratory: 'laboratório de análises clínicas',
 };
 
 /**
@@ -131,16 +132,21 @@ Deno.serve(async (req) => {
             }
           } else {
             // DEFAULT: gravar como proposta pendente para curadoria
+            // Labs são armazenados como 'clinic' (mesma tabela final) mas com descrição "Laboratório"
+            const proposalEntity = entity === 'laboratory' ? 'clinic' : entity;
+            const descLabel = entity === 'laboratory'
+              ? `Laboratório${phone ? ' · Tel: ' + phone : ''}`
+              : (phone ? `Tel: ${phone}` : null);
             const { error } = await sb.from('place_proposals').insert({
               source: 'google_places',
-              entity_type: entity,
+              entity_type: proposalEntity,
               external_id: externalId,
               name, address, city,
               phone, website, image_url: image,
               latitude: lat, longitude: lng,
-              description: phone ? `Tel: ${phone}` : null,
+              description: descLabel,
               raw_payload: p,
-              search_meta: { city, query: QUERIES[entity], imported_at: new Date().toISOString() },
+              search_meta: { city, query: QUERIES[entity], original_entity: entity, imported_at: new Date().toISOString() },
               status: 'pending',
             });
             if (error) { errors.push(`proposal ${name}: ${error.message}`); skipped++; }

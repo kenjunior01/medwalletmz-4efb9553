@@ -1,4 +1,29 @@
 import { cn } from '@/lib/utils';
+import meddyPatient from '@/assets/meddy/meddy-patient.png';
+import meddyDoctor from '@/assets/meddy/meddy-doctor.png';
+import meddyPharmacist from '@/assets/meddy/meddy-pharmacist.png';
+import meddyDriver from '@/assets/meddy/meddy-driver.png';
+import meddyClinic from '@/assets/meddy/meddy-clinic.png';
+import meddyAdmin from '@/assets/meddy/meddy-admin.png';
+
+const MEDDY_IMAGES: Record<MeddyRole, string> = {
+  patient: meddyPatient,
+  doctor: meddyDoctor,
+  pharmacist: meddyPharmacist,
+  driver: meddyDriver,
+  clinic: meddyClinic,
+  admin: meddyAdmin,
+};
+
+const STATE_ANIM: Record<MeddyState, string> = {
+  idle: '',
+  happy: 'animate-[meddy-bounce_1.6s_ease-in-out_infinite]',
+  thinking: 'opacity-90',
+  encouraging: 'animate-[meddy-bounce_1.2s_ease-in-out_infinite]',
+  concerned: 'saturate-75',
+  celebrating: 'animate-[meddy-wiggle_0.6s_ease-in-out_infinite]',
+  waving: 'animate-[meddy-wiggle_1.4s_ease-in-out_infinite]',
+};
 
 export type MeddyRole = 'patient' | 'doctor' | 'pharmacist' | 'driver' | 'clinic' | 'admin';
 export type MeddyState = 'idle' | 'happy' | 'thinking' | 'encouraging' | 'concerned' | 'celebrating' | 'waving';
@@ -27,20 +52,36 @@ interface Props {
  *   - idle, happy, thinking, encouraging, concerned, celebrating, waving
  */
 export function Meddy({ role = 'patient', state = 'idle', size = 120, className, showRoleLabel = false }: Props) {
+  const src = MEDDY_IMAGES[role] ?? MEDDY_IMAGES.patient;
+  return (
+    <div className={cn("inline-flex flex-col items-center gap-1", className)}>
+      <img
+        src={src}
+        alt={`Meddy ${roleLabel(role)}`}
+        width={size}
+        height={size}
+        loading="lazy"
+        draggable={false}
+        style={{ width: size, height: size }}
+        className={cn("object-contain select-none", STATE_ANIM[state])}
+      />
+      {showRoleLabel && (
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+          Meddy · {roleLabel(role)}
+        </span>
+      )}
+    </div>
+  );
+}
+
+// Legacy SVG renderer kept for reference / fallback (unused).
+function MeddySvg({ role = 'patient', state = 'idle', size = 120, className, showRoleLabel = false }: Props) {
   const eyes = eyeFor(state);
   const mouth = mouthFor(state);
   const accessory = accessoryFor(role, state);
-
   return (
     <div className={cn("inline-flex flex-col items-center gap-1", className)}>
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 200 200"
-        xmlns="http://www.w3.org/2000/svg"
-        role="img"
-        aria-label={`Meddy, mascote MedWallet${roleLabel(role)}`}
-      >
+      <svg width={size} height={size} viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label={`Meddy ${roleLabel(role)}`}>
         <defs>
           <linearGradient id="meddy-body" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#ffffff" />
