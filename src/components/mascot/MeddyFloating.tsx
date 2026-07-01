@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Meddy, type MeddyRole, type MeddyState } from './Meddy';
 import { pickMeddyMessage, type MeddyMessage, type Context } from './MeddyMessages';
@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { X, Send, Sparkles, Minimize2, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useUserRoles } from '@/hooks/useUserRole';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 interface Props {
   context?: Context;
@@ -25,8 +26,7 @@ interface Props {
  */
 export function MeddyFloating({ context = 'default', position = 'bottom-right' }: Props) {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { roles } = useUserRoles();
+  const { user, roles } = useAuth();
   const [open, setOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [lastText, setLastText] = useState<string | undefined>();
@@ -41,6 +41,71 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
     return 'patient';
   })();
 
+  const { data: profile } = useQuery<any>({
+    queryKey: ['meddy-profile', user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, default_city, phone')
+        .eq('user_id', user!.id)
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 60_000,
+  });
+
+  const { data: metric = 0 } = useQuery<number>({
+    queryKey: ['meddy-metric', role, user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      if (role === 'admin') {
+        const { count } = await (supabase as any)
+          .from('place_proposals')
+          .select('id', { count: 'exact', head: true })
+          .in('status', ['pending', 'in_review']);
+        return count ?? 0;
+      }
+      if (role === 'doctor') {
+        const { count } = await (supabase as any)
+          .from('consultations')
+          .select('id', { count: 'exact', head: true })
+          .eq('doctor_id', user!.id)
+          .in('status', ['scheduled', 'confirmed', 'in_progress']);
+        return count ?? 0;
+      }
+      if (role === 'pharmacist') {
+        const { data: store } = await (supabase as any)
+          .from('stores')
+          .select('id')
+          .eq('owner_id', user!.id)
+          .maybeSingle();
+        if (!store?.id) return 0;
+        const { count } = await (supabase as any)
+          .from('orders')
+          .select('id', { count: 'exact', head: true })
+          .eq('store_id', store.id)
+          .in('status', ['pending', 'confirmed', 'preparing']);
+        return count ?? 0;
+      }
+      if (role === 'driver') {
+        const { count } = await (supabase as any)
+          .from('driver_assignments')
+          .select('id', { count: 'exact', head: true })
+          .eq('driver_id', user!.id)
+          .in('status', ['assigned', 'picked_up']);
+        return count ?? 0;
+      }
+      const { count } = await (supabase as any)
+        .from('orders')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user!.id)
+        .in('status', ['pending', 'confirmed', 'preparing', 'out_for_delivery']);
+      return count ?? 0;
+    },
+    staleTime: 30_000,
+  });
+
   // Re-pick quando muda contexto (a cada abertura) — tem de vir ANTES do early return
   useEffect(() => {
     if (open) setLastText(undefined);
@@ -51,6 +116,14 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
 
   const state: MeddyState = open ? 'waving' : 'idle';
   const message = pickMeddyMessage(role, context, lastText);
+  const firstName = useMemo(() => {
+    const source = profile?.full_name || user.email?.split('@')[0] || 'amigo';
+    return String(source).trim().split(/\s+/)[0];
+  }, [profile?.full_name, user.email]);
+  const personalizedText = message?.text
+    .replaceAll('XXXX', String(metric))
+    .replaceAll('{{name}}', firstName)
+    .replaceAll('{{city}}', profile?.default_city || 'Moçambique');
 
   const cycleMessage = () => {
     if (message) setLastText(message.text);
@@ -110,7 +183,7 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
             {message && (
               <div className="p-3 bg-card">
                 <p className="text-sm leading-relaxed">
-                  {message.text}
+                  {personalizedText}
                 </p>
                 <div className="flex items-center gap-2 mt-3">
                   <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={cycleMessage}>
