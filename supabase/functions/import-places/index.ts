@@ -8,12 +8,13 @@ const corsHeaders = {
 
 const GATEWAY = 'https://connector-gateway.lovable.dev/google_maps';
 
-type Entity = 'pharmacy' | 'clinic' | 'hospital';
+type Entity = 'pharmacy' | 'clinic' | 'hospital' | 'laboratory';
 
 const QUERIES: Record<Entity, string> = {
   pharmacy: 'farmácia',
   clinic: 'clínica médica',
   hospital: 'hospital',
+  laboratory: 'laboratório de análises clínicas',
 };
 
 /**
