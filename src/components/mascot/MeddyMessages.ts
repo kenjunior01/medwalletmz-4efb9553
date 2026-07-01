@@ -27,9 +27,9 @@ export type Context = 'home' | 'empty_doctors' | 'empty_pharmacies' | 'triage' |
 const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
   patient: {
     home: [
-      { text: "Olá! Sou a Meddy 🌿 Posso ajudar-te a encontrar médico, farmácia ou marcar teleconsulta.", emoji: "🌿" },
+      { text: "Olá, {{name}}! Sou a Meddy 🌿 Posso ajudar-te a encontrar médico, farmácia ou marcar teleconsulta em {{city}}.", emoji: "🌿" },
       { text: "Sabias que podes sugerir farmácias que conheces? Cada aprovação dá-te +25 MZN 💰", emoji: "💰" },
-      { text: "Hoje tens XXXX consultas marcadas. Não te atrases!", emoji: "📅" },
+      { text: "Tens XXXX pedido(s) ou acompanhamento(s) em aberto. Posso levar-te ao ponto certo.", emoji: "📅" },
     ],
     empty_doctors: [
       { text: "Ainda não há médicos nesta especialidade. Queres ser avisado quando aparecer?", emoji: "🔔", actionLabel: "Lista de espera", actionHref: "/health/doctors" },
@@ -67,7 +67,7 @@ const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
 
   doctor: {
     home: [
-      { text: "Bem-vindo, Dr(a). Tens XXXX consultas marcadas hoje.", emoji: "🩺" },
+      { text: "Bem-vindo, Dr(a). {{name}}. Tens XXXX consulta(s) activas ou marcadas.", emoji: "🩺" },
       { text: "Não te esqueças de marcar disponibilidade na agenda.", emoji: "📅", actionLabel: "Disponibilidade", actionHref: "/doctor/availability" },
       { text: "Os pacientes confiam em ti. Faz o check-in rápido das consultas.", emoji: "⭐" },
     ],
@@ -90,7 +90,7 @@ const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
 
   pharmacist: {
     home: [
-      { text: "Olá! Tens XXXX pedidos pendentes na farmácia.", emoji: "💊" },
+      { text: "Olá, {{name}}! Tens XXXX pedido(s) pendentes na farmácia.", emoji: "💊" },
       { text: "Confirma os pedidos dentro de 15 min para manter boa reputação.", emoji: "⏱️" },
     ],
     empty_doctors: [],
@@ -105,12 +105,14 @@ const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
     wallet: [],
     education: [],
     curation: [],
-    default: [],
+    default: [
+      { text: "Estou contigo na operação da farmácia — pedidos, produtos e carteira num só lugar.", emoji: "💊" },
+    ],
   },
 
   driver: {
     home: [
-      { text: "Boas! Tens XXXX entregas à tua espera. Verifica o mapa 🗺️", emoji: "🛵" },
+      { text: "Boas, {{name}}! Tens XXXX entrega(s) à tua espera. Verifica o mapa 🗺️", emoji: "🛵" },
       { text: "Lembra-te: a segurança vem primeiro. Capacete sempre!", emoji: "🪖" },
     ],
     empty_doctors: [],
@@ -123,12 +125,14 @@ const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
     wallet: [],
     education: [],
     curation: [],
-    default: [],
+    default: [
+      { text: "Boas viagens! Mantém as entregas seguras e confirma cada etapa no app.", emoji: "🛵" },
+    ],
   },
 
   clinic: {
     home: [
-      { text: "Bem-vindo à tua clínica! Tens XXXX marcações esta semana.", emoji: "🏥" },
+      { text: "Bem-vindo, {{name}}. A tua clínica/hospital pode acompanhar médicos, marcações e carteira aqui.", emoji: "🏥" },
     ],
     empty_doctors: [],
     empty_pharmacies: [],
@@ -138,12 +142,14 @@ const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
     wallet: [],
     education: [],
     curation: [],
-    default: [],
+    default: [
+      { text: "Posso ajudar a gerir a tua unidade de saúde, equipa médica e marcações.", emoji: "🏥" },
+    ],
   },
 
   admin: {
     home: [
-      { text: "Olá admin! Tens XXXX propostas pendentes na curadoria.", emoji: "🛡️", actionLabel: "Abrir curadoria", actionHref: "/admin/curation" },
+      { text: "Olá, {{name}}! Tens XXXX proposta(s) pendentes ou em revisão na curadoria.", emoji: "🛡️", actionLabel: "Abrir curadoria", actionHref: "/admin/curation" },
       { text: "Verifica o /admin/import para puxar farmácias via Google Places.", emoji: "📥", actionLabel: "Importar", actionHref: "/admin/import" },
     ],
     empty_doctors: [],
@@ -154,8 +160,8 @@ const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
     wallet: [],
     education: [],
     curation: [
-      { text: "Aqui decides o que aparece para os utilizadores. Aprova com cuidado!", emoji: "✅" },
-      { text: "Dica: bulk-approve acelera muito quando há muitos rascunhos do Google Places.", emoji: "⚡" },
+      { text: "Aqui decides o que aparece para os utilizadores. Filtra por cidade/tipo, valida o mapa e aprova com cuidado!", emoji: "✅" },
+      { text: "Dica: usa aprovação ou rejeição em massa só depois de confirmar as coordenadas e contactos.", emoji: "⚡" },
     ],
     default: [
       { text: "Tens superpoderes aqui. Usa-os com sabedoria 🛡️", emoji: "🛡️" },

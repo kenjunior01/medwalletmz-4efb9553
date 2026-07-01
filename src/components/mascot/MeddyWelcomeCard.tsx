@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRoles } from '@/hooks/useUserRole';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import type { MeddyRole } from './Meddy';
 
@@ -27,6 +29,16 @@ export function MeddyWelcomeCard({
   const { user } = useAuth();
   const { roles } = useUserRoles();
 
+  const { data: profile } = useQuery<any>({
+    queryKey: ['meddy-welcome-profile', user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('full_name').eq('user_id', user!.id).maybeSingle();
+      return data;
+    },
+    staleTime: 60_000,
+  });
+
   if (!user) return null;
 
   const role: MeddyRole = (() => {
@@ -38,7 +50,7 @@ export function MeddyWelcomeCard({
     return 'patient';
   })();
 
-  const firstName = user.email?.split('@')[0] || 'amigo';
+  const firstName = profile?.full_name?.trim()?.split(/\s+/)[0] || user.email?.split('@')[0] || 'amigo';
 
   return (
     <section className="px-4 mt-5">
