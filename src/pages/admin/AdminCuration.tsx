@@ -205,19 +205,6 @@ export default function AdminCuration() {
     [proposals, selected],
   );
 
-  if (loading) return <CurationSkeleton />;
-
-  if (!hasRole('admin')) {
-    return (
-      <div className="p-8 text-center">
-        <p className="text-muted-foreground">Acesso restrito.</p>
-        <Button className="mt-4" onClick={() => navigate('/admin/bootstrap')}>
-          Bootstrap admin
-        </Button>
-      </div>
-    );
-  }
-
   const resetPage = () => {
     setPage(0);
     setSelected(new Set());
@@ -341,6 +328,19 @@ export default function AdminCuration() {
     cityFilter !== 'all' ? cityFilter : 'todas cidades',
     typeFilter !== 'all' ? entityLabel[typeFilter] : 'todos tipos',
   ].join(' · ');
+
+  if (loading) return <CurationSkeleton />;
+
+  if (!hasRole('admin')) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-muted-foreground">Acesso restrito.</p>
+        <Button className="mt-4" onClick={() => navigate('/admin/bootstrap')}>
+          Bootstrap admin
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-7xl">
