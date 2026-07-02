@@ -111,15 +111,17 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
     if (open) setLastText(undefined);
   }, [open, context]);
 
+  // useMemo tem de correr SEMPRE (antes de qualquer early return) para preservar ordem dos hooks
+  const firstName = useMemo(() => {
+    const source = profile?.full_name || user?.email?.split('@')[0] || 'amigo';
+    return String(source).trim().split(/\s+/)[0];
+  }, [profile?.full_name, user?.email]);
+
   // Não mostrar para utilizadores não autenticados (Auth page mostra login)
   if (!user || dismissed) return null;
 
   const state: MeddyState = open ? 'waving' : 'idle';
   const message = pickMeddyMessage(role, context, lastText);
-  const firstName = useMemo(() => {
-    const source = profile?.full_name || user.email?.split('@')[0] || 'amigo';
-    return String(source).trim().split(/\s+/)[0];
-  }, [profile?.full_name, user.email]);
   const personalizedText = message?.text
     .replace(/XXXX/g, String(metric))
     .replace(/{{name}}/g, firstName)
