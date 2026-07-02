@@ -2293,9 +2293,16 @@ export type Database = {
         Row: {
           consultation_id: string
           created_at: string
+          created_by: string | null
+          duration_seconds: number | null
+          end_reason: string | null
           ended_at: string | null
           id: string
+          participants: Json
+          provider: string
           room_id: string
+          room_name: string | null
+          room_url: string | null
           started_at: string | null
           status: string
           updated_at: string
@@ -2303,9 +2310,16 @@ export type Database = {
         Insert: {
           consultation_id: string
           created_at?: string
+          created_by?: string | null
+          duration_seconds?: number | null
+          end_reason?: string | null
           ended_at?: string | null
           id?: string
+          participants?: Json
+          provider?: string
           room_id: string
+          room_name?: string | null
+          room_url?: string | null
           started_at?: string | null
           status?: string
           updated_at?: string
@@ -2313,9 +2327,16 @@ export type Database = {
         Update: {
           consultation_id?: string
           created_at?: string
+          created_by?: string | null
+          duration_seconds?: number | null
+          end_reason?: string | null
           ended_at?: string | null
           id?: string
+          participants?: Json
+          provider?: string
           room_id?: string
+          room_name?: string | null
+          room_url?: string | null
           started_at?: string | null
           status?: string
           updated_at?: string
@@ -2553,6 +2574,14 @@ export type Database = {
           _user_id: string
         }
         Returns: Json
+      }
+      video_session_add_participant: {
+        Args: { _role: string; _session_id: string; _user_id: string }
+        Returns: undefined
+      }
+      video_session_end: {
+        Args: { _reason?: string; _session_id: string }
+        Returns: undefined
       }
       wallet_admin_adjust: {
         Args: {

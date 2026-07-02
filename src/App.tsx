@@ -80,6 +80,7 @@ import Partners from "./pages/Partners";
 import WaitlistDialog from "@/components/providers/WaitlistDialog";
 import VideoConsultation from "./pages/health/VideoConsultation";
 import ConsultationRoom from "./pages/health/ConsultationRoom";
+import VideoSessions from "./pages/health/VideoSessions";
 import Referrals from "./pages/Referrals";
 import Wallet from "./pages/Wallet";
 import AdminWallets from "./pages/admin/AdminWallets";
@@ -123,6 +124,7 @@ const App = () => (
                   <Route path="/health/doctors" element={<Doctors />} />
                   <Route path="/health/book/:doctorId" element={<BookConsultation />} />
                   <Route path="/health/consultations" element={<MyConsultations />} />
+                  <Route path="/health/sessions" element={<VideoSessions />} />
                   <Route path="/health/consultation/:id" element={<ConsultationChat />} />
                   <Route path="/health/profile" element={<HealthProfile />} />
                   <Route path="/health/prescriptions" element={<MyPrescriptions />} />
