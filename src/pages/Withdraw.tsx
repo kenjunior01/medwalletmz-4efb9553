@@ -10,6 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Wallet, ArrowDownToLine, Clock, CheckCircle2, XCircle } from "lucide-react";
+import {
+  ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip,
+  PieChart, Pie, Cell, Legend,
+} from "recharts";
+import { useMemo } from "react";
 
 const METHODS = [
   { value: "mpesa", label: "M-Pesa" },
@@ -36,6 +41,7 @@ export default function Withdraw() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
+  const [txSeries, setTxSeries] = useState<any[]>([]);
 
   const load = async () => {
     if (!user) return;
@@ -50,6 +56,20 @@ export default function Withdraw() {
     setIsPro(pro);
     if (ps?.value != null) setMinAmt(Number(ps.value));
     setHistory(hist ?? []);
+
+    // Wallet balance evolution (last 30 tx)
+    const { data: txs } = await supabase
+      .from("wallet_transactions")
+      .select("created_at,balance_after")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true })
+      .limit(60);
+    setTxSeries(
+      (txs ?? []).map((t: any) => ({
+        date: new Date(t.created_at).toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" }),
+        saldo: Number(t.balance_after ?? 0),
+      }))
+    );
   };
 
   useEffect(() => { load(); }, [user?.id]);
@@ -64,6 +84,23 @@ export default function Withdraw() {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [user?.id]);
+
+  const stats = useMemo(() => {
+    const acc: Record<string, number> = { pending: 0, paid: 0, rejected: 0 };
+    let held = 0;
+    history.forEach((h) => {
+      acc[h.status] = (acc[h.status] ?? 0) + Number(h.amount);
+      if (h.status === "pending") held += Number(h.amount);
+    });
+    return {
+      held,
+      pie: [
+        { name: "Pendente", value: acc.pending, color: "hsl(45 93% 47%)" },
+        { name: "Pago", value: acc.paid, color: "hsl(160 84% 39%)" },
+        { name: "Rejeitado", value: acc.rejected, color: "hsl(0 84% 60%)" },
+      ].filter((s) => s.value > 0),
+    };
+  }, [history]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +139,48 @@ export default function Withdraw() {
       <div className="rounded-2xl bg-gradient-to-br from-primary/90 to-primary p-6 text-primary-foreground shadow-lg">
         <div className="flex items-center gap-2 text-sm opacity-90"><Wallet className="h-4 w-4" /> Saldo disponível</div>
         <div className="text-4xl font-bold mt-1">{balance.toLocaleString("pt-PT")} <span className="text-lg opacity-80">MZN</span></div>
-        <div className="text-xs mt-2 opacity-80">Mínimo por pedido: {minAmt} MZN</div>
+        <div className="flex items-center justify-between mt-2 text-xs opacity-90">
+          <span>Mínimo por pedido: {minAmt} MZN</span>
+          <span>Retido: <strong>{stats.held.toLocaleString("pt-PT")} MZN</strong></span>
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-base">Evolução do saldo</CardTitle></CardHeader>
+          <CardContent className="h-56">
+            {txSeries.length > 1 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={txSeries} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip formatter={(v: any) => `${Number(v).toLocaleString("pt-PT")} MZN`} />
+                  <Line type="monotone" dataKey="saldo" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-sm text-muted-foreground">Sem movimentos ainda.</div>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-base">Levantamentos por estado</CardTitle></CardHeader>
+          <CardContent className="h-56">
+            {stats.pie.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={stats.pie} dataKey="value" nameKey="name" innerRadius={40} outerRadius={70} paddingAngle={2}>
+                    {stats.pie.map((s, i) => <Cell key={i} fill={s.color} />)}
+                  </Pie>
+                  <Tooltip formatter={(v: any) => `${Number(v).toLocaleString("pt-PT")} MZN`} />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-sm text-muted-foreground">Ainda sem pedidos.</div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
