@@ -97,6 +97,9 @@ export default function Wallet() {
           <Button variant="secondary" className="w-full mt-4" onClick={() => setOpen(true)}>
             <Plus className="h-4 w-4 mr-1" /> Depositar saldo
           </Button>
+          <Button asChild variant="outline" className="w-full mt-2 bg-white/10 border-white/30 text-white hover:bg-white/20">
+            <a href="/withdraw">Levantar (profissionais)</a>
+          </Button>
         </Card>
 
         <Card className="p-3 bg-gold/5 border-gold/30 text-sm">
