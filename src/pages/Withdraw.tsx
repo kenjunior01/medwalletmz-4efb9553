@@ -54,6 +54,17 @@ export default function Withdraw() {
 
   useEffect(() => { load(); }, [user?.id]);
 
+  // Realtime updates on this user's withdrawal history + wallet balance
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase
+      .channel(`withdraw-${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'withdrawal_requests', filter: `user_id=eq.${user.id}` }, () => load())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets', filter: `user_id=eq.${user.id}` }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [user?.id]);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const amt = Number(amount);
