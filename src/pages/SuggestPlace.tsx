@@ -33,7 +33,7 @@ const MZ_CITIES = ['Maputo', 'Matola', 'Beira', 'Nampula', 'Quelimane', 'Tete', 
  *
  * - Vai para `place_proposals` com source='user_submit', status='pending'.
  * - O admin revê em /admin/curation e aprova.
- * - Na aprovação: o utilizador recebe +25 MZN na wallet + +50 JoyCoins
+ * - Na aprovação: o utilizador recebe +25 MZN na wallet + +50 Pulse
  *   (configurável em place_proposal_settings).
  */
 export default function SuggestPlace() {
@@ -150,7 +150,7 @@ export default function SuggestPlace() {
               <div className="text-2xl text-muted-foreground">+</div>
               <div className="text-center">
                 <p className="text-2xl font-black text-gold">+{rewardJoy}</p>
-                <p className="text-[10px] text-muted-foreground">JoyCoins</p>
+                <p className="text-[10px] text-muted-foreground">Pulse</p>
               </div>
             </div>
             <p className="text-[11px] text-muted-foreground mt-3">

@@ -114,7 +114,7 @@ export function UserProposalsWidget({ userId }: { userId: string }) {
       </Card>
 
       <p className="text-[10px] text-muted-foreground text-center">
-        Cada sugestão aprovada recompensa o teu saldo MZN e JoyCoins automaticamente.
+        Cada sugestão aprovada recompensa o teu saldo MZN e Pulse automaticamente.
       </p>
     </div>
   );

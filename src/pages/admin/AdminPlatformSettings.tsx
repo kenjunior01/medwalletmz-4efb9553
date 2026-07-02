@@ -13,8 +13,8 @@ const FIELDS = [
   { key: 'deposit_bonus_percent', label: 'Bónus de depósito (%)', type: 'number' },
   { key: 'min_deposit_mzn', label: 'Depósito mínimo (MZN)', type: 'number' },
   { key: 'referral_bonus_mzn', label: 'Bónus em MZN ao convidar', type: 'number' },
-  { key: 'referral_bonus_coins', label: 'Bónus em Joy Coins ao convidar', type: 'number' },
-  { key: 'referral_referred_coins', label: 'Joy Coins para o convidado', type: 'number' },
+  { key: 'referral_bonus_coins', label: 'Bónus em Pulse ao convidar', type: 'number' },
+  { key: 'referral_referred_coins', label: 'Pulse para o convidado', type: 'number' },
   { key: 'wallet_required_for_services', label: 'Carteira obrigatória para pagar serviços', type: 'bool' },
 ];
 

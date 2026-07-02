@@ -76,7 +76,7 @@ export function DesktopRail() {
         <Gift className="h-5 w-5 text-gold mb-2" />
         <p className="text-sm font-bold leading-tight">Convida amigos</p>
         <p className="text-[11px] text-muted-foreground mt-1">
-          Ganha MZN e Joy Coins por cada amigo que entra.
+          Ganha MZN e Pulse por cada amigo que entra.
         </p>
         <Button
           size="sm"

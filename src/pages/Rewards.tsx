@@ -85,7 +85,7 @@ export default function Rewards() {
     return (
       <div className="min-h-screen bg-background p-4 flex flex-col items-center justify-center">
         <Gift className="h-16 w-16 text-muted-foreground mb-4" />
-        <h1 className="text-xl font-bold mb-2">Joy Rewards</h1>
+        <h1 className="text-xl font-bold mb-2">Pulse</h1>
         <p className="text-muted-foreground text-center mb-6">
           Entre na sua conta para ver suas recompensas e conquistas
         </p>
@@ -115,7 +115,7 @@ export default function Rewards() {
           
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-extrabold">Joy Rewards</h1>
+              <h1 className="text-2xl font-extrabold">Pulse</h1>
               <p className="text-white/80 text-sm">Nível {level} • {gamification?.total_orders || 0} pedidos</p>
             </div>
             <div className="text-right">
@@ -123,7 +123,7 @@ export default function Rewards() {
                 <Coins className="h-6 w-6 text-yellow-300" />
                 <span className="text-3xl font-extrabold">{gamification?.joy_coins || 0}</span>
               </div>
-              <p className="text-xs text-white/70">JoyCoins</p>
+              <p className="text-xs text-white/70">Pulse</p>
             </div>
           </div>
         </div>
@@ -257,7 +257,7 @@ export default function Rewards() {
               </div>
               <h3 className="font-bold text-lg mb-2">Indique Amigos</h3>
               <p className="text-muted-foreground text-sm mb-4">
-                Ganhe 100 JoyCoins por cada amigo que fizer o primeiro pedido!
+                Ganhe 100 Pulse por cada amigo que fizer o primeiro pedido!
               </p>
               <div className="bg-muted rounded-lg p-4 mb-4">
                 <p className="text-xs text-muted-foreground mb-1">Seu código de indicação</p>

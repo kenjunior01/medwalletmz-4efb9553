@@ -65,7 +65,7 @@ export function HealthCard() {
           onClick={() => navigate('/referrals')}
           className="col-span-2 flex items-center justify-center gap-1.5 text-xs text-pharmacy hover:text-pharmacy/80 transition py-1.5 rounded-lg border border-pharmacy/30 bg-pharmacy/5"
         >
-          <Gift className="h-3 w-3" /> Convida amigos e ganha Joy Coins
+          <Gift className="h-3 w-3" /> Convida amigos e ganha Pulse
         </button>
       </div>
     </section>
