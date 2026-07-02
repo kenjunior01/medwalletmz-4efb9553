@@ -1,54 +1,66 @@
-## Plano de execução — Relatório MoçambiApp
+## Plano de Execução
 
-Vou implementar em **4 fases sequenciais**, com check de qualidade entre cada uma. Estilo: subtil e premium (sem peso de dados). Foco contexto-MZ.
+### Fase 1 — Conectores adequados à plataforma
+Adicionar (via `standard_connectors--connect`) apenas os que fazem sentido clínico/financeiro:
+- **Resend** — envio transacional (receitas, lembretes, recibos da carteira).
+- **Twilio** — SMS/WhatsApp para OTP, confirmações de consulta e status de entrega (crítico em MZ, onde SMS chega mais que push).
+- **Stripe** — pagamentos internacionais como fallback ao M-Pesa/e-Mola (opcional, ativado só se o admin ligar).
+- Manter **Google Maps** e **KLIPY** já ligados.
 
----
+Não adicionar: HeyGen, Amplitude, Miro, Sanity, Shopify — nada disso encaixa numa carteira de saúde MZ.
 
-### Fase 1 — Estabilizar navegação (crítico, rápido)
-**Objetivo:** zero 404 + confiança imediata.
+### Fase 2 — Rebrand adaptativo do "Joy"
+Substituir "Joy" por um sistema chamado **Pulse** que muda de identidade por role:
+- Paciente → "Pulse Saúde" (progresso de bem-estar, medicação em dia)
+- Médico → "Pulse Clínico" (consultas concluídas, avaliações)
+- Farmácia → "Pulse Vendas" (pedidos entregues, tempo médio)
+- Estafeta → "Pulse Entregas" (KM rodados, on-time rate)
+- Admin → "Pulse Plataforma" (KPIs globais)
 
-- Auditar todas as rotas em `App.tsx` vs links em `Home.tsx`, `BottomNav`, `Header`.
-- Rotas com página existente mas link partido → corrigir path.
-- Funcionalidades sem página pronta (ex.: Exames) → criar **stub "Em Breve"** elegante (`ComingSoon.tsx`) com CTA de notificação, em vez de remover.
-- Confirmar: Triagem IA (`/health/triage`), Planos (`/health/plans`), Receitas, Pedidos, Carteira, Convites todos acessíveis.
+Implementação: um `usePulseIdentity()` hook que devolve `{ label, icon, unit, color, metric }` a partir do role. Renomear tabelas continua igual (mantém `joy_events`, `joy_coin_transactions` no BD — só muda a camada de UI/labels e um novo `PulseBadge` component). Zero migração destrutiva.
 
-### Fase 2 — Design refinado (subtil e premium)
-**Objetivo:** elevar percepção sem mudar identidade Ocean Trust.
+### Fase 3 — Homepage Bento Grid
+Reescrita de `src/pages/Index.tsx` (ou `Home.tsx`) com layout Bento responsivo:
 
-- **Cards:** micro-interações (hover-lift, gradiente sutil no border, ícone com leve scale, shimmer no skeleton). Sem vídeos nem carrosséis pesados.
-- **Desktop (≥1024px):** Home Bento passa a usar largura real (max-w-7xl), grid de 12 colunas, coluna lateral com widget de carteira + atividade + convites sticky. Mobile permanece intocado.
-- **Profile/Wallet/Admin:** aplicar `bento-card`, espaçamento consistente, tipografia Outfit já definida.
-- **Tema:** botão toggle claro/escuro no Header (dark já existe em CSS).
+```text
+┌─────────────────────┬──────────────┐
+│  HERO (2col x 2row) │  Wallet MZN  │
+│  CTA principal      │  NumberFlow  │
+│  Meddy animado      ├──────────────┤
+│                     │  Farmácia24h │
+├──────────┬──────────┼──────────────┤
+│ Próximo  │  Pulse   │  Consulta    │
+│ lembrete │  do role │  agendada    │
+├──────────┴──────────┴──────────────┤
+│  Feed personalizado (role-aware)   │
+└────────────────────────────────────┘
+```
 
-### Fase 3 — Contexto Moçambique
-**Objetivo:** leve, local, offline-tolerante.
+- Glassmorphism em cards (`backdrop-blur`, borders translúcidas, tokens semânticos existentes).
+- Hover subtil (scale 1.01 + glow), sem "cards estranhos".
+- `NumberFlow` (já instalado) para o saldo da carteira.
+- `framer-motion` (já instalado) para entrada em stagger.
+- Skeleton screens em vez de spinners.
+- Micro-animação Meddy no hero (usar assets existentes).
 
-- **Imagens:** substituir Unsplash por `<img loading="lazy" decoding="async">` + `srcset` quando possível; placeholders blur. Configurar `vite-imagetools` para conversão WebP nos assets bundled.
-- **Modo baixo consumo:** toggle em Profile que: desativa imagens decorativas, usa `prefers-reduced-data`, persiste em localStorage, expõe via Context.
-- **Bairros Maputo:** adicionar lista (Polana, Sommerschield, Alto-Maé, Coop, Malhangalene, Costa do Sol, Maxaquene, Mafalala, Chamanculo, Magoanine, Zimpeto, Matola-A/B/C, Machava, Infulene) ao formulário de Address e ao filtro de busca. Tipo `MaputoNeighborhood`.
-- **Offline-first:** revisar `vite.config.ts` Workbox — `NetworkFirst` para HTML; `CacheFirst` p/ assets hashed; cache runtime para `GET /rest/v1/doctor_profiles`, `prescriptions`, `orders` (StaleWhileRevalidate, 24h). Banner "Está offline — a mostrar dados em cache".
-- **Linguagem PT-MZ:** rever microcopy ("Manda mensagem", "Já tens", "Bué", saudações com hora do dia).
+### Fase 4 — Melhorias visuais transversais
+- Confirmar Dark Mode nos tokens (navy profundo + esmeralda, sem preto puro) — ajustar `index.css` se necessário.
+- Success feedback: micro-animação de check nos pagamentos concluídos.
+- Skeleton screens em `Wallet`, `Orders`, `Consultations`.
+- Checkout de farmácia: barra de progresso visual (Steps component) no topo.
 
-### Fase 4 — Pagamentos + tracking visual
-**Objetivo:** tornar fluxo M-Pesa/e-Mola confiável e o tracking vivo.
+### Fase 5 — Assistente IA (chat bubble)
+Reaproveitar o `MeddyFloating` existente: transformar em chat expansível com Lovable AI Gateway (`google/gemini-2.5-flash`, sem key nova). Já tenho `ai_conversations` no BD.
 
-- **Checkout:** stepper visual (Método → Confirmar telefone → STK Push → Estado). Componentes `PaymentMethodCard` para M-Pesa, e-Mola, Mkesh, Carteira. Texto de ajuda contextual + número de suporte.
-- **Order tracking:** timeline animada (placed → confirmed → preparing → on_the_way → delivered) com pulse no estado atual, ETA, botão WhatsApp p/ motorista. Leaflet já existente integrado com refresh realtime.
-- **Push notifications** nos eventos-chave de pedido (já há subscription table).
-
----
+### O que NÃO faço nesta fase
+- Rive (biblioteca pesada, uso Lottie/PNG animado já existente).
+- Apple Pay nativo (requer conta Apple Developer paga do utilizador).
+- Vercel AI SDK (uso Lovable AI direto, mesmo resultado).
 
 ### Detalhes técnicos
-- Novos componentes: `ComingSoon.tsx`, `ThemeToggle.tsx`, `LowDataToggle.tsx`, `NeighborhoodSelect.tsx`, `OfflineBanner.tsx`, `PaymentStepper.tsx`, `OrderTimeline.tsx`.
-- Novo context: `DataSaverContext`.
-- Hook: `useOnlineStatus`.
-- Migração SQL: adicionar coluna `neighborhood text` em `addresses` (+ index).
-- Sem mudanças destrutivas em tabelas existentes.
+- Sem migrações destrutivas; apenas UI + 1 hook novo (`usePulseIdentity`).
+- Novos componentes: `BentoHome.tsx`, `PulseBadge.tsx`, `WalletBentoCard.tsx`, `PulseIdentity.ts` (config).
+- Renomear labels "Joy"→"Pulse" em componentes visíveis; manter nomes de tabelas.
+- Conectores: chamo `standard_connectors--connect` um a um após aprovação do plano.
 
-### Ordem & validação
-1. Fase 1 (sem build pesado) → smoke test rotas.
-2. Fase 2 → screenshot desktop+mobile.
-3. Fase 3 → testar offline no preview publicado.
-4. Fase 4 → fluxo end-to-end de pedido.
-
-Aprovas? Posso começar pela **Fase 1** imediatamente após o "sim".
+Confirma para eu executar, ou diz-me se queres cortar/reordenar algo (ex: pular Stripe, pular Twilio, começar só pela homepage).
