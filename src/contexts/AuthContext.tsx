@@ -66,12 +66,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (!mounted) return;
-        setLoading(true);
         setSession(session);
         setUser(session?.user ?? null);
-        void loadRoles(session?.user ?? null).finally(() => {
-          if (mounted) setLoading(false);
-        });
+        // Só faz sentido reiniciar loading em SIGN_IN / SIGN_OUT — não em token refresh
+        // (senão as páginas admin voltam ao skeleton a cada ~50min)
+        if (_event === 'SIGNED_IN' || _event === 'SIGNED_OUT' || _event === 'USER_UPDATED') {
+          void loadRoles(session?.user ?? null);
+        }
       }
     );
 
