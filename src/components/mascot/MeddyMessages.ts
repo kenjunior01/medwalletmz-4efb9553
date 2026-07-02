@@ -49,7 +49,7 @@ const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
     ],
     profile: [
       { text: "Já fizeste a tua primeira teleconsulta? É super-rápido.", emoji: "🎥" },
-      { text: "Convida amigos e ganha saldo + JoyCoins!", emoji: "🎁", actionLabel: "Convidar", actionHref: "/referrals" },
+      { text: "Convida amigos e ganha saldo + Pulse!", emoji: "🎁", actionLabel: "Convidar", actionHref: "/referrals" },
     ],
     wallet: [
       { text: "Sabias que podes carregar MZN directamente via M-Pesa?", emoji: "💸" },

@@ -63,7 +63,7 @@ export default function Referrals() {
 
   const copy = () => { navigator.clipboard.writeText(link); toast.success('Link copiado!'); };
   const share = async () => {
-    const text = `Junta-te ao MedWallet e ganha bónus de boas-vindas (saldo + Joy Coins)! ${link}`;
+    const text = `Junta-te ao MedWallet e ganha bónus de boas-vindas (saldo + Pulse)! ${link}`;
     if (navigator.share) {
       try { await navigator.share({ title: 'MedWallet', text }); } catch {}
     } else {
@@ -90,7 +90,7 @@ export default function Referrals() {
             <div className="text-2xl opacity-50">+</div>
             <div>
               <p className="text-3xl font-bold">+{bonusCoins}</p>
-              <p className="text-xs opacity-90">Joy Coins</p>
+              <p className="text-xs opacity-90">Pulse</p>
             </div>
           </div>
           <p className="text-[11px] mt-3 opacity-90">Ambos recebem ao 1.º serviço pago do convidado</p>
@@ -123,7 +123,7 @@ export default function Referrals() {
           <Card className="p-3 text-center">
             <Coins className="h-5 w-5 mx-auto text-gold mb-1" />
             <p className="text-xl font-bold">{totalCoins}</p>
-            <p className="text-[10px] text-muted-foreground">Joy Coins</p>
+            <p className="text-[10px] text-muted-foreground">Pulse</p>
           </Card>
         </div>
 

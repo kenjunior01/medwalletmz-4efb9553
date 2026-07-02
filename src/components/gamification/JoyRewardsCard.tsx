@@ -54,13 +54,13 @@ export function JoyRewardsCard() {
               <Gift className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-sm">Joy Rewards</h3>
+              <h3 className="font-bold text-sm">Pulse</h3>
               <p className="text-xs text-muted-foreground">Ganhe prémios</p>
             </div>
           </div>
         </div>
         <p className="text-sm text-muted-foreground mb-3">
-          Entre na sua conta para ganhar JoyCoins e desbloquear conquistas!
+          Entre na sua conta para ganhar Pulse e desbloquear conquistas!
         </p>
         <Button 
           size="sm" 
@@ -86,7 +86,7 @@ export function JoyRewardsCard() {
               <Coins className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-sm">Joy Rewards</h3>
+              <h3 className="font-bold text-sm">Pulse</h3>
               <p className="text-xs text-muted-foreground">Nível {level}</p>
             </div>
           </div>
@@ -100,11 +100,11 @@ export function JoyRewardsCard() {
           </Button>
         </div>
 
-        {/* JoyCoins Balance */}
+        {/* Pulse Balance */}
         <div className="bg-gradient-to-r from-secondary/10 to-gold/10 rounded-xl p-3 mb-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Seus JoyCoins</p>
+              <p className="text-xs text-muted-foreground mb-0.5">Seus Pulse</p>
               <div className="flex items-center gap-1">
                 <Coins className="h-5 w-5 text-gold" />
                 <span className="font-extrabold text-2xl">{gamification?.joy_coins || 0}</span>
