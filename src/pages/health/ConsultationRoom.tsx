@@ -39,7 +39,7 @@ export default function ConsultationRoom() {
     (async () => {
       const { data: c, error } = await supabase
         .from('consultations')
-        .select('id, doctor_id, patient_id, scheduled_at, status, type, reason')
+        .select('id, doctor_id, patient_id, scheduled_at, status, consultation_type, reason')
         .eq('id', id)
         .maybeSingle();
       if (!active) return;
@@ -53,7 +53,7 @@ export default function ConsultationRoom() {
         nav('/health/consultations');
         return;
       }
-      setConsult(c as Consult);
+      setConsult({ ...(c as any), type: (c as any).consultation_type ?? null } as Consult);
       const otherId = c.doctor_id === user.id ? c.patient_id : c.doctor_id;
       const { data: p } = await supabase.from('profiles').select('full_name').eq('user_id', otherId).maybeSingle();
       setOtherName(p?.full_name || 'Participante');
