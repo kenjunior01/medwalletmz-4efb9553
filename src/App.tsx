@@ -79,6 +79,7 @@ import HealthEducation from "./pages/health/HealthEducation";
 import Partners from "./pages/Partners";
 import WaitlistDialog from "@/components/providers/WaitlistDialog";
 import VideoConsultation from "./pages/health/VideoConsultation";
+import ConsultationRoom from "./pages/health/ConsultationRoom";
 import Referrals from "./pages/Referrals";
 import Wallet from "./pages/Wallet";
 import AdminWallets from "./pages/admin/AdminWallets";
@@ -151,6 +152,7 @@ const App = () => (
 
                 {/* Vídeo-consulta (fullscreen, sem layout) */}
                 <Route path="/health/video/:id" element={<VideoConsultation />} />
+                <Route path="/health/room/:id" element={<ConsultationRoom />} />
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AdminDashboard />}>
