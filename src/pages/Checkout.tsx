@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Smartphone, Loader2 } from 'lucide-react';
+import { ArrowLeft, Smartphone, Loader2, Apple, Wallet } from 'lucide-react';
 import { CouponInput, calculateCouponDiscount } from '@/components/checkout/CouponInput';
 import { Zap, FileText, Snowflake } from 'lucide-react';
 interface AppliedCoupon {
@@ -26,11 +26,30 @@ interface AppliedCoupon {
   final_value?: number;
 }
 
-const paymentMethods = [
-  { id: 'mpesa', name: 'M-Pesa', icon: '📱', description: 'Vodacom M-Pesa' },
-  { id: 'emola', name: 'e-Mola', icon: '💰', description: 'Movitel e-Mola' },
-  { id: 'mkesh', name: 'Mkesh', icon: '🏦', description: 'BCI Mkesh' },
+type PayMethod = {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  requiresPhone?: boolean;
+  badge?: string;
+};
+
+const allPaymentMethods: PayMethod[] = [
+  { id: 'wallet', name: 'Carteira MedWallet', icon: '💳', description: 'Débito direto do saldo MZN', badge: 'Instantâneo' },
+  { id: 'mpesa', name: 'M-Pesa', icon: '📱', description: 'Vodacom M-Pesa', requiresPhone: true },
+  { id: 'emola', name: 'e-Mola', icon: '💰', description: 'Movitel e-Mola', requiresPhone: true },
+  { id: 'mkesh', name: 'Mkesh', icon: '🏦', description: 'BCI Mkesh', requiresPhone: true },
+  { id: 'apple_pay', name: 'Apple Pay', icon: '', description: 'Toque para pagar (iOS/Safari)', badge: 'Rápido' },
+  { id: 'google_pay', name: 'Google Pay', icon: '', description: 'Toque para pagar (Android/Chrome)', badge: 'Rápido' },
 ];
+
+function detectSupportedPayments(): { applePay: boolean; googlePay: boolean } {
+  if (typeof window === 'undefined') return { applePay: false, googlePay: false };
+  const applePay = !!(window as any).ApplePaySession && (window as any).ApplePaySession.canMakePayments?.();
+  const googlePay = typeof (window as any).PaymentRequest !== 'undefined';
+  return { applePay: !!applePay, googlePay };
+}
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -39,6 +58,14 @@ export default function Checkout() {
   
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('mpesa');
+  const [supported] = useState(detectSupportedPayments());
+  const paymentMethods = allPaymentMethods.filter(m => {
+    if (m.id === 'apple_pay') return supported.applePay;
+    if (m.id === 'google_pay') return supported.googlePay;
+    return true;
+  });
+  const selectedMethod = paymentMethods.find(m => m.id === paymentMethod) || paymentMethods[0];
+  const requiresPhone = !!selectedMethod?.requiresPhone;
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
@@ -88,7 +115,7 @@ export default function Checkout() {
       return;
     }
 
-    if (!phoneNumber || !address) {
+    if (!address || (requiresPhone && !phoneNumber)) {
       toast.error('Preencha todos os campos obrigatórios');
       return;
     }
@@ -105,6 +132,26 @@ export default function Checkout() {
     setLoading(true);
 
     try {
+      // Native wallet payments (Apple Pay / Google Pay) via PaymentRequest API
+      if ((paymentMethod === 'apple_pay' || paymentMethod === 'google_pay') && typeof (window as any).PaymentRequest !== 'undefined') {
+        try {
+          const methodData: any[] = paymentMethod === 'apple_pay'
+            ? [{ supportedMethods: 'https://apple.com/apple-pay', data: { version: 3, merchantIdentifier: 'merchant.mz.medwallet', merchantCapabilities: ['supports3DS'], supportedNetworks: ['visa','masterCard','amex'], countryCode: 'MZ' } }]
+            : [{ supportedMethods: 'https://google.com/pay', data: { environment: 'TEST', apiVersion: 2, apiVersionMinor: 0, allowedPaymentMethods: [{ type: 'CARD', parameters: { allowedAuthMethods: ['PAN_ONLY','CRYPTOGRAM_3DS'], allowedCardNetworks: ['VISA','MASTERCARD'] } }] } }];
+          const details = { total: { label: 'MedWallet', amount: { currency: 'MZN', value: String(total) } } };
+          const pr = new (window as any).PaymentRequest(methodData, details);
+          const canPay = await pr.canMakePayment().catch(() => false);
+          if (!canPay) throw new Error('unavailable');
+          const resp = await pr.show();
+          await resp.complete('success');
+        } catch (err: any) {
+          if (err?.name === 'AbortError') { setLoading(false); return; }
+          toast.error(`${selectedMethod?.name} indisponível neste dispositivo. Escolha outro método.`);
+          setLoading(false);
+          return;
+        }
+      }
+
       const notesWithCoupon = appliedCoupon
         ? `${notes ? notes + ' | ' : ''}Cupom: ${appliedCoupon.code} (-${discount} MZN)`
         : notes;
