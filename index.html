@@ -65,6 +65,18 @@
 </head>
 
   <body>
+    <script>
+      // Apply theme before paint to avoid flash
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var sys = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          var resolved = stored === "light" || stored === "dark" ? stored : sys;
+          if (resolved === "dark") document.documentElement.classList.add("dark");
+          document.documentElement.style.colorScheme = resolved;
+        } catch (e) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
