@@ -1894,6 +1894,7 @@ export type Database = {
           longitude: number | null
           name: string
           owner_id: string | null
+          phone: string | null
           rating: number | null
           type: string
         }
@@ -1911,6 +1912,7 @@ export type Database = {
           longitude?: number | null
           name: string
           owner_id?: string | null
+          phone?: string | null
           rating?: number | null
           type: string
         }
@@ -1928,6 +1930,7 @@ export type Database = {
           longitude?: number | null
           name?: string
           owner_id?: string | null
+          phone?: string | null
           rating?: number | null
           type?: string
         }
@@ -2402,6 +2405,57 @@ export type Database = {
         }
         Relationships: []
       }
+      withdrawal_requests: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          created_at: string
+          destination: string
+          destination_name: string | null
+          id: string
+          method: string
+          processed_at: string | null
+          processed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          user_notes: string | null
+          wallet_tx_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          created_at?: string
+          destination: string
+          destination_name?: string | null
+          id?: string
+          method: string
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          user_notes?: string | null
+          wallet_tx_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          destination?: string
+          destination_name?: string | null
+          id?: string
+          method?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          user_notes?: string | null
+          wallet_tx_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       weekly_leaderboard: {
@@ -2455,6 +2509,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_professional: { Args: { _user_id: string }; Returns: boolean }
       pay_service: {
         Args: {
           _coupon_id?: string
@@ -2473,6 +2528,20 @@ export type Database = {
       }
       reject_proposal: {
         Args: { p_id: string; p_notes?: string }
+        Returns: Json
+      }
+      request_withdrawal: {
+        Args: {
+          _amount: number
+          _destination: string
+          _destination_name?: string
+          _method: string
+          _notes?: string
+        }
+        Returns: Json
+      }
+      resolve_withdrawal: {
+        Args: { _action: string; _id: string; _notes?: string }
         Returns: Json
       }
       validate_coupon: {
