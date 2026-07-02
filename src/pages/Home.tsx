@@ -107,7 +107,7 @@ export default function Home() {
               <Button size="sm" className="flex-1 bg-white text-primary hover:bg-white/90 font-bold" onClick={() => navigate('/health/triage')}>
                 <Sparkles className="h-4 w-4 mr-1.5" /> Triagem IA
               </Button>
-              <Button size="sm" variant="outline" className="flex-1 border-white/40 text-white hover:bg-white/10" onClick={() => navigate('/health/doctors')}>
+              <Button size="sm" variant="outline" className="flex-1 bg-transparent border-white/60 !text-white hover:bg-white/15 hover:!text-white font-bold" onClick={() => navigate('/health/doctors')}>
                 <Stethoscope className="h-4 w-4 mr-1.5" /> Médicos
               </Button>
             </div>
