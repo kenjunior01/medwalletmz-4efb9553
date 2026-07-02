@@ -368,11 +368,24 @@ export default function Checkout() {
                   <RadioGroupItem value={method.id} id={method.id} />
                   <label 
                     htmlFor={method.id}
-                    className="flex items-center gap-3 flex-1 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/50"
+                    className={`flex items-center gap-3 flex-1 cursor-pointer p-3 rounded-xl border transition ${paymentMethod === method.id ? 'border-primary bg-primary/5 ring-1 ring-primary/40' : 'border-border hover:bg-muted/50'}`}
                   >
-                    <span className="text-2xl">{method.icon}</span>
-                    <div>
-                      <p className="font-medium">{method.name}</p>
+                    {method.id === 'apple_pay' ? (
+                      <Apple className="h-6 w-6" />
+                    ) : method.id === 'google_pay' ? (
+                      <span className="text-xl font-black tracking-tight">G Pay</span>
+                    ) : method.id === 'wallet' ? (
+                      <Wallet className="h-6 w-6 text-primary" />
+                    ) : (
+                      <span className="text-2xl">{method.icon}</span>
+                    )}
+                    <div className="flex-1">
+                      <p className="font-medium flex items-center gap-2">
+                        {method.name}
+                        {method.badge && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-primary/15 text-primary">{method.badge}</span>
+                        )}
+                      </p>
                       <p className="text-xs text-muted-foreground">{method.description}</p>
                     </div>
                   </label>
@@ -382,9 +395,10 @@ export default function Checkout() {
           </RadioGroup>
         </div>
 
-        {/* Phone Number */}
+        {/* Phone Number — only for mobile money */}
+        {requiresPhone && (
         <div className="space-y-3">
-          <Label>Número de Telefone ({paymentMethods.find(m => m.id === paymentMethod)?.name}) *</Label>
+          <Label>Número de Telefone ({selectedMethod?.name}) *</Label>
           <div className="relative">
             <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -393,13 +407,14 @@ export default function Checkout() {
               onChange={(e) => setPhoneNumber(e.target.value)}
               placeholder="84 xxx xxxx"
               className="pl-10"
-              required
+              required={requiresPhone}
             />
           </div>
           <p className="text-xs text-muted-foreground">
             Receberá uma notificação para confirmar o pagamento
           </p>
         </div>
+        )}
 
         {/* Submit */}
         <Button 
@@ -410,7 +425,11 @@ export default function Checkout() {
           {loading ? (
             <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
-            <>Pagar {total} MZN</>
+            <>
+              {paymentMethod === 'apple_pay' && <Apple className="h-5 w-5 mr-2" />}
+              {paymentMethod === 'wallet' && <Wallet className="h-5 w-5 mr-2" />}
+              Pagar {total} MZN
+            </>
           )}
         </Button>
       </form>
