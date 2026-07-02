@@ -193,6 +193,20 @@ export default function Checkout() {
 
       if (itemsError) throw itemsError;
 
+      const isInstant = paymentMethod === 'wallet' || paymentMethod === 'apple_pay' || paymentMethod === 'google_pay';
+
+      // Debit wallet if the user chose it
+      if (paymentMethod === 'wallet') {
+        const { error: walletErr } = await supabase.rpc('wallet_debit', {
+          _user_id: user.id,
+          _amount: total,
+          _service_type: 'pharmacy_order',
+          _ref_id: order.id,
+          _description: `Pedido farmácia #${String(order.id).slice(0, 8)}`,
+        });
+        if (walletErr) throw walletErr;
+      }
+
       // Create payment record
       const { error: paymentError } = await supabase
         .from('payments')
@@ -201,8 +215,8 @@ export default function Checkout() {
           user_id: user.id,
           amount: total,
           method: paymentMethod,
-          phone_number: phoneNumber,
-          status: 'pending'
+          phone_number: requiresPhone ? phoneNumber : null,
+          status: isInstant ? 'confirmed' : 'pending',
         });
 
       if (paymentError) throw paymentError;
