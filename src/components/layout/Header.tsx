@@ -116,7 +116,7 @@ export function Header() {
           <div className="flex items-center gap-1">
             <Sparkles className="h-3.5 w-3.5 text-secondary" />
             <span className="font-extrabold text-lg text-gradient-premium">
-              Joy
+              MedWallet
             </span>
           </div>
         </div>
