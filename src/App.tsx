@@ -90,6 +90,8 @@ import AdminImport from "./pages/admin/AdminImport";
 import AdminCuration from "./pages/admin/AdminCuration";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
+import Withdraw from "./pages/Withdraw";
+import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
 
 const queryClient = new QueryClient();
 
@@ -137,6 +139,7 @@ const App = () => (
                   <Route path="/referrals" element={<Referrals />} />
                   <Route path="/wallet" element={<Wallet />} />
                   <Route path="/suggest-place" element={<SuggestPlace />} />
+                  <Route path="/withdraw" element={<Withdraw />} />
                 </Route>
 
                 {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
@@ -169,6 +172,7 @@ const App = () => (
                   <Route path="transactions" element={<AdminTransactions />} />
                   <Route path="import" element={<AdminImport />} />
                   <Route path="curation" element={<AdminCuration />} />
+                  <Route path="withdrawals" element={<AdminWithdrawals />} />
                 </Route>
                 
                 {/* Store Owner Routes */}
