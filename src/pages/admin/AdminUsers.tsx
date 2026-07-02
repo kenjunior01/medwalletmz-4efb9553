@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight } from 'lucide-react';
 
-type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin';
+type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic';
 
 interface UserWithRoles {
   id: string;
@@ -28,14 +28,18 @@ const roleLabels: Record<AppRole, string> = {
   customer: 'Cliente',
   store_owner: 'Lojista',
   driver: 'Entregador',
-  admin: 'Admin'
+  admin: 'Admin',
+  doctor: 'Médico',
+  clinic: 'Clínica'
 };
 
 const roleColors: Record<AppRole, string> = {
   customer: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   store_owner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   driver: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-  admin: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+  admin: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+  doctor: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
+  clinic: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
 };
 
 export default function AdminUsers() {
@@ -146,7 +150,9 @@ export default function AdminUsers() {
     customers: users?.filter(u => u.roles.includes('customer')).length || 0,
     storeOwners: users?.filter(u => u.roles.includes('store_owner')).length || 0,
     drivers: users?.filter(u => u.roles.includes('driver')).length || 0,
-    admins: users?.filter(u => u.roles.includes('admin')).length || 0
+    admins: users?.filter(u => u.roles.includes('admin')).length || 0,
+    doctors: users?.filter(u => u.roles.includes('doctor')).length || 0,
+    clinics: users?.filter(u => u.roles.includes('clinic')).length || 0,
   };
 
   return (
@@ -157,7 +163,7 @@ export default function AdminUsers() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-7 gap-4 mb-6">
         <Card>
           <CardContent className="p-4 text-center">
             <Users className="h-5 w-5 mx-auto text-muted-foreground mb-1" />
@@ -189,6 +195,18 @@ export default function AdminUsers() {
             <p className="text-xs text-muted-foreground">Admins</p>
           </CardContent>
         </Card>
+        <Card className="border-teal-200 bg-teal-50/50 dark:bg-teal-950/20">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-teal-600">{stats.doctors}</p>
+            <p className="text-xs text-muted-foreground">Médicos</p>
+          </CardContent>
+        </Card>
+        <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-amber-600">{stats.clinics}</p>
+            <p className="text-xs text-muted-foreground">Clínicas</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters */}
@@ -209,6 +227,8 @@ export default function AdminUsers() {
           <SelectContent>
             <SelectItem value="all">Todos os Roles</SelectItem>
             <SelectItem value="customer">Clientes</SelectItem>
+            <SelectItem value="doctor">Médicos</SelectItem>
+            <SelectItem value="clinic">Clínicas</SelectItem>
             <SelectItem value="store_owner">Lojistas</SelectItem>
             <SelectItem value="driver">Entregadores</SelectItem>
             <SelectItem value="admin">Admins</SelectItem>
@@ -356,7 +376,7 @@ export default function AdminUsers() {
                       <SelectValue placeholder="Adicionar role..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {(['customer', 'store_owner', 'driver', 'admin'] as AppRole[])
+                      {(['customer', 'doctor', 'clinic', 'store_owner', 'driver', 'admin'] as AppRole[])
                         .filter(r => !selectedUser.roles.includes(r))
                         .map(role => (
                           <SelectItem key={role} value={role}>

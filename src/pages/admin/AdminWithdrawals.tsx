@@ -7,6 +7,10 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, ArrowDownToLine } from "lucide-react";
 
+const STATUS_LABEL: Record<string, string> = {
+  pending: "Pendente", paid: "Pago", rejected: "Rejeitado", all: "Todos",
+};
+
 export default function AdminWithdrawals() {
   const [rows, setRows] = useState<any[]>([]);
   const [filter, setFilter] = useState<string>("pending");
@@ -21,6 +25,20 @@ export default function AdminWithdrawals() {
 
   useEffect(() => { load(); }, [filter]);
 
+  // Realtime: refresh list when any withdrawal changes
+  useEffect(() => {
+    const ch = supabase
+      .channel('admin-withdrawals')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'withdrawal_requests' }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [filter]);
+
+  const totals = rows.reduce(
+    (a, r) => { a[r.status] = (a[r.status] ?? 0) + Number(r.amount); return a; },
+    {} as Record<string, number>
+  );
+
   const resolve = async (id: string, action: "paid" | "rejected") => {
     const { error } = await supabase.rpc("resolve_withdrawal", { _id: id, _action: action, _notes: notes[id] || null });
     if (error) return toast.error(error.message);
@@ -34,9 +52,20 @@ export default function AdminWithdrawals() {
         <h1 className="text-2xl font-bold flex items-center gap-2"><ArrowDownToLine className="h-6 w-6" /> Levantamentos</h1>
         <div className="flex gap-2">
           {["pending", "paid", "rejected", "all"].map((s) => (
-            <Button key={s} size="sm" variant={filter === s ? "default" : "outline"} onClick={() => setFilter(s)}>{s}</Button>
+            <Button key={s} size="sm" variant={filter === s ? "default" : "outline"} onClick={() => setFilter(s)}>{STATUS_LABEL[s]}</Button>
           ))}
         </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        {(["pending","paid","rejected"] as const).map((s) => (
+          <Card key={s}>
+            <CardContent className="p-4">
+              <div className="text-xs text-muted-foreground">{STATUS_LABEL[s]}</div>
+              <div className="text-xl font-bold">{(totals[s] ?? 0).toLocaleString("pt-PT")} <span className="text-xs font-normal text-muted-foreground">MZN</span></div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {rows.length === 0 && <Card><CardContent className="p-6 text-sm text-muted-foreground">Sem pedidos.</CardContent></Card>}
