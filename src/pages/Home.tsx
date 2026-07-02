@@ -405,7 +405,7 @@ export default function Home() {
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Sugere e, quando publicarmos, recebes saldo + JoyCoins automaticamente.
+                Sugere e, quando publicarmos, recebes saldo + Pulse automaticamente.
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-gold group-hover:translate-x-1 transition" />
