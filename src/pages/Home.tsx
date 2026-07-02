@@ -18,6 +18,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import NumberFlow from "@number-flow/react";
+import { motion } from "framer-motion";
+import { usePulseIdentity } from "@/hooks/usePulseIdentity";
 
 const greet = () => {
   const h = new Date().getHours();
@@ -31,6 +34,8 @@ export default function Home() {
   const { user } = useAuth();
   const { roles } = useUserRoles();
   const { wallet } = useWallet();
+  const pulse = usePulseIdentity();
+  const PulseIcon = pulse.icon;
 
   const isProvider = roles.some(r => ['doctor', 'clinic', 'store_owner', 'driver'].includes(r));
 
@@ -117,18 +122,24 @@ export default function Home() {
       <MeddyWelcomeCard message="Posso ajudar-te a encontrar médico, farmácia ou marcar teleconsulta." />
 
       {/* ============ BENTO GRID ============ */}
-      <section className="px-4 mt-5 grid grid-cols-6 auto-rows-[80px] gap-3">
+      <motion.section
+        className="px-4 mt-5 grid grid-cols-6 auto-rows-[80px] gap-3"
+        initial="hidden"
+        animate="show"
+        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+      >
         {/* Wallet — large */}
         {user && (
-          <button
+          <motion.button
+            variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
             onClick={() => navigate('/wallet')}
             className="col-span-4 row-span-2 bento-card text-left p-4 bg-gradient-to-br from-primary to-secondary text-primary-foreground"
           >
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] uppercase tracking-wider opacity-75 font-bold">Carteira MZN</p>
-                <p className="text-3xl font-black mt-1 leading-none">
-                  {(wallet?.balance_mzn ?? 0).toLocaleString('pt-MZ', { minimumFractionDigits: 0 })}
+                <p className="text-3xl font-black mt-1 leading-none flex items-baseline">
+                  <NumberFlow value={Number(wallet?.balance_mzn ?? 0)} format={{ maximumFractionDigits: 0 }} className="tabular-nums" />
                   <span className="text-base font-semibold ml-1.5 opacity-80">MZN</span>
                 </p>
               </div>
@@ -142,21 +153,22 @@ export default function Home() {
                 <Plus className="h-3 w-3" /> Depositar
               </span>
             </div>
-          </button>
+          </motion.button>
         )}
 
-        {/* Joy / Convites */}
-        <button
+        {/* Pulse / Convites — adapta ao role */}
+        <motion.button
+          variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
           onClick={() => navigate('/referrals')}
           className="col-span-2 row-span-2 bento-card text-left p-3 bg-gradient-to-br from-gold/20 to-gold/5 border-gold/30"
         >
           <div className="h-9 w-9 rounded-xl bg-gold flex items-center justify-center mb-2">
-            <Gift className="h-5 w-5 text-gold-foreground" />
+            <PulseIcon className="h-5 w-5 text-gold-foreground" />
           </div>
-          <p className="text-xs font-bold leading-tight">Convida e<br/>ganha MZN</p>
-          <p className="text-[10px] text-muted-foreground mt-1">+ Joy Coins</p>
+          <p className="text-xs font-bold leading-tight">{pulse.label}</p>
+          <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{pulse.tagline}</p>
           <ArrowRight className="h-3 w-3 absolute bottom-3 right-3 text-gold" />
-        </button>
+        </motion.button>
 
         {/* Próxima consulta */}
         <button
@@ -222,7 +234,7 @@ export default function Home() {
           <p className="text-xs font-bold">Chat médico</p>
           <p className="text-[9px] text-muted-foreground mt-1 leading-tight">Async + anexos</p>
         </button>
-      </section>
+      </motion.section>
 
       <FollowUpReminders />
 
