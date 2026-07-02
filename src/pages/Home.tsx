@@ -10,6 +10,7 @@ import { KlipyBanner } from "@/components/klipy/KlipyBanner";
 import { PersonalizedForYou } from "@/components/health/PersonalizedForYou";
 import { ReferralBanner } from "@/components/referrals/ReferralBanner";
 import { MeddyWelcomeCard } from "@/components/mascot/MeddyWelcomeCard";
+import { RoleHero } from "@/components/home/RoleHero";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRole";
@@ -38,6 +39,8 @@ export default function Home() {
   const PulseIcon = pulse.icon;
 
   const isProvider = roles.some(r => ['doctor', 'clinic', 'store_owner', 'driver'].includes(r));
+  const isAdmin = roles.includes('admin');
+  const showRoleHero = isProvider || isAdmin;
 
   const { data: profile } = useQuery<any>({
     queryKey: ['profile-name', user?.id],
@@ -80,7 +83,10 @@ export default function Home() {
 
   return (
     <div className="pb-6 animate-fade-in">
-      {/* ============ HERO ============ */}
+      {/* ============ HERO — personalizado por role ============ */}
+      {showRoleHero ? (
+        <RoleHero roles={roles as any} name={firstName !== 'visitante' ? firstName : undefined} />
+      ) : (
       <section className="relative px-4 pt-3">
         <div className="relative rounded-[2rem] overflow-hidden gradient-ocean p-6 text-white shadow-premium">
           <div className="absolute -top-12 -right-10 w-48 h-48 rounded-full bg-white/10 blur-3xl" />
@@ -115,6 +121,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       <div className="px-4 mt-4"><EnableNotificationsBanner /></div>
 
