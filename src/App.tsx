@@ -94,6 +94,13 @@ import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import Withdraw from "./pages/Withdraw";
 import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
+import Insurance from "./pages/insurance/Insurance";
+import InsuranceDetail from "./pages/insurance/InsuranceDetail";
+import InsuranceRegister from "./pages/insurance/InsuranceRegister";
+import InsuranceDashboard from "./pages/insurance/InsuranceDashboard";
+import Ads from "./pages/ads/Ads";
+import AdForm from "./pages/ads/AdForm";
+import MyAds from "./pages/ads/MyAds";
 
 const queryClient = new QueryClient();
 
@@ -143,6 +150,13 @@ const App = () => (
                   <Route path="/wallet" element={<Wallet />} />
                   <Route path="/suggest-place" element={<SuggestPlace />} />
                   <Route path="/withdraw" element={<Withdraw />} />
+                  <Route path="/health/insurance" element={<Insurance />} />
+                  <Route path="/insurance/:id" element={<InsuranceDetail />} />
+                  <Route path="/insurance/register" element={<InsuranceRegister />} />
+                  <Route path="/insurance/dashboard" element={<InsuranceDashboard />} />
+                  <Route path="/ads" element={<Ads />} />
+                  <Route path="/ads/new" element={<AdForm />} />
+                  <Route path="/ads/mine" element={<MyAds />} />
                 </Route>
 
                 {/* Rota protegida: destrava o primeiro admin (bootstrap) */}

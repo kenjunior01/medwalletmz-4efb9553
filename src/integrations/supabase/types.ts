@@ -92,6 +92,66 @@ export type Database = {
         }
         Relationships: []
       }
+      advertisements: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          city: string | null
+          contact_phone: string | null
+          contact_whatsapp: string | null
+          created_at: string
+          description: string | null
+          expires_at: string | null
+          id: string
+          image_url: string | null
+          neighborhood: string | null
+          price_mzn: number | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+          views: number
+        }
+        Insert: {
+          admin_notes?: string | null
+          category?: string
+          city?: string | null
+          contact_phone?: string | null
+          contact_whatsapp?: string | null
+          created_at?: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          neighborhood?: string | null
+          price_mzn?: number | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          views?: number
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          city?: string | null
+          contact_phone?: string | null
+          contact_whatsapp?: string | null
+          created_at?: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          neighborhood?: string | null
+          price_mzn?: number | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          views?: number
+        }
+        Relationships: []
+      }
       ai_conversations: {
         Row: {
           created_at: string
@@ -904,6 +964,125 @@ export type Database = {
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insurance_companies: {
+        Row: {
+          address: string | null
+          cities: string[] | null
+          city: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          is_active: boolean
+          is_verified: boolean
+          logo_url: string | null
+          name: string
+          owner_id: string
+          phone: string | null
+          rating: number | null
+          slug: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          cities?: string[] | null
+          city?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          rating?: number | null
+          slug?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          cities?: string[] | null
+          city?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          rating?: number | null
+          slug?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      insurance_plans: {
+        Row: {
+          company_id: string
+          coverage_percent: number
+          covered_services: string[] | null
+          created_at: string
+          description: string | null
+          features: Json | null
+          id: string
+          is_active: boolean
+          max_coverage_mzn: number | null
+          monthly_price_mzn: number
+          name: string
+          updated_at: string
+          yearly_price_mzn: number | null
+        }
+        Insert: {
+          company_id: string
+          coverage_percent?: number
+          covered_services?: string[] | null
+          created_at?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean
+          max_coverage_mzn?: number | null
+          monthly_price_mzn?: number
+          name: string
+          updated_at?: string
+          yearly_price_mzn?: number | null
+        }
+        Update: {
+          company_id?: string
+          coverage_percent?: number
+          covered_services?: string[] | null
+          created_at?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean
+          max_coverage_mzn?: number | null
+          monthly_price_mzn?: number
+          name?: string
+          updated_at?: string
+          yearly_price_mzn?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
             referencedColumns: ["id"]
           },
         ]
@@ -2235,6 +2414,50 @@ export type Database = {
         }
         Relationships: []
       }
+      user_insurance: {
+        Row: {
+          activated_at: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          member_number: string | null
+          plan_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          member_number?: string | null
+          plan_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          member_number?: string | null
+          plan_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_insurance_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_referrals: {
         Row: {
           bonus_coins: number | null
@@ -2640,6 +2863,7 @@ export type Database = {
         | "admin"
         | "doctor"
         | "clinic"
+        | "insurance"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2774,6 +2998,7 @@ export const Constants = {
         "admin",
         "doctor",
         "clinic",
+        "insurance",
       ],
     },
   },
