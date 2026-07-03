@@ -52,16 +52,17 @@ export default function AdminUsers() {
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users', search, roleFilter],
     queryFn: async () => {
-      // Fetch profiles
-      let profilesQuery = supabase
-        .rpc('list_profiles_admin_full' as any);
-
-      if (search) {
-        profilesQuery = profilesQuery.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%`);
-      }
-
-      const { data: profiles, error: profilesError } = await profilesQuery;
+      // Fetch profiles via admin RPC (avoids exposing sensitive columns to signed-in users)
+      const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full');
       if (profilesError) throw profilesError;
+      let profiles: any[] = profilesRaw || [];
+      if (search) {
+        const q = search.toLowerCase();
+        profiles = profiles.filter((p: any) =>
+          (p.full_name || '').toLowerCase().includes(q) ||
+          (p.phone || '').toLowerCase().includes(q)
+        );
+      }
 
       // Fetch all user roles
       const { data: allRoles, error: rolesError } = await supabase
