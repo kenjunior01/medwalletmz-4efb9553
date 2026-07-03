@@ -147,7 +147,7 @@ export default function Home() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] uppercase tracking-wider opacity-75 font-bold">Carteira MZN</p>
-                <p className="text-3xl font-black mt-1 leading-none flex items-baseline">
+                <p className="text-3xl font-black mt-1 leading-none flex items-baseline num-pulse">
                   <NumberFlow value={Number(wallet?.balance_mzn ?? 0)} format={{ maximumFractionDigits: 0 }} className="tabular-nums" />
                   <span className="text-base font-semibold ml-1.5 opacity-80">MZN</span>
                 </p>
