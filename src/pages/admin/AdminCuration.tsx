@@ -807,6 +807,42 @@ function googleMapsUrl(lat: number, lng: number) {
   return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
 }
 
+function GeocodeButton({ draft, onResolved }: { draft: any; onResolved: (lat: number, lng: number, formatted?: string | null) => void }) {
+  const [loading, setLoading] = useState(false);
+  const run = async () => {
+    const address = String(draft.address ?? '').trim();
+    const city = String(draft.city ?? '').trim();
+    const name = String(draft.name ?? '').trim();
+    if (!city && !address && !name) {
+      toast.error('Preenche nome, morada ou cidade antes de geocodificar.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('geocode-address', {
+        body: { address, city, name },
+      });
+      if (error) throw error;
+      if (!data?.latitude || !data?.longitude) {
+        toast.error('Não foi possível encontrar coordenadas para este endereço.');
+        return;
+      }
+      onResolved(Number(data.latitude), Number(data.longitude), data.formatted_address ?? null);
+      toast.success(`Coordenadas preenchidas via ${data.source === 'places' ? 'Google Places' : 'Geocoding'}.`);
+    } catch (e: any) {
+      toast.error(e?.message || 'Erro ao geocodificar.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <Button type="button" size="sm" variant="outline" onClick={run} disabled={loading}>
+      {loading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Locate className="h-4 w-4 mr-1" />}
+      Geocodificar via Google
+    </Button>
+  );
+}
+
 function fieldLabel(key: string) {
   return ({
     name: 'Nome',
