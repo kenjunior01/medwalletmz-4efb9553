@@ -8,6 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/contexts/LocationContext";
 import { Tables } from "@/integrations/supabase/types";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 type Store = Tables<"stores">;
 
@@ -22,6 +24,13 @@ export default function Pharmacy() {
   const [pharmacies, setPharmacies] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [activePrescription, setActivePrescription] = useState<string | null>(null);
+  const [onlyMyCity, setOnlyMyCity] = useState<boolean>(() => {
+    return localStorage.getItem("filter_only_my_city") !== "0";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("filter_only_my_city", onlyMyCity ? "1" : "0");
+  }, [onlyMyCity]);
 
   useEffect(() => {
     const fromState = (routerLocation.state as any)?.prescription_id as string | undefined;
@@ -43,7 +52,7 @@ export default function Pharmacy() {
 
   useEffect(() => {
     fetchPharmacies();
-  }, [selectedCity]);
+  }, [selectedCity, onlyMyCity]);
 
   const fetchPharmacies = async () => {
     setLoading(true);
@@ -53,7 +62,7 @@ export default function Pharmacy() {
         .select("*")
         .eq("type", "pharmacy")
         .eq("is_active", true);
-      if (selectedCity) query = query.eq("city", selectedCity);
+      if (onlyMyCity && selectedCity) query = query.eq("city", selectedCity);
       const { data, error } = await query;
 
       if (error) throw error;
@@ -84,8 +93,15 @@ export default function Pharmacy() {
       <div>
         <h1 className="text-2xl font-bold text-foreground">Farmácia</h1>
         <p className="text-muted-foreground text-sm">
-          Medicamentos e produtos de saúde{selectedCity ? ` em ${selectedCity}` : ""}
+          Medicamentos e produtos de saúde{onlyMyCity && selectedCity ? ` em ${selectedCity}` : " · todas as cidades"}
         </p>
+      </div>
+
+      <div className="flex items-center justify-between bento-card p-3">
+        <Label htmlFor="only-city" className="text-sm cursor-pointer">
+          {onlyMyCity ? `Só na minha cidade (${selectedCity})` : "Mostrar tudo"}
+        </Label>
+        <Switch id="only-city" checked={onlyMyCity} onCheckedChange={setOnlyMyCity} />
       </div>
 
       {activePrescription && (
