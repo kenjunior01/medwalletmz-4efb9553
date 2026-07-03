@@ -1171,6 +1171,124 @@ export type Database = {
         }
         Relationships: []
       }
+      lab_exam_orders: {
+        Row: {
+          collection_address: string | null
+          collection_city: string | null
+          created_at: string
+          home_collection: boolean
+          id: string
+          items: Json
+          lab_id: string
+          notes: string | null
+          patient_name: string
+          patient_phone: string | null
+          result_uploaded_at: string | null
+          result_url: string | null
+          scheduled_at: string | null
+          status: string
+          total_mzn: number
+          updated_at: string
+          user_id: string
+          wallet_tx_id: string | null
+        }
+        Insert: {
+          collection_address?: string | null
+          collection_city?: string | null
+          created_at?: string
+          home_collection?: boolean
+          id?: string
+          items?: Json
+          lab_id: string
+          notes?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          result_uploaded_at?: string | null
+          result_url?: string | null
+          scheduled_at?: string | null
+          status?: string
+          total_mzn?: number
+          updated_at?: string
+          user_id: string
+          wallet_tx_id?: string | null
+        }
+        Update: {
+          collection_address?: string | null
+          collection_city?: string | null
+          created_at?: string
+          home_collection?: boolean
+          id?: string
+          items?: Json
+          lab_id?: string
+          notes?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          result_uploaded_at?: string | null
+          result_url?: string | null
+          scheduled_at?: string | null
+          status?: string
+          total_mzn?: number
+          updated_at?: string
+          user_id?: string
+          wallet_tx_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_exam_orders_lab_id_fkey"
+            columns: ["lab_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lab_exams: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          lab_id: string
+          name: string
+          prep_instructions: string | null
+          price_mzn: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          lab_id: string
+          name: string
+          prep_instructions?: string | null
+          price_mzn?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          lab_id?: string
+          name?: string
+          prep_instructions?: string | null
+          price_mzn?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_exams_lab_id_fkey"
+            columns: ["lab_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_record_shares: {
         Row: {
           consultation_id: string | null
@@ -2763,6 +2881,10 @@ export type Database = {
         Returns: boolean
       }
       is_professional: { Args: { _user_id: string }; Returns: boolean }
+      moderate_ad: {
+        Args: { _action: string; _id: string; _notes?: string }
+        Returns: Json
+      }
       pay_service: {
         Args: {
           _coupon_id?: string
