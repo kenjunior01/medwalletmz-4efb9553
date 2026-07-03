@@ -520,6 +520,11 @@ export default function AdminCuration() {
                     <Field label="Telefone"><Input value={draft.phone ?? ''} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} /></Field>
                     <Field label="Latitude"><Input inputMode="decimal" value={draft.latitude ?? ''} onChange={(e) => setDraft({ ...draft, latitude: e.target.value as any })} /></Field>
                     <Field label="Longitude"><Input inputMode="decimal" value={draft.longitude ?? ''} onChange={(e) => setDraft({ ...draft, longitude: e.target.value as any })} /></Field>
+                  </div>
+                  <div className="flex justify-end">
+                    <GeocodeButton draft={draft} onResolved={(lat, lng, formatted) => setDraft({ ...draft, latitude: lat as any, longitude: lng as any, address: draft.address || formatted || null })} />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <Field label="Imagem URL"><Input value={draft.image_url ?? ''} onChange={(e) => setDraft({ ...draft, image_url: e.target.value })} /></Field>
                     <Field label="Website"><Input value={draft.website ?? ''} onChange={(e) => setDraft({ ...draft, website: e.target.value })} /></Field>
                   </div>
