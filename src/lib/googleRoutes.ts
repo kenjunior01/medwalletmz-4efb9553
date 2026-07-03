@@ -1,12 +1,10 @@
 /**
- * Google Routes / Distance Matrix helper.
+ * Mapbox Directions / Matrix helper (substitui Google Routes).
  *
- * Usa o novo endpoint Routes API (v2) com `trafficModel=best_guess` para
- * devolver duração e distância reais (com tráfego actual) entre origem
- * e destino. Quando a chave Google não está disponível OU a chamada
- * falha, devolve `null` — o caller cai para a heurística de Haversine.
- *
- * Cache: o widget persiste em `place_distance_cache` (R=public select).
+ * Devolve distância e duração reais entre origem e destino usando a
+ * Mapbox Directions API. Cache persistente em `place_distance_cache`.
+ * Se a chave Mapbox não estiver disponível OU a chamada falhar,
+ * devolve `null` — o caller cai para Haversine.
  */
 
 export type TravelMode = 'driving' | 'walking' | 'bicycling';
@@ -70,48 +68,24 @@ export async function fetchRouteDistance(
     }
   } catch (_) { /* swallow — vai para a API */ }
 
-  // 2) chamar Routes API
-  const apiKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_BROWSER_KEY
-    ?? (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY;
-
-  if (!apiKey) {
-    return null; // sem chave — caller decide fallback
-  }
+  // 2) chamar Mapbox Directions API
+  const apiKey = (import.meta as any).env?.VITE_MAPBOX_TOKEN;
+  if (!apiKey) return null;
 
   try {
-    const url = `https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix`
-      + `?key=${encodeURIComponent(apiKey)}`;
+    const profile = mode === 'walking' ? 'walking' : mode === 'bicycling' ? 'cycling' : 'driving-traffic';
+    const coords = `${origin.lng},${origin.lat};${dest.lng},${dest.lat}`;
+    const url = `https://api.mapbox.com/directions/v5/mapbox/${profile}/${coords}`
+      + `?overview=false&geometries=geojson&access_token=${encodeURIComponent(apiKey)}`;
 
-    const body = {
-      origins: [{ waypoint: { location: { latLng: { latitude: origin.lat, longitude: origin.lng } } } }],
-      destinations: [{ waypoint: { location: { latLng: { latitude: dest.lat, longitude: dest.lng } } } }],
-      travelMode: mode.toUpperCase(),
-      routingPreference: 'TRAFFIC_AWARE',
-      departureTime: new Date().toISOString(),
-      computeAlternativeRoutes: false,
-      trafficModel: traffic.toUpperCase(),
-    };
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': 'originIndex,destinationIndex,duration,distanceMeters,condition',
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) throw new Error(`Routes ${res.status}`);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Mapbox ${res.status}`);
     const json = await res.json();
-    const cell = json?.[0]?.["destinationIndex"] === 0 ? json[0] : null;
-    if (!cell || cell.condition !== 'ROUTE_EXISTS') return null;
+    const route = json?.routes?.[0];
+    if (!route) return null;
 
-    // duration vem como "Xs" (string com segundos) — v2 mudou para inteiro.
-    const durationSeconds = typeof cell.duration === 'string'
-      ? Math.round(parseFloat(cell.duration.replace('s', '')))
-      : Math.round(cell.duration);
-    const distanceMeters = Math.round(cell.distanceMeters ?? 0);
+    const durationSeconds = Math.round(route.duration ?? 0);
+    const distanceMeters = Math.round(route.distance ?? 0);
 
     // 3) escrever cache
     try {
@@ -130,13 +104,9 @@ export async function fetchRouteDistance(
       }
     } catch (_) { /* cache é best-effort */ }
 
-    return {
-      distanceMeters,
-      durationSeconds,
-      via: 'google_routes',
-    };
+    return { distanceMeters, durationSeconds, via: 'google_routes' };
   } catch (e) {
-    console.warn('[googleRoutes] falhou, usando haversine', e);
+    console.warn('[mapbox] rota falhou, usando haversine', e);
     return null;
   }
 }
