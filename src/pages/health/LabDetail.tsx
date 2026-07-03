@@ -43,7 +43,7 @@ export default function LabDetail() {
 
       const { data: u } = await supabase.auth.getUser();
       if (u?.user) {
-        const { data: prof } = await supabase.from("profiles").select("full_name, phone").eq("user_id", u.user.id).maybeSingle();
+        const { data: prof } = await (supabase.rpc as any)("get_profile_private", { _user_id: u.user.id }).maybeSingle();
         if (prof) {
           setPatientName(prof.full_name || "");
           setPhone(prof.phone || "");

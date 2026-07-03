@@ -40,7 +40,7 @@ export function usePlatformSettings() {
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      const { data } = await supabase.from('platform_settings').select('key, value');
+      const { data } = await supabase.from('platform_settings_public' as any).select('key, value');
       if (cancelled) return;
       const next: PlatformSettings = { ...DEFAULTS };
       (data || []).forEach((r: any) => { next[r.key] = coerce(r.value); });
