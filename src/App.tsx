@@ -194,6 +194,7 @@ const App = () => (
                   <Route path="import" element={<AdminImport />} />
                   <Route path="curation" element={<AdminCuration />} />
                   <Route path="withdrawals" element={<AdminWithdrawals />} />
+                  <Route path="insurance" element={<AdminInsurance />} />
                 </Route>
                 
                 {/* Store Owner Routes */}
