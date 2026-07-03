@@ -1,25 +1,32 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Shield, MapPin, Plus, CheckCircle2 } from "lucide-react";
+import { Shield, MapPin, Plus, CheckCircle2, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/contexts/LocationContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export default function Insurance() {
   const navigate = useNavigate();
   const { city } = useLocation();
+  const [onlyMyCity, setOnlyMyCity] = useState<boolean>(() => localStorage.getItem("filter_only_my_city") !== "0");
+  useEffect(() => { localStorage.setItem("filter_only_my_city", onlyMyCity ? "1" : "0"); }, [onlyMyCity]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["insurance-companies", city],
+    queryKey: ["insurance-companies", city, onlyMyCity],
     queryFn: async () => {
-      const { data } = await supabase
+      let q = supabase
         .from("insurance_companies")
         .select("*")
+        .eq("is_verified", true)
         .eq("is_active", true)
-        .or(`city.eq.${city},cities.cs.{${city}}`)
         .order("is_verified", { ascending: false });
+      if (onlyMyCity && city) q = q.or(`city.eq.${city},cities.cs.{${city}}`);
+      const { data } = await q;
       return data || [];
     },
   });
@@ -40,14 +47,29 @@ export default function Insurance() {
         </Button>
       </div>
 
+      <div className="flex items-center justify-between bento-card p-3">
+        <Label htmlFor="ins-city" className="text-sm cursor-pointer flex items-center gap-2">
+          {onlyMyCity ? <><MapPin className="h-4 w-4" />Só em {city}</> : <><Globe className="h-4 w-4" />Todas as cidades</>}
+        </Label>
+        <Switch id="ins-city" checked={onlyMyCity} onCheckedChange={setOnlyMyCity} />
+      </div>
+
       {isLoading ? (
         <div className="grid gap-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>
       ) : !data || data.length === 0 ? (
         <div className="bento-card p-8 text-center text-muted-foreground">
           <Shield className="h-12 w-12 mx-auto mb-2 opacity-40" />
-          <p className="font-semibold">Ainda não há seguradoras em {city}.</p>
-          <p className="text-xs mt-1">És uma seguradora? Regista o teu perfil e alcança milhares de utilizadores.</p>
-          <Button className="mt-4" onClick={() => navigate("/insurance/register")}>Registar seguradora</Button>
+          <p className="font-semibold">
+            {onlyMyCity ? `Sem seguradoras aprovadas em ${city}.` : "Ainda não há seguradoras aprovadas."}
+          </p>
+          {onlyMyCity && (
+            <Button variant="outline" size="sm" className="mt-3" onClick={() => setOnlyMyCity(false)}>
+              <Globe className="h-4 w-4 mr-1" /> Mostrar todas as cidades
+            </Button>
+          )}
+          <div className="mt-4">
+            <Button onClick={() => navigate("/insurance/register")}>Registar seguradora</Button>
+          </div>
         </div>
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
