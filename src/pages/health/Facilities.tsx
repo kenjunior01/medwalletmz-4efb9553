@@ -7,7 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Hospital, Building2, FlaskConical, MapPin, Phone, CheckCircle2 } from "lucide-react";
+import { Hospital, Building2, FlaskConical, MapPin, Phone, CheckCircle2, Globe } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const TYPES = [
   { key: "clinic", label: "Clínicas", icon: Building2 },
@@ -75,9 +76,15 @@ export default function Facilities() {
             ) : items.length === 0 ? (
               <div className="bento-card p-8 text-center text-muted-foreground">
                 <t.icon className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                <p className="font-semibold">Sem {t.label.toLowerCase()} {onlyMyCity && city ? `em ${city}` : "registados"}.</p>
+                <p className="font-semibold">
+                  {onlyMyCity && city
+                    ? `Sem ${t.label.toLowerCase()} aprovadas em ${city}.`
+                    : `Sem ${t.label.toLowerCase()} registadas.`}
+                </p>
                 {onlyMyCity && (
-                  <p className="text-xs mt-2">Desliga o filtro acima para ver noutras cidades.</p>
+                  <Button variant="outline" size="sm" className="mt-3" onClick={() => setOnlyMyCity(false)}>
+                    <Globe className="h-4 w-4 mr-1" /> Ver em todas as cidades
+                  </Button>
                 )}
               </div>
             ) : (
