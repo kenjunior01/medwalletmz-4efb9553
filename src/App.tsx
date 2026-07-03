@@ -103,6 +103,9 @@ import Ads from "./pages/ads/Ads";
 import AdForm from "./pages/ads/AdForm";
 import MyAds from "./pages/ads/MyAds";
 import Facilities from "./pages/health/Facilities";
+import LabDetail from "./pages/health/LabDetail";
+import MyLabOrders from "./pages/health/MyLabOrders";
+import AdminAds from "./pages/admin/AdminAds";
 
 const queryClient = new QueryClient();
 
@@ -145,6 +148,8 @@ const App = () => (
                   <Route path="/health/triage" element={<Triage />} />
                   <Route path="/health/records" element={<MedicalRecords />} />
                   <Route path="/health/exams" element={<Exams />} />
+                  <Route path="/health/exams/lab/:id" element={<LabDetail />} />
+                  <Route path="/health/exams/my" element={<MyLabOrders />} />
                   <Route path="/health/education" element={<HealthEducation />} />
                   <Route path="/health/education/:slug" element={<HealthEducation />} />
                   <Route path="/partners" element={<Partners />} />
@@ -195,6 +200,7 @@ const App = () => (
                   <Route path="curation" element={<AdminCuration />} />
                   <Route path="withdrawals" element={<AdminWithdrawals />} />
                   <Route path="insurance" element={<AdminInsurance />} />
+                  <Route path="ads" element={<AdminAds />} />
                 </Route>
                 
                 {/* Store Owner Routes */}
