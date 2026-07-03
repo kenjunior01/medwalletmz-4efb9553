@@ -40,7 +40,7 @@ export default function AdminTransactions() {
       if (type !== 'all') q = q.eq('type', type);
       const { data: rows } = await q;
       const ids = Array.from(new Set((rows || []).map(r => r.user_id)));
-      const { data: profs } = await supabase.from('profiles').select('user_id, full_name, phone').in('user_id', ids);
+      const { data: profs } = await (supabase.rpc as any)('list_profiles_admin', { _ids: ids });
       const enriched = (rows || []).map(r => ({ ...r, profile: profs?.find(p => p.user_id === r.user_id) }));
       return search ? enriched.filter(r => r.profile?.full_name?.toLowerCase().includes(search.toLowerCase()) || r.profile?.phone?.includes(search) || r.description?.toLowerCase().includes(search.toLowerCase())) : enriched;
     },

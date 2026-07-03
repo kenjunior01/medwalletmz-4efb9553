@@ -23,7 +23,7 @@ export default function AdminWallets() {
         .order('balance_mzn', { ascending: false })
         .limit(100);
       const ids = (wallets || []).map(w => w.user_id);
-      const { data: profs } = await supabase.from('profiles').select('user_id, full_name, phone').in('user_id', ids);
+      const { data: profs } = await (supabase.rpc as any)('list_profiles_admin', { _ids: ids });
       return (wallets || []).map(w => ({
         ...w,
         profile: profs?.find(p => p.user_id === w.user_id)
