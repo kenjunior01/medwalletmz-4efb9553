@@ -118,6 +118,11 @@
     --glass: 215 40% 10% / 0.8;
     --glass-border: 0 0% 100% / 0.1;
 
+    /* Neumorphism — dark theme */
+    --neu-bg: 215 30% 12%;
+    --neu-light: 215 30% 18%;
+    --neu-dark: 215 60% 4%;
+
     --sidebar-background: 215 40% 8%;
     --sidebar-foreground: 45 35% 97%;
     --sidebar-primary: 190 60% 50%;
