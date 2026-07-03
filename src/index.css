@@ -70,6 +70,11 @@
     --shadow-lg: 0 20px 40px -10px hsl(215 65% 12% / 0.18), 0 8px 16px -6px hsl(215 65% 12% / 0.08);
     --shadow-glow: 0 0 32px hsl(190 56% 40% / 0.25);
 
+    /* Neumorphism — light theme */
+    --neu-bg: 200 25% 94%;
+    --neu-light: 0 0% 100%;
+    --neu-dark: 215 30% 78%;
+
     /* Sidebar */
     --sidebar-background: 45 35% 97%;
     --sidebar-foreground: 215 65% 12%;
