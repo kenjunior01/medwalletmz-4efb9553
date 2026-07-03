@@ -22,6 +22,7 @@ export default function Pharmacy() {
   const [pharmacies, setPharmacies] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [activePrescription, setActivePrescription] = useState<string | null>(null);
+  const [showAllCities, setShowAllCities] = useState(false);
 
   useEffect(() => {
     const fromState = (routerLocation.state as any)?.prescription_id as string | undefined;
@@ -54,10 +55,6 @@ export default function Pharmacy() {
         .eq("type", "pharmacy")
         .eq("is_active", true);
 
-      if (selectedCity) {
-        query = query.eq("city", selectedCity);
-      }
-
       const { data, error } = await query;
 
       if (error) throw error;
@@ -69,9 +66,12 @@ export default function Pharmacy() {
     }
   };
 
-  const filteredPharmacies = pharmacies.filter((pharmacy) =>
-    pharmacy.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const bySearch = pharmacies.filter((p) =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const inCity = bySearch.filter((p) => !selectedCity || p.city === selectedCity);
+  const others = bySearch.filter((p) => selectedCity && p.city !== selectedCity);
+  const filteredPharmacies = showAllCities || inCity.length === 0 ? bySearch : inCity;
 
   const sortedPharmacies = [...filteredPharmacies].sort((a, b) => {
     switch (activeFilter) {
@@ -146,6 +146,20 @@ export default function Pharmacy() {
         ))}
       </div>
 
+      {selectedCity && inCity.length === 0 && others.length > 0 && (
+        <div className="bg-muted/40 border border-border rounded-xl p-3 text-xs">
+          Ainda não há farmácias em <b>{selectedCity}</b>. A mostrar {others.length} de outras cidades.
+        </div>
+      )}
+      {selectedCity && inCity.length > 0 && others.length > 0 && (
+        <button
+          onClick={() => setShowAllCities((v) => !v)}
+          className="text-xs text-primary font-medium self-start"
+        >
+          {showAllCities ? `Mostrar só ${selectedCity}` : `Ver ${others.length} de outras cidades`}
+        </button>
+      )}
+
       {/* Pharmacy List */}
       <div className="flex flex-col gap-3">
         {loading ? (
@@ -189,7 +203,7 @@ export default function Pharmacy() {
                 <div>
                   <h3 className="font-medium text-sm">{pharmacy.name}</h3>
                   <p className="text-xs text-muted-foreground line-clamp-1">
-                    {pharmacy.description || "Farmácia"}
+                    {pharmacy.city} · {pharmacy.description || "Farmácia"}
                   </p>
                 </div>
                 <div className="flex items-center gap-3 text-xs">
