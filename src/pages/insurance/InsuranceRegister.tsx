@@ -22,11 +22,12 @@ export default function InsuranceRegister() {
     setLoading(true);
     const { data, error } = await supabase.from("insurance_companies").insert({
       owner_id: user.id, ...form, cities: [form.city],
+      is_active: false, is_verified: false,
     }).select().single();
     if (!error) await supabase.from("user_roles").insert({ user_id: user.id, role: "insurance" as any });
     setLoading(false);
     if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
-    toast({ title: "Perfil criado", description: "Agora podes adicionar planos." });
+    toast({ title: "Perfil criado", description: "Aguarda aprovação do admin para aparecer publicamente." });
     navigate(`/insurance/dashboard`);
   };
 
