@@ -94,6 +94,13 @@ import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import Withdraw from "./pages/Withdraw";
 import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
+import Insurance from "./pages/insurance/Insurance";
+import InsuranceDetail from "./pages/insurance/InsuranceDetail";
+import InsuranceRegister from "./pages/insurance/InsuranceRegister";
+import InsuranceDashboard from "./pages/insurance/InsuranceDashboard";
+import Ads from "./pages/ads/Ads";
+import AdForm from "./pages/ads/AdForm";
+import MyAds from "./pages/ads/MyAds";
 
 const queryClient = new QueryClient();
 
