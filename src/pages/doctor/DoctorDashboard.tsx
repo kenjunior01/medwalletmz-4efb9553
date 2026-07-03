@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Calendar, MessageCircle, DollarSign, Users, Stethoscope, CalendarClock } from 'lucide-react';
+import NumberFlow from '@number-flow/react';
+import {
+  PanelShell, NeuCard, BentoCard, BentoGrid, GlassCard,
+  LayeredOrbs, StatusBadge, SkipLink,
+} from '@/components/ui/design-system';
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
@@ -68,73 +71,92 @@ export default function DoctorDashboard() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <header className="bg-gradient-to-br from-pharmacy to-primary text-pharmacy-foreground p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-sm opacity-90">Bem-vindo(a)</p>
-            <h1 className="text-2xl font-bold">Dr(a). consulta</h1>
+      <SkipLink />
+      <main id="main" className="p-4 space-y-5">
+        {/* Hero panel */}
+        <PanelShell className="p-6">
+          <LayeredOrbs variant="ocean" />
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">Bem-vindo(a)</p>
+              <h1 className="text-2xl font-black text-gradient-premium">Dr(a). Consulta</h1>
+            </div>
+            {!profile.is_verified && <StatusBadge status="pending">A verificar</StatusBadge>}
           </div>
-          {!profile.is_verified && <Badge variant="outline" className="bg-white/20 border-white/30">A verificar</Badge>}
-        </div>
-        <div className="flex items-center justify-between bg-white/10 backdrop-blur rounded-xl p-3">
-          <span className="text-sm">Disponível para consultas</span>
-          <Switch checked={profile.is_available} onCheckedChange={toggleAvailable} />
-        </div>
-      </header>
+          <NeuCard className="!p-3 flex items-center justify-between">
+            <label htmlFor="avail" className="text-sm font-semibold">Disponível para consultas</label>
+            <Switch id="avail" checked={profile.is_available} onCheckedChange={toggleAvailable} />
+          </NeuCard>
+        </PanelShell>
 
-      <div className="grid grid-cols-3 gap-3 p-4 -mt-6">
-        <Card><CardContent className="p-3 text-center">
-          <Calendar className="h-5 w-5 mx-auto text-primary mb-1" />
-          <p className="text-xl font-bold">{today.length}</p><p className="text-[10px] text-muted-foreground">Hoje</p>
-        </CardContent></Card>
-        <Card><CardContent className="p-3 text-center">
-          <Users className="h-5 w-5 mx-auto text-pharmacy mb-1" />
-          <p className="text-xl font-bold">{stats.patients}</p><p className="text-[10px] text-muted-foreground">Pacientes</p>
-        </CardContent></Card>
-        <Card><CardContent className="p-3 text-center">
-          <DollarSign className="h-5 w-5 mx-auto text-gold mb-1" />
-          <p className="text-xl font-bold">{stats.monthRevenue}</p><p className="text-[10px] text-muted-foreground">MZN/mês</p>
-        </CardContent></Card>
-      </div>
+        {/* KPI bento grid with animated numbers */}
+        <BentoGrid className="grid-cols-3 md:grid-cols-3">
+          <BentoCard size="sm" className="!col-span-1 text-center">
+            <Calendar className="h-5 w-5 mx-auto text-secondary mb-1" aria-hidden="true" />
+            <p className="text-2xl font-black num-pulse tabular-nums"><NumberFlow value={today.length} /></p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Hoje</p>
+          </BentoCard>
+          <BentoCard size="sm" className="!col-span-1 text-center">
+            <Users className="h-5 w-5 mx-auto text-pharmacy mb-1" aria-hidden="true" />
+            <p className="text-2xl font-black tabular-nums"><NumberFlow value={stats.patients} /></p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Pacientes</p>
+          </BentoCard>
+          <BentoCard size="sm" className="!col-span-1 text-center">
+            <DollarSign className="h-5 w-5 mx-auto text-gold mb-1" aria-hidden="true" />
+            <p className="text-2xl font-black tabular-nums text-gold"><NumberFlow value={stats.monthRevenue} /></p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">MZN/mês</p>
+          </BentoCard>
+        </BentoGrid>
 
-      <div className="px-4 space-y-4">
-        <section>
-          <h2 className="font-bold mb-2">Hoje</h2>
+        <section aria-labelledby="today-h">
+          <h2 id="today-h" className="font-bold text-base mb-2">Hoje</h2>
           {today.length === 0 && <p className="text-sm text-muted-foreground">Sem consultas hoje.</p>}
           {today.map(c => (
-            <Card key={c.id} className="mb-2 cursor-pointer" onClick={() => navigate(`/health/consultation/${c.id}`)}>
-              <CardContent className="p-3 flex items-center gap-3">
-                <div className="text-center">
-                  <p className="text-lg font-bold">{new Date(c.scheduled_at).getHours()}h</p>
+            <GlassCard
+              key={c.id}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/health/consultation/${c.id}`); }}
+              onClick={() => navigate(`/health/consultation/${c.id}`)}
+              className="mb-2 !p-3 flex items-center gap-3 cursor-pointer hover:border-secondary/40 transition-all"
+            >
+                <div className="text-center min-w-[44px]">
+                  <p className="text-lg font-black text-secondary tabular-nums">{new Date(c.scheduled_at).getHours()}h</p>
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-sm">Consulta {c.consultation_type}</p>
                   <p className="text-xs text-muted-foreground">{c.reason || 'Sem motivo descrito'}</p>
                 </div>
-                <MessageCircle className="h-4 w-4 text-primary" />
-              </CardContent>
-            </Card>
+                <MessageCircle className="h-4 w-4 text-secondary" aria-hidden="true" />
+            </GlassCard>
           ))}
         </section>
 
-        <section>
-          <h2 className="font-bold mb-2">Próximas</h2>
+        <section aria-labelledby="up-h">
+          <h2 id="up-h" className="font-bold text-base mb-2">Próximas</h2>
           {upcoming.length === 0 && <p className="text-sm text-muted-foreground">Sem consultas agendadas.</p>}
           {upcoming.map(c => (
-            <Card key={c.id} className="mb-2 cursor-pointer" onClick={() => navigate(`/health/consultation/${c.id}`)}>
-              <CardContent className="p-3">
-                <p className="text-sm font-semibold">{new Date(c.scheduled_at).toLocaleString('pt-PT', { dateStyle: 'medium', timeStyle: 'short' })}</p>
-                <p className="text-xs text-muted-foreground">{c.reason || 'Consulta agendada'}</p>
-              </CardContent>
-            </Card>
+            <NeuCard
+              key={c.id}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/health/consultation/${c.id}`); }}
+              onClick={() => navigate(`/health/consultation/${c.id}`)}
+              className="mb-2 !p-3 cursor-pointer"
+            >
+              <p className="text-sm font-semibold">{new Date(c.scheduled_at).toLocaleString('pt-PT', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+              <p className="text-xs text-muted-foreground">{c.reason || 'Consulta agendada'}</p>
+            </NeuCard>
           ))}
         </section>
 
-        <Button variant="outline" className="w-full" onClick={() => navigate('/doctor/availability')}>
-          <CalendarClock className="h-4 w-4 mr-2" /> Gerir horários disponíveis
-        </Button>
-        <Button variant="outline" className="w-full" onClick={() => navigate('/doctor/patients')}>Ver pacientes</Button>
-      </div>
+        <div className="grid gap-2">
+          <Button variant="outline" className="w-full h-12 border-secondary/40 hover:bg-secondary/10" onClick={() => navigate('/doctor/availability')}>
+            <CalendarClock className="h-4 w-4 mr-2" aria-hidden="true" /> Gerir horários disponíveis
+          </Button>
+          <Button variant="outline" className="w-full h-12" onClick={() => navigate('/doctor/patients')}>Ver pacientes</Button>
+        </div>
+      </main>
     </div>
   );
 }
