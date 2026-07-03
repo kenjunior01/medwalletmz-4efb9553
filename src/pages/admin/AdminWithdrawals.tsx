@@ -47,7 +47,7 @@ export default function AdminWithdrawals() {
   };
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-4 panel-shell">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold flex items-center gap-2"><ArrowDownToLine className="h-6 w-6" /> Levantamentos</h1>
         <div className="flex gap-2">
