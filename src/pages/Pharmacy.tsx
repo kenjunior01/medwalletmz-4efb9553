@@ -16,13 +16,11 @@ const filters = ["Todas", "24h", "Melhor Avaliado", "Próximo"];
 export default function Pharmacy() {
   const navigate = useNavigate();
   const routerLocation = useRouterLocation();
-  const { city: selectedCity } = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todas");
   const [pharmacies, setPharmacies] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [activePrescription, setActivePrescription] = useState<string | null>(null);
-  const [showAllCities, setShowAllCities] = useState(false);
 
   useEffect(() => {
     const fromState = (routerLocation.state as any)?.prescription_id as string | undefined;
@@ -44,7 +42,7 @@ export default function Pharmacy() {
 
   useEffect(() => {
     fetchPharmacies();
-  }, [selectedCity]);
+  }, []);
 
   const fetchPharmacies = async () => {
     setLoading(true);
@@ -66,12 +64,9 @@ export default function Pharmacy() {
     }
   };
 
-  const bySearch = pharmacies.filter((p) =>
+  const filteredPharmacies = pharmacies.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const inCity = bySearch.filter((p) => !selectedCity || p.city === selectedCity);
-  const others = bySearch.filter((p) => selectedCity && p.city !== selectedCity);
-  const filteredPharmacies = showAllCities || inCity.length === 0 ? bySearch : inCity;
 
   const sortedPharmacies = [...filteredPharmacies].sort((a, b) => {
     switch (activeFilter) {
@@ -88,7 +83,7 @@ export default function Pharmacy() {
       <div>
         <h1 className="text-2xl font-bold text-foreground">Farmácia</h1>
         <p className="text-muted-foreground text-sm">
-          Medicamentos e produtos de saúde {selectedCity ? `em ${selectedCity}` : ""}
+          Medicamentos e produtos de saúde em todo o país
         </p>
       </div>
 
@@ -145,20 +140,6 @@ export default function Pharmacy() {
           </Badge>
         ))}
       </div>
-
-      {selectedCity && inCity.length === 0 && others.length > 0 && (
-        <div className="bg-muted/40 border border-border rounded-xl p-3 text-xs">
-          Ainda não há farmácias em <b>{selectedCity}</b>. A mostrar {others.length} de outras cidades.
-        </div>
-      )}
-      {selectedCity && inCity.length > 0 && others.length > 0 && (
-        <button
-          onClick={() => setShowAllCities((v) => !v)}
-          className="text-xs text-primary font-medium self-start"
-        >
-          {showAllCities ? `Mostrar só ${selectedCity}` : `Ver ${others.length} de outras cidades`}
-        </button>
-      )}
 
       {/* Pharmacy List */}
       <div className="flex flex-col gap-3">
