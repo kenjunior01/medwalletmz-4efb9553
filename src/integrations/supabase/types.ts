@@ -2881,8 +2881,16 @@ export type Database = {
         Returns: boolean
       }
       is_professional: { Args: { _user_id: string }; Returns: boolean }
+      lab_order_set_result: {
+        Args: { _order_id: string; _result_url: string }
+        Returns: Json
+      }
       moderate_ad: {
         Args: { _action: string; _id: string; _notes?: string }
+        Returns: Json
+      }
+      moderate_lab: {
+        Args: { _action: string; _lab_id: string; _notes?: string }
         Returns: Json
       }
       pay_service: {
