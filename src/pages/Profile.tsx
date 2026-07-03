@@ -51,9 +51,7 @@ export default function Profile() {
     
     try {
       const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", user.id)
+        .rpc("get_profile_private" as any, { _user_id: user.id } as any)
         .single();
 
       if (error && error.code !== 'PGRST116') throw error;

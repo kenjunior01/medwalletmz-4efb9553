@@ -20,9 +20,7 @@ export default function PaymentSettings() {
   useEffect(() => {
     if (!user) return;
     supabase
-      .from('profiles')
-      .select('mpesa_number, emola_number, mkesh_number')
-      .eq('user_id', user.id)
+      .rpc('get_profile_private' as any, { _user_id: user.id } as any)
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
