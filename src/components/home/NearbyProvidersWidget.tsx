@@ -15,6 +15,13 @@ export function NearbyProvidersWidget() {
   const radiusKm = Number(settings.nearby_radius_km) || 25;
   const ranking = (settings.nearby_ranking as string) || 'distance';
   const preferRoutes = settings.prefer_google_routes !== false; // default true
+  const [onlyMyCity, setOnlyMyCity] = useState<boolean>(() => localStorage.getItem('filter_only_my_city') !== '0');
+
+  useEffect(() => {
+    const handler = () => setOnlyMyCity(localStorage.getItem('filter_only_my_city') !== '0');
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
 
   const [routeToggles, setRouteToggles] = useState<Record<string, { km: number; etaSec: number }>>({});
 
@@ -24,20 +31,21 @@ export function NearbyProvidersWidget() {
   }, []);
 
   const { data: pharmacies } = useQuery<any[]>({
-    queryKey: ['nearby-pharmacies', city],
+    queryKey: ['nearby-pharmacies', city, onlyMyCity],
     queryFn: async () => {
-      const { data } = await supabase
+      let q = supabase
         .from('stores')
         .select('id, name, type, city, latitude, longitude, image_url')
         .eq('is_active', true)
-        .eq('city', city)
         .limit(50);
+      if (onlyMyCity && city) q = q.eq('city', city);
+      const { data } = await q;
       return data || [];
     },
   });
 
   const { data: doctors } = useQuery<any[]>({
-    queryKey: ['nearby-doctors', city],
+    queryKey: ['nearby-doctors', city, onlyMyCity],
     queryFn: async () => {
       const { data } = await (supabase as any)
         .from('doctor_profiles')
@@ -50,7 +58,7 @@ export function NearbyProvidersWidget() {
         ...d,
         full_name: profs?.find((p: any) => p.user_id === d.user_id)?.full_name,
         default_city: profs?.find((p: any) => p.user_id === d.user_id)?.default_city,
-      })).filter((d: any) => !d.default_city || d.default_city === city);
+      })).filter((d: any) => !onlyMyCity || !d.default_city || d.default_city === city);
     },
   });
 
