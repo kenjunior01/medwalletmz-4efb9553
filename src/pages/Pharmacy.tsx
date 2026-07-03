@@ -141,20 +141,6 @@ export default function Pharmacy() {
         ))}
       </div>
 
-      {selectedCity && inCity.length === 0 && others.length > 0 && (
-        <div className="bg-muted/40 border border-border rounded-xl p-3 text-xs">
-          Ainda não há farmácias em <b>{selectedCity}</b>. A mostrar {others.length} de outras cidades.
-        </div>
-      )}
-      {selectedCity && inCity.length > 0 && others.length > 0 && (
-        <button
-          onClick={() => setShowAllCities((v) => !v)}
-          className="text-xs text-primary font-medium self-start"
-        >
-          {showAllCities ? `Mostrar só ${selectedCity}` : `Ver ${others.length} de outras cidades`}
-        </button>
-      )}
-
       {/* Pharmacy List */}
       <div className="flex flex-col gap-3">
         {loading ? (
