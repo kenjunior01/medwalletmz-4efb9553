@@ -106,6 +106,7 @@ import Facilities from "./pages/health/Facilities";
 import LabDetail from "./pages/health/LabDetail";
 import MyLabOrders from "./pages/health/MyLabOrders";
 import AdminAds from "./pages/admin/AdminAds";
+import AdminLabs from "./pages/admin/AdminLabs";
 
 const queryClient = new QueryClient();
 
@@ -201,6 +202,7 @@ const App = () => (
                   <Route path="withdrawals" element={<AdminWithdrawals />} />
                   <Route path="insurance" element={<AdminInsurance />} />
                   <Route path="ads" element={<AdminAds />} />
+                  <Route path="labs" element={<AdminLabs />} />
                 </Route>
                 
                 {/* Store Owner Routes */}
