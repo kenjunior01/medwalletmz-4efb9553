@@ -316,6 +316,9 @@ export default function Home() {
             { icon: Heart, label: 'Planos', color: 'destructive', to: '/health/plans' },
             { icon: Heart, label: 'Seguros', color: 'primary', to: '/health/insurance' },
             { icon: Briefcase, label: 'Anúncios', color: 'secondary', to: '/ads' },
+            { icon: Activity, label: 'Clínicas', color: 'primary', to: '/health/facilities?type=clinic' },
+            { icon: Activity, label: 'Hospitais', color: 'destructive', to: '/health/facilities?type=hospital' },
+            { icon: Activity, label: 'Laboratórios', color: 'secondary', to: '/health/facilities?type=laboratory' },
           ].map(c => (
             <button key={c.label} onClick={() => navigate(c.to)}
               className="bento-card aspect-square p-2 flex flex-col items-center justify-center gap-1.5">
