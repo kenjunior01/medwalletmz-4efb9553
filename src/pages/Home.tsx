@@ -89,8 +89,10 @@ export default function Home() {
       ) : (
       <section className="relative px-4 pt-3">
         <div className="relative rounded-[2rem] overflow-hidden gradient-ocean p-6 text-white shadow-premium">
-          <div className="absolute -top-12 -right-10 w-48 h-48 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -bottom-16 -left-12 w-56 h-56 rounded-full bg-secondary/30 blur-3xl" />
+          {/* Layered orbs — profundidade */}
+          <span className="float-orb h-56 w-56 -top-14 -right-10 bg-secondary/40" />
+          <span className="float-orb h-64 w-64 -bottom-20 -left-14 bg-accent/30" style={{ animationDelay: '-6s' }} />
+          <span className="float-orb h-40 w-40 top-1/3 right-1/3 bg-gold/20" style={{ animationDelay: '-3s' }} />
           <div className="relative">
             <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] opacity-80">
               <Sparkles className="h-3 w-3" /> {greet()}{user ? `, ${firstName}` : ''}
@@ -145,7 +147,7 @@ export default function Home() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] uppercase tracking-wider opacity-75 font-bold">Carteira MZN</p>
-                <p className="text-3xl font-black mt-1 leading-none flex items-baseline">
+                <p className="text-3xl font-black mt-1 leading-none flex items-baseline num-pulse">
                   <NumberFlow value={Number(wallet?.balance_mzn ?? 0)} format={{ maximumFractionDigits: 0 }} className="tabular-nums" />
                   <span className="text-base font-semibold ml-1.5 opacity-80">MZN</span>
                 </p>
@@ -269,6 +271,41 @@ export default function Home() {
       <ReferralBanner />
 
       <KlipyBanner query="healthcare smile" />
+
+      {/* ============ GANHA COM O MEDWALLET — recruit providers ============ */}
+      {!isProvider && !isAdmin && (
+        <section className="px-4 mt-6">
+          <div className="panel-shell p-5">
+            <div className="flex items-center gap-2 text-[11px] uppercase font-black tracking-[0.18em] text-secondary">
+              <Briefcase className="h-3.5 w-3.5" /> Ganha com o MedWallet
+            </div>
+            <h3 className="text-2xl font-black mt-1.5 leading-tight">
+              És médico, farmácia ou<br/>
+              <span className="text-gradient-premium">entregador</span>?
+            </h3>
+            <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
+              Recebe pacientes, gere consultas e recebe direto na tua carteira MZN. Sem mensalidade.
+            </p>
+            <div className="grid grid-cols-3 gap-2 mt-4">
+              {[
+                { icon: Stethoscope, label: 'Médico', to: '/onboarding/doctor' },
+                { icon: Pill,        label: 'Farmácia', to: '/onboarding/pharmacy' },
+                { icon: Truck,       label: 'Entrega', to: '/onboarding/driver' },
+              ].map(o => (
+                <button key={o.label} onClick={() => navigate(o.to)}
+                  className="neu-btn px-2 py-3 flex flex-col items-center gap-1 text-[11px] font-bold">
+                  <o.icon className="h-4 w-4 text-secondary" />
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-3 mt-4 text-[10px] text-muted-foreground">
+              <span className="flex items-center gap-1"><Award className="h-3 w-3 text-gold" /> Verificação rápida</span>
+              <span className="flex items-center gap-1"><Zap className="h-3 w-3 text-secondary" /> Pagamentos 24h</span>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ============ TOP MÉDICOS ============ */}
       {topDoctors && topDoctors.length > 0 && (

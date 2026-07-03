@@ -75,7 +75,7 @@ export default function AdminTransactions() {
   };
 
   return (
-    <div className="p-8 max-w-7xl">
+    <div className="p-8 max-w-7xl panel-shell">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Transações</h1>

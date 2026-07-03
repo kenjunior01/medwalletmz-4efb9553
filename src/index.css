@@ -70,6 +70,11 @@
     --shadow-lg: 0 20px 40px -10px hsl(215 65% 12% / 0.18), 0 8px 16px -6px hsl(215 65% 12% / 0.08);
     --shadow-glow: 0 0 32px hsl(190 56% 40% / 0.25);
 
+    /* Neumorphism — light theme */
+    --neu-bg: 200 25% 94%;
+    --neu-light: 0 0% 100%;
+    --neu-dark: 215 30% 78%;
+
     /* Sidebar */
     --sidebar-background: 45 35% 97%;
     --sidebar-foreground: 215 65% 12%;
@@ -112,6 +117,11 @@
 
     --glass: 215 40% 10% / 0.8;
     --glass-border: 0 0% 100% / 0.1;
+
+    /* Neumorphism — dark theme */
+    --neu-bg: 215 30% 12%;
+    --neu-light: 215 30% 18%;
+    --neu-dark: 215 60% 4%;
 
     --sidebar-background: 215 40% 8%;
     --sidebar-foreground: 45 35% 97%;
@@ -246,6 +256,134 @@
 
   .shadow-premium {
     box-shadow: var(--shadow-lg), var(--shadow-glow);
+  }
+
+  /* ============================================================
+   * Design system v2 — Glass + Bento + Layering + Soft UI + Brut
+   * ============================================================ */
+
+  /* Glass card — frosted with layered gradient border */
+  .glass-card {
+    position: relative;
+    background: hsl(var(--card) / 0.55);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid hsl(var(--glass-border));
+    border-radius: var(--radius);
+    box-shadow:
+      0 1px 0 hsl(0 0% 100% / 0.35) inset,
+      var(--shadow-md);
+  }
+  .dark .glass-card {
+    background: hsl(215 40% 12% / 0.55);
+    box-shadow:
+      0 1px 0 hsl(0 0% 100% / 0.06) inset,
+      var(--shadow-md);
+  }
+
+  /* Neumorphism — soft, tactile surfaces for wallet + core panels */
+  .neu-card {
+    background: hsl(var(--neu-bg));
+    border-radius: var(--radius);
+    box-shadow:
+      9px 9px 22px hsl(var(--neu-dark) / 0.55),
+      -9px -9px 22px hsl(var(--neu-light) / 0.85);
+  }
+  .neu-inset {
+    background: hsl(var(--neu-bg));
+    border-radius: var(--radius);
+    box-shadow:
+      inset 6px 6px 14px hsl(var(--neu-dark) / 0.55),
+      inset -6px -6px 14px hsl(var(--neu-light) / 0.85);
+  }
+  .neu-btn {
+    background: hsl(var(--neu-bg));
+    border-radius: 999px;
+    box-shadow:
+      4px 4px 10px hsl(var(--neu-dark) / 0.5),
+      -4px -4px 10px hsl(var(--neu-light) / 0.85);
+    transition: box-shadow .2s ease, transform .2s ease;
+  }
+  .neu-btn:active {
+    box-shadow:
+      inset 3px 3px 8px hsl(var(--neu-dark) / 0.55),
+      inset -3px -3px 8px hsl(var(--neu-light) / 0.85);
+    transform: translateY(1px);
+  }
+
+  /* Neo-brutalist alert — reservado para avisos críticos */
+  .brutalist-alert {
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+    border: 2px solid hsl(var(--foreground));
+    border-radius: 6px;
+    box-shadow: 6px 6px 0 0 hsl(var(--destructive));
+    padding: 0.9rem 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /* Panel shell — usar em admin / super-panels */
+  .panel-shell {
+    position: relative;
+    background: hsl(var(--card));
+    border-radius: calc(var(--radius) + 4px);
+    padding: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .panel-shell::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg,
+      hsl(var(--secondary) / 0.65),
+      hsl(var(--accent) / 0.35) 40%,
+      hsl(var(--gold) / 0.55) 80%,
+      hsl(var(--primary) / 0.4));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+  .panel-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(600px 200px at 0% 0%, hsl(var(--secondary) / 0.10), transparent 60%),
+      radial-gradient(500px 220px at 100% 100%, hsl(var(--gold) / 0.08), transparent 60%);
+    pointer-events: none;
+  }
+  .panel-shell > * { position: relative; z-index: 1; }
+
+  /* Layered orbs — background depth for heroes */
+  .float-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(60px);
+    opacity: 0.7;
+    pointer-events: none;
+    animation: orb-drift 14s ease-in-out infinite;
+  }
+  @keyframes orb-drift {
+    0%, 100% { transform: translate3d(0,0,0) scale(1); }
+    50%      { transform: translate3d(12px,-18px,0) scale(1.08); }
+  }
+
+  /* Animated typography — pulse a critical number */
+  .num-pulse {
+    animation: num-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes num-pulse {
+    0%, 100% { text-shadow: 0 0 0 hsl(var(--secondary) / 0); }
+    50%      { text-shadow: 0 0 28px hsl(var(--secondary) / 0.45); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float-orb, .num-pulse { animation: none !important; }
   }
 }
 
