@@ -16,6 +16,7 @@ const filters = ["Todas", "24h", "Melhor Avaliado", "Próximo"];
 export default function Pharmacy() {
   const navigate = useNavigate();
   const routerLocation = useRouterLocation();
+  const { city: selectedCity } = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todas");
   const [pharmacies, setPharmacies] = useState<Store[]>([]);
@@ -42,7 +43,7 @@ export default function Pharmacy() {
 
   useEffect(() => {
     fetchPharmacies();
-  }, []);
+  }, [selectedCity]);
 
   const fetchPharmacies = async () => {
     setLoading(true);
@@ -52,7 +53,7 @@ export default function Pharmacy() {
         .select("*")
         .eq("type", "pharmacy")
         .eq("is_active", true);
-
+      if (selectedCity) query = query.eq("city", selectedCity);
       const { data, error } = await query;
 
       if (error) throw error;
@@ -83,7 +84,7 @@ export default function Pharmacy() {
       <div>
         <h1 className="text-2xl font-bold text-foreground">Farmácia</h1>
         <p className="text-muted-foreground text-sm">
-          Medicamentos e produtos de saúde em todo o país
+          Medicamentos e produtos de saúde{selectedCity ? ` em ${selectedCity}` : ""}
         </p>
       </div>
 
