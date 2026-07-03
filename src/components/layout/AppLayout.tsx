@@ -2,7 +2,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import { BottomNav } from "./BottomNav";
 import { Header } from "./Header";
 import { OfflineBanner } from "./OfflineBanner";
-import { WhatsAppButton } from "@/components/support/WhatsAppButton";
 import { DesktopRail } from "./DesktopRail";
 import { MeddyFloating } from "@/components/mascot/MeddyFloating";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -40,7 +39,6 @@ export function AppLayout() {
       </div>
       <BottomNav />
       <MeddyFloating context={context} />
-      <WhatsAppButton />
     </div>
   );
 }
