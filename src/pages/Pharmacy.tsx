@@ -22,6 +22,7 @@ export default function Pharmacy() {
   const [pharmacies, setPharmacies] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [activePrescription, setActivePrescription] = useState<string | null>(null);
+  const [showAllCities, setShowAllCities] = useState(false);
 
   useEffect(() => {
     const fromState = (routerLocation.state as any)?.prescription_id as string | undefined;
@@ -54,10 +55,6 @@ export default function Pharmacy() {
         .eq("type", "pharmacy")
         .eq("is_active", true);
 
-      if (selectedCity) {
-        query = query.eq("city", selectedCity);
-      }
-
       const { data, error } = await query;
 
       if (error) throw error;
@@ -69,9 +66,12 @@ export default function Pharmacy() {
     }
   };
 
-  const filteredPharmacies = pharmacies.filter((pharmacy) =>
-    pharmacy.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const bySearch = pharmacies.filter((p) =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const inCity = bySearch.filter((p) => !selectedCity || p.city === selectedCity);
+  const others = bySearch.filter((p) => selectedCity && p.city !== selectedCity);
+  const filteredPharmacies = showAllCities || inCity.length === 0 ? bySearch : inCity;
 
   const sortedPharmacies = [...filteredPharmacies].sort((a, b) => {
     switch (activeFilter) {
