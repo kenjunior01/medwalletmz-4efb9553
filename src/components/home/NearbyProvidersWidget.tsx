@@ -24,20 +24,19 @@ export function NearbyProvidersWidget() {
   }, []);
 
   const { data: pharmacies } = useQuery<any[]>({
-    queryKey: ['nearby-pharmacies', city],
+    queryKey: ['nearby-pharmacies-all'],
     queryFn: async () => {
       const { data } = await supabase
         .from('stores')
         .select('id, name, type, city, latitude, longitude, image_url')
         .eq('is_active', true)
-        .eq('city', city)
         .limit(50);
       return data || [];
     },
   });
 
   const { data: doctors } = useQuery<any[]>({
-    queryKey: ['nearby-doctors', city],
+    queryKey: ['nearby-doctors-all'],
     queryFn: async () => {
       const { data } = await (supabase as any)
         .from('doctor_profiles')
@@ -50,7 +49,7 @@ export function NearbyProvidersWidget() {
         ...d,
         full_name: profs?.find((p: any) => p.user_id === d.user_id)?.full_name,
         default_city: profs?.find((p: any) => p.user_id === d.user_id)?.default_city,
-      })).filter((d: any) => !d.default_city || d.default_city === city);
+      }));
     },
   });
 
@@ -138,7 +137,7 @@ export function NearbyProvidersWidget() {
           </h2>
           <p className="text-xs text-muted-foreground">
             {coordinates
-              ? `Raio ${radiusKm} km · ordenado por ${ranking === 'rating' ? 'avaliação' : ranking === 'price' ? 'preço' : ranking === 'eta' ? 'tempo real' : 'distância / rota'} · ${city}`
+              ? `Raio ${radiusKm} km · ordenado por ${ranking === 'rating' ? 'avaliação' : ranking === 'price' ? 'preço' : ranking === 'eta' ? 'tempo real' : 'distância / rota'}`
               : 'Ativa a localização para resultados precisos'}
           </p>
         </div>
@@ -152,7 +151,7 @@ export function NearbyProvidersWidget() {
 
       {ranked.length === 0 ? (
         <div className="bento-card p-4 text-sm text-muted-foreground">
-          Ainda não há prestadores próximos em {city}.
+          Ainda não há prestadores disponíveis.
         </div>
       ) : (
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory">
