@@ -54,9 +54,7 @@ export default function AdminUsers() {
     queryFn: async () => {
       // Fetch profiles
       let profilesQuery = supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .rpc('list_profiles_admin_full' as any);
 
       if (search) {
         profilesQuery = profilesQuery.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%`);

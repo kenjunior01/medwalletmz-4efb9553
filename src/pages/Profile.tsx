@@ -50,12 +50,10 @@ export default function Profile() {
     if (!user) return;
     
     try {
-      const { data, error } = await supabase
+      const { data: rows, error } = await supabase
         .rpc("get_profile_private" as any, { _user_id: user.id } as any)
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
-      
+      if (error && (error as any).code !== 'PGRST116') throw error;
+      const data: any = Array.isArray(rows) ? rows[0] : rows;
       if (data) {
         setProfile(data);
         setEditName(data.full_name || "");
