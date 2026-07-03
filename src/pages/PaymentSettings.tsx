@@ -19,16 +19,13 @@ export default function PaymentSettings() {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from('profiles')
-      .select('mpesa_number, emola_number, mkesh_number')
-      .eq('user_id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) {
-          setMpesa(data.mpesa_number ?? '');
-          setEmola(data.emola_number ?? '');
-          setMkesh(data.mkesh_number ?? '');
+    (supabase.rpc as any)('get_profile_private', { _user_id: user.id })
+      .then(({ data }: any) => {
+        const row = Array.isArray(data) ? data[0] : data;
+        if (row) {
+          setMpesa(row.mpesa_number ?? '');
+          setEmola(row.emola_number ?? '');
+          setMkesh(row.mkesh_number ?? '');
         }
       });
   }, [user]);

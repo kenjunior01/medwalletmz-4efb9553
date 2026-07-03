@@ -44,26 +44,20 @@ export default function AdminDrivers() {
   const { data: drivers, isLoading } = useQuery({
     queryKey: ['admin-drivers', search, availabilityFilter],
     queryFn: async () => {
-      // Fetch profiles with driver info (vehicle_type not null)
-      let query = supabase
-        .from('profiles')
-        .select('*')
-        .not('vehicle_type', 'is', null)
-        .order('created_at', { ascending: false });
-
-      if (search) {
-        query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%,license_plate.ilike.%${search}%`);
-      }
-
-      if (availabilityFilter === 'available') {
-        query = query.eq('is_available', true);
-      } else if (availabilityFilter === 'unavailable') {
-        query = query.eq('is_available', false);
-      }
-
-      const { data, error } = await query;
+      const { data: raw, error } = await (supabase.rpc as any)('list_profiles_admin_full');
       if (error) throw error;
-      return data as Driver[];
+      let list: any[] = (raw || []).filter((p: any) => p.vehicle_type);
+      if (search) {
+        const q = search.toLowerCase();
+        list = list.filter((p: any) =>
+          (p.full_name || '').toLowerCase().includes(q) ||
+          (p.phone || '').toLowerCase().includes(q) ||
+          (p.license_plate || '').toLowerCase().includes(q)
+        );
+      }
+      if (availabilityFilter === 'available') list = list.filter((p: any) => p.is_available === true);
+      else if (availabilityFilter === 'unavailable') list = list.filter((p: any) => p.is_available === false);
+      return list as Driver[];
     }
   });
 

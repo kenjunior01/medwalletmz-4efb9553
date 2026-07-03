@@ -22,7 +22,7 @@ export default function DoctorPatients() {
       });
       const ids = [...map.keys()];
       if (!ids.length) { setPatients([]); return; }
-      const { data: profs } = await supabase.from('profiles').select('user_id, full_name, phone').in('user_id', ids);
+      const { data: profs } = await (supabase.rpc as any)('list_patients_for_doctor', { _ids: ids });
       setPatients((profs || []).map((p: any) => ({ ...p, last: map.get(p.user_id)?.scheduled_at })));
     })();
   }, [user]);
