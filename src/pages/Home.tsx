@@ -314,6 +314,8 @@ export default function Home() {
             { icon: Pill, label: 'Farmácia', color: 'emerald', to: '/pharmacy' },
             { icon: Activity, label: 'Exames', color: 'secondary', to: '/health/exams' },
             { icon: Heart, label: 'Planos', color: 'destructive', to: '/health/plans' },
+            { icon: Heart, label: 'Seguros', color: 'primary', to: '/health/insurance' },
+            { icon: Briefcase, label: 'Anúncios', color: 'secondary', to: '/ads' },
           ].map(c => (
             <button key={c.label} onClick={() => navigate(c.to)}
               className="bento-card aspect-square p-2 flex flex-col items-center justify-center gap-1.5">
