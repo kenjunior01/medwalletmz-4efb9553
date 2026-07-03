@@ -2935,6 +2935,22 @@ export type Database = {
         Args: { _order_id: string; _result_url: string }
         Returns: Json
       }
+      list_patients_for_doctor: {
+        Args: { _ids: string[] }
+        Returns: {
+          full_name: string
+          phone: string
+          user_id: string
+        }[]
+      }
+      list_profiles_admin: {
+        Args: { _ids: string[] }
+        Returns: {
+          full_name: string
+          phone: string
+          user_id: string
+        }[]
+      }
       moderate_ad: {
         Args: { _action: string; _id: string; _notes?: string }
         Returns: Json
