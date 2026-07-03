@@ -308,13 +308,12 @@ export default function AdminCuration() {
 
   const bulkReject = useMutation({
     mutationFn: async (ids: string[]) => {
-      let ok = 0;
-      let fail = 0;
-      for (const id of ids) {
-        const { error } = await (supabase as any).rpc('reject_proposal', { p_id: id, p_notes: 'Rejeitado em massa pelo admin' });
-        if (error) fail++; else ok++;
-      }
-      return { ok, fail };
+      const { data, error } = await (supabase as any).rpc('reject_proposals_bulk', {
+        _ids: ids,
+        _notes: 'Rejeitado em massa pelo admin',
+      });
+      if (error) throw error;
+      return { ok: data?.ok ?? 0, fail: data?.fail ?? 0 };
     },
     onSuccess: ({ ok, fail }) => {
       toast.success(`${ok} rejeitadas · ${fail} falharam`);

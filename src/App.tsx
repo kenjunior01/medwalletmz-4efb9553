@@ -107,6 +107,8 @@ import LabDetail from "./pages/health/LabDetail";
 import MyLabOrders from "./pages/health/MyLabOrders";
 import AdminAds from "./pages/admin/AdminAds";
 import AdminLabs from "./pages/admin/AdminLabs";
+import LabRegister from "./pages/lab/LabRegister";
+import LabDashboard from "./pages/lab/LabDashboard";
 
 const queryClient = new QueryClient();
 
@@ -230,7 +232,11 @@ const App = () => (
                 {/* Clinic Routes */}
                 <Route path="/clinic/register" element={<ClinicRegister />} />
                 <Route path="/clinic/dashboard" element={<ClinicDashboard />} />
-                
+
+                {/* Lab Routes */}
+                <Route path="/lab/register" element={<LabRegister />} />
+                <Route path="/lab/dashboard" element={<LabDashboard />} />
+
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

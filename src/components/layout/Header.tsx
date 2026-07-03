@@ -1,9 +1,10 @@
-import { useState, useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { MapPin, ChevronDown, Bell, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocation as useAppLocation } from "@/contexts/LocationContext";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -48,7 +49,7 @@ function getGreeting(): { text: string; emoji: string; gradient: string } {
 }
 
 export function Header() {
-  const [selectedCity, setSelectedCity] = useState("Maputo");
+  const { city: selectedCity, setCity: setSelectedCity } = useAppLocation();
   const greeting = useMemo(() => getGreeting(), []);
   const { user } = useAuth();
   const navigate = useNavigate();

@@ -3011,6 +3011,10 @@ export type Database = {
         Args: { p_id: string; p_notes?: string }
         Returns: Json
       }
+      reject_proposals_bulk: {
+        Args: { _ids: string[]; _notes?: string }
+        Returns: Json
+      }
       request_withdrawal: {
         Args: {
           _amount: number

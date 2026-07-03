@@ -1,66 +1,42 @@
-## Plano de Execução
+## Contexto
 
-### Fase 1 — Conectores adequados à plataforma
-Adicionar (via `standard_connectors--connect`) apenas os que fazem sentido clínico/financeiro:
-- **Resend** — envio transacional (receitas, lembretes, recibos da carteira).
-- **Twilio** — SMS/WhatsApp para OTP, confirmações de consulta e status de entrega (crítico em MZ, onde SMS chega mais que push).
-- **Stripe** — pagamentos internacionais como fallback ao M-Pesa/e-Mola (opcional, ativado só se o admin ligar).
-- Manter **Google Maps** e **KLIPY** já ligados.
+Pediste um pacote grande de melhorias: correções de bugs (rejeição em massa, páginas 404), gamificação Pulse, modelo de comissões/take-rate, bónus de boas-vindas 1000 MT, filtro por cidade a funcionar, laboratórios com auto-registo, navegação inovadora (floating glass bar, FAB, command palette) e social proof. Vamos dividir em fases para entregar valor rápido sem quebrar o que já funciona.
 
-Não adicionar: HeyGen, Amplitude, Miro, Sanity, Shopify — nada disso encaixa numa carteira de saúde MZ.
+## Fase 1 — Correções críticas (bloqueios actuais)
 
-### Fase 2 — Rebrand adaptativo do "Joy"
-Substituir "Joy" por um sistema chamado **Pulse** que muda de identidade por role:
-- Paciente → "Pulse Saúde" (progresso de bem-estar, medicação em dia)
-- Médico → "Pulse Clínico" (consultas concluídas, avaliações)
-- Farmácia → "Pulse Vendas" (pedidos entregues, tempo médio)
-- Estafeta → "Pulse Entregas" (KM rodados, on-time rate)
-- Admin → "Pulse Plataforma" (KPIs globais)
+1. **Rejeição em massa de propostas** — investigar `reject_proposal` e adicionar RPC `reject_proposals_bulk(ids[], notes)` que itera com `SECURITY DEFINER`. Ligar ao botão do AdminCuration.
+2. **Filtro por cidade no Header** — mover `selectedCity` para o `LocationContext` já existente e propagar para `Pharmacy`, `Doctors`, `Facilities`, `Exams` (query `.eq('city', city)`).
+3. **Rotas 404 (Farmácias/Entregadores/outras)** — auditar `App.tsx` e ligar as rotas em falta ou redirecionar para páginas existentes; melhorar `NotFound` com sugestões contextuais.
 
-Implementação: um `usePulseIdentity()` hook que devolve `{ label, icon, unit, color, metric }` a partir do role. Renomear tabelas continua igual (mantém `joy_events`, `joy_coin_transactions` no BD — só muda a camada de UI/labels e um novo `PulseBadge` component). Zero migração destrutiva.
+## Fase 2 — Modelo económico e onboarding
 
-### Fase 3 — Homepage Bento Grid
-Reescrita de `src/pages/Index.tsx` (ou `Home.tsx`) com layout Bento responsivo:
+4. **Bónus de boas-vindas 1000 MT** — actualizar `handle_new_user()` para creditar 1000 MZN via `wallet_credit` com `reference_type='welcome_bonus'`. Adicionar setting `welcome_bonus_mzn` (default 1000) para ser configurável no admin.
+5. **Take-rate visível** — garantir `service_commissions` tem entradas para `consultation` (15%), `pharmacy_order` (7%), `delivery` (fixa). Já existe `pay_service` que aplica; só precisa das entradas seed + UI no admin.
+6. **Pulse gamificação** — atribuir Pulse ao completar perfil (>80% campos) e ao sugerir prestador aprovado (já parcialmente feito). Adicionar hook `usePulseAwards` que dispara ao guardar perfil.
 
-```text
-┌─────────────────────┬──────────────┐
-│  HERO (2col x 2row) │  Wallet MZN  │
-│  CTA principal      │  NumberFlow  │
-│  Meddy animado      ├──────────────┤
-│                     │  Farmácia24h │
-├──────────┬──────────┼──────────────┤
-│ Próximo  │  Pulse   │  Consulta    │
-│ lembrete │  do role │  agendada    │
-├──────────┴──────────┴──────────────┤
-│  Feed personalizado (role-aware)   │
-└────────────────────────────────────┘
-```
+## Fase 3 — Laboratórios self-service
 
-- Glassmorphism em cards (`backdrop-blur`, borders translúcidas, tokens semânticos existentes).
-- Hover subtil (scale 1.01 + glow), sem "cards estranhos".
-- `NumberFlow` (já instalado) para o saldo da carteira.
-- `framer-motion` (já instalado) para entrada em stagger.
-- Skeleton screens em vez de spinners.
-- Micro-animação Meddy no hero (usar assets existentes).
+7. **Auto-registo de laboratórios** — página `/lab/register` (baseada em `ClinicRegister`) que cria clinic com `type='laboratory'` e `is_verified=false`. Fluxo de aprovação já existe em `/admin/labs`.
+8. **Dashboard do laboratório** — `/lab/dashboard` para ver pedidos, fazer upload de resultado PDF (já existe `lab_order_set_result`).
 
-### Fase 4 — Melhorias visuais transversais
-- Confirmar Dark Mode nos tokens (navy profundo + esmeralda, sem preto puro) — ajustar `index.css` se necessário.
-- Success feedback: micro-animação de check nos pagamentos concluídos.
-- Skeleton screens em `Wallet`, `Orders`, `Consultations`.
-- Checkout de farmácia: barra de progresso visual (Steps component) no topo.
+## Fase 4 — Navegação inovadora (mobile-first)
 
-### Fase 5 — Assistente IA (chat bubble)
-Reaproveitar o `MeddyFloating` existente: transformar em chat expansível com Lovable AI Gateway (`google/gemini-2.5-flash`, sem key nova). Já tenho `ai_conversations` no BD.
+9. **Floating Glass BottomNav** — refactor `BottomNav.tsx`: `fixed bottom-4 left-4 right-4 rounded-3xl glass shadow-2xl`, com FAB central maior que abre um radial menu (Triagem, Consulta, Farmácia, Emergência) usando `framer-motion`.
+10. **Command Palette (Cmd+K)** — usar `cmdk` (já instalado via shadcn Command) e montar em `AppLayout`; atalhos globais para navegação.
+11. **Contextual Header** — o header já mostra cidade; adicionar saldo em `/wallet` e filtros rápidos em `/health/doctors` via slot dinâmico.
 
-### O que NÃO faço nesta fase
-- Rive (biblioteca pesada, uso Lottie/PNG animado já existente).
-- Apple Pay nativo (requer conta Apple Developer paga do utilizador).
-- Vercel AI SDK (uso Lovable AI direto, mesmo resultado).
+## Fase 5 — Design & Social Proof
 
-### Detalhes técnicos
-- Sem migrações destrutivas; apenas UI + 1 hook novo (`usePulseIdentity`).
-- Novos componentes: `BentoHome.tsx`, `PulseBadge.tsx`, `WalletBentoCard.tsx`, `PulseIdentity.ts` (config).
-- Renomear labels "Joy"→"Pulse" em componentes visíveis; manter nomes de tabelas.
-- Conectores: chamo `standard_connectors--connect` um a um após aprovação do plano.
+12. **Home**: mapa interactivo com marcadores pulsantes de farmácias 24h (Mapbox + `react-leaflet` custom pulse CSS).
+13. **Social proof**: nova secção com depoimentos moçambicanos (dados seed em `platform_settings` para ser editável).
+14. **Avatares adaptativos**: usar `usePulseIdentity` para colorir o avatar do utilizador conforme o role dominante.
 
-Confirma para eu executar, ou diz-me se queres cortar/reordenar algo (ex: pular Stripe, pular Twilio, começar só pela homepage).
+## Detalhes técnicos
+
+- **DB**: migrações apenas para `reject_proposals_bulk`, `welcome_bonus_mzn` setting, seed de `service_commissions`, testimonials JSON em `platform_settings`.
+- **Sem quebras**: mantém tokens Ocean Trust, `PanelShell`, `BentoGrid`, `NumberFlow`.
+- **Ordem sugerida**: Fases 1 → 2 → 4 (navegação) → 3 → 5. Cada fase é entregável isolado.
+
+## Pergunta
+
+Faço tudo de uma vez (grande PR, ~20-30 ficheiros) ou entrego **Fase 1 primeiro** para desbloquear a rejeição em massa e o filtro por cidade, e depois avanço fase a fase? Recomendo faseado — tu vês progresso e podemos ajustar prioridades no meio.
