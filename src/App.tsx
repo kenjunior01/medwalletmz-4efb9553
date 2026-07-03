@@ -94,6 +94,7 @@ import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import Withdraw from "./pages/Withdraw";
 import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
+import AdminInsurance from "./pages/admin/AdminInsurance";
 import Insurance from "./pages/insurance/Insurance";
 import InsuranceDetail from "./pages/insurance/InsuranceDetail";
 import InsuranceRegister from "./pages/insurance/InsuranceRegister";
