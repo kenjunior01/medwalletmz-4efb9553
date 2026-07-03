@@ -22,6 +22,7 @@ import {
   Sparkles,
   ArrowDownToLine,
   Shield,
+  Megaphone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -40,6 +41,7 @@ const menuItems = [
   { icon: Receipt, label: 'Transações', path: '/admin/transactions' },
   { icon: ArrowDownToLine, label: 'Levantamentos', path: '/admin/withdrawals' },
   { icon: Shield, label: 'Seguradoras', path: '/admin/insurance' },
+  { icon: Megaphone, label: 'Anúncios', path: '/admin/ads' },
   { icon: Percent, label: 'Comissões', path: '/admin/commissions' },
   { icon: Sliders, label: 'Carteira & Bónus', path: '/admin/platform-settings' },
   { icon: Crown, label: 'Subscrições', path: '/admin/subscriptions' },
