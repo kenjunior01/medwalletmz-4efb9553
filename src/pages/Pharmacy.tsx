@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation as useRouterLocation } from "react-router-dom";
-import { Search, Pill, Star, Clock, FileText, X, Zap } from "lucide-react";
+import { Search, Pill, Star, Clock, FileText, X, Zap, Globe } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -172,10 +172,20 @@ export default function Pharmacy() {
             </div>
           ))
         ) : sortedPharmacies.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="bento-card p-8 text-center text-muted-foreground">
             <Pill className="h-12 w-12 mx-auto mb-2 opacity-50" />
-            <p>Nenhuma farmácia encontrada</p>
-            <p className="text-sm">Tente ajustar sua pesquisa</p>
+            <p className="font-semibold">
+              {onlyMyCity && selectedCity
+                ? `Sem farmácias aprovadas em ${selectedCity}.`
+                : "Nenhuma farmácia encontrada."}
+            </p>
+            {onlyMyCity ? (
+              <Button variant="outline" size="sm" className="mt-3" onClick={() => setOnlyMyCity(false)}>
+                <Globe className="h-4 w-4 mr-1" /> Ver em todas as cidades
+              </Button>
+            ) : (
+              <p className="text-sm mt-1">Tenta ajustar a pesquisa.</p>
+            )}
           </div>
         ) : (
           sortedPharmacies.map((pharmacy) => (
