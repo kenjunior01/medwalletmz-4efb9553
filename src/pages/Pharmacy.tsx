@@ -203,7 +203,7 @@ export default function Pharmacy() {
                 <div>
                   <h3 className="font-medium text-sm">{pharmacy.name}</h3>
                   <p className="text-xs text-muted-foreground line-clamp-1">
-                    {pharmacy.description || "Farmácia"}
+                    {pharmacy.city} · {pharmacy.description || "Farmácia"}
                   </p>
                 </div>
                 <div className="flex items-center gap-3 text-xs">
