@@ -2847,33 +2847,6 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles_public: {
-        Row: {
-          avatar_url: string | null
-          created_at: string | null
-          default_city: string | null
-          full_name: string | null
-          referral_code: string | null
-          user_id: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string | null
-          default_city?: string | null
-          full_name?: string | null
-          referral_code?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string | null
-          default_city?: string | null
-          full_name?: string | null
-          referral_code?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       weekly_leaderboard: {
         Row: {
           avatar_url: string | null
@@ -2910,8 +2883,8 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      get_my_profile: {
-        Args: never
+      get_profile_private: {
+        Args: { _user_id: string }
         Returns: {
           avatar_url: string | null
           created_at: string
