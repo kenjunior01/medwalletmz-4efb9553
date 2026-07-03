@@ -42,6 +42,7 @@ const menuItems = [
   { icon: ArrowDownToLine, label: 'Levantamentos', path: '/admin/withdrawals' },
   { icon: Shield, label: 'Seguradoras', path: '/admin/insurance' },
   { icon: Megaphone, label: 'Anúncios', path: '/admin/ads' },
+  { icon: Sparkles, label: 'Laboratórios', path: '/admin/labs' },
   { icon: Percent, label: 'Comissões', path: '/admin/commissions' },
   { icon: Sliders, label: 'Carteira & Bónus', path: '/admin/platform-settings' },
   { icon: Crown, label: 'Subscrições', path: '/admin/subscriptions' },

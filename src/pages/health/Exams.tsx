@@ -23,7 +23,7 @@ export default function Exams() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      let q = supabase.from("clinics").select("*").eq("is_active", true).eq("type", "laboratory");
+      let q = supabase.from("clinics").select("*").eq("is_active", true).eq("is_verified", true).eq("type", "laboratory");
       if (onlyMyCity && city) q = q.eq("city", city);
       const { data } = await q.order("is_verified", { ascending: false }).limit(100);
       setLabs(data || []);

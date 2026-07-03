@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ClipboardList, FlaskConical, ArrowLeft, Download, Clock, CheckCircle2, Truck, XCircle } from "lucide-react";
+import { toast } from "sonner";
 
 const STATUS_META: Record<string, { label: string; icon: any; color: string }> = {
   pending: { label: "Pendente", icon: Clock, color: "bg-amber-500/20 text-amber-700 dark:text-amber-300" },
@@ -18,6 +19,12 @@ export default function MyLabOrders() {
   const nav = useNavigate();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const downloadResult = async (path: string) => {
+    const { data, error } = await supabase.storage.from("lab-results").createSignedUrl(path, 60);
+    if (error || !data?.signedUrl) return toast.error("Não foi possível abrir o resultado");
+    window.open(data.signedUrl, "_blank");
+  };
 
   useEffect(() => {
     (async () => {
@@ -83,13 +90,13 @@ export default function MyLabOrders() {
                   </span>
                   <span className="font-bold text-primary">{Number(o.total_mzn).toLocaleString()} MZN</span>
                 </div>
-                {o.result_url && (
-                  <Button asChild size="sm" variant="outline" className="w-full">
-                    <a href={o.result_url} target="_blank" rel="noreferrer">
-                      <Download className="h-4 w-4 mr-1" /> Descarregar resultado
-                    </a>
+                {o.status === "completed" && o.result_url ? (
+                  <Button size="sm" variant="outline" className="w-full" onClick={() => downloadResult(o.result_url)}>
+                    <Download className="h-4 w-4 mr-1" /> Descarregar resultado
                   </Button>
-                )}
+                ) : o.status !== "completed" ? (
+                  <p className="text-xs text-muted-foreground text-center pt-1">Resultado disponível após conclusão.</p>
+                ) : null}
               </div>
             );
           })}
