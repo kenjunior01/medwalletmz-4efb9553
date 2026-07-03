@@ -2829,6 +2829,51 @@ export type Database = {
       }
     }
     Views: {
+      platform_settings_public: {
+        Row: {
+          key: string | null
+          updated_at: string | null
+          value: Json | null
+        }
+        Insert: {
+          key?: string | null
+          updated_at?: string | null
+          value?: Json | null
+        }
+        Update: {
+          key?: string | null
+          updated_at?: string | null
+          value?: Json | null
+        }
+        Relationships: []
+      }
+      profiles_public: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          default_city: string | null
+          full_name: string | null
+          referral_code: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          default_city?: string | null
+          full_name?: string | null
+          referral_code?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          default_city?: string | null
+          full_name?: string | null
+          referral_code?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       weekly_leaderboard: {
         Row: {
           avatar_url: string | null
@@ -2863,6 +2908,38 @@ export type Database = {
           to: "wallets"
           isOneToOne: true
           isSetofReturn: false
+        }
+      }
+      get_my_profile: {
+        Args: never
+        Returns: {
+          avatar_url: string | null
+          created_at: string
+          default_city: string | null
+          emola_number: string | null
+          full_name: string | null
+          health_certified: boolean
+          id: string
+          is_available: boolean | null
+          is_verified_driver: boolean
+          license_carta_url: string | null
+          license_plate: string | null
+          license_viatura_url: string | null
+          mkesh_number: string | null
+          mpesa_number: string | null
+          phone: string | null
+          referral_code: string | null
+          referred_by: string | null
+          updated_at: string
+          user_id: string
+          vehicle_type: string | null
+          verified_at: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
         }
       }
       get_user_roles: {
