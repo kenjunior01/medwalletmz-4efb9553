@@ -143,6 +143,13 @@ const App = () => (
                   <Route path="/wallet" element={<Wallet />} />
                   <Route path="/suggest-place" element={<SuggestPlace />} />
                   <Route path="/withdraw" element={<Withdraw />} />
+                  <Route path="/health/insurance" element={<Insurance />} />
+                  <Route path="/insurance/:id" element={<InsuranceDetail />} />
+                  <Route path="/insurance/register" element={<InsuranceRegister />} />
+                  <Route path="/insurance/dashboard" element={<InsuranceDashboard />} />
+                  <Route path="/ads" element={<Ads />} />
+                  <Route path="/ads/new" element={<AdForm />} />
+                  <Route path="/ads/mine" element={<MyAds />} />
                 </Route>
 
                 {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
