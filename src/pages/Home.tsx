@@ -272,6 +272,41 @@ export default function Home() {
 
       <KlipyBanner query="healthcare smile" />
 
+      {/* ============ GANHA COM O MEDWALLET — recruit providers ============ */}
+      {!isProvider && !isAdmin && (
+        <section className="px-4 mt-6">
+          <div className="panel-shell p-5">
+            <div className="flex items-center gap-2 text-[11px] uppercase font-black tracking-[0.18em] text-secondary">
+              <Briefcase className="h-3.5 w-3.5" /> Ganha com o MedWallet
+            </div>
+            <h3 className="text-2xl font-black mt-1.5 leading-tight">
+              És médico, farmácia ou<br/>
+              <span className="text-gradient-premium">entregador</span>?
+            </h3>
+            <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
+              Recebe pacientes, gere consultas e recebe direto na tua carteira MZN. Sem mensalidade.
+            </p>
+            <div className="grid grid-cols-3 gap-2 mt-4">
+              {[
+                { icon: Stethoscope, label: 'Médico', to: '/onboarding/doctor' },
+                { icon: Pill,        label: 'Farmácia', to: '/onboarding/pharmacy' },
+                { icon: Truck,       label: 'Entrega', to: '/onboarding/driver' },
+              ].map(o => (
+                <button key={o.label} onClick={() => navigate(o.to)}
+                  className="neu-btn px-2 py-3 flex flex-col items-center gap-1 text-[11px] font-bold">
+                  <o.icon className="h-4 w-4 text-secondary" />
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-3 mt-4 text-[10px] text-muted-foreground">
+              <span className="flex items-center gap-1"><Award className="h-3 w-3 text-gold" /> Verificação rápida</span>
+              <span className="flex items-center gap-1"><Zap className="h-3 w-3 text-secondary" /> Pagamentos 24h</span>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ============ TOP MÉDICOS ============ */}
       {topDoctors && topDoctors.length > 0 && (
         <section className="mt-6">
