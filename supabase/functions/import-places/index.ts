@@ -6,8 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const GATEWAY = 'https://connector-gateway.lovable.dev/google_maps';
-
 type Entity = 'pharmacy' | 'clinic' | 'hospital' | 'laboratory';
 
 const QUERIES: Record<Entity, string> = {
@@ -25,31 +23,36 @@ const QUERIES: Record<Entity, string> = {
  *
  * Comportamento mantido: deduplicação por external_id+city+entity_type.
  */
+// Mapbox Search Box — devolve POIs. Normaliza para o mesmo shape usado abaixo.
 async function searchText(query: string, city: string) {
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-  const GOOGLE_MAPS_API_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY');
-  if (!LOVABLE_API_KEY || !GOOGLE_MAPS_API_KEY) throw new Error('Missing Google Maps connector credentials');
+  const MAPBOX_TOKEN = Deno.env.get('MAPBOX_TOKEN');
+  if (!MAPBOX_TOKEN) throw new Error('Missing MAPBOX_TOKEN');
 
-  const res = await fetch(`${GATEWAY}/places/v1/places:searchText`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      'X-Connection-Api-Key': GOOGLE_MAPS_API_KEY,
-      'Content-Type': 'application/json',
-      'X-Goog-FieldMask':
-        'places.id,places.displayName,places.formattedAddress,places.location,places.internationalPhoneNumber,places.nationalPhoneNumber,places.rating,places.websiteUri,places.photos',
-    },
-    body: JSON.stringify({ textQuery: `${query} em ${city}, Moçambique`, regionCode: 'MZ', pageSize: 20 }),
-  });
-  if (!res.ok) throw new Error(`Places ${res.status}: ${await res.text()}`);
-  return (await res.json()).places ?? [];
+  const q = `${query} ${city} Moçambique`;
+  const url = `https://api.mapbox.com/search/searchbox/v1/forward`
+    + `?q=${encodeURIComponent(q)}&country=mz&language=pt&limit=10`
+    + `&access_token=${encodeURIComponent(MAPBOX_TOKEN)}`;
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Mapbox Search ${res.status}: ${await res.text()}`);
+  const json = await res.json();
+  const feats = json.features ?? [];
+  return feats.map((f: any) => ({
+    id: f.properties?.mapbox_id ?? null,
+    displayName: { text: f.properties?.name ?? f.properties?.name_preferred ?? 'Sem nome' },
+    formattedAddress: f.properties?.full_address ?? f.properties?.place_formatted ?? null,
+    location: f.geometry?.coordinates
+      ? { latitude: f.geometry.coordinates[1], longitude: f.geometry.coordinates[0] }
+      : null,
+    internationalPhoneNumber: f.properties?.metadata?.phone ?? null,
+    nationalPhoneNumber: null,
+    rating: null,
+    websiteUri: f.properties?.metadata?.website ?? null,
+    photos: [],
+  }));
 }
 
-function photoUrl(photoName?: string) {
-  if (!photoName) return null;
-  const KEY = Deno.env.get('GOOGLE_MAPS_BROWSER_KEY') ?? Deno.env.get('GOOGLE_MAPS_API_KEY');
-  return `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=800&key=${KEY}`;
-}
+function photoUrl(_: any) { return null; }
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
