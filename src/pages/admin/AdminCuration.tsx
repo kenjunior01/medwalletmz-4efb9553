@@ -766,8 +766,8 @@ function validateProposal(proposal: Proposal) {
   if (!proposal.name?.trim()) blockers.push('Nome é obrigatório.');
   if (!proposal.city?.trim()) blockers.push('Cidade é obrigatória.');
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) blockers.push('Latitude e longitude válidas são obrigatórias antes de aprovar.');
-  if (Number.isFinite(lat) && (lat < MZ_BOUNDS.minLat || lat > MZ_BOUNDS.maxLat)) blockers.push('Latitude está fora dos limites de Moçambique.');
-  if (Number.isFinite(lng) && (lng < MZ_BOUNDS.minLng || lng > MZ_BOUNDS.maxLng)) blockers.push('Longitude está fora dos limites de Moçambique.');
+  if (Number.isFinite(lat) && (lat < MZ_BOUNDS.minLat || lat > MZ_BOUNDS.maxLat)) warnings.push('Latitude parece fora de Moçambique — confirma no mapa antes de aprovar.');
+  if (Number.isFinite(lng) && (lng < MZ_BOUNDS.minLng || lng > MZ_BOUNDS.maxLng)) warnings.push('Longitude parece fora de Moçambique — confirma no mapa antes de aprovar.');
   if (!proposal.address?.trim()) warnings.push('Morada vazia: confirma visualmente no mapa antes de publicar.');
   if (!proposal.phone?.trim()) warnings.push('Telefone vazio: pode ser publicado, mas convém confirmar contacto depois.');
   if (proposal.image_url && !/^https?:\/\//i.test(proposal.image_url)) blockers.push('Imagem deve ser uma URL pública começando por http:// ou https://.');
