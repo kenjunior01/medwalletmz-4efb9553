@@ -89,8 +89,10 @@ export default function Home() {
       ) : (
       <section className="relative px-4 pt-3">
         <div className="relative rounded-[2rem] overflow-hidden gradient-ocean p-6 text-white shadow-premium">
-          <div className="absolute -top-12 -right-10 w-48 h-48 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -bottom-16 -left-12 w-56 h-56 rounded-full bg-secondary/30 blur-3xl" />
+          {/* Layered orbs — profundidade */}
+          <span className="float-orb h-56 w-56 -top-14 -right-10 bg-secondary/40" />
+          <span className="float-orb h-64 w-64 -bottom-20 -left-14 bg-accent/30" style={{ animationDelay: '-6s' }} />
+          <span className="float-orb h-40 w-40 top-1/3 right-1/3 bg-gold/20" style={{ animationDelay: '-3s' }} />
           <div className="relative">
             <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] opacity-80">
               <Sparkles className="h-3 w-3" /> {greet()}{user ? `, ${firstName}` : ''}
