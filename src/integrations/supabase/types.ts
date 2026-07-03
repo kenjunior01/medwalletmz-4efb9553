@@ -206,8 +206,10 @@ export type Database = {
           id: string
           is_active: boolean
           is_verified: boolean
+          latitude: number | null
           license_url: string | null
           logo_url: string | null
+          longitude: number | null
           name: string
           owner_id: string
           phone: string | null
@@ -222,8 +224,10 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_verified?: boolean
+          latitude?: number | null
           license_url?: string | null
           logo_url?: string | null
+          longitude?: number | null
           name: string
           owner_id: string
           phone?: string | null
@@ -238,8 +242,10 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_verified?: boolean
+          latitude?: number | null
           license_url?: string | null
           logo_url?: string | null
+          longitude?: number | null
           name?: string
           owner_id?: string
           phone?: string | null
