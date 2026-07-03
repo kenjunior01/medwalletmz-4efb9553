@@ -90,10 +90,13 @@ export default function LabRegister() {
             <Label>Email de contacto</Label>
             <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
           </div>
-          <div>
-            <Label>Licença MISAU (PDF/imagem)</Label>
-            <LicenseUpload value={form.license_url} onChange={(url) => setForm({ ...form, license_url: url })} />
-          </div>
+          <LicenseUpload
+            label="Licença MISAU"
+            description="Documento que autoriza a operação do laboratório"
+            slot="misau-lab"
+            value={form.license_url}
+            onUploaded={(url) => setForm({ ...form, license_url: url })}
+          />
           <Button className="w-full" disabled={saving} onClick={submit}>
             {saving ? 'A submeter…' : 'Submeter para aprovação'}
           </Button>
