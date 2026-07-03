@@ -17,6 +17,7 @@ import {
   Image as ImageIcon,
   Loader2,
   MapPin,
+  Locate,
   Save,
   Search,
   ShieldAlert,
