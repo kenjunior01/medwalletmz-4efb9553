@@ -101,6 +101,7 @@ import InsuranceDashboard from "./pages/insurance/InsuranceDashboard";
 import Ads from "./pages/ads/Ads";
 import AdForm from "./pages/ads/AdForm";
 import MyAds from "./pages/ads/MyAds";
+import Facilities from "./pages/health/Facilities";
 
 const queryClient = new QueryClient();
 
