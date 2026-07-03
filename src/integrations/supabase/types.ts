@@ -2951,6 +2951,38 @@ export type Database = {
           user_id: string
         }[]
       }
+      list_profiles_admin_full: {
+        Args: never
+        Returns: {
+          avatar_url: string | null
+          created_at: string
+          default_city: string | null
+          emola_number: string | null
+          full_name: string | null
+          health_certified: boolean
+          id: string
+          is_available: boolean | null
+          is_verified_driver: boolean
+          license_carta_url: string | null
+          license_plate: string | null
+          license_viatura_url: string | null
+          mkesh_number: string | null
+          mpesa_number: string | null
+          phone: string | null
+          referral_code: string | null
+          referred_by: string | null
+          updated_at: string
+          user_id: string
+          vehicle_type: string | null
+          verified_at: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       moderate_ad: {
         Args: { _action: string; _id: string; _notes?: string }
         Returns: Json
