@@ -158,6 +158,7 @@ const App = () => (
                   <Route path="/ads" element={<Ads />} />
                   <Route path="/ads/new" element={<AdForm />} />
                   <Route path="/ads/mine" element={<MyAds />} />
+                  <Route path="/health/facilities" element={<Facilities />} />
                 </Route>
 
                 {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
