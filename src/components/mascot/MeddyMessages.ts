@@ -33,7 +33,7 @@ const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
     ],
     empty_doctors: [
       { text: "Ainda não há médicos nesta especialidade. Queres ser avisado quando aparecer?", emoji: "🔔", actionLabel: "Lista de espera", actionHref: "/health/doctors" },
-      { text: "Faz uma triagem com IA agora — é gratuita e dá-te sugestões imediatas.", emoji: "✨", actionLabel: "Triagem IA", actionHref: "/health/triage" },
+      { text: "Faz uma Meddy Consulta agora — é gratuita e dá-te sugestões imediatas.", emoji: "✨", actionLabel: "Meddy Consulta", actionHref: "/health/triage" },
       { text: "Lê artigos de saúde sobre o teu sintoma enquanto esperas.", emoji: "📚", actionLabel: "Saúde MZ", actionHref: "/health/education" },
     ],
     empty_pharmacies: [

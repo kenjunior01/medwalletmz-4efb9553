@@ -199,7 +199,7 @@ function EmptyState({
             <Sparkles className="h-4 w-4 text-secondary-foreground" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-bold text-sm">Fazer triagem com IA agora</p>
+            <p className="font-bold text-sm">Fazer Meddy Consulta agora</p>
             <p className="text-[11px] text-muted-foreground">Avaliação inicial dos sintomas em segundos</p>
           </div>
         </button>

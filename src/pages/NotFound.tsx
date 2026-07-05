@@ -8,7 +8,7 @@ const suggestions = [
   { to: "/health/doctors", label: "Médicos", icon: Stethoscope, tone: "from-secondary/20 to-secondary/5" },
   { to: "/pharmacy", label: "Farmácias", icon: Pill, tone: "from-emerald-500/20 to-emerald-500/5" },
   { to: "/orders", label: "Pedidos", icon: ClipboardList, tone: "from-amber-500/20 to-amber-500/5" },
-  { to: "/health/triage", label: "Triagem IA", icon: Search, tone: "from-fuchsia-500/20 to-fuchsia-500/5" },
+  { to: "/health/triage", label: "Meddy Consulta", icon: Search, tone: "from-fuchsia-500/20 to-fuchsia-500/5" },
   { to: "/health/exams", label: "Exames", icon: Compass, tone: "from-cyan-500/20 to-cyan-500/5" },
 ];
 

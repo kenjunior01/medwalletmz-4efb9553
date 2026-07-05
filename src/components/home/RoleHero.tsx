@@ -85,10 +85,10 @@ const CONFIGS: Record<AppRole, Config> = {
   customer: {
     tag: "Paciente",
     title: "Saúde e farmácia numa só carteira",
-    subtitle: "Triagem IA, médicos verificados e entregas 24/7 em Maputo.",
+    subtitle: "Meddy Consulta, médicos verificados e entregas 24/7 em Maputo.",
     gradient: "from-primary to-secondary",
     ctas: [
-      { label: "Triagem IA", icon: Activity, to: "/health/triage" },
+      { label: "Meddy Consulta", icon: Activity, to: "/health/triage" },
       { label: "Médicos", icon: Stethoscope, to: "/health/doctors", variant: "secondary" },
     ],
   },

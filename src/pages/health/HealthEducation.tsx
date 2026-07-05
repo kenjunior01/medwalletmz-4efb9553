@@ -211,7 +211,7 @@ export default function HealthEducation() {
               <p className="text-xs opacity-90 mt-0.5">Fala com um médico verificado via chat ou vídeo-consulta.</p>
               <div className="flex gap-2 mt-2">
                 <Button size="sm" variant="secondary" onClick={() => navigate("/health/triage")}>
-                  <Sparkles className="h-3.5 w-3.5 mr-1" /> Triagem IA
+                  <Sparkles className="h-3.5 w-3.5 mr-1" /> Meddy Consulta
                 </Button>
                 <Button size="sm" variant="outline" className="bg-transparent border-white/40 text-white hover:bg-white/10" onClick={() => navigate("/health/doctors")}>
                   <Stethoscope className="h-3.5 w-3.5 mr-1" /> Marcar
