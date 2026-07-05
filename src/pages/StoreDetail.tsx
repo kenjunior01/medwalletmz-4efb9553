@@ -137,11 +137,13 @@ export default function StoreDetail() {
               <span className="font-medium">{store.rating?.toFixed(1) || '4.5'}</span>
             </div>
             
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>{store.delivery_time}</span>
-            </div>
-            
+            {(store as any).delivery_enabled && store.delivery_time && (
+              <div className="flex items-center gap-1 text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>{store.delivery_time}</span>
+              </div>
+            )}
+
             {distance && (
               <div className="flex items-center gap-1 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
@@ -149,9 +151,11 @@ export default function StoreDetail() {
               </div>
             )}
             
-            <Badge variant="secondary">
-              Taxa: {store.delivery_fee} MZN
-            </Badge>
+            {(store as any).delivery_enabled ? (
+              <Badge variant="secondary">Taxa: {store.delivery_fee} MZN</Badge>
+            ) : (
+              <Badge variant="outline">Levantamento na loja</Badge>
+            )}
           </div>
         </div>
       </div>

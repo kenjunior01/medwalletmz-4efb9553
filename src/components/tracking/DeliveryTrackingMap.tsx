@@ -1,48 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
-import L from 'leaflet';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { GoogleMap } from '@/components/maps/GoogleMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Phone, Navigation, Clock, MapPin, Truck } from 'lucide-react';
-import 'leaflet/dist/leaflet.css';
-
-// Fix for default markers
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
-
-// Custom icons
-const driverIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const destinationIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const storeIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+import { Navigation, Clock, MapPin, Truck } from 'lucide-react';
 
 interface DriverLocation {
   lat: number;
@@ -59,23 +21,12 @@ interface TrackingMapProps {
   userLocation?: { lat: number; lng: number };
 }
 
-function MapUpdater({ center }: { center: [number, number] }) {
-  const map = useMap();
-  
-  useEffect(() => {
-    map.setView(center, map.getZoom());
-  }, [center, map]);
-  
-  return null;
-}
-
 export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, userLocation }: TrackingMapProps) {
   const [driverLocation, setDriverLocation] = useState<DriverLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [estimatedTime, setEstimatedTime] = useState<string | null>(null);
-  
-  // Default center (Maputo)
-  const defaultCenter: [number, number] = [-25.9692, 32.5732];
+
+  const defaultCenter = { lat: -25.9692, lng: 32.5732 };
   
   useEffect(() => {
     fetchDriverLocation();
@@ -195,13 +146,9 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
     }
   };
 
-  const getMapCenter = (): [number, number] => {
-    if (driverLocation) {
-      return [driverLocation.lat, driverLocation.lng];
-    }
-    if (userLocation) {
-      return [userLocation.lat, userLocation.lng];
-    }
+  const getMapCenter = () => {
+    if (driverLocation) return { lat: driverLocation.lat, lng: driverLocation.lng };
+    if (userLocation) return userLocation;
     return defaultCenter;
   };
 
@@ -303,72 +250,17 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
 
         {/* Map */}
         <div className="h-64 rounded-lg overflow-hidden border border-border">
-          <MapContainer
+          <GoogleMap
             center={getMapCenter()}
             zoom={14}
-            style={{ height: '100%', width: '100%' }}
-            zoomControl={false}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-              url={`https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=${import.meta.env.VITE_MAPBOX_TOKEN}`}
-              tileSize={512}
-              zoomOffset={-1}
-            />
-
-            <MapUpdater center={getMapCenter()} />
-
-            {/* Driver marker */}
-            <Marker position={[driverLocation.lat, driverLocation.lng]} icon={driverIcon}>
-              <Popup>
-                <div className="text-center">
-                  <strong>{driverLocation.driver_name}</strong>
-                  <br />
-                  <span className="text-sm">{getStatusLabel(driverLocation.status)}</span>
-                </div>
-              </Popup>
-            </Marker>
-
-            {/* Store marker */}
-            {storeLocation && (
-              <Marker position={[storeLocation.lat, storeLocation.lng]} icon={storeIcon}>
-                <Popup>
-                  <div className="text-center">
-                    <strong>{storeLocation.name}</strong>
-                    <br />
-                    <span className="text-sm">Farmácia</span>
-                  </div>
-                </Popup>
-              </Marker>
-            )}
-
-            {/* User location marker */}
-            {userLocation && (
-              <Marker position={[userLocation.lat, userLocation.lng]} icon={destinationIcon}>
-                <Popup>
-                  <div className="text-center">
-                    <strong>Seu endereço</strong>
-                    <br />
-                    <span className="text-sm">Destino da entrega</span>
-                  </div>
-                </Popup>
-              </Marker>
-            )}
-
-            {/* Route line */}
-            {userLocation && (
-              <Polyline
-                positions={[
-                  [driverLocation.lat, driverLocation.lng],
-                  [userLocation.lat, userLocation.lng]
-                ]}
-                color="hsl(var(--primary))"
-                weight={3}
-                opacity={0.7}
-                dashArray="10, 10"
-              />
-            )}
-          </MapContainer>
+            height="100%"
+            markers={[
+              { id: 'driver', lat: driverLocation.lat, lng: driverLocation.lng, title: driverLocation.driver_name, description: getStatusLabel(driverLocation.status), color: '#22c55e' },
+              ...(storeLocation ? [{ id: 'store', lat: storeLocation.lat, lng: storeLocation.lng, title: storeLocation.name, description: 'Farmácia', color: '#3b82f6' }] : []),
+              ...(userLocation ? [{ id: 'dest', lat: userLocation.lat, lng: userLocation.lng, title: 'Seu endereço', description: 'Destino da entrega', color: '#ef4444' }] : []),
+            ]}
+            polyline={userLocation ? [{ lat: driverLocation.lat, lng: driverLocation.lng }, userLocation] : undefined}
+          />
         </div>
 
         {/* Legend */}

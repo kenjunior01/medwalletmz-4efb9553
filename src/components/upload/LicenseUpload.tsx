@@ -16,14 +16,14 @@ interface Props {
   accept?: string;
 }
 
-export function LicenseUpload({ label, description, slot, value, onUploaded, accept = 'image/*,application/pdf' }: Props) {
+export function LicenseUpload({ label, description, slot, value, onUploaded, accept = 'image/*,application/pdf,.doc,.docx,.xls,.xlsx' }: Props) {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(value ?? null);
 
   const handleFile = async (file: File) => {
     if (!user) { toast.error('Inicia sessão primeiro'); return; }
-    if (file.size > 8 * 1024 * 1024) { toast.error('Ficheiro deve ter no máximo 8 MB'); return; }
+    if (file.size > 15 * 1024 * 1024) { toast.error('Ficheiro deve ter no máximo 15 MB'); return; }
     setUploading(true);
     try {
       const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
@@ -57,7 +57,7 @@ export function LicenseUpload({ label, description, slot, value, onUploaded, acc
             {hasFile ? 'Ficheiro enviado' : uploading ? 'A enviar…' : 'Carregar ficheiro'}
           </p>
           <p className="text-[11px] text-muted-foreground truncate">
-            {hasFile ? previewUrl?.split('/').pop() : 'JPG, PNG ou PDF · máx. 8 MB'}
+            {hasFile ? previewUrl?.split('/').pop() : 'JPG, PNG, PDF ou DOC · máx. 15 MB'}
           </p>
         </div>
         <input
