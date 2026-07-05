@@ -54,7 +54,7 @@ export function DesktopRail() {
         <div className="flex flex-col">
           {[
             { icon: Calendar, label: "Minhas consultas", to: "/health/consultations" },
-            { icon: MessageCircle, label: "Triagem IA", to: "/health/triage" },
+            { icon: MessageCircle, label: "Meddy Consulta", to: "/health/triage" },
             { icon: Gift, label: "Convidar amigos", to: "/referrals" },
           ].map((it) => (
             <button

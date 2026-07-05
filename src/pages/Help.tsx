@@ -131,7 +131,7 @@ const faqCategories = [
       },
       {
         q: 'Não há médico na minha especialidade. O que faço?',
-        a: 'Podes juntar-te à lista de espera — avisamos-te assim que houver profissional disponível. Entretanto, fala com clínico geral ou faz triagem com IA.',
+        a: 'Podes juntar-te à lista de espera — avisamos-te assim que houver profissional disponível. Entretanto, fala com clínico geral ou faz Meddy Consulta.',
       },
     ],
   },

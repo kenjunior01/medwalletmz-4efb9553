@@ -227,9 +227,13 @@ export default function Pharmacy() {
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">
-                    Entrega: {pharmacy.delivery_fee || 0} MZN
-                  </span>
+                  {(pharmacy as any).delivery_enabled ? (
+                    <span className="text-xs text-muted-foreground">
+                      Entrega: {pharmacy.delivery_fee || 0} MZN
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">Levantamento na loja</span>
+                  )}
                   <Button size="sm" className="h-7 text-xs rounded-full bg-pharmacy hover:bg-pharmacy/90">
                     Ver Produtos
                   </Button>

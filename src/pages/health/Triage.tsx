@@ -72,7 +72,7 @@ export default function Triage() {
         </Button>
         <div>
           <h1 className="text-lg font-bold flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" /> Triagem IA
+            <Sparkles className="h-4 w-4 text-primary" /> Meddy Consulta
           </h1>
           <p className="text-xs text-muted-foreground">Avaliação rápida de sintomas</p>
         </div>

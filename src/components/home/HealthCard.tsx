@@ -41,7 +41,7 @@ export function HealthCard() {
           onClick={() => navigate('/health/triage')}
           className="flex items-center justify-center gap-1.5 text-xs text-primary hover:text-primary/80 transition py-1.5 rounded-lg border border-primary/30 bg-primary/5"
         >
-          <Sparkles className="h-3 w-3" /> Triagem IA
+          <Sparkles className="h-3 w-3" /> Meddy Consulta
         </button>
         <button
           onClick={() => navigate('/health/records')}

@@ -102,12 +102,12 @@ export default function Home() {
               <span className="text-secondary">numa só carteira.</span>
             </h1>
             <p className="text-sm opacity-85 mt-3 max-w-[280px]">
-              Triagem com IA, médicos verificados e entregas em Maputo — pago direto da tua carteira MZN.
+              Meddy Consulta, médicos verificados e entregas em Maputo — pago direto da tua carteira MZN.
             </p>
 
             <div className="flex gap-2 mt-5">
               <Button size="sm" className="flex-1 bg-white text-primary hover:bg-white/90 font-bold" onClick={() => navigate('/health/triage')}>
-                <Sparkles className="h-4 w-4 mr-1.5" /> Triagem IA
+                <Sparkles className="h-4 w-4 mr-1.5" /> Meddy Consulta
               </Button>
               <Button size="sm" variant="outline" className="flex-1 bg-transparent border-white/60 !text-white hover:bg-white/15 hover:!text-white font-bold" onClick={() => navigate('/health/doctors')}>
                 <Stethoscope className="h-4 w-4 mr-1.5" /> Médicos
@@ -220,11 +220,11 @@ export default function Home() {
           <Pill className="absolute -right-4 -bottom-4 h-20 w-20 text-pharmacy/10 -rotate-12" />
         </button>
 
-        {/* Triagem IA */}
+        {/* Meddy Consulta */}
         <button onClick={() => navigate('/health/triage')}
           className="col-span-2 row-span-2 bento-card text-left p-3 bg-gradient-to-br from-accent/30 to-accent/5 border-accent/40">
           <Sparkles className="h-5 w-5 text-secondary mb-1.5" />
-          <p className="text-xs font-bold">Triagem IA</p>
+          <p className="text-xs font-bold">Meddy Consulta</p>
           <p className="text-[9px] text-muted-foreground mt-1 leading-tight">Descreve sintomas</p>
         </button>
 
