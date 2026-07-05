@@ -32,10 +32,10 @@ export function GoogleMap({
   followFirstMarker,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRefs = useRef<google.maps.Marker[]>([]);
-  const lineRef = useRef<google.maps.Polyline | null>(null);
-  const infoRef = useRef<google.maps.InfoWindow | null>(null);
+  const mapRef = useRef<any>(null);
+  const markerRefs = useRef<any[]>([]);
+  const lineRef = useRef<any>(null);
+  const infoRef = useRef<any>(null);
 
   useEffect(() => {
     let cancelled = false;
