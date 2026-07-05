@@ -2190,6 +2190,7 @@ export type Database = {
           address: string | null
           city: string
           created_at: string
+          delivery_enabled: boolean
           delivery_fee: number | null
           delivery_time: string | null
           description: string | null
@@ -2208,6 +2209,7 @@ export type Database = {
           address?: string | null
           city: string
           created_at?: string
+          delivery_enabled?: boolean
           delivery_fee?: number | null
           delivery_time?: string | null
           description?: string | null
@@ -2226,6 +2228,7 @@ export type Database = {
           address?: string | null
           city?: string
           created_at?: string
+          delivery_enabled?: boolean
           delivery_fee?: number | null
           delivery_time?: string | null
           description?: string | null
