@@ -18,6 +18,7 @@ export default function DoctorDashboard() {
   const [today, setToday] = useState<any[]>([]);
   const [upcoming, setUpcoming] = useState<any[]>([]);
   const [stats, setStats] = useState({ patients: 0, monthRevenue: 0 });
+  const [hasSub, setHasSub] = useState<boolean | null>(null);
 
   const load = async () => {
     if (!user) return;
@@ -49,6 +50,14 @@ export default function DoctorDashboard() {
     const monthRevenue = (month || []).reduce((s, c: any) => s + (c.fee || 0), 0);
     const patients = new Set((month || []).map((c: any) => c.patient_id)).size;
     setStats({ patients, monthRevenue });
+
+    const { data: sub } = await supabase
+      .from('subscriptions')
+      .select('id, plan:subscription_plans(target_audience)')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .maybeSingle();
+    setHasSub(!!sub && (sub as any).plan?.target_audience === 'doctor');
   };
 
   useEffect(() => { load(); }, [user]);
@@ -88,6 +97,18 @@ export default function DoctorDashboard() {
             <Switch id="avail" checked={profile.is_available} onCheckedChange={toggleAvailable} />
           </NeuCard>
         </PanelShell>
+
+        {hasSub === false && (
+          <button
+            onClick={() => navigate('/subscribe')}
+            className="w-full text-left p-4 rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 to-secondary/10 hover:shadow-md transition"
+          >
+            <p className="text-sm font-semibold">Ative a sua subscrição profissional</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Desbloqueie consultas ilimitadas, marca destacada e prioridade nas recomendações. Pague por M-Pesa, e-Mola ou Mkesh.
+            </p>
+          </button>
+        )}
 
         {/* KPI bento grid with animated numbers */}
         <BentoGrid className="grid-cols-3 md:grid-cols-3">
