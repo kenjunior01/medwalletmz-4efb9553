@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLocation } from '@/contexts/LocationContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Sparkles, AlertTriangle, Stethoscope } from 'lucide-react';
+import { ArrowLeft, Sparkles, AlertTriangle, Stethoscope, MapPin, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface TriageResult {
@@ -28,11 +29,50 @@ const sevColor: Record<string, string> = {
 export default function Triage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { coordinates, calculateDistance } = useLocation();
   const [symptoms, setSymptoms] = useState('');
   const [age, setAge] = useState('');
   const [duration, setDuration] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TriageResult | null>(null);
+  const [nearbyDoctors, setNearbyDoctors] = useState<any[]>([]);
+
+  const findNearbyDoctors = async (specialtyName: string) => {
+    try {
+      const { data: specs } = await supabase
+        .from('medical_specialties')
+        .select('id, name')
+        .ilike('name', `%${specialtyName}%`)
+        .limit(1);
+      const specialtyId = specs?.[0]?.id;
+      let q = supabase
+        .from('doctor_profiles')
+        .select('*, medical_specialties(name, icon)')
+        .eq('is_available', true);
+      if (specialtyId) q = q.eq('specialty_id', specialtyId);
+      const { data } = await q.order('is_verified', { ascending: false }).limit(10);
+      let list = (data as any[]) || [];
+      if (coordinates) {
+        list = list
+          .map((d) => ({
+            ...d,
+            _dist: d.latitude && d.longitude ? calculateDistance(d.latitude, d.longitude) : null,
+          }))
+          .sort((a, b) => (a._dist ?? 9999) - (b._dist ?? 9999));
+      }
+      const top = list.slice(0, 3);
+      const ids = top.map((d) => d.user_id);
+      if (ids.length) {
+        const { data: profs } = await supabase.from('profiles').select('user_id, full_name').in('user_id', ids);
+        top.forEach((d: any) => {
+          d.profiles = profs?.find((p: any) => p.user_id === d.user_id) || null;
+        });
+      }
+      setNearbyDoctors(top);
+    } catch (e) {
+      console.warn('nearby doctors failed', e);
+    }
+  };
 
   const run = async () => {
     if (!symptoms.trim()) return toast.error('Descreve os sintomas');
@@ -45,6 +85,7 @@ export default function Triage() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setResult(data as TriageResult);
+      if (data?.suggested_specialty) findNearbyDoctors(data.suggested_specialty);
       if (user) {
         await supabase.from('triage_logs').insert({
           patient_id: user.id,
@@ -128,6 +169,39 @@ export default function Triage() {
               <Button size="sm" onClick={() => navigate('/health/doctors')}>
                 <Stethoscope className="h-4 w-4 mr-1" /> Marcar consulta
               </Button>
+            </div>
+          </Card>
+        )}
+
+        {result && nearbyDoctors.length > 0 && (
+          <Card className="p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-primary" />
+              <p className="text-sm font-semibold">Médicos recomendados perto de si</p>
+            </div>
+            <div className="space-y-2">
+              {nearbyDoctors.map((d: any) => (
+                <button
+                  key={d.id}
+                  onClick={() => navigate(`/health/book/${d.id}`)}
+                  className="w-full text-left flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition"
+                >
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Stethoscope className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate flex items-center gap-1">
+                      Dr(a). {d.profiles?.full_name || 'Médico'}
+                      {d.is_verified && <CheckCircle2 className="h-3 w-3 text-primary" />}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {d.medical_specialties?.name || '—'}
+                      {d._dist != null && ` · ${d._dist.toFixed(1)} km`}
+                    </p>
+                  </div>
+                  <Button size="sm" variant="ghost">Marcar</Button>
+                </button>
+              ))}
             </div>
           </Card>
         )}

@@ -71,6 +71,16 @@ export default function LabDashboard() {
         </Card>
       )}
 
+      <Card
+        onClick={() => nav('/subscribe')}
+        className="p-4 cursor-pointer bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/30"
+      >
+        <p className="text-sm font-semibold">Subscrição do laboratório</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Ative um plano profissional para aparecer com destaque e receber pedidos ilimitados. Pague por M-Pesa, e-Mola ou Mkesh.
+        </p>
+      </Card>
+
       <div className="grid gap-3">
         {orders.length === 0 ? (
           <Card className="p-8 text-center text-muted-foreground">Sem pedidos ainda.</Card>
