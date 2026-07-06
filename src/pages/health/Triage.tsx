@@ -172,6 +172,39 @@ export default function Triage() {
             </div>
           </Card>
         )}
+
+        {result && nearbyDoctors.length > 0 && (
+          <Card className="p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-primary" />
+              <p className="text-sm font-semibold">Médicos recomendados perto de si</p>
+            </div>
+            <div className="space-y-2">
+              {nearbyDoctors.map((d: any) => (
+                <button
+                  key={d.id}
+                  onClick={() => navigate(`/health/book/${d.id}`)}
+                  className="w-full text-left flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition"
+                >
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Stethoscope className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate flex items-center gap-1">
+                      Dr(a). {d.profiles?.full_name || 'Médico'}
+                      {d.is_verified && <CheckCircle2 className="h-3 w-3 text-primary" />}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {d.medical_specialties?.name || '—'}
+                      {d._dist != null && ` · ${d._dist.toFixed(1)} km`}
+                    </p>
+                  </div>
+                  <Button size="sm" variant="ghost">Marcar</Button>
+                </button>
+              ))}
+            </div>
+          </Card>
+        )}
       </section>
     </div>
   );
