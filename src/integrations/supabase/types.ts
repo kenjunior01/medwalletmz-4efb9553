@@ -176,6 +176,69 @@ export type Database = {
         }
         Relationships: []
       }
+      blood_donors: {
+        Row: {
+          blood_type: string
+          city: string
+          created_at: string | null
+          is_active: boolean | null
+          last_donation_date: string | null
+          user_id: string
+        }
+        Insert: {
+          blood_type: string
+          city: string
+          created_at?: string | null
+          is_active?: boolean | null
+          last_donation_date?: string | null
+          user_id: string
+        }
+        Update: {
+          blood_type?: string
+          city?: string
+          created_at?: string | null
+          is_active?: boolean | null
+          last_donation_date?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      blood_requests: {
+        Row: {
+          blood_type: string
+          city: string
+          contact_phone: string
+          created_at: string | null
+          created_by: string | null
+          hospital_name_manual: string
+          id: string
+          reason: string | null
+          status: string | null
+        }
+        Insert: {
+          blood_type: string
+          city: string
+          contact_phone: string
+          created_at?: string | null
+          created_by?: string | null
+          hospital_name_manual: string
+          id?: string
+          reason?: string | null
+          status?: string | null
+        }
+        Update: {
+          blood_type?: string
+          city?: string
+          contact_phone?: string
+          created_at?: string | null
+          created_by?: string | null
+          hospital_name_manual?: string
+          id?: string
+          reason?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       challenges: {
         Row: {
           category: string
@@ -891,6 +954,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      fcm_tokens: {
+        Row: {
+          created_at: string | null
+          device_type: string | null
+          id: string
+          last_seen_at: string | null
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          last_seen_at?: string | null
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          last_seen_at?: string | null
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       health_referral_rewards: {
         Row: {
