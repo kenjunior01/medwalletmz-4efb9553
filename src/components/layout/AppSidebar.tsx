@@ -1,0 +1,74 @@
+import { NavLink, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { sidebarByRole } from "@/config/navigation";
+import { usePrimaryRole } from "@/hooks/usePrimaryRole";
+import { useDeviceType } from "@/hooks/useDeviceType";
+
+/** Sidebar for tablet (icons only) and desktop (icons + labels grouped). */
+export function AppSidebar() {
+  const { pathname } = useLocation();
+  const { role } = usePrimaryRole();
+  const device = useDeviceType();
+  const items = sidebarByRole[role] ?? sidebarByRole.customer;
+  const compact = device === "tablet";
+
+  // Group by section (desktop only)
+  const groups: Record<string, typeof items> = {};
+  for (const it of items) {
+    const g = it.group ?? "Menu";
+    (groups[g] ||= []).push(it);
+  }
+
+  return (
+    <aside
+      className={cn(
+        "hidden md:flex sticky top-0 self-start h-screen border-r border-border bg-background/95 backdrop-blur flex-col overflow-y-auto",
+        compact ? "w-16" : "w-60"
+      )}
+    >
+      <div className={cn("px-3 py-4 border-b border-border", compact && "px-2")}>
+        <NavLink to="/" className="flex items-center gap-2">
+          <img src="/icon-512.png" alt="MedWallet" className="h-8 w-8 rounded-lg" />
+          {!compact && <span className="font-black text-base">MedWallet</span>}
+        </NavLink>
+      </div>
+
+      <nav className="flex-1 py-3">
+        {Object.entries(groups).map(([group, its]) => (
+          <div key={group} className="mb-3">
+            {!compact && (
+              <p className="px-4 mb-1 text-[10px] uppercase tracking-wider font-bold text-muted-foreground">
+                {group}
+              </p>
+            )}
+            <ul className="flex flex-col">
+              {its.map(({ path, icon: Icon, label }) => {
+                const active =
+                  pathname === path ||
+                  (path !== "/" && pathname.startsWith(path));
+                return (
+                  <li key={path}>
+                    <NavLink
+                      to={path}
+                      title={compact ? label : undefined}
+                      className={cn(
+                        "flex items-center gap-3 mx-2 px-2 py-2 rounded-lg text-sm transition-colors",
+                        active
+                          ? "bg-primary/10 text-primary font-semibold"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                        compact && "justify-center"
+                      )}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {!compact && <span className="truncate">{label}</span>}
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </nav>
+    </aside>
+  );
+}

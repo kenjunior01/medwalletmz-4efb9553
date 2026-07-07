@@ -3,8 +3,10 @@ import { BottomNav } from "./BottomNav";
 import { Header } from "./Header";
 import { OfflineBanner } from "./OfflineBanner";
 import { DesktopRail } from "./DesktopRail";
+import { AppSidebar } from "./AppSidebar";
 import { MeddyFloating } from "@/components/mascot/MeddyFloating";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useDeviceType } from "@/hooks/useDeviceType";
 import type { Context } from "@/components/mascot/MeddyMessages";
 
 /**
@@ -26,18 +28,23 @@ export function AppLayout() {
   useNotifications();
   const { pathname } = useLocation();
   const context = contextFromPath(pathname);
+  const device = useDeviceType();
+  const isMobile = device === "mobile";
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <OfflineBanner />
-      <Header />
-      <div className="flex-1 w-full max-w-6xl mx-auto lg:px-6 lg:gap-6 lg:pt-2">
-        <main className="flex-1 pb-20 min-w-0">
-          <Outlet />
-        </main>
-        <DesktopRail />
+    <div className="min-h-screen bg-background flex">
+      {!isMobile && <AppSidebar />}
+      <div className="flex-1 flex flex-col min-w-0">
+        <OfflineBanner />
+        <Header />
+        <div className="flex-1 w-full max-w-6xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
+          <main className={`flex-1 min-w-0 ${isMobile ? "pb-20" : ""}`}>
+            <Outlet />
+          </main>
+          {device === "desktop" && <DesktopRail />}
+        </div>
+        {isMobile && <BottomNav />}
       </div>
-      <BottomNav />
       <MeddyFloating context={context} />
     </div>
   );

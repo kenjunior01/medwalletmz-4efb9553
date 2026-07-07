@@ -176,30 +176,173 @@ export type Database = {
         }
         Relationships: []
       }
+      blood_donation_campaigns: {
+        Row: {
+          address: string | null
+          blood_types_needed: string[] | null
+          city: string
+          created_at: string
+          description: string | null
+          ends_at: string
+          hospital_id: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          latitude: number | null
+          longitude: number | null
+          organizer_id: string
+          starts_at: string
+          target_units: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          blood_types_needed?: string[] | null
+          city: string
+          created_at?: string
+          description?: string | null
+          ends_at: string
+          hospital_id?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          organizer_id: string
+          starts_at: string
+          target_units?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          blood_types_needed?: string[] | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          ends_at?: string
+          hospital_id?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          organizer_id?: string
+          starts_at?: string
+          target_units?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      blood_donation_matches: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          distance_km: number | null
+          donor_user_id: string
+          id: string
+          notes: string | null
+          request_id: string
+          scheduled_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          distance_km?: number | null
+          donor_user_id: string
+          id?: string
+          notes?: string | null
+          request_id: string
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          distance_km?: number | null
+          donor_user_id?: string
+          id?: string
+          notes?: string | null
+          request_id?: string
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blood_donation_matches_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "blood_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blood_donors: {
         Row: {
+          birth_date: string | null
           blood_type: string
           city: string
           created_at: string | null
+          full_name: string | null
+          health_notes: string | null
           is_active: boolean | null
+          is_available: boolean
           last_donation_date: string | null
+          latitude: number | null
+          longitude: number | null
+          neighborhood: string | null
+          phone: string | null
+          total_donations: number
+          updated_at: string
           user_id: string
+          verified_at: string | null
+          weight_kg: number | null
         }
         Insert: {
+          birth_date?: string | null
           blood_type: string
           city: string
           created_at?: string | null
+          full_name?: string | null
+          health_notes?: string | null
           is_active?: boolean | null
+          is_available?: boolean
           last_donation_date?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          neighborhood?: string | null
+          phone?: string | null
+          total_donations?: number
+          updated_at?: string
           user_id: string
+          verified_at?: string | null
+          weight_kg?: number | null
         }
         Update: {
+          birth_date?: string | null
           blood_type?: string
           city?: string
           created_at?: string | null
+          full_name?: string | null
+          health_notes?: string | null
           is_active?: boolean | null
+          is_available?: boolean
           last_donation_date?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          neighborhood?: string | null
+          phone?: string | null
+          total_donations?: number
+          updated_at?: string
           user_id?: string
+          verified_at?: string | null
+          weight_kg?: number | null
         }
         Relationships: []
       }
@@ -210,10 +353,20 @@ export type Database = {
           contact_phone: string
           created_at: string | null
           created_by: string | null
+          deadline: string | null
+          hospital_id: string | null
           hospital_name_manual: string
           id: string
+          latitude: number | null
+          longitude: number | null
+          notes: string | null
+          patient_name: string | null
           reason: string | null
           status: string | null
+          units_needed: number
+          units_received: number
+          updated_at: string
+          urgency: string
         }
         Insert: {
           blood_type: string
@@ -221,10 +374,20 @@ export type Database = {
           contact_phone: string
           created_at?: string | null
           created_by?: string | null
+          deadline?: string | null
+          hospital_id?: string | null
           hospital_name_manual: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
+          notes?: string | null
+          patient_name?: string | null
           reason?: string | null
           status?: string | null
+          units_needed?: number
+          units_received?: number
+          updated_at?: string
+          urgency?: string
         }
         Update: {
           blood_type?: string
@@ -232,10 +395,20 @@ export type Database = {
           contact_phone?: string
           created_at?: string | null
           created_by?: string | null
+          deadline?: string | null
+          hospital_id?: string | null
           hospital_name_manual?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
+          notes?: string | null
+          patient_name?: string | null
           reason?: string | null
           status?: string | null
+          units_needed?: number
+          units_received?: number
+          updated_at?: string
+          urgency?: string
         }
         Relationships: []
       }
@@ -1012,6 +1185,96 @@ export type Database = {
         }
         Relationships: []
       }
+      hospitals: {
+        Row: {
+          address: string | null
+          beds_count: number | null
+          city: string
+          created_at: string
+          departments: string[] | null
+          description: string | null
+          email: string | null
+          emergency_24h: boolean
+          has_blood_bank: boolean | null
+          has_icu: boolean | null
+          has_maternity: boolean | null
+          has_pediatrics: boolean | null
+          id: string
+          insurance_accepted: string[] | null
+          is_active: boolean
+          is_verified: boolean
+          latitude: number | null
+          legacy_clinic_id: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          neighborhood: string | null
+          owner_id: string | null
+          phone: string | null
+          rating: number | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          beds_count?: number | null
+          city: string
+          created_at?: string
+          departments?: string[] | null
+          description?: string | null
+          email?: string | null
+          emergency_24h?: boolean
+          has_blood_bank?: boolean | null
+          has_icu?: boolean | null
+          has_maternity?: boolean | null
+          has_pediatrics?: boolean | null
+          id?: string
+          insurance_accepted?: string[] | null
+          is_active?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          legacy_clinic_id?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          neighborhood?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          beds_count?: number | null
+          city?: string
+          created_at?: string
+          departments?: string[] | null
+          description?: string | null
+          email?: string | null
+          emergency_24h?: boolean
+          has_blood_bank?: boolean | null
+          has_icu?: boolean | null
+          has_maternity?: boolean | null
+          has_pediatrics?: boolean | null
+          id?: string
+          insurance_accepted?: string[] | null
+          is_active?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          legacy_clinic_id?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          neighborhood?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       influencer_picks: {
         Row: {
           created_at: string
@@ -1379,6 +1642,168 @@ export type Database = {
           },
         ]
       }
+      laboratories: {
+        Row: {
+          address: string | null
+          city: string
+          created_at: string
+          description: string | null
+          email: string | null
+          exam_categories: string[] | null
+          home_collection: boolean | null
+          id: string
+          insurance_accepted: string[] | null
+          is_active: boolean
+          is_verified: boolean
+          latitude: number | null
+          legacy_clinic_id: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          neighborhood: string | null
+          opening_hours: Json | null
+          owner_id: string | null
+          phone: string | null
+          rating: number | null
+          result_delivery_hours: number | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          exam_categories?: string[] | null
+          home_collection?: boolean | null
+          id?: string
+          insurance_accepted?: string[] | null
+          is_active?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          legacy_clinic_id?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          neighborhood?: string | null
+          opening_hours?: Json | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          result_delivery_hours?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          exam_categories?: string[] | null
+          home_collection?: boolean | null
+          id?: string
+          insurance_accepted?: string[] | null
+          is_active?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          legacy_clinic_id?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          neighborhood?: string | null
+          opening_hours?: Json | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          result_delivery_hours?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      medical_clinics: {
+        Row: {
+          address: string | null
+          city: string
+          consultation_price_avg: number | null
+          created_at: string
+          description: string | null
+          email: string | null
+          has_pediatrics: boolean | null
+          id: string
+          insurance_accepted: string[] | null
+          is_active: boolean
+          is_verified: boolean
+          latitude: number | null
+          legacy_clinic_id: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          neighborhood: string | null
+          opening_hours: Json | null
+          owner_id: string | null
+          phone: string | null
+          rating: number | null
+          specialties: string[] | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city: string
+          consultation_price_avg?: number | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          has_pediatrics?: boolean | null
+          id?: string
+          insurance_accepted?: string[] | null
+          is_active?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          legacy_clinic_id?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          neighborhood?: string | null
+          opening_hours?: Json | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string
+          consultation_price_avg?: number | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          has_pediatrics?: boolean | null
+          id?: string
+          insurance_accepted?: string[] | null
+          is_active?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          legacy_clinic_id?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          neighborhood?: string | null
+          opening_hours?: Json | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       medical_record_shares: {
         Row: {
           consultation_id: string | null
@@ -1688,6 +2113,93 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pharmacies: {
+        Row: {
+          address: string | null
+          city: string
+          created_at: string
+          delivery_fee: number | null
+          description: string | null
+          email: string | null
+          has_delivery: boolean | null
+          id: string
+          image_url: string | null
+          insurance_accepted: string[] | null
+          is_24h: boolean | null
+          is_active: boolean
+          is_verified: boolean
+          latitude: number | null
+          legacy_store_id: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          neighborhood: string | null
+          opening_hours: Json | null
+          owner_id: string | null
+          phone: string | null
+          rating: number | null
+          sells_prescription_only: boolean | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city: string
+          created_at?: string
+          delivery_fee?: number | null
+          description?: string | null
+          email?: string | null
+          has_delivery?: boolean | null
+          id?: string
+          image_url?: string | null
+          insurance_accepted?: string[] | null
+          is_24h?: boolean | null
+          is_active?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          legacy_store_id?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          neighborhood?: string | null
+          opening_hours?: Json | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          sells_prescription_only?: boolean | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string
+          created_at?: string
+          delivery_fee?: number | null
+          description?: string | null
+          email?: string | null
+          has_delivery?: boolean | null
+          id?: string
+          image_url?: string | null
+          insurance_accepted?: string[] | null
+          is_24h?: boolean | null
+          is_active?: boolean
+          is_verified?: boolean
+          latitude?: number | null
+          legacy_store_id?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          neighborhood?: string | null
+          opening_hours?: Json | null
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          sells_prescription_only?: boolean | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
       }
       place_distance_cache: {
         Row: {

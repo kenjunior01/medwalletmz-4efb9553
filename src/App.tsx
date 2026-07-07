@@ -109,6 +109,9 @@ import AdminAds from "./pages/admin/AdminAds";
 import AdminLabs from "./pages/admin/AdminLabs";
 import LabRegister from "./pages/lab/LabRegister";
 import LabDashboard from "./pages/lab/LabDashboard";
+import BloodHub from "./pages/blood/BloodHub";
+import BloodDonorRegister from "./pages/blood/BloodDonorRegister";
+import BloodRequestForm from "./pages/blood/BloodRequestForm";
 
 const queryClient = new QueryClient();
 
@@ -168,6 +171,9 @@ const App = () => (
                   <Route path="/ads/new" element={<AdForm />} />
                   <Route path="/ads/mine" element={<MyAds />} />
                   <Route path="/health/facilities" element={<Facilities />} />
+                  <Route path="/blood" element={<BloodHub />} />
+                  <Route path="/blood/register-donor" element={<BloodDonorRegister />} />
+                  <Route path="/blood/request" element={<BloodRequestForm />} />
                 </Route>
 
                 {/* Rota protegida: destrava o primeiro admin (bootstrap) */}

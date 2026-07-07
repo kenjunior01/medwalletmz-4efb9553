@@ -1,23 +1,18 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Stethoscope, FileText, ClipboardList, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { path: "/", icon: Home, label: "Início" },
-  { path: "/health/doctors", icon: Stethoscope, label: "Médicos" },
-  { path: "/health/prescriptions", icon: FileText, label: "Receitas" },
-  { path: "/orders", icon: ClipboardList, label: "Pedidos" },
-  { path: "/profile", icon: User, label: "Perfil" },
-];
+import { bottomNavByRole } from "@/config/navigation";
+import { usePrimaryRole } from "@/hooks/usePrimaryRole";
 
 export function BottomNav() {
   const location = useLocation();
+  const { role } = usePrimaryRole();
+  const navItems = bottomNavByRole[role] ?? bottomNavByRole.customer;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border safe-area-bottom">
       <div className="flex items-center justify-around py-2 px-4">
         {navItems.map(({ path, icon: Icon, label }) => {
-          const isActive = location.pathname === path;
+          const isActive = location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
           return (
             <NavLink
               key={path}
