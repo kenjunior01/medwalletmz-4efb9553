@@ -21,7 +21,8 @@ const TYPES = [
 
 export default function Facilities() {
   const nav = useNavigate();
-  const { city, location: userLoc } = useLocation() as any;
+  const { city, coordinates } = useLocation();
+  const userLoc = coordinates ? { lat: coordinates.latitude, lng: coordinates.longitude } : null;
   const [sp, setSp] = useSearchParams();
   const initial = (sp.get("type") as any) || "clinic";
   const [tab, setTab] = useState<string>(initial);
