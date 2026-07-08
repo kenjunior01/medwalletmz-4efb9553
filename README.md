@@ -118,6 +118,13 @@ Componente `ReferralBanner` com copy adaptado ao contexto moçambicano:
 - **Offline-First UI:** Indicadores claros de funcionalidades disponíveis sem conexão à internet.
 - **Foco em Emergência:** Reorganização da hierarquia visual para acesso imediato a "Triagem IA" e "Carteira M-Pesa".
 
+### 13. Base de Dados de Saúde Moçambicana (Seeding & Import) ✅
+
+- **Seed Inicial Massivo:** Inserção de +20 hospitais, clínicas e farmácias de referência em Maputo, Matola, Beira e Nampula com coordenadas reais e imagens de alta qualidade.
+- **Auto-Importador Google Maps:** Ferramenta administrativa para importar automaticamente centenas de locais via Google Places/Mapbox API para qualquer cidade de Moçambique.
+- **Curation Dashboard:** Painel `/admin/curation` para validar e aprovar submissões da comunidade e importações em massa.
+- **Renderização Segura de Imagens:** Componente `SafeImage` implementado em toda a app para garantir que nenhuma lista quebre por links de imagem offline (fallback automático).
+
 ---
 
 ## Schema (Supabase)

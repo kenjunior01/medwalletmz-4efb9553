@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { haversineKm } from "@/lib/googleRoutes";
 import { MapPin } from "lucide-react";
+import { SafeImage } from "@/components/ui/safe-image";
 
 type Store = Tables<"stores">;
 
@@ -213,17 +214,12 @@ export default function Pharmacy() {
               className="bg-card rounded-xl border border-border p-3 flex gap-3 transition-all hover:shadow-medium cursor-pointer"
             >
               <div className="w-20 h-20 rounded-lg flex-shrink-0 overflow-hidden">
-                {pharmacy.image_url ? (
-                  <img
-                    src={pharmacy.image_url}
-                    alt={pharmacy.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-pharmacy/20 to-pharmacy/5 flex items-center justify-center">
-                    <Pill className="h-8 w-8 text-pharmacy/50" />
-                  </div>
-                )}
+                <SafeImage
+                  src={pharmacy.image_url || undefined}
+                  alt={pharmacy.name}
+                  className="w-full h-full object-cover"
+                  fallbackSrc="/placeholder.svg"
+                />
               </div>
               <div className="flex-1 flex flex-col justify-between">
                 <div>
