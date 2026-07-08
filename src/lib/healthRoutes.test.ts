@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from './healthRoutes';
+import { buildGoogleMapsDirectionsUrl, getSafeImageUrl, normalizeImageUrl } from './healthRoutes';
 
 describe('buildGoogleMapsDirectionsUrl', () => {
     it('builds a Google Maps directions URL with origin and destination', () => {
@@ -13,6 +13,20 @@ describe('buildGoogleMapsDirectionsUrl', () => {
         expect(url).toContain('destination=-25.9701%2C32.5799');
         expect(url).toContain('origin=-25.9692%2C32.5732');
         expect(url).toContain('travelmode=driving');
+    });
+});
+
+describe('normalizeImageUrl', () => {
+    it('rejects invalid image values', () => {
+        expect(normalizeImageUrl('')).toBeNull();
+        expect(normalizeImageUrl(undefined)).toBeNull();
+        expect(normalizeImageUrl('not-a-url')).toBeNull();
+        expect(normalizeImageUrl('javascript:alert(1)')).toBeNull();
+    });
+
+    it('keeps safe public image URLs', () => {
+        expect(normalizeImageUrl('https://example.com/hospital.png')).toBe('https://example.com/hospital.png');
+        expect(normalizeImageUrl('/images/hospital.png')).toBe('/images/hospital.png');
     });
 });
 

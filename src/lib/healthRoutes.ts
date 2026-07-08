@@ -23,9 +23,27 @@ function isLikelyImageUrl(value: string) {
     return false;
 }
 
-export function getSafeImageUrl(url?: string | null) {
-    if (!url || typeof url !== 'string') return '/placeholder.svg';
+export function normalizeImageUrl(url?: string | null) {
+    if (!url || typeof url !== 'string') return null;
+
     const trimmed = url.trim();
-    if (!trimmed || !isLikelyImageUrl(trimmed)) return '/placeholder.svg';
+    if (!trimmed || !isLikelyImageUrl(trimmed)) return null;
+
+    if (/^javascript:/i.test(trimmed)) return null;
+
+    try {
+        const parsed = new URL(trimmed, window.location.origin);
+        if (parsed.protocol === 'javascript:') return null;
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:' && parsed.protocol !== 'data:') return null;
+    } catch {
+        return null;
+    }
+
     return trimmed;
+}
+
+export function getSafeImageUrl(url?: string | null) {
+    const normalized = normalizeImageUrl(url);
+    if (!normalized) return '/placeholder.svg';
+    return normalized;
 }

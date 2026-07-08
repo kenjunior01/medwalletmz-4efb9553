@@ -1,4 +1,7 @@
 import { useMemo, useState } from 'react';
+import { uploadImageToStorage } from '@/lib/imageUpload';
+import { SafeImage } from '@/components/ui/safe-image';
+import { getSafeImageUrl, normalizeImageUrl } from '@/lib/healthRoutes';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -61,7 +64,7 @@ type TypeFilter = 'all' | 'pharmacy' | 'clinic' | 'hospital' | 'lab';
 
 type Proposal = {
   id: string;
-  source: 'google_places' | 'user_submit';
+  source: 'google_places' | 'user_submit' | 'legacy';
   entity_type: EntityType;
   name: string;
   address: string | null;
@@ -84,6 +87,7 @@ type Proposal = {
   raw_payload: any;
   search_meta: any;
   proposed_by: string | null;
+  source_table?: 'stores' | 'clinics' | null;
 };
 
 type AuditLog = {
@@ -120,7 +124,7 @@ export default function AdminCuration() {
   const queryClient = useQueryClient();
   const { hasRole, loading } = useAuth();
   const [tab, setTab] = useState<'pending' | 'in_review' | 'approved' | 'rejected' | 'all'>('pending');
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'google_places' | 'user_submit'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'google_places' | 'user_submit' | 'legacy'>('all');
   const [cityFilter, setCityFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [search, setSearch] = useState('');
@@ -128,6 +132,7 @@ export default function AdminCuration() {
   const [page, setPage] = useState(0);
   const [reviewing, setReviewing] = useState<Proposal | null>(null);
   const [draft, setDraft] = useState<Partial<Proposal>>({});
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const citiesQuery = useQuery<string[]>({
     queryKey: ['curation-cities'],
@@ -178,9 +183,89 @@ export default function AdminCuration() {
       if (error) throw error;
 
       const rows = (data ?? []) as Proposal[];
-      if (typeFilter === 'lab') return rows.filter(isLaboratoryProposal);
-      if (typeFilter === 'clinic') return rows.filter((p) => !isLaboratoryProposal(p));
-      return rows;
+      const { data: storesData } = await (supabase as any)
+        .from('stores')
+        .select('id, name, address, city, phone, website, description, image_url, latitude, longitude, type, created_at')
+        .order('created_at', { ascending: false });
+      const { data: clinicsData } = await (supabase as any)
+        .from('clinics')
+        .select('id, name, address, city, phone, website, description, logo_url, latitude, longitude, created_at')
+        .order('created_at', { ascending: false });
+
+      const legacyRows: Proposal[] = [
+        ...(storesData ?? []).map((row: any) => ({
+          id: row.id,
+          source: 'legacy' as const,
+          source_table: 'stores' as const,
+          entity_type: row.type === 'pharmacy' ? 'pharmacy' : 'other',
+          name: row.name,
+          address: row.address ?? null,
+          city: row.city,
+          neighborhood: null,
+          reference_point: null,
+          phone: row.phone ?? null,
+          website: row.website ?? null,
+          description: row.description ?? null,
+          image_url: normalizeImageUrl(row.image_url),
+          latitude: row.latitude ?? null,
+          longitude: row.longitude ?? null,
+          status: 'approved' as const,
+          reward_mzn: null,
+          reward_joy_coins: null,
+          reward_paid: null,
+          review_notes: null,
+          created_at: row.created_at ?? new Date().toISOString(),
+          updated_at: null,
+          raw_payload: { table: 'stores' },
+          search_meta: { table: 'stores' },
+          proposed_by: null,
+        })),
+        ...(clinicsData ?? []).map((row: any) => ({
+          id: row.id,
+          source: 'legacy' as const,
+          source_table: 'clinics' as const,
+          entity_type: /hospital/i.test(row.description ?? '') ? 'hospital' : 'clinic',
+          name: row.name,
+          address: row.address ?? null,
+          city: row.city,
+          neighborhood: null,
+          reference_point: null,
+          phone: row.phone ?? null,
+          website: row.website ?? null,
+          description: row.description ?? null,
+          image_url: normalizeImageUrl(row.logo_url),
+          latitude: row.latitude ?? null,
+          longitude: row.longitude ?? null,
+          status: 'approved' as const,
+          reward_mzn: null,
+          reward_joy_coins: null,
+          reward_paid: null,
+          review_notes: null,
+          created_at: row.created_at ?? new Date().toISOString(),
+          updated_at: null,
+          raw_payload: { table: 'clinics' },
+          search_meta: { table: 'clinics' },
+          proposed_by: null,
+        })),
+      ];
+
+      const merged = [...rows, ...legacyRows];
+      const filtered = merged.filter((item) => {
+        if (tab !== 'all' && item.status !== tab) return false;
+        if (sourceFilter !== 'all' && item.source !== sourceFilter) return false;
+        if (cityFilter !== 'all' && item.city !== cityFilter) return false;
+        if (typeFilter === 'pharmacy' || typeFilter === 'hospital') return item.entity_type === typeFilter;
+        if (typeFilter === 'clinic' || typeFilter === 'lab') return item.entity_type === 'clinic';
+        return true;
+      });
+
+      if (search.trim()) {
+        return filtered.filter((item) => item.name.toLowerCase().includes(search.trim().toLowerCase()));
+      }
+
+      if (typeFilter === 'lab') return filtered.filter(isLaboratoryProposal);
+      if (typeFilter === 'clinic') return filtered.filter((p) => !isLaboratoryProposal(p));
+      return filtered;
     },
     staleTime: 10_000,
   });
@@ -224,13 +309,53 @@ export default function AdminCuration() {
       toast.error(validation.blockers[0]);
       return false;
     }
-    const { error } = await (supabase as any)
-      .from('place_proposals')
-      .update(cleaned)
-      .eq('id', reviewing.id);
-    if (error) {
-      toast.error(error.message);
-      return false;
+    if (reviewing.source_table === 'stores') {
+      const { error } = await (supabase as any)
+        .from('stores')
+        .update({
+          name: cleaned.name,
+          address: cleaned.address,
+          city: cleaned.city,
+          phone: cleaned.phone,
+          website: cleaned.website,
+          description: cleaned.description,
+          image_url: cleaned.image_url,
+          latitude: cleaned.latitude,
+          longitude: cleaned.longitude,
+        })
+        .eq('id', reviewing.id);
+      if (error) {
+        toast.error(error.message);
+        return false;
+      }
+    } else if (reviewing.source_table === 'clinics') {
+      const { error } = await (supabase as any)
+        .from('clinics')
+        .update({
+          name: cleaned.name,
+          address: cleaned.address,
+          city: cleaned.city,
+          phone: cleaned.phone,
+          website: cleaned.website,
+          description: cleaned.description,
+          logo_url: cleaned.image_url,
+          latitude: cleaned.latitude,
+          longitude: cleaned.longitude,
+        })
+        .eq('id', reviewing.id);
+      if (error) {
+        toast.error(error.message);
+        return false;
+      }
+    } else {
+      const { error } = await (supabase as any)
+        .from('place_proposals')
+        .update(cleaned)
+        .eq('id', reviewing.id);
+      if (error) {
+        toast.error(error.message);
+        return false;
+      }
     }
     toast.success('Alterações guardadas');
     await queryClient.invalidateQueries({ queryKey: ['curation-proposals'] });
@@ -243,6 +368,9 @@ export default function AdminCuration() {
     mutationFn: async (proposal: Proposal) => {
       const validation = validateProposal(proposal);
       if (validation.blockers.length) throw new Error(validation.blockers[0]);
+      if (proposal.source_table === 'stores' || proposal.source_table === 'clinics') {
+        return { publish_target: proposal.source_table === 'stores' ? 'stores' : 'clinics' };
+      }
       const { data, error } = await (supabase as any).rpc('approve_proposal', { p_id: proposal.id, p_notes: proposal.review_notes ?? null });
       if (error) throw error;
       return data;
@@ -524,7 +652,35 @@ export default function AdminCuration() {
                     <GeocodeButton draft={draft} onResolved={(lat, lng, formatted) => setDraft({ ...draft, latitude: lat as any, longitude: lng as any, address: draft.address || formatted || null })} />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <Field label="Imagem URL"><Input value={draft.image_url ?? ''} onChange={(e) => setDraft({ ...draft, image_url: e.target.value })} /></Field>
+                    <Field label="Imagem URL">
+                      <div className="flex gap-2">
+                        <Input value={draft.image_url ?? ''} onChange={(e) => setDraft({ ...draft, image_url: e.target.value })} />
+                        <label className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-input bg-background hover:bg-accent cursor-pointer shrink-0">
+                          {uploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setUploadingImage(true);
+                              try {
+                                const path = await uploadImageToStorage(file, { bucket: 'licenses', folder: 'place-images' });
+                                const { data } = await supabase.storage.from('licenses').createSignedUrl(path, 60 * 60 * 24 * 365);
+                                if (data?.signedUrl) setDraft({ ...draft, image_url: data.signedUrl });
+                                else throw new Error('Não foi possível gerar a URL da imagem');
+                                toast.success('Imagem carregada para o storage');
+                              } catch (error: any) {
+                                toast.error(error?.message ?? 'Erro ao carregar a imagem');
+                              } finally {
+                                setUploadingImage(false);
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </Field>
                     <Field label="Website"><Input value={draft.website ?? ''} onChange={(e) => setDraft({ ...draft, website: e.target.value })} /></Field>
                   </div>
                   <Field label="Notas / descrição"><Textarea rows={3} value={draft.description ?? ''} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></Field>
@@ -597,7 +753,7 @@ function ProposalCard({ proposal, selected, busy, onSelect, onReview, onApprove,
       )}
       <div className="flex flex-col md:flex-row">
         <div className="md:w-44 md:h-auto h-34 bg-muted shrink-0 relative">
-          {proposal.image_url ? <img src={proposal.image_url} alt={proposal.name} className="w-full h-full object-cover" /> : (
+          {proposal.image_url ? <SafeImage src={getSafeImageUrl(proposal.image_url)} alt={proposal.name} className="w-full h-full object-cover" /> : (
             <div className="w-full h-full flex items-center justify-center"><ImageIcon className="h-8 w-8 text-muted-foreground" /></div>
           )}
           <Badge className="absolute top-2 left-2 bg-background/85 backdrop-blur text-foreground border-0 text-[10px]">
@@ -696,7 +852,7 @@ function ImagePreview({ proposal }: { proposal: Proposal }) {
   return (
     <Card className="overflow-hidden">
       <div className="h-52 bg-muted flex items-center justify-center">
-        {proposal.image_url ? <img src={proposal.image_url} alt={proposal.name} className="w-full h-full object-cover" /> : <ImageIcon className="h-10 w-10 text-muted-foreground" />}
+        {proposal.image_url ? <SafeImage src={getSafeImageUrl(proposal.image_url)} alt={proposal.name} className="w-full h-full object-cover" /> : <ImageIcon className="h-10 w-10 text-muted-foreground" />}
       </div>
       <div className="p-3 text-xs text-muted-foreground">Imagem pública usada na listagem após aprovação.</div>
     </Card>
@@ -769,7 +925,7 @@ function validateProposal(proposal: Proposal) {
   if (Number.isFinite(lng) && (lng < MZ_BOUNDS.minLng || lng > MZ_BOUNDS.maxLng)) warnings.push('Longitude parece fora de Moçambique — confirma no mapa antes de aprovar.');
   if (!proposal.address?.trim()) warnings.push('Morada vazia: confirma visualmente no mapa antes de publicar.');
   if (!proposal.phone?.trim()) warnings.push('Telefone vazio: pode ser publicado, mas convém confirmar contacto depois.');
-  if (proposal.image_url && !/^https?:\/\//i.test(proposal.image_url)) blockers.push('Imagem deve ser uma URL pública começando por http:// ou https://.');
+  if (proposal.image_url && !normalizeImageUrl(proposal.image_url)) blockers.push('Imagem deve ser uma URL pública ou um ficheiro válido no storage.');
 
   return { blockers, warnings };
 }

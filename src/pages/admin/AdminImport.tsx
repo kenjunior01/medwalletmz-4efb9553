@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Download, Upload, Sparkles, MapPin, Info, ArrowRight, History } from 'lucide-react';
 import { toast } from 'sonner';
+import { normalizeImageUrl } from '@/lib/healthRoutes';
 
 type EntityKey = 'pharmacies' | 'clinics' | 'hospitals' | 'doctors';
 
@@ -80,9 +81,7 @@ export default function AdminImport() {
         if (key === 'pharmacies' || key === 'clinics' || key === 'hospitals') {
           const entityType = key === 'pharmacies' ? 'pharmacy' : key === 'hospitals' ? 'hospital' : 'clinic';
           const rawImage = row.image_url ?? row.logo_url ?? row.photo_url ?? null;
-          const normalizedImage = typeof rawImage === 'string' && rawImage.trim()
-            ? rawImage.trim()
-            : null;
+          const normalizedImage = normalizeImageUrl(rawImage);
           payload = {
             source: 'user_submit',
             entity_type: entityType,

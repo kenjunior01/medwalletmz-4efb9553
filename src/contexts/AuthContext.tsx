@@ -9,8 +9,8 @@ interface AuthContextType {
   session: Session | null;
   roles: AppRole[];
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, referralCode?: string) => Promise<{ error: Error | null; user: User | null }>;
+  signIn: (email: string, password: string, referralCode?: string) => Promise<{ error: Error | null; user: User | null }>;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
   refreshRoles: () => Promise<void>;
@@ -40,6 +40,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshRoles = useCallback(async () => {
     if (user) await fetchUserRoles(user.id);
   }, [fetchUserRoles, user]);
+
+  const applyReferralCode = useCallback(async (referralCode: string, referredId: string) => {
+    const normalizedCode = referralCode?.trim();
+    if (!normalizedCode || !referredId) return;
+
+    const { data: referrerProfile } = await supabase
+      .from('profiles')
+      .select('user_id')
+      .eq('referral_code', normalizedCode)
+      .maybeSingle();
+
+    const referrerId = referrerProfile?.user_id;
+    if (!referrerId || referrerId === referredId) return;
+
+    const { data: existingReferral } = await supabase
+      .from('user_referrals')
+      .select('id')
+      .eq('referred_id', referredId)
+      .maybeSingle();
+
+    if (existingReferral) return;
+
+    const { error } = await supabase.from('user_referrals').insert({
+      referrer_id: referrerId,
+      referred_id: referredId,
+      referral_code: normalizedCode,
+      status: 'completed',
+    });
+
+    if (error) {
+      console.error('Erro a aplicar convite:', error);
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -94,19 +127,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, referralCode?: string) => {
     const redirectUrl = `${window.location.origin}/`;
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: redirectUrl, data: { full_name: fullName } },
     });
-    return { error: error as Error | null };
+
+    if (!error && data.user && referralCode) {
+      await applyReferralCode(referralCode, data.user.id);
+    }
+
+    return { error: error as Error | null, user: data.user as User | null };
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error as Error | null };
+  const signIn = async (email: string, password: string, referralCode?: string) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (!error && data.user && referralCode) {
+      await applyReferralCode(referralCode, data.user.id);
+    }
+
+    return { error: error as Error | null, user: data.user as User | null };
   };
 
   const signOut = async () => {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { uploadImageToStorage } from '@/lib/imageUpload';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocation } from '@/contexts/LocationContext';
@@ -19,10 +20,10 @@ import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 
 const ENTITY_TYPES = [
-  { v: 'pharmacy', label: 'Farmácia',         icon: Store,     hint: 'Vende medicamentos ao público' },
-  { v: 'clinic',   label: 'Clínica',          icon: Building2, hint: 'Consultas e exames ambulatórios' },
-  { v: 'hospital', label: 'Hospital',         icon: Hospital,  hint: 'Atendimento com internamento' },
-  { v: 'lab',      label: 'Laboratório',      icon: Building2, hint: 'Análises clínicas / imagens' },
+  { v: 'pharmacy', label: 'Farmácia', icon: Store, hint: 'Vende medicamentos ao público' },
+  { v: 'clinic', label: 'Clínica', icon: Building2, hint: 'Consultas e exames ambulatórios' },
+  { v: 'hospital', label: 'Hospital', icon: Hospital, hint: 'Atendimento com internamento' },
+  { v: 'lab', label: 'Laboratório', icon: Building2, hint: 'Análises clínicas / imagens' },
 ];
 
 const MZ_CITIES = ['Maputo', 'Matola', 'Beira', 'Nampula', 'Quelimane', 'Tete', 'Xai-Xai', 'Lichinga', 'Pemba', 'Inhambane'];
@@ -51,6 +52,7 @@ export default function SuggestPlace() {
   const [website, setWebsite] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -95,6 +97,29 @@ export default function SuggestPlace() {
       </div>
     );
   }
+
+  const handleImageUpload = async (file: File) => {
+    if (!user) {
+      toast.error('Inicia sessão para carregar a imagem');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const path = await uploadImageToStorage(file, { bucket: 'licenses', folder: 'place-images' });
+      const { data } = await supabase.storage.from('licenses').createSignedUrl(path, 60 * 60 * 24 * 365);
+      if (data?.signedUrl) {
+        setImageUrl(data.signedUrl);
+        toast.success('Imagem carregada com sucesso');
+      } else {
+        throw new Error('Não foi possível gerar a URL da imagem');
+      }
+    } catch (e: any) {
+      toast.error(e?.message ?? 'Erro ao carregar a imagem');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const submit = async () => {
     if (!name.trim()) return toast.error("Indica o nome do local");
@@ -220,9 +245,8 @@ export default function SuggestPlace() {
                     type="button"
                     key={t.v}
                     onClick={() => setEntityType(t.v)}
-                    className={`p-2 rounded-xl border text-center transition ${
-                      active ? "border-primary bg-primary/10" : "border-border bg-card"
-                    }`}
+                    className={`p-2 rounded-xl border text-center transition ${active ? "border-primary bg-primary/10" : "border-border bg-card"
+                      }`}
                   >
                     <Icon className={`h-5 w-5 mx-auto ${active ? "text-primary" : "text-muted-foreground"}`} />
                     <p className="text-[10px] font-semibold mt-1">{t.label}</p>
@@ -320,9 +344,18 @@ export default function SuggestPlace() {
                   onChange={(e) => setImageUrl(e.target.value)}
                   placeholder="https://..."
                 />
-                <Button type="button" variant="outline" size="icon">
-                  <Upload className="h-4 w-4" />
-                </Button>
+                <label className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-input bg-background hover:bg-accent cursor-pointer">
+                  {uploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file);
+                    }}
+                  />
+                </label>
               </div>
               <p className="text-[10px] text-muted-foreground mt-1">
                 Carrega uma foto para ajudar a identificar o local.
