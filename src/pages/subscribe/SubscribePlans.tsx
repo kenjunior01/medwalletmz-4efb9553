@@ -16,7 +16,7 @@ interface Plan {
   target_audience: string;
   features: any;
   is_active: boolean;
-  is_popular?: boolean;
+  badge?: string | null;
 }
 
 const audiences = [
@@ -86,11 +86,11 @@ export default function SubscribePlans() {
               return (
                 <Card
                   key={p.id}
-                  className={`p-5 relative ${p.is_popular ? "border-primary border-2" : ""}`}
+                  className={`p-5 relative ${p.badge ? "border-primary border-2" : ""}`}
                 >
-                  {p.is_popular && (
+                  {p.badge && (
                     <Badge className="absolute -top-2 right-4 gap-1">
-                      <Sparkles className="h-3 w-3" /> Popular
+                      <Sparkles className="h-3 w-3" /> {p.badge}
                     </Badge>
                   )}
                   <h3 className="text-xl font-bold">{p.name}</h3>
