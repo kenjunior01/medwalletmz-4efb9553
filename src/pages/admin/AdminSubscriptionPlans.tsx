@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Plus, Trash2, Edit } from "lucide-react";
 
-const audiences = ["customer", "doctor", "clinic", "hospital", "lab", "store_owner", "driver"];
+const audiences = ["customer", "doctor", "clinic", "hospital", "lab", "pharmacy", "store_owner", "driver"];
 const periods = ["monthly", "quarterly", "yearly"];
 
 export default function AdminSubscriptionPlans() {

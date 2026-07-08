@@ -24,7 +24,7 @@ const audiences = [
   { key: "doctor", label: "Médicos" },
   { key: "clinic", label: "Clínicas/Hospitais" },
   { key: "lab", label: "Laboratórios" },
-  { key: "store_owner", label: "Farmácias" },
+  { key: "pharmacy", label: "Farmácias" },
 ];
 
 export default function SubscribePlans() {
