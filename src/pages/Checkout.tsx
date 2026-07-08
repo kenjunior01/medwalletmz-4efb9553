@@ -9,9 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Smartphone, Loader2, Apple, Wallet } from 'lucide-react';
-import { CouponInput, calculateCouponDiscount } from '@/components/checkout/CouponInput';
-import { Zap, FileText, Snowflake } from 'lucide-react';
+import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
+import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake } from 'lucide-react';
 interface AppliedCoupon {
   id: string;
   code: string;
@@ -338,15 +337,12 @@ export default function Checkout() {
           onRemoveCoupon={() => setAppliedCoupon(null)}
         />
         {/* Delivery Address */}
-        <div className="space-y-3">
-          <Label>Endereço de Entrega *</Label>
-          <Textarea
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Rua, número, bairro, referência..."
-            required
-          />
-        </div>
+        <GoogleAddressInput
+          value={address}
+          onChange={(val) => setAddress(val)}
+          placeholder="Rua, número, bairro, referência..."
+          label="Endereço de Entrega *"
+        />
 
         {/* Notes */}
         <div className="space-y-3">

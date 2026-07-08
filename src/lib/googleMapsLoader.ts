@@ -18,7 +18,7 @@ export function loadGoogleMaps(): Promise<any> {
       key: KEY,
       loading: "async",
       callback: cbName,
-      libraries: "places",
+      libraries: "places,geometry",
     });
     if (CHANNEL) params.set("channel", CHANNEL);
     s.src = `https://maps.googleapis.com/maps/api/js?${params.toString()}`;

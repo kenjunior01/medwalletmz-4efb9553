@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Sparkles, ArrowRight, Stethoscope, Pill, FileText, BookOpen, Video, Activity, ChevronRight } from "lucide-react";
+import { Sparkles, ArrowRight, Stethoscope, Pill, FileText, BookOpen, Video, Activity, ChevronRight, Gift, ShieldCheck, CloudRain } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -23,8 +23,10 @@ import { cn } from "@/lib/utils";
 type Hint =
   | { kind: "doctor"; doctorId: string; title: string; subtitle: string; icon: any; }
   | { kind: "article"; slug: string; title: string; subtitle: string; icon: any; }
+  | { kind: "weather"; title: string; subtitle: string; icon: any; }
   | { kind: "triage"; title: string; subtitle: string; icon: any; }
-  | { kind: "checkup"; title: string; subtitle: string; icon: any; };
+  | { kind: "checkup"; title: string; subtitle: string; icon: any; }
+  | { kind: "referral"; title: string; subtitle: string; icon: any; };
 
 export function PersonalizedForYou() {
   const navigate = useNavigate();
@@ -110,23 +112,35 @@ export function PersonalizedForYou() {
     }
 
     // 3) Sugerir artigo educacional sobre hipertensão (condição mais comum em MZ)
-    const hypertensionArticle = articles?.find((a: any) => a.slug === "hipertensao-controlo");
-    if (hypertensionArticle) {
+    const malariaArticle = articles?.find((a: any) => a.slug?.includes("malaria"));
+    if (malariaArticle && Math.random() > 0.5) {
       return {
         kind: "article",
-        slug: hypertensionArticle.slug,
-        title: "Como controlar a pressão alta",
-        subtitle: "5 min · recomendado para adultos",
-        icon: BookOpen,
+        slug: malariaArticle.slug,
+        title: "Malária: Guia de Prevenção MZ",
+        subtitle: "Aprende a proteger a tua família",
+        icon: ShieldCheck,
       };
     }
 
-    // 4) Fallback — check-up geral
+    // 4) Weather Insight (Google Weather API) - Foco em prevenção (ex: Cólera em época de chuvas)
+    const month = new Date().getMonth();
+    const isRainySeason = month >= 10 || month <= 3; // Novembro a Março em MZ
+    if (isRainySeason) {
+      return {
+        kind: "weather",
+        title: "Época de chuvas em Moçambique",
+        subtitle: "Aumenta o cuidado com água e mosquitos.",
+        icon: CloudRain,
+      };
+    }
+
+    // 5) Se não tem amigos convidados, sugerir referral
     return {
-      kind: "checkup",
-      title: "Check-up geral",
-      subtitle: "Marca uma consulta de rotina",
-      icon: Video,
+      kind: "referral",
+      title: "Ganha 25 MZN convidando amigos",
+      subtitle: "Saldo grátis para teleconsultas",
+      icon: Gift,
     };
   }, [user, consultations, triageLogs, articles]);
 
@@ -137,7 +151,9 @@ export function PersonalizedForYou() {
   const onClick = () => {
     if (hint.kind === "doctor") navigate(`/health/book/${hint.doctorId}`);
     else if (hint.kind === "article") navigate(`/health/education/${hint.slug}`);
+    else if (hint.kind === "weather") navigate("/health/education/prevencao-colera");
     else if (hint.kind === "triage") navigate("/health/triage");
+    else if (hint.kind === "referral") navigate("/referrals");
     else navigate("/health/doctors");
   };
 

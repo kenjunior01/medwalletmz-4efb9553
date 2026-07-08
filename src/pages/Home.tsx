@@ -1,13 +1,15 @@
 import {
   Stethoscope, Sparkles, FileText, Pill, MessageCircle, ArrowRight, Gift, Wallet,
   Plus, Briefcase, Star, TrendingUp, Calendar, Activity, Zap, Heart, ShieldCheck,
-  Truck, Building2, ChevronRight, BookOpen, MapPinPlus, Award,
+  Truck, Building2, ChevronRight, BookOpen, MapPinPlus, Award, Crown, HandHeart,
+  Mic, Search
 } from "lucide-react";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
 import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
 import { KlipyBanner } from "@/components/klipy/KlipyBanner";
 import { PersonalizedForYou } from "@/components/health/PersonalizedForYou";
+import { AirQualityWidget } from "@/components/home/AirQualityWidget";
 import { ReferralBanner } from "@/components/referrals/ReferralBanner";
 import { MeddyWelcomeCard } from "@/components/mascot/MeddyWelcomeCard";
 import { RoleHero } from "@/components/home/RoleHero";
@@ -20,8 +22,11 @@ import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import NumberFlow from "@number-flow/react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePulseIdentity } from "@/hooks/usePulseIdentity";
+import { useDataSaver } from "@/contexts/DataSaverContext";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const greet = () => {
   const h = new Date().getHours();
@@ -80,6 +85,21 @@ export default function Home() {
   });
 
   const firstName = profile?.full_name?.split(' ')[0] || (user ? 'amigo' : 'visitante');
+  const { enabled: dataSaver } = useDataSaver();
+  const [isListening, setIsListening] = useState(false);
+
+  const startVoiceSearch = () => {
+    setIsListening(true);
+    toast.info("A ouvir sintomas...", {
+      description: "Podes falar agora. A usar Cloud Speech-to-Text.",
+      icon: <Mic className="h-4 w-4 text-primary animate-pulse" />,
+    });
+    // Simulação
+    setTimeout(() => {
+      setIsListening(false);
+      navigate('/health/triage');
+    }, 3000);
+  };
 
   return (
     <div className="pb-6 animate-fade-in">
@@ -109,8 +129,14 @@ export default function Home() {
               <Button size="sm" className="flex-1 bg-white text-primary hover:bg-white/90 font-bold" onClick={() => navigate('/health/triage')}>
                 <Sparkles className="h-4 w-4 mr-1.5" /> Meddy Consulta
               </Button>
-              <Button size="sm" variant="outline" className="flex-1 bg-transparent border-white/60 !text-white hover:bg-white/15 hover:!text-white font-bold" onClick={() => navigate('/health/doctors')}>
-                <Stethoscope className="h-4 w-4 mr-1.5" /> Médicos
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-transparent border-white/60 !text-white hover:bg-white/15 hover:!text-white font-bold"
+                onClick={startVoiceSearch}
+              >
+                <Mic className={cn("h-4 w-4 mr-1.5", isListening && "animate-pulse text-secondary")} />
+                {isListening ? "A ouvir..." : "Voz"}
               </Button>
             </div>
 
@@ -125,7 +151,14 @@ export default function Home() {
       </section>
       )}
 
-      <div className="px-4 mt-4"><EnableNotificationsBanner /></div>
+      <div className="px-4 mt-4">
+        {dataSaver && (
+          <Badge variant="secondary" className="mb-2 bg-emerald-500/10 text-emerald-600 border-emerald-500/20 gap-1.5 py-1">
+            <Zap className="h-3 w-3" /> Modo Poupança de Dados Ativo
+          </Badge>
+        )}
+        <EnableNotificationsBanner />
+      </div>
 
       {/* ============ MEDDY (mascote) ============ */}
       <MeddyWelcomeCard message="Posso ajudar-te a encontrar médico, farmácia ou marcar teleconsulta." />
@@ -165,18 +198,18 @@ export default function Home() {
           </motion.button>
         )}
 
-        {/* Pulse / Convites — adapta ao role */}
+        {/* Planos de Saúde — Highlighting the subscription service */}
         <motion.button
           variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-          onClick={() => navigate('/referrals')}
-          className="col-span-2 row-span-2 bento-card text-left p-3 bg-gradient-to-br from-gold/20 to-gold/5 border-gold/30"
+          onClick={() => navigate('/health/plans')}
+          className="col-span-2 row-span-2 bento-card text-left p-3 bg-gradient-to-br from-secondary to-secondary/10 border-secondary/30 relative overflow-hidden"
         >
-          <div className="h-9 w-9 rounded-xl bg-gold flex items-center justify-center mb-2">
-            <PulseIcon className="h-5 w-5 text-gold-foreground" />
+          <div className="h-9 w-9 rounded-xl bg-white/20 flex items-center justify-center mb-2">
+            <Crown className="h-5 w-5 text-white" />
           </div>
-          <p className="text-xs font-bold leading-tight">{pulse.label}</p>
-          <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{pulse.tagline}</p>
-          <ArrowRight className="h-3 w-3 absolute bottom-3 right-3 text-gold" />
+          <p className="text-xs font-bold leading-tight text-white">Planos</p>
+          <p className="text-[10px] text-white/80 mt-1 leading-tight">Health Pass</p>
+          <Sparkles className="h-4 w-4 absolute bottom-3 right-3 text-white/50" />
         </motion.button>
 
         {/* Próxima consulta */}
@@ -246,6 +279,8 @@ export default function Home() {
       </motion.section>
 
       <FollowUpReminders />
+
+      <AirQualityWidget />
 
       <NearbyProvidersWidget />
 
@@ -352,6 +387,7 @@ export default function Home() {
             { icon: Activity, label: 'Exames', color: 'secondary', to: '/health/exams' },
             { icon: Heart, label: 'Planos', color: 'destructive', to: '/health/plans' },
             { icon: Heart, label: 'Seguros', color: 'primary', to: '/health/insurance' },
+            { icon: HandHeart, label: 'Solidários', color: 'rose-500', to: '/solidarity' },
             { icon: Briefcase, label: 'Anúncios', color: 'secondary', to: '/ads' },
             { icon: Activity, label: 'Clínicas', color: 'primary', to: '/health/facilities?type=clinic' },
             { icon: Activity, label: 'Hospitais', color: 'destructive', to: '/health/facilities?type=hospital' },

@@ -7,12 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ArrowDownCircle, ArrowUpCircle, RefreshCw, Gift, Wallet as WalletIcon, Search, Plus, Minus } from 'lucide-react';
+import { ArrowDownCircle, ArrowUpCircle, RefreshCw, Gift, Wallet as WalletIcon, Search, Plus, Minus, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const STATUS_COLOR: Record<string, string> = {
   confirmed: 'bg-emerald/15 text-emerald border-emerald/40',
-  pending: 'bg-gold/15 text-gold-foreground border-gold/40',
+  pending: 'bg-amber-500/15 text-amber-600 border-amber-500/40',
   refunded: 'bg-destructive/15 text-destructive border-destructive/40',
   reversed: 'bg-muted text-muted-foreground',
 };
@@ -72,6 +72,29 @@ export default function AdminTransactions() {
     });
     if (error) return toast.error(error.message);
     toast.success('Ajuste aplicado'); setAdjustFor(null); setAdjAmt(''); setReason(''); refetch();
+  };
+
+  const approveDeposit = async (tx: any) => {
+    if (!confirm('Confirmas que o valor foi recebido offline?')) return;
+    try {
+      // Chamamos o RPC de ajuste para efetivar o crédito
+      const { error } = await supabase.rpc('wallet_admin_adjust', {
+        _user_id: tx.user_id,
+        _amount: Number(tx.amount),
+        _direction: 'credit',
+        _reason: `Aprovação de depósito offline (${tx.metadata?.payment_method?.toUpperCase()}) - Ref: ${tx.metadata?.payment_reference}`,
+      });
+
+      if (error) throw error;
+
+      // Marcamos a transação original como confirmada
+      await supabase.from('wallet_transactions').update({ status: 'confirmed' }).eq('id', tx.id);
+
+      toast.success('Depósito aprovado e creditado!');
+      refetch();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
   };
 
   return (
@@ -147,6 +170,11 @@ export default function AdminTransactions() {
                       <Badge variant="outline" className={`text-[10px] capitalize ${STATUS_COLOR[t.status] || ''}`}>{t.status}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground truncate">{t.description || t.reference_type}</p>
+                    {t.metadata?.payment_reference && (
+                      <p className="text-[10px] font-mono bg-muted/50 inline-block px-1 rounded mt-0.5">
+                        REF: {t.metadata.payment_reference} · TEL: {t.metadata.payment_phone || '—'}
+                      </p>
+                    )}
                     <p className="text-[10px] text-muted-foreground">{new Date(t.created_at).toLocaleString('pt-PT')}</p>
                   </div>
                   <div className="text-right">
@@ -155,7 +183,12 @@ export default function AdminTransactions() {
                     </p>
                     <p className="text-[10px] text-muted-foreground">Saldo: {Number(t.balance_after).toFixed(2)}</p>
                   </div>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1 ml-2">
+                    {t.type === 'deposit' && t.status === 'pending' && (
+                      <Button size="sm" className="bg-emerald hover:bg-emerald/90 text-white" onClick={() => approveDeposit(t)}>
+                        <CheckCircle2 className="h-3 w-3 mr-1" /> Aprovar
+                      </Button>
+                    )}
                     {t.type === 'debit' && t.status === 'confirmed' && (
                       <Button size="sm" variant="outline" onClick={() => setRefundFor(t)}>
                         <RefreshCw className="h-3 w-3 mr-1" /> Reembolsar

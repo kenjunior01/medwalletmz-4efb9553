@@ -77,6 +77,47 @@ Componente `ReferralBanner` com copy adaptado ao contexto moçambicano:
 - Partilha direta via **WhatsApp** (canal dominante em MZ).
 - Link de convite copy-paste.
 
+### 8. Integração Google Maps Máxima · `rec 1.2` ✅
+
+- **Google Routes API (v2):** Cálculo de rotas reais com consciência de tráfego para rastreamento de entregas e cálculo de proximidade de médicos/farmácias.
+- **Polylines Reais:** O mapa de rastreamento agora desenha o caminho exato da estrada em vez de uma linha reta, com ajuste automático de zoom.
+- **Google Places Autocomplete:** Implementado em `Addresses.tsx`, `Checkout.tsx` e `SuggestPlace.tsx` para garantir endereços precisos e geocodificados.
+- **Geocoding reverso:** Auto-detecção de bairro e cidade ao usar "Minha Localização".
+- **Botão de Navegação Externa:** Atalho "Abrir no Google Maps" adicionado ao rastreamento para navegação GPS assistida.
+- **Mapas Interativos Avançados:** Novo sistema em `SuggestPlace.tsx` permitindo arrastar pins e clicar no mapa para definir coordenadas exatas de novos estabelecimentos.
+- **Static Maps:** Previsão visual ultra-rápida de mapas no histórico de pedidos em `Orders.tsx`.
+- **Ordenação por Proximidade:** Filtro "Próximo" em farmácias e médicos usa cálculos geográficos em tempo real.
+
+### 9. Ecossistema Completo (Sangue, Seguros & Parcerias) · `rec 5.3` ✅
+
+- **Sangue (MedWallet Sangue):** Sistema completo de doação com mapa de campanhas, pedidos urgentes partilháveis via WhatsApp e incentivos (saldo + Pulse).
+- **Seguros Localizados:** Integração de seguradoras locais com destaque para micro-seguros via M-Pesa. Badges informativos sobre cobertura (Consultas/Farmácia/Exames).
+- **Classificados (Anúncios):** Marketplace de saúde e serviços com sistema de anúncios destacados (promovidos), contador de visualizações e integração direta WhatsApp.
+- **Corporate & Governo:** Página de parcerias expandida com proposta de valor clara para o setor público (MISAU) e benefícios corporativos (redução de absentismo).
+- **Gamificação Social:** Incentivos reais por doação de sangue e referências, convertíveis em serviços dentro da app.
+
+### 10. Inovação Google Cloud IA & Saúde · `rec 1.2` ✅
+
+- **Cloud Vision API (OCR):** Digitalização de receitas físicas e relatórios de exames via foto. A API extrai o texto automaticamente, preenchendo o histórico médico digital.
+- **Cloud Document AI:** Processamento estruturado de documentos de identidade (BI) e cartões de seguros locais.
+- **Cloud Speech-to-Text & Text-to-Speech:** Triagem por voz e leitura assistida de artigos de saúde para utilizadores com baixa literacia ou dificuldades visuais.
+- **Google Cloud Healthcare API:** Armazenamento de dados médicos em conformidade com padrões globais (FHIR/HL7).
+- **BigQuery API:** Análise agregada de dados de saúde para identificação de tendências epidemiológicas (parceria MISAU).
+
+### 11. Otimização de Logística e Meio Ambiente ✅
+
+- **Route Optimization API:** Sequenciamento inteligente de entregas para farmácias 24h, otimizando tempo e combustível para os estafetas.
+- **Address Validation API:** Normalização de moradas em contextos urbanos complexos de Maputo, garantindo que o medicamento chega ao destino correto.
+- **Air Quality & Weather API:** Alertas preventivos baseados na qualidade do ar e condições meteorológicas para pacientes com condições crónicas (asma, hipertensão).
+
+### 12. Design Centrado no Utilizador Moçambicano ✅
+
+- **Modo Data Saver:** Redução drástica do consumo de dados móveis (essencial para o mercado local).
+- **VUI (Voice User Interface):** Interface adaptada para comandos de voz em todas as áreas críticas (triagem, pesquisa).
+- **Notificações Adaptativas por Clima:** Sistema que correlaciona condições crónicas (asma, hipertensão) com dados de clima/ar em tempo real para avisos diários personalizados.
+- **Offline-First UI:** Indicadores claros de funcionalidades disponíveis sem conexão à internet.
+- **Foco em Emergência:** Reorganização da hierarquia visual para acesso imediato a "Triagem IA" e "Carteira M-Pesa".
+
 ---
 
 ## Schema (Supabase)

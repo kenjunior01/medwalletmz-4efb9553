@@ -25,14 +25,32 @@ const COLORS: Record<string, string> = {
   debit: 'text-destructive', commission: 'text-destructive',
 };
 
+interface PayAccount {
+  id: string;
+  method: 'mpesa' | 'emola' | 'mkesh' | 'bank';
+  account_name: string;
+  account_number: string;
+  instructions: string | null;
+}
+
+const methodLabel: Record<string, string> = {
+  mpesa: 'M-Pesa',
+  emola: 'e-Mola',
+  mkesh: 'Mkesh',
+  bank: 'Transferência Bancária',
+};
+
 export default function Wallet() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { wallet, loading, deposit } = useWallet();
+  const { wallet, loading } = useWallet();
   const [tx, setTx] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('mpesa');
+  const [accounts, setAccounts] = useState<PayAccount[]>([]);
+  const [reference, setReference] = useState('');
+  const [phone, setPhone] = useState('');
   const [bonusPct, setBonusPct] = useState(5);
   const [submitting, setSubmitting] = useState(false);
 
@@ -47,32 +65,55 @@ export default function Wallet() {
     loadTx();
     supabase.from('platform_settings').select('value').eq('key', 'deposit_bonus_percent').maybeSingle()
       .then(({ data }) => { if (data) setBonusPct(Number(data.value)); });
+
+    supabase.from('platform_payment_accounts').select('*').eq('is_active', true)
+      .then(({ data }) => setAccounts((data as any) || []));
   }, [user]);
 
-  useEffect(() => {
-    if (!user) return;
-    const ch = supabase.channel(`wallet-tx-${user.id}`)
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'wallet_transactions', filter: `user_id=eq.${user.id}` },
-        (p: any) => setTx(prev => [p.new, ...prev]))
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
-  }, [user]);
+  const copy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copiado!');
+  };
 
   const handleDeposit = async () => {
     const amt = parseFloat(amount);
     if (!amt || amt < 50) { toast.error('Mínimo 50 MZN'); return; }
+    if (!reference || !phone) { toast.error('Preencha a referência e o seu número'); return; }
+
     setSubmitting(true);
     try {
-      const r = await deposit(amt, method);
-      toast.success(`Depositado ${amt} MZN${r?.bonus ? ` + ${r.bonus} bónus` : ''}`);
-      setOpen(false); setAmount('');
-    } catch (e: any) { toast.error(e.message); }
-    finally { setSubmitting(false); }
+      // Inserir transação pendente para validação manual (Offline)
+      const { error } = await supabase.from('wallet_transactions').insert({
+        user_id: user?.id,
+        amount: amt,
+        type: 'deposit',
+        status: 'pending',
+        description: `Depósito via ${methodLabel[method]} - Ref: ${reference}`,
+        metadata: {
+          payment_method: method,
+          payment_reference: reference,
+          payment_phone: phone,
+          offline_deposit: true
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success('Solicitação de depósito enviada! Aguarda validação (até 24h).');
+      setOpen(false);
+      setAmount('');
+      setReference('');
+      setPhone('');
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const bonusPreview = amount ? Math.round(parseFloat(amount) * bonusPct) / 100 : 0;
   const balance = Number(wallet?.balance_mzn ?? 0);
+  const filteredAccounts = accounts.filter(a => a.method === method);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -114,19 +155,12 @@ export default function Wallet() {
             </BentoCard>
           </BentoGrid>
 
-          <div className="grid grid-cols-2 gap-2 mt-5">
+          <div className="grid grid-cols-1 gap-2 mt-5">
             <Button
               className="neu-btn h-12 bg-transparent hover:bg-transparent text-foreground font-semibold"
               onClick={() => setOpen(true)}
             >
               <Plus className="h-4 w-4 mr-1" aria-hidden="true" /> Depositar
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-12 border-secondary/40 hover:bg-secondary/10"
-            >
-              <a href="/withdraw">Levantar</a>
             </Button>
           </div>
         </PanelShell>
@@ -186,40 +220,72 @@ export default function Wallet() {
       </main>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Depositar saldo</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <label htmlFor="dep-amt" className="text-sm font-medium">Valor (MZN)</label>
-              <Input id="dep-amt" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="Ex: 500" min={50} />
-              <p className="text-xs text-muted-foreground mt-1">Mínimo 50 MZN</p>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Depositar saldo (Offline)</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-primary/5 p-3 rounded-lg border border-primary/20">
+              <p className="text-xs text-muted-foreground uppercase font-bold">Instruções</p>
+              <p className="text-sm mt-1">
+                Transfira o valor para uma das nossas contas e insira a referência do SMS abaixo.
+              </p>
             </div>
+
             <div>
-              <label htmlFor="dep-method" className="text-sm font-medium">Método</label>
-              <Select value={method} onValueChange={setMethod}>
-                <SelectTrigger id="dep-method"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mpesa">M-Pesa</SelectItem>
-                  <SelectItem value="emola">e-Mola</SelectItem>
-                  <SelectItem value="mkesh">Mkesh</SelectItem>
-                </SelectContent>
-              </Select>
+              <label className="text-sm font-bold">1. Escolha o método</label>
+              <Tabs value={method} onValueChange={setMethod} className="mt-2">
+                <TabsList className="grid grid-cols-3 w-full">
+                  <TabsTrigger value="mpesa">M-Pesa</TabsTrigger>
+                  <TabsTrigger value="emola">e-Mola</TabsTrigger>
+                  <TabsTrigger value="mkesh">Mkesh</TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
-            <div className="grid grid-cols-4 gap-2">
-              {[200, 500, 1000, 2000].map(v => (
-                <Button key={v} variant="outline" size="sm" onClick={() => setAmount(String(v))} aria-label={`Preencher com ${v} MZN`}>{v}</Button>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold">2. Transfira para</label>
+              {filteredAccounts.length === 0 ? (
+                <p className="text-xs text-destructive">Contas não configuradas. Contacte suporte.</p>
+              ) : filteredAccounts.map(a => (
+                <div key={a.id} className="p-3 border rounded-xl flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-sm">{a.account_name}</p>
+                    <p className="font-mono text-lg">{a.account_number}</p>
+                  </div>
+                  <Button size="sm" variant="ghost" onClick={() => copy(a.account_number)}>
+                    <Plus className="h-4 w-4 mr-1" /> Copiar
+                  </Button>
+                </div>
               ))}
             </div>
+
+            <div className="space-y-3 pt-2 border-t">
+              <label className="text-sm font-bold">3. Confirmação</label>
+              <div>
+                <Label htmlFor="dep-amt" className="text-xs">Valor enviado (MZN)</Label>
+                <Input id="dep-amt" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="Mínimo 50" />
+              </div>
+              <div>
+                <Label htmlFor="dep-ref" className="text-xs">Referência do SMS (ID)</Label>
+                <Input id="dep-ref" value={reference} onChange={e => setReference(e.target.value)} placeholder="Ex: MP24..." />
+              </div>
+              <div>
+                <Label htmlFor="dep-phone" className="text-xs">O seu número de envio</Label>
+                <Input id="dep-phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="84 / 85 / 82 / 86..." />
+              </div>
+            </div>
+
             {bonusPreview > 0 && (
               <div className="bg-gold/10 rounded-lg p-2 text-xs">
-                <Gift className="h-3 w-3 inline text-gold" aria-hidden="true" /> Recebes +<b>{bonusPreview} MZN</b> de bónus ({bonusPct}%).
+                <Gift className="h-3 w-3 inline text-gold mr-1" aria-hidden="true" />
+                Recebes +<b>{bonusPreview} MZN</b> de bónus ({bonusPct}%) após validação.
               </div>
             )}
+
             <Button className="w-full" onClick={handleDeposit} disabled={submitting}>
-              {submitting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /><span className="sr-only">A processar</span></> : 'Confirmar depósito'}
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : 'Enviar para validação'}
             </Button>
             <p className="text-[10px] text-muted-foreground text-center">
-              Receberás um SMS de confirmação no telefone associado ao {method.toUpperCase()}.
+              A validação manual pode demorar até 24h em dias úteis.
             </p>
           </div>
         </DialogContent>

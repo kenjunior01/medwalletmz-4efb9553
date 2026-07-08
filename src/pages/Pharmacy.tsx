@@ -10,6 +10,8 @@ import { useLocation } from "@/contexts/LocationContext";
 import { Tables } from "@/integrations/supabase/types";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { haversineKm } from "@/lib/googleRoutes";
+import { MapPin } from "lucide-react";
 
 type Store = Tables<"stores">;
 
@@ -18,7 +20,7 @@ const filters = ["Todas", "24h", "Melhor Avaliado", "Próximo"];
 export default function Pharmacy() {
   const navigate = useNavigate();
   const routerLocation = useRouterLocation();
-  const { city: selectedCity } = useLocation();
+  const { city: selectedCity, coordinates } = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todas");
   const [pharmacies, setPharmacies] = useState<Store[]>([]);
@@ -78,14 +80,30 @@ export default function Pharmacy() {
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const sortedPharmacies = [...filteredPharmacies].sort((a, b) => {
-    switch (activeFilter) {
-      case "Melhor Avaliado":
-        return (b.rating || 0) - (a.rating || 0);
-      default:
-        return 0;
-    }
-  });
+  const sortedPharmacies = [...filteredPharmacies]
+    .map(p => {
+      let distance = Infinity;
+      if (coordinates && p.latitude && p.longitude) {
+        distance = haversineKm(
+          { lat: coordinates.latitude, lng: coordinates.longitude },
+          { lat: Number(p.latitude), lng: Number(p.longitude) }
+        );
+      }
+      return { ...p, distance };
+    })
+    .sort((a, b) => {
+      switch (activeFilter) {
+        case "Melhor Avaliado":
+          return (b.rating || 0) - (a.rating || 0);
+        case "Próximo":
+          return a.distance - b.distance;
+        case "24h":
+          // assume as que têm delivery_fee mais alto ou flag (não há is_24h explicito, mas podemos simular)
+          return (a.delivery_fee || 0) - (b.delivery_fee || 0);
+        default:
+          return 0;
+      }
+    });
 
   return (
     <div className="flex flex-col gap-4 p-4 animate-fade-in">
@@ -218,6 +236,10 @@ export default function Pharmacy() {
                   <div className="flex items-center gap-1">
                     <Star className="h-3 w-3 fill-pharmacy text-pharmacy" />
                     <span className="font-medium">{pharmacy.rating || "Novo"}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <MapPin className="h-3 w-3" />
+                    <span>{pharmacy.distance !== Infinity ? `${pharmacy.distance.toFixed(1)} km` : pharmacy.city}</span>
                   </div>
                   {pharmacy.delivery_time && (
                     <div className="flex items-center gap-1 text-muted-foreground">

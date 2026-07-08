@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft, BookOpen, Clock, Sparkles, ShieldCheck, AlertTriangle,
   ChevronRight, Share2, Search, Stethoscope, Heart, Brain, Baby,
-  Activity, Apple, HeartPulse, Lock,
+  Activity, Apple, HeartPulse, Lock, ThumbsUp, Eye,
 } from "lucide-react";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -91,10 +91,11 @@ export default function HealthEducation() {
   }, [article?.id, user?.id]);
 
   // Se tiver slug, abre o detalhe
-  if (slug) return <ArticleDetail article={article} loading={loadingOne} onBack={() => navigate("/health/education")} user={user} />;
+  if (slug) return <ArticleDetail article={article} related={related} loading={loadingOne} onBack={() => navigate("/health/education")} user={user} navigate={navigate} />;
 
   const featured = articles?.find((a: any) => a.is_featured) || articles?.[0];
   const rest = articles?.filter((a: any) => a.id !== featured?.id) ?? [];
+  const related = articles?.filter((a: any) => a.id !== article?.id && a.category === article?.category).slice(0, 3) ?? [];
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -185,7 +186,7 @@ export default function HealthEducation() {
                     <div className="flex items-center gap-2 mb-0.5">
                       <Badge variant="outline" className="text-[9px] px-1.5 py-0">{meta.label}</Badge>
                       <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                        <Clock className="h-3 w-3" /> {a.read_minutes ?? 4} min
+                        <Clock className="h-3 w-3" /> {a.read_minutes || Math.ceil((a.body_md?.length || 500) / 1000) || 4} min
                       </span>
                     </div>
                     <p className="font-bold text-sm leading-tight line-clamp-2">{a.title}</p>
@@ -261,8 +262,10 @@ function FeaturedHero({ article, onOpen }: { article: any; onOpen: () => void })
   );
 }
 
-function ArticleDetail({ article, loading, onBack, user }: { article: any; loading: boolean; onBack: () => void; user: any }) {
+function ArticleDetail({ article, related, loading, onBack, user, navigate }: { article: any; related: any[]; loading: boolean; onBack: () => void; user: any; navigate: any }) {
   // Hooks devem ser chamados sempre, antes de qualquer early return.
+  const [liked, setLiked] = useState(false);
+
   const blocks = useMemo(
     () => renderMd((article?.body_md as string) || ""),
     [article?.body_md]
@@ -327,15 +330,56 @@ function ArticleDetail({ article, loading, onBack, user }: { article: any; loadi
           <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center text-primary font-black">
             {(article.author_name ?? "M")[0]}
           </div>
-          <div>
+          <div className="flex-1">
             <p className="text-sm font-semibold">{article.author_name ?? "Equipa MedWallet"}</p>
             <p className="text-[11px] text-muted-foreground">{article.author_credentials ?? "Equipa clínica"}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn("gap-1.5 h-8 rounded-full", liked && "text-primary bg-primary/10")}
+              onClick={() => {
+                setLiked(!liked);
+                toast.success(liked ? "Reação removida" : "Obrigado pelo teu feedback!");
+              }}
+            >
+              <ThumbsUp className={cn("h-4 w-4", liked && "fill-current")} />
+              <span className="text-xs">{article.likes_count || 0 + (liked ? 1 : 0)}</span>
+            </Button>
+            <div className="flex items-center gap-1 text-muted-foreground px-2">
+              <Eye className="h-4 w-4" />
+              <span className="text-xs">{article.views_count || 0}</span>
+            </div>
           </div>
         </div>
 
         <div className="mt-4 space-y-3 text-[15px] leading-relaxed">
           {blocks}
         </div>
+
+        {related.length > 0 && (
+          <div className="mt-10 pt-6 border-t">
+            <h3 className="font-bold text-sm mb-4">Artigos relacionados</h3>
+            <div className="space-y-3">
+              {related.map(r => (
+                <button
+                  key={r.id}
+                  onClick={() => navigate(`/health/education/${r.slug}`)}
+                  className="w-full text-left p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition flex items-center justify-between"
+                >
+                  <div className="flex-1">
+                    <p className="text-sm font-bold line-clamp-1">{r.title}</p>
+                    <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> {r.read_minutes || 4} min · {categoryMeta[r.category]?.label}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <Card className="mt-8 p-4 bg-muted/40 border-dashed">
           <p className="text-[11px] text-muted-foreground">

@@ -148,6 +148,24 @@ const faqCategories = [
       },
     ],
   },
+  {
+    icon: Handshake,
+    title: "Apoio Médico & Solidariedade",
+    questions: [
+      {
+        q: "Como posso pedir apoio para uma cirurgia?",
+        a: "Acesse a aba 'Solidários' na Home e clique em 'Pedir Apoio'. Deverá preencher o formulário detalhado e anexar o relatório médico. Todos os casos são validados pela MedWallet.",
+      },
+      {
+        q: "Como são feitas as doações?",
+        a: "As doações são feitas via M-Pesa ou Carteira MedWallet diretamente para o caso escolhido. O MedWallet garante que 100% do valor chega ao hospital de destino.",
+      },
+      {
+        q: "É seguro doar?",
+        a: "Sim. Apenas publicamos casos com relatórios médicos verificados e hospitais parceiros confirmados.",
+      },
+    ],
+  },
 ];
 
 export default function Help() {

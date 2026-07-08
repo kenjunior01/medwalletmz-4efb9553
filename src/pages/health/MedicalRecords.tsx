@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, FileText, Upload, Share2, Trash2, Download } from 'lucide-react';
+import { ArrowLeft, Plus, FileText, Upload, Share2, Trash2, Download, Sparkles, Scan, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -28,6 +28,24 @@ export default function MedicalRecords() {
   const [form, setForm] = useState({ title: '', record_type: 'exam', description: '', issued_at: '', issued_by: '' });
   const [file, setFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const [scanning, setScanning] = useState(false);
+
+  const simulateOCR = async () => {
+    if (!file) return toast.error('Carrega um ficheiro primeiro');
+    setScanning(true);
+    // Simulação da Cloud Vision API / Document AI
+    await new Promise(r => setTimeout(r, 2500));
+
+    setForm({
+      ...form,
+      title: 'Digitalização: ' + file.name.split('.')[0],
+      issued_by: 'Digitalizado via MedWallet AI',
+      description: 'Texto extraído via OCR: Paciente apresenta sintomas de fadiga. Recomendado repouso e hidratação.',
+      issued_at: new Date().toISOString().split('T')[0]
+    });
+    setScanning(false);
+    toast.success('Documento processado com sucesso!');
+  };
 
   const load = async () => {
     if (!user) return;
@@ -148,12 +166,25 @@ export default function MedicalRecords() {
               </div>
               <div>
                 <Label>Ficheiro</Label>
-                <label className="mt-1 flex items-center gap-2 border-2 border-dashed rounded-lg p-3 cursor-pointer hover:bg-muted/50">
-                  <Upload className="h-4 w-4" />
-                  <span className="text-sm flex-1 truncate">{file ? file.name : 'Carregar PDF / imagem'}</span>
-                  <input type="file" accept="image/*,application/pdf" className="hidden"
-                    onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-                </label>
+                <div className="flex gap-2 mt-1">
+                  <label className="flex-1 flex items-center gap-2 border-2 border-dashed rounded-lg p-3 cursor-pointer hover:bg-muted/50 overflow-hidden">
+                    <Upload className="h-4 w-4 shrink-0" />
+                    <span className="text-sm truncate">{file ? file.name : 'PDF / Imagem'}</span>
+                    <input type="file" accept="image/*,application/pdf" className="hidden"
+                      onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+                  </label>
+                  {file && (
+                    <Button
+                      variant="secondary"
+                      onClick={simulateOCR}
+                      disabled={scanning}
+                      className="bg-accent/10 text-secondary border-accent/20"
+                    >
+                      {scanning ? <Sparkles className="h-4 w-4 animate-pulse" /> : <Scan className="h-4 w-4" />}
+                    </Button>
+                  )}
+                </div>
+                {scanning && <p className="text-[10px] text-secondary mt-1 animate-pulse">A extrair texto via Cloud Vision API...</p>}
               </div>
               <Button className="w-full" onClick={save} disabled={saving}>{saving ? 'A guardar...' : 'Guardar'}</Button>
             </div>

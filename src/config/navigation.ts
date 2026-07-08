@@ -142,7 +142,6 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/driver/dashboard", icon: Truck, label: "Painel", group: "Entregas" },
     { path: "/driver/history", icon: ClipboardList, label: "Histórico", group: "Entregas" },
     { path: "/wallet", icon: Wallet, label: "Ganhos", group: "Conta" },
-    { path: "/withdraw", icon: Wallet, label: "Levantar", group: "Conta" },
     { path: "/profile", icon: User, label: "Perfil", group: "Conta" },
   ],
   admin: [
@@ -155,7 +154,6 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/admin/drivers", icon: Truck, label: "Entregadores", group: "Gestão" },
     { path: "/admin/orders", icon: Package, label: "Encomendas", group: "Gestão" },
     { path: "/admin/transactions", icon: Wallet, label: "Financeiro", group: "Gestão" },
-    { path: "/admin/withdrawals", icon: Wallet, label: "Levantamentos", group: "Gestão" },
     { path: "/admin/subscriptions", icon: Shield, label: "Subscrições", group: "Gestão" },
     { path: "/admin/subscription-plans", icon: Shield, label: "Planos", group: "Gestão" },
     { path: "/admin/settings", icon: Settings, label: "Definições", group: "Sistema" },

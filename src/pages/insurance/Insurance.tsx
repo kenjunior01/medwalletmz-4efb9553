@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Shield, MapPin, Plus, CheckCircle2, Globe } from "lucide-react";
+import { Shield, MapPin, Plus, CheckCircle2, Globe, Sparkles, Smartphone, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/contexts/LocationContext";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,24 @@ export default function Insurance() {
           <Plus className="h-4 w-4 mr-1" /> Registar
         </Button>
       </div>
+
+      <Card className="p-4 bg-gradient-to-br from-primary/10 to-secondary/10 border-none relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-2">
+          <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shrink-0">
+            <Smartphone className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm font-bold">Micro-seguros M-Pesa</h3>
+            <p className="text-[11px] text-muted-foreground">Planos a partir de 50 MZN/mês. Paga com saldo M-Pesa ou MedWallet.</p>
+          </div>
+          <Button size="sm" variant="ghost" className="h-8 text-[10px]" onClick={() => navigate("/partners")}>
+            Saber mais <ChevronRight className="h-3 w-3 ml-0.5" />
+          </Button>
+        </div>
+      </Card>
 
       <div className="flex items-center justify-between bento-card p-3">
         <Label htmlFor="ins-city" className="text-sm cursor-pointer flex items-center gap-2">
@@ -97,6 +115,11 @@ export default function Insurance() {
                     <MapPin className="h-3 w-3" />
                     <span>{c.city}</span>
                     {c.cities?.length > 1 && <Badge variant="outline" className="h-4 text-[9px]">+{c.cities.length - 1} cidades</Badge>}
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <Badge variant="secondary" className="text-[9px] bg-emerald-50 text-emerald-700 border-emerald-100">Consultas</Badge>
+                    <Badge variant="secondary" className="text-[9px] bg-blue-50 text-blue-700 border-blue-100">Farmácia</Badge>
+                    <Badge variant="secondary" className="text-[9px] bg-amber-50 text-amber-700 border-amber-100">Exames</Badge>
                   </div>
                 </div>
               </div>

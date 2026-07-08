@@ -6,7 +6,9 @@ import { useLocation } from "@/contexts/LocationContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Megaphone, Plus, MapPin, Phone } from "lucide-react";
+import { Megaphone, Plus, MapPin, Phone, Eye, MessageSquare, Share2 } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 const CATEGORIES = ["Todas", "Saúde", "Serviços", "Produtos", "Empregos", "Aluguer", "Outros"];
 
@@ -54,23 +56,81 @@ export default function Ads() {
         </div>
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
-          {data.map((a: any) => (
-            <div key={a.id} className="bento-card overflow-hidden">
-              {a.image_url && <img src={a.image_url} className="w-full h-32 object-cover" alt={a.title} />}
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-bold flex-1">{a.title}</h3>
-                  <Badge variant="secondary" className="text-[10px]">{a.category}</Badge>
+          {data.map((a: any) => {
+            const isHighValue = Number(a.price_mzn) > 5000;
+            return (
+              <div key={a.id} className={cn(
+                "bento-card overflow-hidden group transition-all hover:shadow-md",
+                isHighValue && "border-primary/30 ring-1 ring-primary/10"
+              )}>
+                <div className="relative">
+                  {a.image_url ? (
+                    <img src={a.image_url} className="w-full h-40 object-cover" alt={a.title} />
+                  ) : (
+                    <div className="w-full h-40 bg-muted flex items-center justify-center">
+                      <Megaphone className="h-10 w-10 text-muted-foreground opacity-20" />
+                    </div>
+                  )}
+                  {isHighValue && (
+                    <Badge className="absolute top-2 right-2 bg-primary text-white text-[9px] font-bold">
+                      DESTAQUE
+                    </Badge>
+                  )}
+                  <div className="absolute bottom-2 left-2 flex gap-1">
+                    <Badge variant="secondary" className="text-[9px] bg-background/80 backdrop-blur border-none">
+                      {a.category}
+                    </Badge>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{a.description}</p>
-                {a.price_mzn && <p className="text-lg font-black text-primary mt-2">{Number(a.price_mzn).toLocaleString("pt-MZ")} MZN</p>}
-                <div className="flex items-center justify-between mt-2 text-[11px] text-muted-foreground">
-                  <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{a.neighborhood || a.city}</span>
-                  {a.contact_whatsapp && <a href={`https://wa.me/${a.contact_whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener" className="text-primary font-semibold flex items-center gap-1"><Phone className="h-3 w-3" />WhatsApp</a>}
+
+                <div className="p-4">
+                  <h3 className="font-bold text-sm line-clamp-1 group-hover:text-primary transition-colors">{a.title}</h3>
+                  <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[32px]">{a.description}</p>
+
+                  <div className="flex items-center justify-between mt-3">
+                    {a.price_mzn ? (
+                      <p className="text-base font-black text-primary">{Number(a.price_mzn).toLocaleString("pt-MZ")} MZN</p>
+                    ) : (
+                      <p className="text-xs font-semibold text-muted-foreground italic">Preço sob consulta</p>
+                    )}
+                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                      <Eye className="h-3.5 w-3.5" /> {a.views || 0}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                    <span className="flex items-center gap-1 text-[10px] text-muted-foreground truncate max-w-[120px]">
+                      <MapPin className="h-3 w-3" /> {a.neighborhood || a.city}
+                    </span>
+                    <div className="flex gap-2">
+                      {a.contact_whatsapp && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2 text-[10px] border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                          onClick={() => window.open(`https://wa.me/${a.contact_whatsapp.replace(/\D/g, "")}`, "_blank")}
+                        >
+                          <MessageSquare className="h-3 w-3 mr-1" /> WhatsApp
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0"
+                        onClick={() => {
+                          const url = `${window.location.origin}/ads/${a.id}`;
+                          navigator.clipboard.writeText(url);
+                          toast.success("Link do anúncio copiado!");
+                        }}
+                      >
+                        <Share2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

@@ -19,6 +19,9 @@ import {
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 
+import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
+import { GoogleMap } from '@/components/maps/GoogleMap';
+
 const ENTITY_TYPES = [
   { v: 'pharmacy', label: 'Farmácia', icon: Store, hint: 'Vende medicamentos ao público' },
   { v: 'clinic', label: 'Clínica', icon: Building2, hint: 'Consultas e exames ambulatórios' },
@@ -304,9 +307,16 @@ export default function SuggestPlace() {
 
             <div>
               <Label>Endereço (rua, número)</Label>
-              <Input
+              <GoogleAddressInput
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={(val, info) => {
+                  setAddress(val);
+                  if (info) {
+                    setLat(String(info.lat));
+                    setLng(String(info.lng));
+                    if (info.neighborhood) setNeighborhood(info.neighborhood);
+                  }
+                }}
                 placeholder="Av. 24 de Julho, nº 123"
               />
             </div>
@@ -376,10 +386,31 @@ export default function SuggestPlace() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
-              <MapPin className="h-4 w-4" /> Localização
+              <MapPin className="h-4 w-4" /> Localização exata
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0 space-y-3">
+            <div className="h-48 rounded-lg overflow-hidden border border-border">
+              <GoogleMap
+                center={lat && lng ? { lat: Number(lat), lng: Number(lng) } : (coordinates ? { lat: coordinates.latitude, lng: coordinates.longitude } : undefined)}
+                zoom={15}
+                height="100%"
+                markers={[{
+                  id: 'current',
+                  lat: Number(lat) || coordinates?.latitude || -25.9692,
+                  lng: Number(lng) || coordinates?.longitude || 32.5732,
+                  draggable: true,
+                  onDragEnd: (la, ln) => {
+                    setLat(String(la));
+                    setLng(String(ln));
+                  }
+                }]}
+                onMapClick={(la, ln) => {
+                  setLat(String(la));
+                  setLng(String(ln));
+                }}
+              />
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <Label>Latitude</Label>
@@ -408,15 +439,11 @@ export default function SuggestPlace() {
               {gpsLoading
                 ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
                 : <Navigation className="h-3.5 w-3.5 mr-1" />}
-              Usar minha localização
+              Usar minha localização GPS
             </Button>
-            <Alert className="bg-amber-500/10 border-amber-500/30">
-              <AlertTitle className="text-xs">Importante</AlertTitle>
-              <AlertDescription className="text-[11px]">
-                Enviamos a tua localização <strong>apenas</strong> para ajudar a equipa a
-                confirmar no mapa. Não é partilhada com terceiros.
-              </AlertDescription>
-            </Alert>
+            <p className="text-[10px] text-muted-foreground">
+              Dica: Arrasta o pin ou clica no mapa para ajustar a posição.
+            </p>
           </CardContent>
         </Card>
 

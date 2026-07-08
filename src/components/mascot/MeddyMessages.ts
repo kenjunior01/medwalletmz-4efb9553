@@ -22,7 +22,7 @@ export interface MeddyMessage {
   actionHref?: string;
 }
 
-export type Context = 'home' | 'empty_doctors' | 'empty_pharmacies' | 'triage' | 'orders' | 'profile' | 'curation' | 'education' | 'wallet' | 'default';
+export type Context = 'home' | 'empty_doctors' | 'empty_pharmacies' | 'triage' | 'orders' | 'profile' | 'curation' | 'education' | 'wallet' | 'nudge' | 'default';
 
 const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
   patient: {
@@ -30,6 +30,17 @@ const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
       { text: "Olá, {{name}}! Sou a Meddy 🌿 Posso ajudar-te a encontrar médico, farmácia ou marcar teleconsulta em {{city}}.", emoji: "🌿" },
       { text: "Sabias que podes sugerir farmácias que conheces? Cada aprovação dá-te +25 MZN 💰", emoji: "💰" },
       { text: "Tens XXXX pedido(s) ou acompanhamento(s) em aberto. Posso levar-te ao ponto certo.", emoji: "📅" },
+      { text: "O teu Pulse está a subir! Continua assim para desbloqueares descontos em consultas.", emoji: "🔥" },
+    ],
+    nudge: [
+      { text: "Bebe um copo de água agora! É mais fácil do que marcar uma consulta de rins depois. 💧", emoji: "💧" },
+      { text: "Já te levantaste hoje? Estica as costas por 30 segundos. Eu espero... ⏳", emoji: "⏳" },
+      { text: "Estás há muito tempo a olhar para o ecrã. Pisca os olhos 10 vezes seguidas. 👀", emoji: "👀" },
+      { text: "A tua saúde não tira férias! Já verificaste o teu plano de hoje? 🛡️", emoji: "🛡️" },
+      { text: "Não me obrigues a mandar uma notificação chata amanhã... Cuida de ti hoje! 🦉", emoji: "🦉" },
+      { text: "A tua série pode esperar, a tua saúde não. Vai dormir cedo hoje! 😴", emoji: "😴" },
+      { text: "A tua streak de saúde é de XXXX dias! Não a deixes morrer, {{name}}! 🔥", emoji: "🔥", actionLabel: "Ver Pulse", actionHref: "/rewards" },
+      { text: "Sentes-te bem hoje? Se não, o Meddy IA está aqui para uma triagem rápida.", emoji: "🩺", actionLabel: "Triagem", actionHref: "/health/triage" },
     ],
     empty_doctors: [
       { text: "Ainda não há médicos nesta especialidade. Queres ser avisado quando aparecer?", emoji: "🔔", actionLabel: "Lista de espera", actionHref: "/health/doctors" },

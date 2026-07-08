@@ -82,6 +82,17 @@ const CONFIGS: Record<AppRole, Config> = {
       { label: "Histórico", icon: ClipboardList, to: "/driver/history", variant: "secondary" },
     ],
   },
+  insurance: {
+    tag: "Seguradora",
+    title: "Gere os teus Planos de Saúde",
+    subtitle: "Cria planos, valida membros e acompanha o uso dos serviços.",
+    gradient: "from-blue-700 via-primary to-blue-500",
+    ctas: [
+      { label: "Painel Seguros", icon: ShieldCheck, to: "/insurance/dashboard" },
+      { label: "Meus Planos", icon: ClipboardList, to: "/insurance/dashboard", variant: "secondary" },
+    ],
+    metrics: [{ label: "Segurança total", icon: ShieldCheck }],
+  },
   customer: {
     tag: "Paciente",
     title: "Saúde e farmácia numa só carteira",

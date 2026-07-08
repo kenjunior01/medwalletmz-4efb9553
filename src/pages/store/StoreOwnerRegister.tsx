@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { ArrowLeft, Store, Loader2, MapPin, Clock, Upload } from 'lucide-react';
+import { ArrowLeft, Store, Loader2, MapPin, Clock } from 'lucide-react';
+import { LogoUpload } from '@/components/upload/LogoUpload';
 
 const storeTypes = [
   { value: 'food', label: 'Restaurante / Comida' },
@@ -250,21 +251,14 @@ export default function StoreOwnerRegister() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="imageUrl">URL da Imagem da Farmácia</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="imageUrl"
-                    placeholder="https://..."
-                    value={formData.imageUrl}
-                    onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                  />
-                  <Button variant="outline" size="icon">
-                    <Upload className="h-4 w-4" />
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Deixe vazio para usar uma imagem padrão
-                </p>
+                <LogoUpload
+                  label="Imagem / Logo da Farmácia"
+                  description="Carregue uma foto da fachada ou o logotipo"
+                  value={formData.imageUrl}
+                  onUploaded={(url) => handleInputChange('imageUrl', url)}
+                  bucket="licenses"
+                  folder="store-logos"
+                />
               </div>
             </div>
 

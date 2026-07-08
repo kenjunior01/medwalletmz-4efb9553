@@ -30,6 +30,7 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
   const [open, setOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [lastText, setLastText] = useState<string | undefined>();
+  const [isNudge, setIsNudge] = useState(false);
 
   // Detectar role principal
   const role: MeddyRole = (() => {
@@ -40,6 +41,25 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
     if (roles.includes('clinic')) return 'clinic';
     return 'patient';
   })();
+
+  // Lógica de "Nag" / "Duolingo style" - Auto popup
+  useEffect(() => {
+    if (!user || dismissed || open) return;
+
+    const lastNudge = localStorage.getItem('meddy-last-nudge');
+    const now = Date.now();
+    const cooldown = 1000 * 60 * 30; // 30 minutos entre nudges "agressivos"
+
+    if (lastNudge && now - Number(lastNudge) < cooldown) return;
+
+    const timer = setTimeout(() => {
+      setIsNudge(true);
+      setOpen(true);
+      localStorage.setItem('meddy-last-nudge', String(Date.now()));
+    }, 15000); // Aparece após 15 segundos de inatividade/navegação
+
+    return () => clearTimeout(timer);
+  }, [user, dismissed, open, pathname]);
 
   const { data: profile } = useQuery<any>({
     queryKey: ['meddy-profile', user?.id],
@@ -96,6 +116,12 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
           .in('status', ['assigned', 'picked_up']);
         return count ?? 0;
       }
+
+      if (isNudge) {
+        const { data } = await supabase.from('user_gamification').select('streak_days').eq('user_id', user!.id).maybeSingle();
+        return data?.streak_days || 0;
+      }
+
       const { count } = await (supabase as any)
         .from('orders')
         .select('id', { count: 'exact', head: true })
@@ -120,14 +146,16 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
   // Não mostrar para utilizadores não autenticados (Auth page mostra login)
   if (!user || dismissed) return null;
 
-  const state: MeddyState = open ? 'waving' : 'idle';
-  const message = pickMeddyMessage(role, context, lastText);
+  const activeContext = isNudge ? 'nudge' : context;
+  const state: MeddyState = open ? (isNudge ? 'concerned' : 'waving') : 'idle';
+  const message = pickMeddyMessage(role, activeContext as any, lastText);
   const personalizedText = message?.text
     .replace(/XXXX/g, String(metric))
     .replace(/{{name}}/g, firstName)
     .replace(/{{city}}/g, profile?.default_city || 'Moçambique');
 
   const cycleMessage = () => {
+    setIsNudge(false);
     if (message) setLastText(message.text);
   };
 
@@ -175,7 +203,7 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
                   Assistente da MedWallet · {roleLabel(role)}
                 </p>
               </div>
-              <Button size="icon" variant="ghost" onClick={() => setOpen(false)}
+              <Button size="icon" variant="ghost" onClick={() => { setOpen(false); setIsNudge(false); }}
                 className="text-primary-foreground hover:bg-white/20 h-7 w-7">
                 <Minimize2 className="h-3.5 w-3.5" />
               </Button>
@@ -246,7 +274,7 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
       {/* Backdrop invisível para fechar ao clicar fora */}
       {open && (
         <button
-          onClick={() => setOpen(false)}
+          onClick={() => { setOpen(false); setIsNudge(false); }}
           className="fixed inset-0 z-40 bg-background/20 backdrop-blur-sm"
           aria-label="Fechar Meddy"
         />

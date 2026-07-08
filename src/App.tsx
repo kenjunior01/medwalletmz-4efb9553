@@ -94,8 +94,6 @@ import AdminImport from "./pages/admin/AdminImport";
 import AdminCuration from "./pages/admin/AdminCuration";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
-import Withdraw from "./pages/Withdraw";
-import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
 import AdminInsurance from "./pages/admin/AdminInsurance";
 import Insurance from "./pages/insurance/Insurance";
 import InsuranceDetail from "./pages/insurance/InsuranceDetail";
@@ -115,6 +113,8 @@ import LabDashboard from "./pages/lab/LabDashboard";
 import BloodHub from "./pages/blood/BloodHub";
 import BloodDonorRegister from "./pages/blood/BloodDonorRegister";
 import BloodRequestForm from "./pages/blood/BloodRequestForm";
+import Solidarity from "./pages/Solidarity";
+import { SmartEngagementPopUp } from "@/components/notifications/SmartEngagementPopUp";
 
 const queryClient = new QueryClient();
 
@@ -127,6 +127,7 @@ const App = () => (
             <TooltipProvider>
               <Toaster />
               <Sonner />
+              <SmartEngagementPopUp />
               <BrowserRouter>
                 <Routes>
                   {/* Main App Routes */}
@@ -166,7 +167,6 @@ const App = () => (
                     <Route path="/referrals" element={<Referrals />} />
                     <Route path="/wallet" element={<Wallet />} />
                     <Route path="/suggest-place" element={<SuggestPlace />} />
-                    <Route path="/withdraw" element={<Withdraw />} />
                     <Route path="/health/insurance" element={<Insurance />} />
                     <Route path="/insurance/:id" element={<InsuranceDetail />} />
                     <Route path="/insurance/register" element={<InsuranceRegister />} />
@@ -179,6 +179,7 @@ const App = () => (
                     <Route path="/blood" element={<BloodHub />} />
                     <Route path="/blood/register-donor" element={<BloodDonorRegister />} />
                     <Route path="/blood/request" element={<BloodRequestForm />} />
+                    <Route path="/solidarity" element={<Solidarity />} />
                   </Route>
 
                   {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
@@ -213,7 +214,6 @@ const App = () => (
                     <Route path="transactions" element={<AdminTransactions />} />
                     <Route path="import" element={<AdminImport />} />
                     <Route path="curation" element={<AdminCuration />} />
-                    <Route path="withdrawals" element={<AdminWithdrawals />} />
                     <Route path="insurance" element={<AdminInsurance />} />
                     <Route path="ads" element={<AdminAds />} />
                     <Route path="labs" element={<AdminLabs />} />

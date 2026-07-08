@@ -16,7 +16,14 @@ export default function InsuranceDashboard() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [plan, setPlan] = useState({ name: "", description: "", monthly_price_mzn: 0, coverage_percent: 50, max_coverage_mzn: 0 });
+  const [plan, setPlan] = useState({
+    name: "",
+    description: "",
+    monthly_price_mzn: 0,
+    coverage_percent: 50,
+    max_coverage_mzn: 0,
+    benefits_text: ""
+  });
 
   const { data: company } = useQuery({
     queryKey: ["my-insurance", user?.id],
@@ -38,11 +45,17 @@ export default function InsuranceDashboard() {
 
   const addPlan = async () => {
     if (!company) return;
-    const { error } = await supabase.from("insurance_plans").insert({ ...plan, company_id: company.id });
+    const benefits = plan.benefits_text.split("\n").map(b => b.trim()).filter(Boolean);
+    const { error } = await supabase.from("insurance_plans").insert({
+      ...plan,
+      benefits_text: undefined, // remove from payload
+      features: benefits as any,
+      company_id: company.id
+    });
     if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
     toast({ title: "Plano criado" });
     setOpen(false);
-    setPlan({ name: "", description: "", monthly_price_mzn: 0, coverage_percent: 50, max_coverage_mzn: 0 });
+    setPlan({ name: "", description: "", monthly_price_mzn: 0, coverage_percent: 50, max_coverage_mzn: 0, benefits_text: "" });
     qc.invalidateQueries({ queryKey: ["my-insurance-plans"] });
   };
 
@@ -91,6 +104,14 @@ export default function InsuranceDashboard() {
             <div className="space-y-3">
               <div><Label>Nome</Label><Input value={plan.name} onChange={e => setPlan({ ...plan, name: e.target.value })} /></div>
               <div><Label>Descrição</Label><Textarea value={plan.description} onChange={e => setPlan({ ...plan, description: e.target.value })} /></div>
+              <div>
+                <Label>Benefícios (um por linha)</Label>
+                <Textarea
+                  placeholder="Consultas grátis&#10;50% desconto em exames&#10;..."
+                  value={plan.benefits_text}
+                  onChange={e => setPlan({ ...plan, benefits_text: e.target.value })}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Preço mensal (MZN)</Label><Input type="number" value={plan.monthly_price_mzn} onChange={e => setPlan({ ...plan, monthly_price_mzn: +e.target.value })} /></div>
                 <div><Label>Cobertura %</Label><Input type="number" max={100} value={plan.coverage_percent} onChange={e => setPlan({ ...plan, coverage_percent: +e.target.value })} /></div>

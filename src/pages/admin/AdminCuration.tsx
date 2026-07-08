@@ -27,6 +27,7 @@ import {
   Sparkles,
   Store,
   User as UserIcon,
+  Upload,
   X,
   XCircle,
 } from 'lucide-react';
@@ -38,6 +39,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { LogoUpload } from '@/components/upload/LogoUpload';
 import {
   Dialog,
   DialogContent,
@@ -652,35 +654,16 @@ export default function AdminCuration() {
                     <GeocodeButton draft={draft} onResolved={(lat, lng, formatted) => setDraft({ ...draft, latitude: lat as any, longitude: lng as any, address: draft.address || formatted || null })} />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <Field label="Imagem URL">
-                      <div className="flex gap-2">
-                        <Input value={draft.image_url ?? ''} onChange={(e) => setDraft({ ...draft, image_url: e.target.value })} />
-                        <label className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-input bg-background hover:bg-accent cursor-pointer shrink-0">
-                          {uploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              setUploadingImage(true);
-                              try {
-                                const path = await uploadImageToStorage(file, { bucket: 'licenses', folder: 'place-images' });
-                                const { data } = await supabase.storage.from('licenses').createSignedUrl(path, 60 * 60 * 24 * 365);
-                                if (data?.signedUrl) setDraft({ ...draft, image_url: data.signedUrl });
-                                else throw new Error('Não foi possível gerar a URL da imagem');
-                                toast.success('Imagem carregada para o storage');
-                              } catch (error: any) {
-                                toast.error(error?.message ?? 'Erro ao carregar a imagem');
-                              } finally {
-                                setUploadingImage(false);
-                              }
-                            }}
-                          />
-                        </label>
-                      </div>
-                    </Field>
+                    <div className="md:col-span-2">
+                      <LogoUpload
+                        label="Logotipo / Imagem"
+                        description="Carregue uma imagem para garantir que seja visível para todos os utilizadores"
+                        value={draft.image_url}
+                        onUploaded={(url) => setDraft({ ...draft, image_url: url })}
+                        bucket="licenses"
+                        folder="place-images"
+                      />
+                    </div>
                     <Field label="Website"><Input value={draft.website ?? ''} onChange={(e) => setDraft({ ...draft, website: e.target.value })} /></Field>
                   </div>
                   <Field label="Notas / descrição"><Textarea rows={3} value={draft.description ?? ''} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></Field>

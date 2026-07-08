@@ -47,6 +47,11 @@ export function ReferralBanner() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
+  const shareFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`;
+    window.open(url, "_blank");
+  };
+
   const copy = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(link);
@@ -88,12 +93,15 @@ export function ReferralBanner() {
             </Button>
           </div>
 
-          <div className="flex gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mt-3">
             <Button size="sm" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white" onClick={shareWhatsApp}>
               <Share2 className="h-3.5 w-3.5 mr-1" /> WhatsApp
             </Button>
-            <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate("/referrals")}>
-              <Gift className="h-3.5 w-3.5 mr-1" /> Ver programa
+            <Button size="sm" variant="outline" className="flex-1 border-blue-600 text-blue-600 hover:bg-blue-50" onClick={shareFacebook}>
+              Facebook
+            </Button>
+            <Button size="sm" variant="ghost" className="w-full text-[10px]" onClick={() => navigate("/referrals")}>
+              <Gift className="h-3.5 w-3.5 mr-1" /> Detalhes do programa
             </Button>
           </div>
         </div>

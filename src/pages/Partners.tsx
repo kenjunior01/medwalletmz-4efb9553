@@ -165,6 +165,23 @@ export default function Partners() {
         </Card>
       </section>
 
+      {/* MedWallet for Business */}
+      <section className="px-4 pt-5">
+        <h3 className="font-bold text-base mb-3">MedWallet para Empresas</h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bento-card p-3 bg-primary/5 border-primary/10">
+            <ShieldCheck className="h-5 w-5 text-primary mb-2" />
+            <p className="font-bold text-xs">Redução de Absentismo</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Teleconsultas rápidas evitam deslocações desnecessárias.</p>
+          </div>
+          <div className="bento-card p-3 bg-secondary/5 border-secondary/10">
+            <Users className="h-5 w-5 text-secondary mb-2" />
+            <p className="font-bold text-xs">Retenção de Talento</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Um benefício inovador que demonstra cuidado real.</p>
+          </div>
+        </div>
+      </section>
+
       {/* Form */}
       <section className="px-4 pt-5">
         <Card className="overflow-hidden">

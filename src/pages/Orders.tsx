@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Package, CheckCircle, Clock, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation } from "lucide-react";
+import { ClipboardList, Package, CheckCircle, Clock, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReviewModal } from "@/components/reviews/ReviewModal";
+import { StaticMapImage } from "@/components/maps/StaticMapImage";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -227,11 +228,21 @@ export default function Orders() {
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-border">
-          <span className="text-xs text-muted-foreground">
-            #{order.id.slice(0, 8).toUpperCase()}
+          <span className="text-xs text-muted-foreground flex items-center gap-1">
+            <MapPin className="h-3 w-3" /> #{order.id.slice(0, 8).toUpperCase()}
           </span>
           <span className="font-bold text-primary">{order.total} MZN</span>
         </div>
+
+        {/* Map Preview for active orders */}
+        {isActiveOrder && order.store?.latitude && order.store?.longitude && (
+          <StaticMapImage
+            destination={{ lat: order.store.latitude, lng: order.store.longitude }}
+            height={120}
+            zoom={15}
+            className="mt-2 h-[120px]"
+          />
+        )}
 
         {/* Quick status indicator for active orders */}
         {order.status === "in_transit" && (

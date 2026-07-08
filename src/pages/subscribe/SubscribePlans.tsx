@@ -22,9 +22,11 @@ interface Plan {
 const audiences = [
   { key: "customer", label: "Utilizadores" },
   { key: "doctor", label: "Médicos" },
-  { key: "clinic", label: "Clínicas/Hospitais" },
+  { key: "clinic", label: "Clínicas" },
+  { key: "hospital", label: "Hospitais" },
   { key: "lab", label: "Laboratórios" },
-  { key: "pharmacy", label: "Farmácias" },
+  { key: "store_owner", label: "Farmácias" },
+  { key: "driver", label: "Entregadores" },
 ];
 
 export default function SubscribePlans() {

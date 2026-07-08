@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Navigation, Clock, MapPin, Truck } from 'lucide-react';
+import { fetchRouteDistance, fmtDuration } from '@/lib/googleRoutes';
 
 interface DriverLocation {
   lat: number;
@@ -25,6 +26,7 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
   const [driverLocation, setDriverLocation] = useState<DriverLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [estimatedTime, setEstimatedTime] = useState<string | null>(null);
+  const [encodedPolyline, setEncodedPolyline] = useState<string | undefined>();
 
   const defaultCenter = { lat: -25.9692, lng: 32.5732 };
   
@@ -120,10 +122,24 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
     }
   };
 
-  const updateEstimatedTime = (driverLat: number, driverLng: number) => {
+  const updateEstimatedTime = async (driverLat: number, driverLng: number) => {
     if (!userLocation) return;
     
-    // Calculate distance using Haversine formula
+    // Use real route distance/time if available
+    const route = await fetchRouteDistance(
+      { lat: driverLat, lng: driverLng },
+      { lat: userLocation.lat, lng: userLocation.lng },
+      'pharmacy', // generic kind for tracking
+      orderId
+    );
+
+    if (route) {
+      setEstimatedTime(fmtDuration(route.durationSeconds));
+      setEncodedPolyline(route.polyline);
+      return;
+    }
+
+    // Fallback to Haversine
     const R = 6371; // Earth's radius in km
     const dLat = (userLocation.lat - driverLat) * Math.PI / 180;
     const dLon = (userLocation.lng - driverLng) * Math.PI / 180;
@@ -249,18 +265,30 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
         </div>
 
         {/* Map */}
-        <div className="h-64 rounded-lg overflow-hidden border border-border">
+        <div className="h-64 rounded-lg overflow-hidden border border-border relative">
           <GoogleMap
             center={getMapCenter()}
             zoom={14}
             height="100%"
             markers={[
               { id: 'driver', lat: driverLocation.lat, lng: driverLocation.lng, title: driverLocation.driver_name, description: getStatusLabel(driverLocation.status), color: '#22c55e' },
-              ...(storeLocation ? [{ id: 'store', lat: storeLocation.lat, lng: storeLocation.lng, title: storeLocation.name, description: 'Farmácia', color: '#3b82f6' }] : []),
-              ...(userLocation ? [{ id: 'dest', lat: userLocation.lat, lng: userLocation.lng, title: 'Seu endereço', description: 'Destino da entrega', color: '#ef4444' }] : []),
+              ...(storeLocation ? [{ id: 'store', lat: storeLocation.lat, lng: storeLocation.lng, title: storeLocation.name, description: 'Farmácia', color: '#f97316' }] : []),
+              ...(userLocation ? [{ id: 'dest', lat: userLocation.lat, lng: userLocation.lng, title: 'Seu endereço', description: 'Destino da entrega', color: '#3b82f6' }] : []),
             ]}
-            polyline={userLocation ? [{ lat: driverLocation.lat, lng: driverLocation.lng }, userLocation] : undefined}
+            encodedPolyline={encodedPolyline}
+            polyline={!encodedPolyline && userLocation ? [{ lat: driverLocation.lat, lng: driverLocation.lng }, userLocation] : undefined}
           />
+
+          {userLocation && (
+            <Button
+              size="sm"
+              variant="secondary"
+              className="absolute bottom-2 right-2 h-8 text-[10px] gap-1 shadow-lg border-primary/20"
+              onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${userLocation.lat},${userLocation.lng}&travelmode=driving`, '_blank')}
+            >
+              <Navigation className="h-3 w-3" /> Abrir no Google Maps
+            </Button>
+          )}
         </div>
 
         {/* Legend */}

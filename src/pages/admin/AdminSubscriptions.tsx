@@ -31,22 +31,59 @@ export default function AdminSubscriptions() {
   }, [tab]);
 
   const approve = async (id: string, periodMonths = 1) => {
+    const sub = items.find(i => i.id === id);
+    if (!sub) return;
+
     const now = new Date();
     const expires = new Date(now);
     expires.setMonth(expires.getMonth() + periodMonths);
-    const { error } = await supabase
-      .from('subscriptions')
-      .update({
-        status: 'active',
-        started_at: now.toISOString(),
-        expires_at: expires.toISOString(),
-        reviewed_at: now.toISOString(),
-        reviewed_by: user?.id,
-      })
-      .eq('id', id);
-    if (error) return toast.error(error.message);
-    toast.success('Subscrição ativada');
-    load();
+
+    try {
+      // 1. Ativar a subscrição
+      const { error: subErr } = await supabase
+        .from('subscriptions')
+        .update({
+          status: 'active',
+          started_at: now.toISOString(),
+          expires_at: expires.toISOString(),
+          reviewed_at: now.toISOString(),
+          reviewed_by: user?.id,
+        })
+        .eq('id', id);
+
+      if (subErr) throw subErr;
+
+      // 2. Mapear target_audience para roles
+      const audience = sub.plan?.target_audience;
+      let roleToAssign = '';
+      if (audience === 'doctor') roleToAssign = 'doctor';
+      else if (audience === 'clinic' || audience === 'hospital') roleToAssign = 'clinic';
+      else if (audience === 'lab') roleToAssign = 'clinic'; // Labs usam clinic role
+      else if (audience === 'pharmacy' || audience === 'store_owner') roleToAssign = 'store_owner';
+      else if (audience === 'driver') roleToAssign = 'driver';
+
+      if (roleToAssign) {
+        // Atribuir role
+        await supabase.from('user_roles').upsert({
+          user_id: sub.user_id,
+          role: roleToAssign as any
+        }, { onConflict: 'user_id,role' });
+
+        // Ativar perfis correspondentes
+        if (roleToAssign === 'doctor') {
+          await supabase.from('doctor_profiles').update({ is_verified: true, is_active: true } as any).eq('user_id', sub.user_id);
+        } else if (roleToAssign === 'clinic') {
+          await supabase.from('clinics').update({ is_verified: true, is_active: true }).eq('owner_id', sub.user_id);
+        } else if (roleToAssign === 'store_owner') {
+          await supabase.from('stores').update({ is_active: true }).eq('owner_id', sub.user_id);
+        }
+      }
+
+      toast.success('Subscrição ativada e permissões atualizadas');
+      load();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
   };
 
   const reject = async (id: string) => {

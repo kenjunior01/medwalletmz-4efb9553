@@ -45,6 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const normalizedCode = referralCode?.trim();
     if (!normalizedCode || !referredId) return;
 
+    // Wait a bit for the database trigger handle_new_user to create the profile
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
     const { data: referrerProfile } = await supabase
       .from('profiles')
       .select('user_id')
@@ -71,6 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (error) {
       console.error('Erro a aplicar convite:', error);
+    } else {
+      console.log('Convite aplicado com sucesso');
     }
   }, []);
 

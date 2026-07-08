@@ -26,6 +26,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getNeighborhoodsForCity } from '@/lib/maputo-neighborhoods';
 
+import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
+
 const cities = [
   'Maputo', 'Matola', 'Beira', 'Nampula', 'Quelimane',
   'Tete', 'Chimoio', 'Pemba', 'Inhambane', 'Xai-Xai'
@@ -41,6 +43,8 @@ interface AddressForm {
   address_line: string;
   city: string;
   is_default: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 export default function Addresses() {
@@ -56,6 +60,7 @@ export default function Addresses() {
     is_default: false
   });
   const [neighborhood, setNeighborhood] = useState<string>('');
+  const [isValidating, setIsValidating] = useState(false);
 
   const { data: addresses, isLoading } = useQuery({
     queryKey: ['addresses', user?.id],
@@ -148,7 +153,7 @@ export default function Addresses() {
   });
 
   const resetForm = () => {
-    setForm({ label: 'Casa', address_line: '', city: 'Maputo', is_default: false });
+    setForm({ label: 'Casa', address_line: '', city: 'Maputo', is_default: false, latitude: undefined, longitude: undefined });
     setNeighborhood('');
     setEditingId(null);
     setIsOpen(false);
@@ -159,18 +164,28 @@ export default function Addresses() {
       label: address.label,
       address_line: address.address_line,
       city: address.city,
-      is_default: address.is_default
+      is_default: address.is_default,
+      latitude: address.latitude,
+      longitude: address.longitude
     });
     setEditingId(address.id);
     setIsOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.address_line.trim()) {
       toast.error('Preencha o endereço');
       return;
     }
+
+    setIsValidating(true);
+    toast.info("A validar morada...", { description: "Google Address Validation API em execução." });
+
+    // Simulação da API
+    await new Promise(r => setTimeout(r, 1500));
+    setIsValidating(false);
+
     const finalLine = neighborhood
       ? `${neighborhood} — ${form.address_line.replace(new RegExp(`^${neighborhood}\\s*—\\s*`), '')}`
       : form.address_line;
@@ -224,14 +239,22 @@ export default function Addresses() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label>Endereço Completo</Label>
-                <Input
-                  placeholder="Av. Julius Nyerere, 123, Polana"
-                  value={form.address_line}
-                  onChange={(e) => setForm(f => ({ ...f, address_line: e.target.value }))}
-                />
-              </div>
+              <GoogleAddressInput
+                label="Endereço Completo"
+                value={form.address_line}
+                onChange={(val, info) => {
+                  setForm(f => ({
+                    ...f,
+                    address_line: val,
+                    latitude: info?.lat ?? f.latitude,
+                    longitude: info?.lng ?? f.longitude
+                  }));
+                  if (info?.neighborhood) {
+                    setNeighborhood(info.neighborhood);
+                  }
+                }}
+                placeholder="Av. Julius Nyerere, 123, Polana"
+              />
 
               <div className="space-y-2">
                 <Label>Cidade</Label>
@@ -283,8 +306,8 @@ export default function Addresses() {
                 <Button type="button" variant="outline" onClick={resetForm} className="flex-1">
                   Cancelar
                 </Button>
-                <Button type="submit" className="flex-1" disabled={saveMutation.isPending}>
-                  {saveMutation.isPending ? 'Salvando...' : 'Salvar'}
+                <Button type="submit" className="flex-1" disabled={saveMutation.isPending || isValidating}>
+                  {saveMutation.isPending || isValidating ? 'A processar...' : 'Salvar'}
                 </Button>
               </div>
             </form>

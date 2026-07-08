@@ -5,11 +5,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Droplet, AlertCircle, Calendar, MapPin, Plus, Heart, Users } from "lucide-react";
+import { Droplet, AlertCircle, Calendar, MapPin, Plus, Heart, Users, Share2, Info } from "lucide-react";
+import { toast } from "sonner";
+import { GoogleMap } from "@/components/maps/GoogleMap";
+import { useLocation } from "@/contexts/LocationContext";
 
 export default function BloodHub() {
   const nav = useNavigate();
   const { user } = useAuth();
+  const { coordinates, city: userCity } = useLocation();
   const [donor, setDonor] = useState<any>(null);
   const [requests, setRequests] = useState<any[]>([]);
   const [campaigns, setCampaigns] = useState<any[]>([]);
@@ -30,8 +34,15 @@ export default function BloodHub() {
     })();
   }, [user]);
 
-  return (
-    <div className="p-4 flex flex-col gap-4 animate-fade-in">
+  const shareRequest = (r: any) => {
+    const text = `🚨 PEDIDO DE SANGUE URGENTE (${r.blood_type}) em ${r.city}!\nHospital: ${r.hospital_name_manual}\nPor favor, ajuda a partilhar ou doa se puderes. #MedWalletSangue #DoarFazBem`;
+    const url = `${window.location.origin}/blood/request/${r.id}`;
+    if (navigator.share) {
+      navigator.share({ title: 'Pedido de Sangue Urgente', text, url });
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
+    }
+  };
       <div className="bento-card p-5 bg-gradient-to-br from-red-500/15 via-rose-500/10 to-transparent border-red-500/30">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-11 w-11 rounded-2xl bg-red-500/20 flex items-center justify-center">
@@ -52,7 +63,7 @@ export default function BloodHub() {
           <TabsTrigger value="history"><Users className="h-4 w-4 mr-1" />Histórico</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="donor" className="mt-4">
+        <TabsContent value="donor" className="mt-4 space-y-4">
           {!user ? (
             <div className="bento-card p-6 text-center">
               <p className="mb-3">Precisas de conta para te registares como doador.</p>
@@ -69,16 +80,24 @@ export default function BloodHub() {
               </div>
               <p className="text-sm text-muted-foreground">Total de doações: <strong>{donor.total_donations ?? 0}</strong></p>
               {donor.last_donation_date && <p className="text-sm">Última: {new Date(donor.last_donation_date).toLocaleDateString("pt-MZ")}</p>}
-              <Button variant="outline" onClick={() => nav("/blood/register-donor")}>Editar perfil</Button>
+              <Button variant="outline" className="w-full" onClick={() => nav("/blood/register-donor")}>Editar perfil</Button>
             </div>
           ) : (
             <div className="bento-card p-6 text-center space-y-3">
               <Droplet className="h-10 w-10 mx-auto text-red-500" />
               <p className="font-bold">Torna-te doador</p>
               <p className="text-sm text-muted-foreground">Registo em 2 minutos. Recebes alertas quando alguém precisar do teu tipo perto de ti.</p>
-              <Button onClick={() => nav("/blood/register-donor")}>Quero ser doador</Button>
+              <Button className="w-full" onClick={() => nav("/blood/register-donor")}>Quero ser doador</Button>
             </div>
           )}
+
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex gap-3">
+            <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="text-xs text-amber-800 leading-relaxed">
+              <p className="font-bold mb-1">Dica Meddy Sangue:</p>
+              Hidrata-te bem antes de doar e certifica-te que tiveste uma refeição leve. O teu gesto pode salvar até 4 vidas em Moçambique!
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="requests" className="mt-4 space-y-3">
@@ -105,27 +124,60 @@ export default function BloodHub() {
                 {donor?.blood_type === r.blood_type && donor?.is_available && (
                   <Button size="sm" onClick={async () => {
                     await supabase.from("blood_donation_matches").insert({ request_id: r.id, donor_user_id: user!.id });
-                    alert("Ofereceste-te para doar. O hospital vai contactar-te.");
+                    toast.success("Ofereceste-te para doar. O hospital vai contactar-te.");
                   }}>Doar</Button>
                 )}
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => shareRequest(r)}>
+                  <Share2 className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           ))}
         </TabsContent>
 
-        <TabsContent value="campaigns" className="mt-4 space-y-3">
-          {campaigns.length === 0 ? (
-            <div className="bento-card p-6 text-center text-muted-foreground">Sem campanhas ativas.</div>
-          ) : campaigns.map((c) => (
-            <div key={c.id} className="bento-card p-4">
-              <p className="font-bold">{c.title}</p>
-              <p className="text-xs text-muted-foreground">{c.city} · {new Date(c.starts_at).toLocaleDateString("pt-MZ")} – {new Date(c.ends_at).toLocaleDateString("pt-MZ")}</p>
-              {c.description && <p className="text-sm mt-2">{c.description}</p>}
-              {c.blood_types_needed?.length > 0 && (
-                <div className="flex gap-1 mt-2">{c.blood_types_needed.map((t: string) => <Badge key={t} variant="outline">{t}</Badge>)}</div>
-              )}
+        <TabsContent value="campaigns" className="mt-4 space-y-4">
+          {campaigns.length > 0 && (
+            <div className="h-44 rounded-xl overflow-hidden border border-border">
+              <GoogleMap
+                center={coordinates ? { lat: coordinates.latitude, lng: coordinates.longitude } : undefined}
+                zoom={12}
+                height="100%"
+                markers={campaigns.map(c => ({
+                  id: c.id,
+                  lat: Number(c.latitude) || -25.9692,
+                  lng: Number(c.longitude) || 32.5732,
+                  title: c.title,
+                  description: c.city,
+                  color: "#ef4444"
+                }))}
+              />
             </div>
-          ))}
+          )}
+
+          <div className="space-y-3">
+            {campaigns.length === 0 ? (
+              <div className="bento-card p-6 text-center text-muted-foreground">Sem campanhas ativas.</div>
+            ) : campaigns.map((c) => (
+              <div key={c.id} className="bento-card p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <p className="font-bold text-sm">{c.title}</p>
+                  <Badge variant="secondary" className="text-[9px]">Campanha Ativa</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Calendar className="h-3 w-3" /> {new Date(c.starts_at).toLocaleDateString("pt-MZ")} – {new Date(c.ends_at).toLocaleDateString("pt-MZ")}
+                </p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                  <MapPin className="h-3 w-3" /> {c.city}
+                </p>
+                {c.description && <p className="text-xs mt-2 text-muted-foreground line-clamp-2">{c.description}</p>}
+                {c.blood_types_needed?.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {c.blood_types_needed.map((t: string) => <Badge key={t} variant="outline" className="text-[10px]">{t}</Badge>)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </TabsContent>
 
         <TabsContent value="history" className="mt-4 space-y-3">

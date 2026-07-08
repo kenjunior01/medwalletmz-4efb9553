@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Building2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { LicenseUpload } from '@/components/upload/LicenseUpload';
+import { LogoUpload } from '@/components/upload/LogoUpload';
 
 export default function ClinicRegister() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function ClinicRegister() {
     phone: '',
     email: '',
     license_url: '',
+    logo_url: '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -33,7 +35,17 @@ export default function ClinicRegister() {
     try {
       const { data, error } = await supabase
         .from('clinics')
-        .insert({ ...form, owner_id: user.id })
+        .insert({
+          name: form.name,
+          description: form.description,
+          address: form.address,
+          city: form.city,
+          phone: form.phone,
+          email: form.email,
+          license_url: form.license_url,
+          logo_url: form.logo_url,
+          owner_id: user.id
+        })
         .select()
         .single();
       if (error) throw error;
@@ -89,13 +101,23 @@ export default function ClinicRegister() {
             <Label>Email</Label>
             <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
           </div>
-          <LicenseUpload
-            slot="misau"
-            label="Licença de funcionamento (MISAU) *"
-            description="Foto ou PDF do alvará da clínica"
-            value={form.license_url}
-            onUploaded={(p) => setForm({ ...form, license_url: p })}
-          />
+          <div className="grid grid-cols-2 gap-3">
+            <LicenseUpload
+              slot="misau"
+              label="Licença MISAU *"
+              description="Alvará da clínica"
+              value={form.license_url}
+              onUploaded={(p) => setForm({ ...form, license_url: p })}
+            />
+            <LogoUpload
+              label="Logo da Clínica"
+              description="Logotipo ou foto"
+              value={form.logo_url}
+              onUploaded={(p) => setForm({ ...form, logo_url: p })}
+              bucket="licenses"
+              folder="clinic-logos"
+            />
+          </div>
         </div>
         <Button className="w-full" onClick={submit} disabled={saving}>
           {saving ? 'A guardar...' : 'Criar clínica'}

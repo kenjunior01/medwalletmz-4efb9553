@@ -10,13 +10,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { FlaskConical, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { LicenseUpload } from '@/components/upload/LicenseUpload';
+import { LogoUpload } from '@/components/upload/LogoUpload';
 
 export default function LabRegister() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [form, setForm] = useState({
     name: '', description: '', address: '', city: 'Maputo',
-    phone: '', email: '', license_url: '',
+    phone: '', email: '', license_url: '', logo_url: '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -28,7 +29,20 @@ export default function LabRegister() {
     try {
       const { error } = await (supabase as any)
         .from('clinics')
-        .insert({ ...form, type: 'laboratory', owner_id: user.id, is_verified: false, is_active: false });
+        .insert({
+          name: form.name,
+          description: form.description,
+          address: form.address,
+          city: form.city,
+          phone: form.phone,
+          email: form.email,
+          license_url: form.license_url,
+          logo_url: form.logo_url,
+          type: 'laboratory',
+          owner_id: user.id,
+          is_verified: false,
+          is_active: false
+        });
       if (error) throw error;
       await (supabase as any).from('user_roles').insert({ user_id: user.id, role: 'clinic' });
       toast.success('Laboratório submetido! Aguarda aprovação MedWallet.');
@@ -90,14 +104,24 @@ export default function LabRegister() {
             <Label>Email de contacto</Label>
             <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
           </div>
-          <LicenseUpload
-            label="Licença MISAU"
-            description="Documento que autoriza a operação do laboratório"
-            slot="misau-lab"
-            value={form.license_url}
-            onUploaded={(url) => setForm({ ...form, license_url: url })}
-          />
-          <Button className="w-full" disabled={saving} onClick={submit}>
+          <div className="grid grid-cols-2 gap-3">
+            <LicenseUpload
+              label="Licença MISAU"
+              description="Documento de operação"
+              slot="misau-lab"
+              value={form.license_url}
+              onUploaded={(url) => setForm({ ...form, license_url: url })}
+            />
+            <LogoUpload
+              label="Logo do Laboratório"
+              description="Logotipo ou foto"
+              value={form.logo_url}
+              onUploaded={(url) => setForm({ ...form, logo_url: url })}
+              bucket="licenses"
+              folder="lab-logos"
+            />
+          </div>
+          <Button className="w-full mt-4" disabled={saving} onClick={submit}>
             {saving ? 'A submeter…' : 'Submeter para aprovação'}
           </Button>
         </div>

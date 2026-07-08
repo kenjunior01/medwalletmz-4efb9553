@@ -5,9 +5,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Stethoscope, Star, Clock, CheckCircle2, ArrowLeft, Bell, Sparkles, Video, MessageCircle } from 'lucide-react';
+import { Stethoscope, Star, Clock, CheckCircle2, ArrowLeft, Bell, Sparkles, Video, MessageCircle, MapPin } from 'lucide-react';
 import WaitlistDialog from '@/components/providers/WaitlistDialog';
 import { MeddyEmptyState } from '@/components/mascot/MeddyEmptyState';
+import { useLocation } from '@/contexts/LocationContext';
+import { haversineKm } from '@/lib/googleRoutes';
 
 interface Specialty { id: string; name: string; slug: string; icon: string }
 interface Doctor {
@@ -21,12 +23,16 @@ interface Doctor {
   rating: number | null;
   specialty_id: string | null;
   avatar_url: string | null;
-  profiles?: { full_name: string | null } | null;
+  latitude: number | null;
+  longitude: number | null;
+  distance?: number;
+  profiles?: { full_name: string | null; default_city: string | null } | null;
   medical_specialties?: { name: string; icon: string } | null;
 }
 
 export default function Doctors() {
   const navigate = useNavigate();
+  const { coordinates, city } = useLocation();
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
@@ -52,18 +58,26 @@ export default function Doctors() {
       .eq('is_available', true);
     if (selectedSpecialty) q = q.eq('specialty_id', selectedSpecialty);
     q.order('is_verified', { ascending: false }).then(async ({ data }) => {
-      const list = (data as any) || [];
+      let list = (data as any) || [];
       const ids = list.map((d: any) => d.user_id);
       if (ids.length) {
-        const { data: profs } = await supabase.from('profiles').select('user_id, full_name').in('user_id', ids);
-        list.forEach((d: any) => {
-          d.profiles = profs?.find((p: any) => p.user_id === d.user_id) || null;
+        const { data: profs } = await supabase.from('profiles').select('user_id, full_name, default_city').in('user_id', ids);
+        list = list.map((d: any) => {
+          const profile = profs?.find((p: any) => p.user_id === d.user_id) || null;
+          let distance = Infinity;
+          if (coordinates && d.latitude && d.longitude) {
+            distance = haversineKm(
+              { lat: coordinates.latitude, lng: coordinates.longitude },
+              { lat: Number(d.latitude), lng: Number(d.longitude) }
+            );
+          }
+          return { ...d, profiles: profile, distance };
         });
       }
-      setDoctors(list);
+      setDoctors(list.sort((a: any, b: any) => a.distance - b.distance));
       setLoading(false);
     });
-  }, [selectedSpecialty]);
+  }, [selectedSpecialty, coordinates]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -126,6 +140,7 @@ export default function Doctors() {
                   <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><Star className="h-3 w-3 fill-gold text-gold" />{(d.rating || 0).toFixed(1)}</span>
                     <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{d.years_experience || 0} anos</span>
+                    <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{d.distance !== Infinity ? `${d.distance.toFixed(1)} km` : (d.profiles?.default_city || city)}</span>
                   </div>
                   {d.bio && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{d.bio}</p>}
                   <div className="flex items-center justify-between mt-3">
