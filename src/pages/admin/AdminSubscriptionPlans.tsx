@@ -23,13 +23,14 @@ export default function AdminSubscriptionPlans() {
 
   const empty = {
     name: "",
+    slug: "",
     description: "",
     price_mzn: 0,
     billing_period: "monthly",
     target_audience: "doctor",
     features_text: "",
     is_active: true,
-    is_popular: false,
+    badge: "",
   };
   const [form, setForm] = useState<any>(empty);
 
@@ -51,28 +52,31 @@ export default function AdminSubscriptionPlans() {
     const feats = Array.isArray(p.features) ? p.features : (p.features?.items ?? []);
     setForm({
       name: p.name,
+      slug: p.slug || "",
       description: p.description || "",
       price_mzn: p.price_mzn,
       billing_period: p.billing_period,
       target_audience: p.target_audience,
       features_text: feats.join("\n"),
       is_active: p.is_active,
-      is_popular: p.is_popular ?? false,
+      badge: p.badge || "",
     });
     setOpen(true);
   };
 
   const save = async () => {
     const features = form.features_text.split("\n").map((x: string) => x.trim()).filter(Boolean);
+    const slug = (form.slug || form.name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const payload = {
       name: form.name,
+      slug,
       description: form.description || null,
       price_mzn: Number(form.price_mzn),
       billing_period: form.billing_period,
       target_audience: form.target_audience,
-      features,
+      features: features as any,
       is_active: form.is_active,
-      is_popular: form.is_popular,
+      badge: form.badge || null,
     };
     const { error } = editing
       ? await supabase.from("subscription_plans").update(payload).eq("id", editing.id)
@@ -140,12 +144,13 @@ export default function AdminSubscriptionPlans() {
                 <Label>Funcionalidades (uma por linha)</Label>
                 <Textarea rows={5} value={form.features_text} onChange={e => setForm({ ...form, features_text: e.target.value })} placeholder="Consultas ilimitadas&#10;Aparecer em destaque&#10;..." />
               </div>
+              <div>
+                <Label>Badge (opcional, ex: "Popular")</Label>
+                <Input value={form.badge} onChange={e => setForm({ ...form, badge: e.target.value })} />
+              </div>
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2 text-sm">
                   <Switch checked={form.is_active} onCheckedChange={v => setForm({ ...form, is_active: v })} /> Ativo
-                </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <Switch checked={form.is_popular} onCheckedChange={v => setForm({ ...form, is_popular: v })} /> Popular
                 </label>
               </div>
               <Button className="w-full" onClick={save}>Guardar</Button>
@@ -162,7 +167,7 @@ export default function AdminSubscriptionPlans() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="font-bold">{p.name}</h3>
-                    {p.is_popular && <Badge>Popular</Badge>}
+                    {p.badge && <Badge>{p.badge}</Badge>}
                     {!p.is_active && <Badge variant="secondary">Inativo</Badge>}
                   </div>
                   <p className="text-xs text-muted-foreground">{p.target_audience} · {p.billing_period}</p>
