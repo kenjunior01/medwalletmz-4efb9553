@@ -58,8 +58,18 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   try {
     const {
-      cities = ['Maputo'],
-      entities = ['pharmacy', 'clinic', 'hospital'],
+      cities = [
+        // Todas as capitais provinciais + cidades relevantes
+        'Maputo', 'Matola', 'Boane', 'Marracuene',
+        'Xai-Xai', 'Chókwè', 'Inhambane', 'Maxixe', 'Vilanculos',
+        'Beira', 'Dondo', 'Chimoio', 'Manica', 'Gondola',
+        'Tete', 'Moatize',
+        'Quelimane', 'Mocuba', 'Gurué',
+        'Nampula', 'Nacala', 'Angoche',
+        'Pemba', 'Montepuez',
+        'Lichinga', 'Cuamba',
+      ],
+      entities = ['pharmacy', 'clinic', 'hospital', 'laboratory'],
       // 'commit' = publica direto (legacy behaviour).  default 'draft' = grava em place_proposals.
       mode = 'draft',
     } = await req.json();

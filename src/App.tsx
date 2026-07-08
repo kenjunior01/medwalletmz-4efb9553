@@ -66,10 +66,12 @@ import MyPrescriptions from "./pages/health/MyPrescriptions";
 import PrescriptionDetail from "./pages/health/PrescriptionDetail";
 import HealthPlans from "./pages/health/HealthPlans";
 import Subscribe from "./pages/subscribe/Subscribe";
+import SubscribePlans from "./pages/subscribe/SubscribePlans";
 import MySubscriptions from "./pages/MySubscriptions";
 import ClinicRegister from "./pages/clinic/ClinicRegister";
 import ClinicDashboard from "./pages/clinic/ClinicDashboard";
 import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
+import AdminSubscriptionPlans from "./pages/admin/AdminSubscriptionPlans";
 import AdminPaymentAccounts from "./pages/admin/AdminPaymentAccounts";
 import PaymentSettings from "./pages/PaymentSettings";
 import Triage from "./pages/health/Triage";
@@ -148,6 +150,7 @@ const App = () => (
                   <Route path="/health/prescriptions" element={<MyPrescriptions />} />
                   <Route path="/health/prescription/:id" element={<PrescriptionDetail />} />
                   <Route path="/health/plans" element={<HealthPlans />} />
+                  <Route path="/subscribe" element={<SubscribePlans />} />
                   <Route path="/subscribe/:planId" element={<Subscribe />} />
                   <Route path="/subscriptions" element={<MySubscriptions />} />
                   <Route path="/payment-settings" element={<PaymentSettings />} />
@@ -198,6 +201,7 @@ const App = () => (
                   <Route path="users" element={<AdminUsers />} />
                   <Route path="drivers" element={<AdminDrivers />} />
                   <Route path="subscriptions" element={<AdminSubscriptions />} />
+                  <Route path="subscription-plans" element={<AdminSubscriptionPlans />} />
                   <Route path="payment-accounts" element={<AdminPaymentAccounts />} />
                   <Route path="settings" element={<AdminSettings />} />
                   <Route path="wallets" element={<AdminWallets />} />
