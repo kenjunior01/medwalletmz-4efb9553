@@ -27,7 +27,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePulseIdentity } from "@/hooks/usePulseIdentity";
 import { useDataSaver } from "@/contexts/DataSaverContext";
 import { useState } from "react";
+import React from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -44,6 +46,8 @@ export default function Home() {
     if (h < 18) return t('common.good_afternoon');
     return t('common.good_night');
   };
+
+  const isProvider = roles.some(r => ['doctor', 'clinic', 'store_owner', 'driver'].includes(r));
   const isAdmin = roles.includes('admin');
   const showRoleHero = isProvider || isAdmin;
 
@@ -74,10 +78,10 @@ export default function Home() {
       const query = supabase
         .from('doctor_profiles' as any)
         .select('id, user_id, rating, consultation_fee, medical_specialties(name, icon)')
-        .eq('is_active', true);
+        .eq('is_available', true);
 
       if (country?.id) {
-        query.eq('country_id', country.id);
+        (query as any).eq('country_id', country.id);
       }
 
       const res: any = await query

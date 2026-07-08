@@ -114,8 +114,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function fetchCountries() {
       try {
-        const { data, error } = await supabase
-          .from('countries')
+        const { data, error } = await (supabase.from('countries' as any) as any)
           .select('*')
           .eq('is_active', true);
 

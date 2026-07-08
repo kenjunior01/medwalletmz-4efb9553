@@ -126,9 +126,9 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <CountryProvider>
-        <CartProvider>
-          <LocationProvider>
+      <LocationProvider>
+        <CountryProvider>
+          <CartProvider>
             <DataSaverProvider>
               <TooltipProvider>
                 <Toaster />
