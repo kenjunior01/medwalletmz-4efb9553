@@ -264,11 +264,11 @@ const App = () => (
               </BrowserRouter>
             </TooltipProvider>
           </DataSaverProvider>
-        </LocationProvider>
-      </CartProvider>
-    </CountryProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+        </CartProvider>
+      </CountryProvider>
+    </LocationProvider>
+  </AuthProvider>
+</QueryClientProvider>
 );
 
 export default App;

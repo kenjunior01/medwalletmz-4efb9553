@@ -26,8 +26,7 @@ import NumberFlow from "@number-flow/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePulseIdentity } from "@/hooks/usePulseIdentity";
 import { useDataSaver } from "@/contexts/DataSaverContext";
-import { useState } from "react";
-import React from "react";
+import { Fragment, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -117,7 +116,7 @@ export default function Home() {
       style={{
         '--primary': country?.branding_config?.primary_color || '#047857',
         '--accent': country?.branding_config?.accent_color || '#fbbf24'
-      } as React.CSSProperties}
+      } as any}
     >
       {/* ============ HERO — personalizado por role ============ */}
       {showRoleHero ? (
@@ -142,7 +141,12 @@ export default function Home() {
             </div>
             <h1 className="text-3xl font-black leading-[1.05] mt-2">
               {t('home.hero_title').split(' ').map((word, i, arr) =>
-                i === arr.length - 1 ? <><br/><span key={i} className="text-secondary">{word}</span></> : word + ' '
+                i === arr.length - 1 ? (
+                  <Fragment key={i}>
+                    <br/>
+                    <span className="text-secondary">{word}</span>
+                  </Fragment>
+                ) : word + ' '
               )}
             </h1>
             <p className="text-sm opacity-85 mt-3 max-w-[280px]">
