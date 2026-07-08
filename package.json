@@ -13,6 +13,15 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/camera": "^8.2.0",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/geolocation": "^8.2.0",
+    "@capacitor/ios": "^8.4.1",
+    "@capacitor/push-notifications": "^8.1.1",
+    "@capacitor/splash-screen": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.2",
     "@daily-co/daily-js": "^0.91.0",
     "@hookform/resolvers": "^3.10.0",
     "@lovable.dev/cloud-auth-js": "^1.1.2",

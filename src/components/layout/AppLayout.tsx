@@ -7,6 +7,7 @@ import { AppSidebar } from "./AppSidebar";
 import { MeddyFloating } from "@/components/mascot/MeddyFloating";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useDeviceType } from "@/hooks/useDeviceType";
+import { useCapacitor } from "@/hooks/useCapacitor";
 import type { Context } from "@/components/mascot/MeddyMessages";
 
 /**
@@ -26,6 +27,7 @@ function contextFromPath(pathname: string): Context {
 
 export function AppLayout() {
   useNotifications();
+  useCapacitor();
   const { pathname } = useLocation();
   const context = contextFromPath(pathname);
   const device = useDeviceType();
