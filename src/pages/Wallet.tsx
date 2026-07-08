@@ -45,6 +45,7 @@ const methodLabel: Record<string, string> = {
 export default function Wallet() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country, t } = useCountry();
   const { wallet, loading } = useWallet();
   const [tx, setTx] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
@@ -123,10 +124,10 @@ export default function Wallet() {
     <div className="min-h-screen bg-background pb-24">
       <SkipLink />
       <header className="sticky top-0 z-10 bg-background/85 backdrop-blur border-b p-4 flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Voltar">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label={t('common.back')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-bold text-lg">Minha Carteira</h1>
+        <h1 className="font-bold text-lg">{t('wallet.title')}</h1>
       </header>
 
       <main id="main" className="p-4 space-y-5">
@@ -134,7 +135,7 @@ export default function Wallet() {
         <PanelShell className="p-6">
           <LayeredOrbs variant="ocean" />
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <WalletIcon className="h-4 w-4" aria-hidden="true" /> Saldo disponível
+            <WalletIcon className="h-4 w-4" aria-hidden="true" /> {t('wallet.available_balance')}
           </div>
           <p
             className="text-5xl font-black mt-2 num-pulse tabular-nums text-gradient-premium"
@@ -146,13 +147,13 @@ export default function Wallet() {
 
           <BentoGrid className="mt-5 grid-cols-2 md:grid-cols-2">
             <BentoCard size="sm" className="!col-span-1">
-              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Depositado</p>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">{t('wallet.deposited')}</p>
               <p className="text-xl font-bold mt-1 text-pharmacy">
                 <NumberFlow value={Number(wallet?.total_deposited ?? 0)} /> <span className="text-xs">{currency}</span>
               </p>
             </BentoCard>
             <BentoCard size="sm" className="!col-span-1">
-              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Gasto</p>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide">{t('wallet.spent')}</p>
               <p className="text-xl font-bold mt-1 text-primary">
                 <NumberFlow value={Number(wallet?.total_spent ?? 0)} /> <span className="text-xs">{currency}</span>
               </p>
@@ -164,7 +165,7 @@ export default function Wallet() {
               className="neu-btn h-12 bg-transparent hover:bg-transparent text-foreground font-semibold"
               onClick={() => setOpen(true)}
             >
-              <Plus className="h-4 w-4 mr-1" aria-hidden="true" /> Depositar
+              <Plus className="h-4 w-4 mr-1" aria-hidden="true" /> {t('wallet.deposit')}
             </Button>
           </div>
         </PanelShell>
@@ -172,20 +173,19 @@ export default function Wallet() {
         {/* Bonus glass card */}
         <GlassCard className="border-gold/30">
           <p className="font-semibold flex items-center gap-2 text-sm">
-            <Gift className="h-4 w-4 text-gold" aria-hidden="true" /> Bónus de depósito
+            <Gift className="h-4 w-4 text-gold" aria-hidden="true" /> {t('wallet.deposit_bonus')}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Recebes <b className="text-gold">+{bonusPct}%</b> em cada depósito.
-            Ex.: 1000 MZN → {(1000 + (1000 * bonusPct / 100)).toLocaleString()} MZN.
+            {t('wallet.deposit_bonus_desc', { percent: String(bonusPct) })}
           </p>
         </GlassCard>
 
         {/* Histórico */}
         <section aria-labelledby="hist-h">
-          <h2 id="hist-h" className="font-bold text-base mb-3">Histórico</h2>
+          <h2 id="hist-h" className="font-bold text-base mb-3">{t('wallet.history')}</h2>
           {tx.length === 0 ? (
             <NeuCard className="text-center text-sm text-muted-foreground py-8">
-              Sem movimentos ainda.
+              {t('wallet.empty_history')}
             </NeuCard>
           ) : (
             <div className="space-y-2">
@@ -225,17 +225,17 @@ export default function Wallet() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Depositar saldo (Offline)</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('wallet.deposit_dialog_title')}</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div className="bg-primary/5 p-3 rounded-lg border border-primary/20">
-              <p className="text-xs text-muted-foreground uppercase font-bold">Instruções</p>
+              <p className="text-xs text-muted-foreground uppercase font-bold">{t('wallet.instructions')}</p>
               <p className="text-sm mt-1">
-                Transfira o valor para uma das nossas contas e insira a referência do SMS abaixo.
+                {t('wallet.instructions_desc')}
               </p>
             </div>
 
             <div>
-              <label className="text-sm font-bold">1. Escolha o método</label>
+              <label className="text-sm font-bold">{t('wallet.choose_method')}</label>
               <Tabs value={method} onValueChange={setMethod} className="mt-2">
                 <TabsList className="grid grid-cols-3 w-full">
                   <TabsTrigger value="mpesa">M-Pesa</TabsTrigger>
@@ -246,9 +246,9 @@ export default function Wallet() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold">2. Transfira para</label>
+              <label className="text-sm font-bold">{t('wallet.transfer_to')}</label>
               {filteredAccounts.length === 0 ? (
-                <p className="text-xs text-destructive">Contas não configuradas. Contacte suporte.</p>
+                <p className="text-xs text-destructive">{t('wallet.no_accounts')}</p>
               ) : filteredAccounts.map(a => (
                 <div key={a.id} className="p-3 border rounded-xl flex items-center justify-between">
                   <div>
@@ -256,24 +256,24 @@ export default function Wallet() {
                     <p className="font-mono text-lg">{a.account_number}</p>
                   </div>
                   <Button size="sm" variant="ghost" onClick={() => copy(a.account_number)}>
-                    <Plus className="h-4 w-4 mr-1" /> Copiar
+                    <Plus className="h-4 w-4 mr-1" /> {t('common.save')}
                   </Button>
                 </div>
               ))}
             </div>
 
             <div className="space-y-3 pt-2 border-t">
-              <label className="text-sm font-bold">3. Confirmação</label>
+              <label className="text-sm font-bold">{t('wallet.confirmation')}</label>
               <div>
-                <Label htmlFor="dep-amt" className="text-xs">Valor enviado ({currency})</Label>
+                <Label htmlFor="dep-amt" className="text-xs">{t('wallet.amount_sent', { currency })}</Label>
                 <Input id="dep-amt" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder={`Mínimo 50 ${currency}`} />
               </div>
               <div>
-                <Label htmlFor="dep-ref" className="text-xs">Referência do SMS (ID)</Label>
+                <Label htmlFor="dep-ref" className="text-xs">{t('wallet.sms_reference')}</Label>
                 <Input id="dep-ref" value={reference} onChange={e => setReference(e.target.value)} placeholder="Ex: MP24..." />
               </div>
               <div>
-                <Label htmlFor="dep-phone" className="text-xs">O seu número de envio</Label>
+                <Label htmlFor="dep-phone" className="text-xs">{t('wallet.sending_number')}</Label>
                 <Input id="dep-phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="84 / 85 / 82 / 86..." />
               </div>
             </div>
@@ -281,15 +281,15 @@ export default function Wallet() {
             {bonusPreview > 0 && (
               <div className="bg-gold/10 rounded-lg p-2 text-xs">
                 <Gift className="h-3 w-3 inline text-gold mr-1" aria-hidden="true" />
-                Recebes +<b>{bonusPreview} {currency}</b> de bónus ({bonusPct}%) após validação.
+                {t('wallet.bonus_notice', { amount: String(bonusPreview), currency, percent: String(bonusPct) })}
               </div>
             )}
 
             <Button className="w-full" onClick={handleDeposit} disabled={submitting}>
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : 'Enviar para validação'}
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : t('wallet.submit_validation')}
             </Button>
             <p className="text-[10px] text-muted-foreground text-center">
-              A validação manual pode demorar até 24h em dias úteis.
+              {t('wallet.validation_delay')}
             </p>
           </div>
         </DialogContent>

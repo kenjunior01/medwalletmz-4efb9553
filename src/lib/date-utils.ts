@@ -1,10 +1,11 @@
 import { format, formatDistanceToNow } from 'date-fns';
-import { ptBR, pt, enUS } from 'date-fns/locale';
+import { ptBR, pt, enUS, hi } from 'date-fns/locale';
 
 const locales: Record<string, any> = {
   'pt-BR': ptBR,
   'pt': pt,
   'en': enUS,
+  'hi': hi,
 };
 
 /**

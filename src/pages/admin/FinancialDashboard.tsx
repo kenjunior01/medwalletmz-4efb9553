@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, TrendingUp, Users, Wallet, Globe, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { formatCurrency } from '@/lib/currency';
+import { useCountry } from '@/contexts/CountryContext';
 
 interface CurrencyTotal {
   currency: string;
@@ -17,6 +17,7 @@ interface CurrencyTotal {
 
 export default function FinancialDashboard() {
   const navigate = useNavigate();
+  const { t } = useCountry();
   const [totals, setTotals] = useState<CurrencyTotal[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,38 +55,38 @@ export default function FinancialDashboard() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg font-bold">Dashboard Financeiro Global</h1>
+        <h1 className="text-lg font-bold">{t('financial.title')}</h1>
       </header>
 
       <main className="p-4 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {totals.map((t) => (
-            <Card key={t.currency} className="p-4 space-y-3 overflow-hidden relative">
+          {totals.map((t_data) => (
+            <Card key={t_data.currency} className="p-4 space-y-3 overflow-hidden relative">
               <div className="absolute top-0 right-0 p-3 opacity-10">
                 <Globe className="h-12 w-12" />
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-xs font-bold uppercase tracking-wider">
-                <Wallet className="h-4 w-4" /> Saldo Total em {t.currency}
+                <Wallet className="h-4 w-4" /> {t('financial.total_balance_in', { currency: t_data.currency })}
               </div>
               <p className="text-3xl font-black">
-                {formatCurrency(t.total_balance, t.currency as any)}
+                {formatCurrency(t_data.total_balance, t_data.currency as any)}
               </p>
               <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50">
                 <div>
-                  <p className="text-[10px] text-muted-foreground uppercase">Depósitos</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">{t('financial.deposits')}</p>
                   <p className="text-sm font-bold text-pharmacy flex items-center gap-1">
-                    <ArrowUpRight className="h-3 w-3" /> {formatCurrency(t.total_deposited, t.currency as any)}
+                    <ArrowUpRight className="h-3 w-3" /> {formatCurrency(t_data.total_deposited, t_data.currency as any)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-muted-foreground uppercase">Gastos</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">{t('financial.spent')}</p>
                   <p className="text-sm font-bold text-destructive flex items-center gap-1">
-                    <ArrowDownRight className="h-3 w-3" /> {formatCurrency(t.total_spent, t.currency as any)}
+                    <ArrowDownRight className="h-3 w-3" /> {formatCurrency(t_data.total_spent, t_data.currency as any)}
                   </p>
                 </div>
               </div>
               <p className="text-[10px] text-muted-foreground italic">
-                Baseado em {t.count} carteiras ativas
+                {t('financial.active_wallets', { count: String(t_data.count) })}
               </p>
             </Card>
           ))}
@@ -93,7 +94,7 @@ export default function FinancialDashboard() {
 
         <Card className="p-4">
           <h3 className="font-bold mb-4 flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-primary" /> Distribuição de Volume por Moeda
+            <TrendingUp className="h-4 w-4 text-primary" /> {t('financial.volume_distribution')}
           </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -127,15 +128,15 @@ export default function FinancialDashboard() {
         </Card>
 
         <section className="space-y-3">
-          <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Ações Rápidas</h3>
+          <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">{t('financial.quick_actions')}</h3>
           <div className="grid grid-cols-2 gap-3">
             <Button variant="outline" className="h-20 flex-col gap-2 border-dashed">
               <Users className="h-5 w-5" />
-              <span className="text-xs">Gerir Médicos</span>
+              <span className="text-xs">{t('financial.manage_doctors')}</span>
             </Button>
             <Button variant="outline" className="h-20 flex-col gap-2 border-dashed">
               <TrendingUp className="h-5 w-5" />
-              <span className="text-xs">Taxas de Câmbio</span>
+              <span className="text-xs">{t('financial.exchange_rates')}</span>
             </Button>
           </div>
         </section>

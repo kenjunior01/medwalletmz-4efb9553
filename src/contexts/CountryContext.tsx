@@ -27,7 +27,7 @@ interface CountryContextType {
   setCountryById: (id: string) => void;
   locale: string;
   setLocale: (locale: string) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string>) => string;
   loading: boolean;
 }
 
@@ -37,8 +37,9 @@ const CountryContext = createContext<CountryContextType | undefined>(undefined);
 import pt from '@/i18n/pt.json';
 import ptBR from '@/i18n/pt-BR.json';
 import en from '@/i18n/en.json';
+import hi from '@/i18n/hi.json';
 
-const translations: Record<string, any> = { pt, 'pt-BR': ptBR, en };
+const translations: Record<string, any> = { pt, 'pt-BR': ptBR, en, hi };
 
 export function CountryProvider({ children }: { children: ReactNode }) {
   const { countryCode: gpsCountry } = useLocation();
@@ -49,12 +50,14 @@ export function CountryProvider({ children }: { children: ReactNode }) {
     if (saved) return saved;
     // Detect browser language
     const browserLang = navigator.language;
-    return browserLang.startsWith('pt') ? (browserLang === 'pt-BR' ? 'pt-BR' : 'pt') : 'en';
+    if (browserLang.startsWith('pt')) return browserLang === 'pt-BR' ? 'pt-BR' : 'pt';
+    if (browserLang.startsWith('hi')) return 'hi';
+    return 'en';
   });
   const [loading, setLoading] = useState(true);
 
-  // Translation helper
-  const t = (path: string) => {
+  // Translation helper with simple placeholder support
+  const t = (path: string, params?: Record<string, string>) => {
     const keys = path.split('.');
     let current = translations[locale] || translations['pt'];
 
@@ -62,7 +65,16 @@ export function CountryProvider({ children }: { children: ReactNode }) {
       if (!current || current[key] === undefined) return path;
       current = current[key];
     }
-    return typeof current === 'string' ? current : path;
+
+    if (typeof current !== 'string') return path;
+
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        current = (current as string).replace(`{{${key}}}`, value);
+      });
+    }
+
+    return current;
   };
 
   useEffect(() => {

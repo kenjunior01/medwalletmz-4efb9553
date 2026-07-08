@@ -8,6 +8,7 @@ export function LanguageSelector() {
   const languages = [
     { code: 'pt', name: 'Português (PT)', flag: '🇵🇹' },
     { code: 'pt-BR', name: 'Português (BR)', flag: '🇧🇷' },
+    { code: 'hi', name: 'हिंदी (Hindi)', flag: '🇮🇳' },
     { code: 'en', name: 'English', flag: '🇺🇸' },
   ];
 

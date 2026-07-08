@@ -65,7 +65,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const { items, subtotal, clearCart, currentStoreId } = useCart();
   const { user } = useAuth();
-  const { country } = useCountry();
+  const { country, t } = useCountry();
 
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -315,8 +315,8 @@ export default function Checkout() {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8">
-        <p className="text-muted-foreground mb-4">Seu carrinho está vazio</p>
-        <Button onClick={() => navigate('/')}>Continuar Comprando</Button>
+        <p className="text-muted-foreground mb-4">{t('checkout.empty_cart')}</p>
+        <Button onClick={() => navigate('/')}>{t('checkout.continue_shopping')}</Button>
       </div>
     );
   }
@@ -333,7 +333,7 @@ export default function Checkout() {
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg font-semibold">Finalizar Pedido</h1>
+        <h1 className="text-lg font-semibold">{t('checkout.title')}</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="p-4 space-y-6">
@@ -355,7 +355,7 @@ export default function Checkout() {
 
         {/* Order Summary */}
         <div className="bg-card rounded-xl border border-border p-4">
-          <h2 className="font-semibold mb-3">Resumo do Pedido</h2>
+          <h2 className="font-semibold mb-3">{t('checkout.summary')}</h2>
           <div className="space-y-2 text-sm">
             {items.map(item => (
               <div key={item.id} className="flex justify-between">
@@ -365,21 +365,21 @@ export default function Checkout() {
             ))}
             <div className="border-t border-border pt-2 mt-2">
               <div className="flex justify-between">
-                <span>Subtotal</span>
+                <span>{t('checkout.subtotal')}</span>
                 <span>{subtotal} {country?.currency_symbol || 'MZN'}</span>
               </div>
               <div className="flex justify-between">
-                <span>Taxa de Entrega</span>
+                <span>{t('checkout.delivery_fee')}</span>
                 <span>{deliveryFee} {country?.currency_symbol || 'MZN'}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-primary">
-                  <span>Desconto ({appliedCoupon?.code})</span>
+                  <span>{t('checkout.discount')} ({appliedCoupon?.code})</span>
                   <span>-{discount} {country?.currency_symbol || 'MZN'}</span>
                 </div>
               )}
               <div className="flex justify-between font-bold text-lg pt-2">
-                <span>Total</span>
+                <span>{t('checkout.total')}</span>
                 <span className="text-primary">{total} {country?.currency_symbol || 'MZN'}</span>
               </div>
             </div>
@@ -398,22 +398,22 @@ export default function Checkout() {
           value={address}
           onChange={(val) => setAddress(val)}
           placeholder="Rua, número, bairro, referência..."
-          label="Endereço de Entrega *"
+          label={`${t('checkout.address')} *`}
         />
 
         {/* Notes */}
         <div className="space-y-3">
-          <Label>Notas (opcional)</Label>
+          <Label>{t('checkout.notes')}</Label>
           <Input
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Instruções especiais..."
+            placeholder={t('checkout.notes_placeholder')}
           />
         </div>
 
         {/* Payment Method */}
         <div className="space-y-3">
-          <Label>Método de Pagamento *</Label>
+          <Label>{t('checkout.payment_method')} *</Label>
           <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
             <div className="grid gap-3">
               {paymentMethods.map(method => (
@@ -451,14 +451,14 @@ export default function Checkout() {
         {/* Phone Number — only for mobile money */}
         {requiresPhone && (
         <div className="space-y-3">
-          <Label>Número de Telefone ({selectedMethod?.name}) *</Label>
+          <Label>{t('checkout.phone_label', { method: selectedMethod?.name })} *</Label>
           <div className="relative">
             <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="tel"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="84 xxx xxxx"
+              placeholder={t('checkout.phone_placeholder')}
               className="pl-10"
               required={requiresPhone}
             />
@@ -481,7 +481,7 @@ export default function Checkout() {
             <>
               {paymentMethod === 'apple_pay' && <Apple className="h-5 w-5 mr-2" />}
               {paymentMethod === 'wallet' && <Wallet className="h-5 w-5 mr-2" />}
-              Pagar {total} {country?.currency_symbol || 'MZN'}
+              {t('checkout.pay_button', { amount: String(total), currency: country?.currency_symbol || 'MZN' })}
             </>
           )}
         </Button>

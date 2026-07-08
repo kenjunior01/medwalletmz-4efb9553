@@ -14,6 +14,7 @@ import { LicenseUpload } from '@/components/upload/LicenseUpload';
 export default function DoctorRegister() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country: currentCountry, t } = useCountry();
   const [specialties, setSpecialties] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const [country, setCountry] = useState('MZ');
@@ -45,17 +46,17 @@ export default function DoctorRegister() {
   const submit = async () => {
     if (!user) { navigate('/auth'); return; }
     if (!form.specialty_id || !form.full_name) {
-      toast.error('Preencha os campos obrigatórios'); return;
+      toast.error(t('doctor_register.required_fields_error')); return;
     }
     if (country === 'BR' && (!form.crm_number || !form.crm_uf)) {
-      toast.error('Preencha o seu CRM e UF'); return;
+      toast.error(t('doctor_register.crm_error')); return;
     }
     if (country !== 'BR' && !form.license_number) {
-      toast.error('Preencha o seu número de licença'); return;
+      toast.error(t('doctor_register.license_error')); return;
     }
 
     if (!form.license_url) {
-      toast.error(country === 'BR' ? 'Carregue a foto do seu CRM' : 'Carrega a cédula da Ordem dos Médicos'); return;
+      toast.error(country === 'BR' ? t('doctor_register.document_error') : t('doctor_register.license_upload_label')); return;
     }
     setSaving(true);
     try {
@@ -79,7 +80,7 @@ export default function DoctorRegister() {
       }, { onConflict: 'user_id' });
       if (pErr) throw pErr;
       await supabase.from('user_roles').upsert({ user_id: user.id, role: 'doctor' }, { onConflict: 'user_id,role' });
-      toast.success('Registo enviado! A aguardar verificação.');
+      toast.success(t('doctor_register.success_msg'));
       navigate('/doctor/dashboard');
     } catch (e: any) {
       toast.error(e.message);
@@ -90,22 +91,22 @@ export default function DoctorRegister() {
     <div className="min-h-screen bg-background pb-32">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-4 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
-        <h1 className="font-bold">Registo de médico</h1>
+        <h1 className="font-bold">{t('doctor_register.title')}</h1>
       </header>
       <div className="p-4 max-w-xl mx-auto space-y-4">
         <div className="text-center py-4">
           <div className="w-16 h-16 mx-auto rounded-2xl bg-pharmacy/10 flex items-center justify-center mb-3">
             <Stethoscope className="h-8 w-8 text-pharmacy" />
           </div>
-          <h2 className="text-xl font-bold">Junte-se ao MedWallet</h2>
-          <p className="text-sm text-muted-foreground">Atenda pacientes online por chat seguro</p>
+          <h2 className="text-xl font-bold">{t('doctor_register.join_title')}</h2>
+          <p className="text-sm text-muted-foreground">{t('doctor_register.join_subtitle')}</p>
         </div>
 
-        <div><Label>Nome completo *</Label><Input value={form.full_name} onChange={e => setForm({...form, full_name: e.target.value})} /></div>
+        <div><Label>{t('doctor_register.full_name')} *</Label><Input value={form.full_name} onChange={e => setForm({...form, full_name: e.target.value})} /></div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label>País de Atuação *</Label>
+            <Label>{t('doctor_register.country_of_practice')} *</Label>
             <Select value={country} onValueChange={setCountry}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -113,7 +114,7 @@ export default function DoctorRegister() {
               </SelectContent>
             </Select>
           </div>
-          <div><Label>Telefone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+..." /></div>
+          <div><Label>{t('doctor_register.phone')}</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+..." /></div>
         </div>
 
         {country === 'BR' ? (
@@ -128,35 +129,35 @@ export default function DoctorRegister() {
             </div>
           </div>
         ) : (
-          <div><Label>Nº de licença médica *</Label><Input value={form.license_number} onChange={e => setForm({...form, license_number: e.target.value})} /></div>
+          <div><Label>{t('doctor_register.license_number')} *</Label><Input value={form.license_number} onChange={e => setForm({...form, license_number: e.target.value})} /></div>
         )}
 
         <div>
-          <Label>Especialidade *</Label>
+          <Label>{t('doctor_register.specialty')} *</Label>
           <Select value={form.specialty_id} onValueChange={v => setForm({...form, specialty_id: v})}>
-            <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder={t('doctor_register.specialty_placeholder')} /></SelectTrigger>
             <SelectContent>
               {specialties.map(s => <SelectItem key={s.id} value={s.id}>{s.icon} {s.name}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
-        <div><Label>Bio (apresentação ao paciente)</Label><Textarea value={form.bio} onChange={e => setForm({...form, bio: e.target.value})} rows={3} /></div>
+        <div><Label>{t('doctor_register.bio')}</Label><Textarea value={form.bio} onChange={e => setForm({...form, bio: e.target.value})} rows={3} /></div>
         <LicenseUpload
           slot="cedula"
-          label="Cédula da Ordem dos Médicos *"
-          description="Foto ou PDF do documento oficial"
+          label={`${t('doctor_register.license_upload_label')} *`}
+          description={t('doctor_register.license_upload_desc')}
           value={form.license_url}
           onUploaded={(p) => setForm({ ...form, license_url: p })}
         />
         <div className="grid grid-cols-2 gap-3">
-          <div><Label>Preço da consulta (MZN)</Label><Input type="number" value={form.consultation_fee} onChange={e => setForm({...form, consultation_fee: e.target.value})} /></div>
-          <div><Label>Anos de experiência</Label><Input type="number" value={form.years_experience} onChange={e => setForm({...form, years_experience: e.target.value})} /></div>
+          <div><Label>{t('doctor_register.consultation_fee', { currency: currentCountry?.currency_code || 'MZN' })}</Label><Input type="number" value={form.consultation_fee} onChange={e => setForm({...form, consultation_fee: e.target.value})} /></div>
+          <div><Label>{t('doctor_register.years_experience')}</Label><Input type="number" value={form.years_experience} onChange={e => setForm({...form, years_experience: e.target.value})} /></div>
         </div>
-        <p className="text-xs text-muted-foreground">A sua conta será verificada manualmente antes de aparecer publicamente.</p>
+        <p className="text-xs text-muted-foreground">{t('doctor_register.manual_verification_notice')}</p>
       </div>
       <div className="fixed bottom-0 inset-x-0 p-4 bg-background border-t">
         <Button className="w-full" size="lg" onClick={submit} disabled={saving}>
-          {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Submeter registo
+          {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} {t('doctor_register.submit_button')}
         </Button>
       </div>
     </div>

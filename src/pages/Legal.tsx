@@ -31,7 +31,7 @@ export default function Legal() {
     <div className="min-h-screen bg-background">
       <header className="p-4 border-b flex items-center gap-3 bg-card sticky top-0 z-10">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
-        <h1 className="font-bold text-lg">Legal</h1>
+        <h1 className="font-bold text-lg">{t('legal.title')}</h1>
       </header>
 
       <main className="p-6 space-y-6 max-w-2xl mx-auto">
@@ -49,16 +49,16 @@ export default function Legal() {
           <p>{config.content}</p>
           <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-xl">
             <Scale className="h-5 w-5 text-primary shrink-0 mt-1" />
-            <p className="text-xs">Este documento é atualizado automaticamente com base na sua localização atual.</p>
+            <p className="text-xs">{t('legal.auto_update_notice')}</p>
           </div>
         </section>
 
         <div className="grid gap-3">
           <Button variant="outline" className="justify-start gap-3 h-14">
-            <FileText className="h-5 w-5" /> Política de Cookies
+            <FileText className="h-5 w-5" /> {t('legal.cookies_policy')}
           </Button>
           <Button variant="outline" className="justify-start gap-3 h-14">
-            <Scale className="h-5 w-5" /> Responsabilidade Médica
+            <Scale className="h-5 w-5" /> {t('legal.medical_responsibility')}
           </Button>
         </div>
       </main>

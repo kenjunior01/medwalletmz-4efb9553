@@ -268,8 +268,8 @@ export default function Home() {
           <div className="h-9 w-9 rounded-xl bg-pharmacy text-pharmacy-foreground flex items-center justify-center mb-1.5">
             <Pill className="h-5 w-5" />
           </div>
-          <p className="text-sm font-bold leading-tight">Farmácia 24h</p>
-          <p className="text-[10px] text-muted-foreground mt-0.5">Entrega prioritária</p>
+          <p className="text-sm font-bold leading-tight">{t('home.pharmacy_24h')}</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">{t('home.delivery_priority')}</p>
           <Pill className="absolute -right-4 -bottom-4 h-20 w-20 text-pharmacy/10 -rotate-12" />
         </button>
 
@@ -277,24 +277,24 @@ export default function Home() {
         <button onClick={() => navigate('/health/triage')}
           className="col-span-2 row-span-2 bento-card text-left p-3 bg-gradient-to-br from-accent/30 to-accent/5 border-accent/40">
           <Sparkles className="h-5 w-5 text-secondary mb-1.5" />
-          <p className="text-xs font-bold">Meddy Consulta</p>
-          <p className="text-[9px] text-muted-foreground mt-1 leading-tight">Descreve sintomas</p>
+          <p className="text-xs font-bold">{t('home.meddy_consulta')}</p>
+          <p className="text-[9px] text-muted-foreground mt-1 leading-tight">{t('home.hero_subtitle')}</p>
         </button>
 
         {/* Receitas */}
         <button onClick={() => navigate('/health/prescriptions')}
           className="col-span-2 row-span-2 bento-card text-left p-3">
           <FileText className="h-5 w-5 text-emerald mb-1.5" />
-          <p className="text-xs font-bold">Receitas</p>
-          <p className="text-[9px] text-muted-foreground mt-1 leading-tight">Histórico + PDF</p>
+          <p className="text-xs font-bold">{t('home.prescriptions')}</p>
+          <p className="text-[9px] text-muted-foreground mt-1 leading-tight">{t('home.prescriptions_desc')}</p>
         </button>
 
         {/* Histórico consultas */}
         <button onClick={() => navigate('/health/consultations')}
           className="col-span-2 row-span-2 bento-card text-left p-3 bg-muted/40">
           <MessageCircle className="h-5 w-5 text-primary mb-1.5" />
-          <p className="text-xs font-bold">Chat médico</p>
-          <p className="text-[9px] text-muted-foreground mt-1 leading-tight">Async + anexos</p>
+          <p className="text-xs font-bold">{t('home.chat_medical')}</p>
+          <p className="text-[9px] text-muted-foreground mt-1 leading-tight">{t('home.chat_medical_desc')}</p>
         </button>
       </motion.section>
 
@@ -316,8 +316,8 @@ export default function Home() {
             <BookOpen className="h-5 w-5 text-amber-600" />
           </div>
           <div className="flex-1 text-left min-w-0">
-            <p className="font-bold text-sm">Saúde em Moçambique</p>
-            <p className="text-[11px] text-muted-foreground">Malária, HIV, hipertensão e mais — pela equipa clínica</p>
+            <p className="font-bold text-sm">{t('home.health_in_country', { country: country?.name || 'seu país' })}</p>
+            <p className="text-[11px] text-muted-foreground">{t('home.health_team_desc')}</p>
           </div>
           <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
         </button>
@@ -332,20 +332,19 @@ export default function Home() {
         <section className="px-4 mt-6">
           <div className="panel-shell p-5">
             <div className="flex items-center gap-2 text-[11px] uppercase font-black tracking-[0.18em] text-secondary">
-              <Briefcase className="h-3.5 w-3.5" /> Ganha com o MedWallet
+              <Briefcase className="h-3.5 w-3.5" /> {t('home.earn_with_medwallet')}
             </div>
             <h3 className="text-2xl font-black mt-1.5 leading-tight">
-              És médico, farmácia ou<br/>
-              <span className="text-gradient-premium">entregador</span>?
+              {t('home.are_you_professional')}
             </h3>
             <p className="text-xs text-muted-foreground mt-1.5 max-w-[280px]">
-              Recebe pacientes, gere consultas e recebe direto na tua carteira MZN. Sem mensalidade.
+              {t('home.onboarding_desc')}
             </p>
             <div className="grid grid-cols-3 gap-2 mt-4">
               {[
-                { icon: Stethoscope, label: 'Médico', to: '/onboarding/doctor' },
-                { icon: Pill,        label: 'Farmácia', to: '/onboarding/pharmacy' },
-                { icon: Truck,       label: 'Entrega', to: '/onboarding/driver' },
+                { icon: Stethoscope, label: t('common.doctor'), to: '/doctor/register' },
+                { icon: Pill,        label: t('common.pharmacy'), to: '/store/register' },
+                { icon: Truck,       label: t('common.driver'), to: '/driver/register' },
               ].map(o => (
                 <button key={o.label} onClick={() => navigate(o.to)}
                   className="neu-btn px-2 py-3 flex flex-col items-center gap-1 text-[11px] font-bold">
@@ -355,8 +354,8 @@ export default function Home() {
               ))}
             </div>
             <div className="flex items-center gap-3 mt-4 text-[10px] text-muted-foreground">
-              <span className="flex items-center gap-1"><Award className="h-3 w-3 text-gold" /> Verificação rápida</span>
-              <span className="flex items-center gap-1"><Zap className="h-3 w-3 text-secondary" /> Pagamentos 24h</span>
+              <span className="flex items-center gap-1"><Award className="h-3 w-3 text-gold" /> {t('home.fast_verification')}</span>
+              <span className="flex items-center gap-1"><Zap className="h-3 w-3 text-secondary" /> {t('home.payments_24h')}</span>
             </div>
           </div>
         </section>
@@ -367,11 +366,11 @@ export default function Home() {
         <section className="mt-6">
           <div className="px-4 flex items-center justify-between mb-3">
             <div>
-              <h2 className="text-xl font-black">Profissionais em destaque</h2>
-              <p className="text-xs text-muted-foreground">Verificados, com avaliações reais</p>
+              <h2 className="text-xl font-black">{t('home.top_doctors')}</h2>
+              <p className="text-xs text-muted-foreground">{t('home.verified_reviews')}</p>
             </div>
             <Button variant="ghost" size="sm" onClick={() => navigate('/health/doctors')}>
-              Ver todos <ChevronRight className="h-4 w-4 ml-0.5" />
+              {t('home.view_all')} <ChevronRight className="h-4 w-4 ml-0.5" />
             </Button>
           </div>
           <div className="flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar snap-x snap-mandatory">
