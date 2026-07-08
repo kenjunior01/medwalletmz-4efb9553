@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useCountry } from "@/contexts/CountryContext";
 import {
   Stethoscope, Pill, Building2, Truck, ShieldCheck, Users, Calendar,
   ClipboardList, TrendingUp, ArrowRight, Package, Activity,
@@ -107,8 +108,15 @@ const CONFIGS: Record<AppRole, Config> = {
 
 export function RoleHero({ roles, name }: { roles: AppRole[]; name?: string }) {
   const navigate = useNavigate();
+  const { t } = useCountry();
   const role = pickRole(roles);
-  const cfg = CONFIGS[role];
+
+  // Custom config override for dynamic translations
+  const cfg = { ...CONFIGS[role] };
+  if (role === 'customer') {
+    cfg.title = t('home.hero_title');
+    cfg.subtitle = t('home.hero_subtitle');
+  }
 
   return (
     <section className="px-4 pt-3">

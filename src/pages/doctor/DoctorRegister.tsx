@@ -16,10 +16,13 @@ export default function DoctorRegister() {
   const { user } = useAuth();
   const [specialties, setSpecialties] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
+  const [country, setCountry] = useState('MZ');
   const [form, setForm] = useState({
     full_name: '',
     phone: '',
     license_number: '',
+    crm_number: '',
+    crm_uf: '',
     specialty_id: '',
     bio: '',
     consultation_fee: '500',
@@ -27,24 +30,46 @@ export default function DoctorRegister() {
     license_url: '',
   });
 
+  const countries = [
+    { code: 'MZ', name: 'Moçambique', flag: '🇲🇿' },
+    { code: 'BR', name: 'Brasil', flag: '🇧🇷' },
+    { code: 'AO', name: 'Angola', flag: '🇦🇴' },
+    { code: 'PT', name: 'Portugal', flag: '🇵🇹' },
+    { code: 'IN', name: 'Índia', flag: '🇮🇳' },
+  ];
+
   useEffect(() => {
     supabase.from('medical_specialties').select('*').order('name').then(({ data }) => setSpecialties(data || []));
   }, []);
 
   const submit = async () => {
     if (!user) { navigate('/auth'); return; }
-    if (!form.license_number || !form.specialty_id || !form.full_name) {
+    if (!form.specialty_id || !form.full_name) {
       toast.error('Preencha os campos obrigatórios'); return;
     }
+    if (country === 'BR' && (!form.crm_number || !form.crm_uf)) {
+      toast.error('Preencha o seu CRM e UF'); return;
+    }
+    if (country !== 'BR' && !form.license_number) {
+      toast.error('Preencha o seu número de licença'); return;
+    }
+
     if (!form.license_url) {
-      toast.error('Carrega a cédula da Ordem dos Médicos'); return;
+      toast.error(country === 'BR' ? 'Carregue a foto do seu CRM' : 'Carrega a cédula da Ordem dos Médicos'); return;
     }
     setSaving(true);
     try {
-      await supabase.from('profiles').update({ full_name: form.full_name, phone: form.phone }).eq('user_id', user.id);
+      await supabase.from('profiles').update({
+        full_name: form.full_name,
+        phone: form.phone,
+        default_city: country === 'BR' ? form.crm_uf : null // Usando city para guardar UF temporariamente
+      }).eq('user_id', user.id);
+
+      const licenseDisplay = country === 'BR' ? `CRM-${form.crm_uf} ${form.crm_number}` : form.license_number;
+
       const { error: pErr } = await supabase.from('doctor_profiles').upsert({
         user_id: user.id,
-        license_number: form.license_number,
+        license_number: licenseDisplay,
         specialty_id: form.specialty_id,
         bio: form.bio,
         consultation_fee: parseInt(form.consultation_fee) || 500,
@@ -77,8 +102,35 @@ export default function DoctorRegister() {
         </div>
 
         <div><Label>Nome completo *</Label><Input value={form.full_name} onChange={e => setForm({...form, full_name: e.target.value})} /></div>
-        <div><Label>Telefone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+258 84 ..." /></div>
-        <div><Label>Nº de licença médica *</Label><Input value={form.license_number} onChange={e => setForm({...form, license_number: e.target.value})} /></div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label>País de Atuação *</Label>
+            <Select value={country} onValueChange={setCountry}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {countries.map(c => <SelectItem key={c.code} value={c.code}>{c.flag} {c.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div><Label>Telefone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+..." /></div>
+        </div>
+
+        {country === 'BR' ? (
+          <div className="grid grid-cols-3 gap-3">
+            <div className="col-span-2">
+              <Label>CRM (Número) *</Label>
+              <Input value={form.crm_number} onChange={e => setForm({...form, crm_number: e.target.value})} placeholder="000000" />
+            </div>
+            <div>
+              <Label>UF *</Label>
+              <Input value={form.crm_uf} onChange={e => setForm({...form, crm_uf: e.target.value})} placeholder="SP" maxLength={2} />
+            </div>
+          </div>
+        ) : (
+          <div><Label>Nº de licença médica *</Label><Input value={form.license_number} onChange={e => setForm({...form, license_number: e.target.value})} /></div>
+        )}
+
         <div>
           <Label>Especialidade *</Label>
           <Select value={form.specialty_id} onValueChange={v => setForm({...form, specialty_id: v})}>

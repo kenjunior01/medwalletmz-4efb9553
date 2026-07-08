@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2, Gift, PlusCircle, Award, History } from "lucide-react";
+import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2, Gift, PlusCircle, Award, History, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCountry } from "@/contexts/CountryContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
 import { LowDataToggle } from "@/components/profile/LowDataToggle";
 import { UserProposalsWidget } from "@/components/places/UserProposalsWidget";
+import { LanguageSelector } from "@/components/layout/LanguageSelector";
 
 type Profile = Tables<"profiles">;
 
@@ -24,6 +26,7 @@ const menuItems = [
   { icon: Bell, label: "Notificações", href: "/notifications" },
   { icon: Settings, label: "Configurações", href: "/settings" },
   { icon: HelpCircle, label: "Ajuda & Suporte", href: "/help" },
+  { icon: ShieldCheck, label: "Termos Legais", href: "/legal" },
 ];
 
 export default function Profile() {
@@ -280,7 +283,12 @@ export default function Profile() {
       )}
 
       {/* Preferências locais */}
-      <LowDataToggle />
+      <div className="space-y-4">
+        <LowDataToggle />
+        <div className="bg-card rounded-xl border border-border p-2">
+          <LanguageSelector />
+        </div>
+      </div>
 
       {/* Business Options */}
       <div className="bg-card rounded-xl border border-border divide-y divide-border">

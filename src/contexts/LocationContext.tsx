@@ -8,7 +8,9 @@ interface Coordinates {
 interface LocationContextType {
   coordinates: Coordinates | null;
   city: string;
+  countryCode: string;
   setCity: (city: string) => void;
+  setCountryCode: (code: string) => void;
   loading: boolean;
   error: string | null;
   requestLocation: () => void;
@@ -17,14 +19,14 @@ interface LocationContextType {
 
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
-// Default coordinates for major cities in Mozambique
-const CITY_COORDINATES: Record<string, Coordinates> = {
-  'Maputo': { latitude: -25.9692, longitude: 32.5732 },
-  'Beira': { latitude: -19.8436, longitude: 34.8389 },
-  'Nampula': { latitude: -15.1165, longitude: 39.2666 },
-  'Quelimane': { latitude: -17.8786, longitude: 36.8881 },
-  'Tete': { latitude: -16.1564, longitude: 33.5867 },
-  'Chimoio': { latitude: -19.1164, longitude: 33.4833 },
+// Default coordinates for major cities
+const CITY_COORDINATES: Record<string, Coordinates & { country: string }> = {
+  'Maputo': { latitude: -25.9692, longitude: 32.5732, country: 'MZ' },
+  'Beira': { latitude: -19.8436, longitude: 34.8389, country: 'MZ' },
+  'São Paulo': { latitude: -23.5505, longitude: -46.6333, country: 'BR' },
+  'Luanda': { latitude: -8.8390, longitude: 13.2894, country: 'AO' },
+  'Lisboa': { latitude: 38.7223, longitude: -9.1393, country: 'PT' },
+  'New Delhi': { latitude: 28.6139, longitude: 77.2090, country: 'IN' },
 };
 
 export function LocationProvider({ children }: { children: ReactNode }) {
@@ -32,16 +34,22 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const [city, setCity] = useState<string>(() => {
     return localStorage.getItem('selectedCity') || 'Maputo';
   });
+  const [countryCode, setCountryCode] = useState<string>(() => {
+    return localStorage.getItem('selectedCountry') || 'MZ';
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     localStorage.setItem('selectedCity', city);
+    localStorage.setItem('selectedCountry', countryCode);
+
     // Set default coordinates for selected city
     if (!coordinates && CITY_COORDINATES[city]) {
       setCoordinates(CITY_COORDINATES[city]);
+      setCountryCode(CITY_COORDINATES[city].country);
     }
-  }, [city]);
+  }, [city, countryCode]);
 
   const requestLocation = () => {
     if (!navigator.geolocation) {
@@ -92,7 +100,9 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     <LocationContext.Provider value={{
       coordinates,
       city,
+      countryCode,
       setCity,
+      setCountryCode,
       loading,
       error,
       requestLocation,

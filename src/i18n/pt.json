@@ -1,0 +1,36 @@
+{
+  "common": {
+    "welcome": "Bem-vindo",
+    "good_morning": "Bom dia",
+    "good_afternoon": "Boa tarde",
+    "good_night": "Boa noite",
+    "loading": "A carregar...",
+    "error": "Ocorreu um erro",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "back": "Voltar",
+    "confirm": "Confirmar",
+    "pay": "Pagar"
+  },
+  "home": {
+    "hero_title": "Saúde, farmácia numa só carteira.",
+    "hero_subtitle": "Triagem com IA, médicos verificados e farmácia 24h.",
+    "wallet_card": "Carteira",
+    "meddy_consulta": "Meddy Consulta",
+    "doctors": "Médicos",
+    "pharmacy": "Farmácia",
+    "categories": "Explora por categoria",
+    "trust_strip": {
+      "doctors": "+120 médicos",
+      "available": "24/7"
+    }
+  },
+  "checkout": {
+    "title": "Finalizar Pedido",
+    "payment_method": "Método de Pagamento",
+    "address": "Endereço de Entrega",
+    "summary": "Resumo do Pedido",
+    "total": "Total",
+    "delivery_fee": "Taxa de Entrega"
+  }
+}

@@ -5,8 +5,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWallet } from '@/hooks/useWallet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getCurrencySymbol } from '@/lib/currency';
 import { ArrowLeft, Wallet as WalletIcon, ArrowDownCircle, ArrowUpCircle, Gift, RefreshCw, Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import NumberFlow from '@number-flow/react';
@@ -112,7 +114,9 @@ export default function Wallet() {
   };
 
   const bonusPreview = amount ? Math.round(parseFloat(amount) * bonusPct) / 100 : 0;
-  const balance = Number(wallet?.balance_mzn ?? 0);
+  const balance = Number(wallet?.balance ?? 0);
+  const currency = wallet?.currency || 'MZN';
+  const symbol = getCurrencySymbol(currency as any);
   const filteredAccounts = accounts.filter(a => a.method === method);
 
   return (
@@ -137,20 +141,20 @@ export default function Wallet() {
             aria-live="polite"
           >
             <NumberFlow value={balance} format={{ minimumFractionDigits: 2 }} />
-            <span className="text-lg font-semibold ml-2 text-muted-foreground">MZN</span>
+            <span className="text-lg font-semibold ml-2 text-muted-foreground">{currency}</span>
           </p>
 
           <BentoGrid className="mt-5 grid-cols-2 md:grid-cols-2">
             <BentoCard size="sm" className="!col-span-1">
               <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Depositado</p>
               <p className="text-xl font-bold mt-1 text-pharmacy">
-                <NumberFlow value={Number(wallet?.total_deposited ?? 0)} /> <span className="text-xs">MZN</span>
+                <NumberFlow value={Number(wallet?.total_deposited ?? 0)} /> <span className="text-xs">{currency}</span>
               </p>
             </BentoCard>
             <BentoCard size="sm" className="!col-span-1">
               <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Gasto</p>
               <p className="text-xl font-bold mt-1 text-primary">
-                <NumberFlow value={Number(wallet?.total_spent ?? 0)} /> <span className="text-xs">MZN</span>
+                <NumberFlow value={Number(wallet?.total_spent ?? 0)} /> <span className="text-xs">{currency}</span>
               </p>
             </BentoCard>
           </BentoGrid>
@@ -208,7 +212,7 @@ export default function Wallet() {
                         {isOut ? '−' : '+'}{Number(t.amount).toFixed(2)}
                       </p>
                       <p className="text-[10px] text-muted-foreground tabular-nums">
-                        {Number(t.balance_after).toFixed(2)} MZN
+                        {Number(t.balance_after).toFixed(2)} {currency}
                       </p>
                     </div>
                   </NeuCard>
@@ -261,8 +265,8 @@ export default function Wallet() {
             <div className="space-y-3 pt-2 border-t">
               <label className="text-sm font-bold">3. Confirmação</label>
               <div>
-                <Label htmlFor="dep-amt" className="text-xs">Valor enviado (MZN)</Label>
-                <Input id="dep-amt" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="Mínimo 50" />
+                <Label htmlFor="dep-amt" className="text-xs">Valor enviado ({currency})</Label>
+                <Input id="dep-amt" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder={`Mínimo 50 ${currency}`} />
               </div>
               <div>
                 <Label htmlFor="dep-ref" className="text-xs">Referência do SMS (ID)</Label>
@@ -277,7 +281,7 @@ export default function Wallet() {
             {bonusPreview > 0 && (
               <div className="bg-gold/10 rounded-lg p-2 text-xs">
                 <Gift className="h-3 w-3 inline text-gold mr-1" aria-hidden="true" />
-                Recebes +<b>{bonusPreview} MZN</b> de bónus ({bonusPct}%) após validação.
+                Recebes +<b>{bonusPreview} {currency}</b> de bónus ({bonusPct}%) após validação.
               </div>
             )}
 

@@ -8,6 +8,7 @@ import { MeddyFloating } from "@/components/mascot/MeddyFloating";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useDeviceType } from "@/hooks/useDeviceType";
 import { useCapacitor } from "@/hooks/useCapacitor";
+import { useCountry } from "@/contexts/CountryContext";
 import type { Context } from "@/components/mascot/MeddyMessages";
 
 /**
@@ -28,10 +29,27 @@ function contextFromPath(pathname: string): Context {
 export function AppLayout() {
   useNotifications();
   useCapacitor();
+  const { country } = useCountry();
   const { pathname } = useLocation();
   const context = contextFromPath(pathname);
   const device = useDeviceType();
   const isMobile = device === "mobile";
+
+  // Dynamic branding injection
+  useEffect(() => {
+    if (country?.branding_config) {
+      const root = document.documentElement;
+      const branding = country.branding_config;
+
+      if (branding.primary_color) {
+        root.style.setProperty('--primary', branding.primary_color);
+        // We could also calculate hsl values here if needed for shadcn
+      }
+      if (branding.accent_color) {
+        root.style.setProperty('--accent', branding.accent_color);
+      }
+    }
+  }, [country]);
 
   return (
     <div className="min-h-screen bg-background flex">

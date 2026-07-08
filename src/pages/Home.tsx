@@ -19,6 +19,7 @@ import { useUserRoles } from "@/hooks/useUserRole";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
+import { useCountry } from "@/contexts/CountryContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import NumberFlow from "@number-flow/react";
@@ -28,22 +29,21 @@ import { useDataSaver } from "@/contexts/DataSaverContext";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const greet = () => {
-  const h = new Date().getHours();
-  if (h < 12) return 'Bom dia';
-  if (h < 18) return 'Boa tarde';
-  return 'Boa noite';
-};
-
 export default function Home() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { roles } = useUserRoles();
   const { wallet } = useWallet();
+  const { country, t } = useCountry();
   const pulse = usePulseIdentity();
   const PulseIcon = pulse.icon;
 
-  const isProvider = roles.some(r => ['doctor', 'clinic', 'store_owner', 'driver'].includes(r));
+  const greet = () => {
+    const h = new Date().getHours();
+    if (h < 12) return t('common.good_morning');
+    if (h < 18) return t('common.good_afternoon');
+    return t('common.good_night');
+  };
   const isAdmin = roles.includes('admin');
   const showRoleHero = isProvider || isAdmin;
 
@@ -69,12 +69,18 @@ export default function Home() {
   });
 
   const { data: topDoctors } = useQuery<any[]>({
-    queryKey: ['top-doctors-home'],
+    queryKey: ['top-doctors-home', country?.id],
     queryFn: async () => {
-      const res: any = await supabase
+      const query = supabase
         .from('doctor_profiles' as any)
         .select('id, user_id, rating, consultation_fee, medical_specialties(name, icon)')
-        .eq('is_active', true)
+        .eq('is_active', true);
+
+      if (country?.id) {
+        query.eq('country_id', country.id);
+      }
+
+      const res: any = await query
         .order('rating', { ascending: false })
         .limit(6);
       const dd: any[] = res.data || [];
@@ -102,13 +108,26 @@ export default function Home() {
   };
 
   return (
-    <div className="pb-6 animate-fade-in">
+    <div
+      className="pb-6 animate-fade-in"
+      style={{
+        '--primary': country?.branding_config?.primary_color || '#047857',
+        '--accent': country?.branding_config?.accent_color || '#fbbf24'
+      } as React.CSSProperties}
+    >
       {/* ============ HERO — personalizado por role ============ */}
       {showRoleHero ? (
         <RoleHero roles={roles as any} name={firstName !== 'visitante' ? firstName : undefined} />
       ) : (
       <section className="relative px-4 pt-3">
-        <div className="relative rounded-[2rem] overflow-hidden gradient-ocean p-6 text-white shadow-premium">
+        <div
+          className="relative rounded-[2rem] overflow-hidden gradient-ocean p-6 text-white shadow-premium"
+          style={country?.branding_config?.home_banner_url ? {
+            backgroundImage: `linear-gradient(to bottom right, rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url(${country.branding_config.home_banner_url})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          } : {}}
+        >
           {/* Layered orbs — profundidade */}
           <span className="float-orb h-56 w-56 -top-14 -right-10 bg-secondary/40" />
           <span className="float-orb h-64 w-64 -bottom-20 -left-14 bg-accent/30" style={{ animationDelay: '-6s' }} />
@@ -118,16 +137,17 @@ export default function Home() {
               <Sparkles className="h-3 w-3" /> {greet()}{user ? `, ${firstName}` : ''}
             </div>
             <h1 className="text-3xl font-black leading-[1.05] mt-2">
-              Saúde, farmácia<br/>
-              <span className="text-secondary">numa só carteira.</span>
+              {t('home.hero_title').split(' ').map((word, i, arr) =>
+                i === arr.length - 1 ? <><br/><span key={i} className="text-secondary">{word}</span></> : word + ' '
+              )}
             </h1>
             <p className="text-sm opacity-85 mt-3 max-w-[280px]">
-              Meddy Consulta, médicos verificados e entregas em Maputo — pago direto da tua carteira MZN.
+              {t('home.hero_subtitle')}
             </p>
 
             <div className="flex gap-2 mt-5">
               <Button size="sm" className="flex-1 bg-white text-primary hover:bg-white/90 font-bold" onClick={() => navigate('/health/triage')}>
-                <Sparkles className="h-4 w-4 mr-1.5" /> Meddy Consulta
+                <Sparkles className="h-4 w-4 mr-1.5" /> {t('home.meddy_consulta')}
               </Button>
               <Button
                 size="sm"
@@ -142,9 +162,9 @@ export default function Home() {
 
             {/* Trust strip */}
             <div className="flex items-center gap-3 mt-5 pt-4 border-t border-white/15 text-[10px] opacity-75">
-              <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> M-Pesa</span>
-              <span className="flex items-center gap-1"><Heart className="h-3 w-3" /> +120 médicos</span>
-              <span className="flex items-center gap-1"><Zap className="h-3 w-3" /> 24/7</span>
+              <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> {country?.config?.payment_methods?.[0]?.name || 'Pagamento'}</span>
+              <span className="flex items-center gap-1"><Heart className="h-3 w-3" /> {t('home.trust_strip.doctors')}</span>
+              <span className="flex items-center gap-1"><Zap className="h-3 w-3" /> {t('home.trust_strip.available')}</span>
             </div>
           </div>
         </div>
@@ -179,10 +199,10 @@ export default function Home() {
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-wider opacity-75 font-bold">Carteira MZN</p>
+                <p className="text-[10px] uppercase tracking-wider opacity-75 font-bold">Carteira {country?.currency_code || 'MZN'}</p>
                 <p className="text-3xl font-black mt-1 leading-none flex items-baseline num-pulse">
                   <NumberFlow value={Number(wallet?.balance_mzn ?? 0)} format={{ maximumFractionDigits: 0 }} className="tabular-nums" />
-                  <span className="text-base font-semibold ml-1.5 opacity-80">MZN</span>
+                  <span className="text-base font-semibold ml-1.5 opacity-80">{country?.currency_code || 'MZN'}</span>
                 </p>
               </div>
               <div className="h-9 w-9 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
@@ -379,7 +399,7 @@ export default function Home() {
 
       {/* ============ CATEGORIAS ============ */}
       <section className="px-4 mt-6">
-        <h2 className="text-xl font-black mb-3">Explora por categoria</h2>
+        <h2 className="text-xl font-black mb-3">{t('home.categories')}</h2>
         <div className="grid grid-cols-4 gap-2">
           {[
             { icon: Stethoscope, label: 'Médicos', color: 'pharmacy', to: '/health/doctors' },

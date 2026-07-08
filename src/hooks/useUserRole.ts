@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-export type AppRole = 'admin' | 'customer' | 'store_owner' | 'driver' | 'doctor' | 'clinic';
+export type AppRole = 'admin' | 'customer' | 'store_owner' | 'driver' | 'doctor' | 'clinic' | 'country_manager';
 
 export function useUserRoles() {
   const { user, roles: authRoles, loading: authLoading } = useAuth();

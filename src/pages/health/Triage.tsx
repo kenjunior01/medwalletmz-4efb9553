@@ -29,7 +29,7 @@ const sevColor: Record<string, string> = {
 export default function Triage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { coordinates, calculateDistance } = useLocation();
+  const { coordinates, calculateDistance, countryCode } = useLocation();
   const [symptoms, setSymptoms] = useState('');
   const [age, setAge] = useState('');
   const [duration, setDuration] = useState('');
@@ -80,7 +80,7 @@ export default function Triage() {
     setResult(null);
     try {
       const { data, error } = await supabase.functions.invoke('ai-triage', {
-        body: { symptoms, age: age ? Number(age) : null, duration },
+        body: { symptoms, age: age ? Number(age) : null, duration, country: countryCode },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { CountryProvider } from "@/contexts/CountryContext";
 import { LocationProvider } from "@/contexts/LocationContext";
 import { DataSaverProvider } from "@/contexts/DataSaverContext";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -85,6 +86,7 @@ import ConsultationRoom from "./pages/health/ConsultationRoom";
 import VideoSessions from "./pages/health/VideoSessions";
 import Referrals from "./pages/Referrals";
 import Wallet from "./pages/Wallet";
+import Legal from "./pages/Legal";
 import AdminWallets from "./pages/admin/AdminWallets";
 import AdminCommissions from "./pages/admin/AdminCommissions";
 import AdminPlatformSettings from "./pages/admin/AdminPlatformSettings";
@@ -92,6 +94,9 @@ import AdminReferrals from "./pages/admin/AdminReferrals";
 import AdminTransactions from "./pages/admin/AdminTransactions";
 import AdminImport from "./pages/admin/AdminImport";
 import AdminCuration from "./pages/admin/AdminCuration";
+import GlobalMetrics from "./pages/admin/GlobalMetrics";
+import FinancialDashboard from "./pages/admin/FinancialDashboard";
+import CountrySettings from "./pages/admin/CountrySettings";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import AdminInsurance from "./pages/admin/AdminInsurance";
@@ -121,14 +126,15 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <CartProvider>
-        <LocationProvider>
-          <DataSaverProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <SmartEngagementPopUp />
-              <BrowserRouter>
+      <CountryProvider>
+        <CartProvider>
+          <LocationProvider>
+            <DataSaverProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <SmartEngagementPopUp />
+                <BrowserRouter>
                 <Routes>
                   {/* Main App Routes */}
                   <Route element={<AppLayout />}>
@@ -166,6 +172,7 @@ const App = () => (
                     <Route path="/partners" element={<Partners />} />
                     <Route path="/referrals" element={<Referrals />} />
                     <Route path="/wallet" element={<Wallet />} />
+                    <Route path="/legal" element={<Legal />} />
                     <Route path="/suggest-place" element={<SuggestPlace />} />
                     <Route path="/health/insurance" element={<Insurance />} />
                     <Route path="/insurance/:id" element={<InsuranceDetail />} />
@@ -217,6 +224,9 @@ const App = () => (
                     <Route path="insurance" element={<AdminInsurance />} />
                     <Route path="ads" element={<AdminAds />} />
                     <Route path="labs" element={<AdminLabs />} />
+                    <Route path="global-metrics" element={<GlobalMetrics />} />
+                    <Route path="financial" element={<FinancialDashboard />} />
+                    <Route path="country-settings" element={<CountrySettings />} />
                   </Route>
 
                   {/* Store Owner Routes */}
@@ -256,6 +266,7 @@ const App = () => (
           </DataSaverProvider>
         </LocationProvider>
       </CartProvider>
+    </CountryProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

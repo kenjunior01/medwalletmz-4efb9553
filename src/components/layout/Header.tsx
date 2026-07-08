@@ -1,10 +1,11 @@
 import { useMemo, useEffect, useState } from "react";
-import { MapPin, ChevronDown, Bell, Sparkles } from "lucide-react";
+import { MapPin, ChevronDown, Bell, Sparkles, Globe, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation as useAppLocation } from "@/contexts/LocationContext";
+import { useCountry } from "@/contexts/CountryContext";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -50,6 +51,7 @@ function getGreeting(): { text: string; emoji: string; gradient: string } {
 
 export function Header() {
   const { city: selectedCity, setCity: setSelectedCity } = useAppLocation();
+  const { country, allCountries, setCountryById, locale, setLocale } = useCountry();
   const greeting = useMemo(() => getGreeting(), []);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -77,37 +79,64 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 glass border-b border-border/50 safe-area-top">
       <div className="flex items-center justify-between px-4 py-3">
-        {/* Location Selector */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1.5 hover:bg-primary/10 rounded-xl transition-all">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-primary" />
-              </div>
-              <div className="flex flex-col items-start">
-                <span className="text-[10px] text-muted-foreground font-medium">Entregar em</span>
-                <span className="font-bold text-sm">{selectedCity}</span>
-              </div>
-              <ChevronDown className="h-3 w-3 text-muted-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-52 glass rounded-xl p-1">
-            {cities.map((city) => (
-              <DropdownMenuItem
-                key={city}
-                onClick={() => setSelectedCity(city)}
-                className={`rounded-lg py-2.5 px-3 cursor-pointer transition-all ${
-                  city === selectedCity 
-                    ? "bg-primary text-primary-foreground" 
-                    : "hover:bg-muted"
-                }`}
-              >
-                <MapPin className="h-4 w-4 mr-2" />
-                {city}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          {/* Country Selector */}
+          {allCountries.length > 1 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/10">
+                  {country?.id === 'MZ' ? '🇲🇿' : <Globe className="h-4 w-4" />}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48 glass rounded-xl p-1">
+                {allCountries.map((c) => (
+                  <DropdownMenuItem
+                    key={c.id}
+                    onClick={() => setCountryById(c.id)}
+                    className={`rounded-lg py-2 px-3 cursor-pointer ${
+                      c.id === country?.id ? "bg-primary text-primary-foreground" : ""
+                    }`}
+                  >
+                    <span className="mr-2">{c.id === 'MZ' ? '🇲🇿' : '🌐'}</span>
+                    {c.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          {/* Location Selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1.5 hover:bg-primary/10 rounded-xl transition-all">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <MapPin className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-[10px] text-muted-foreground font-medium">Entregar em</span>
+                  <span className="font-bold text-sm">{selectedCity}</span>
+                </div>
+                <ChevronDown className="h-3 w-3 text-muted-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-52 glass rounded-xl p-1">
+              {cities.map((city) => (
+                <DropdownMenuItem
+                  key={city}
+                  onClick={() => setSelectedCity(city)}
+                  className={`rounded-lg py-2.5 px-3 cursor-pointer transition-all ${
+                    city === selectedCity
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  <MapPin className="h-4 w-4 mr-2" />
+                  {city}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         {/* Logo with Greeting */}
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
@@ -124,6 +153,30 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-1">
+          {/* Language Selector */}
+          {country && country.supported_locales.length > 1 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/10">
+                  <Languages className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-32 glass rounded-xl p-1">
+                {country.supported_locales.map((l) => (
+                  <DropdownMenuItem
+                    key={l}
+                    onClick={() => setLocale(l)}
+                    className={`rounded-lg py-2 px-3 cursor-pointer uppercase font-bold text-xs ${
+                      l === locale ? "bg-primary text-primary-foreground" : ""
+                    }`}
+                  >
+                    {l}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
           <ThemeToggle />
           <Button variant="ghost" size="icon" onClick={() => navigate('/orders')} aria-label="Notificações" className="relative hover:bg-primary/10 rounded-xl transition-all h-10 w-10">
             <Bell className="h-4 w-4" />

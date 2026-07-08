@@ -1,0 +1,36 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "good_morning": "Good morning",
+    "good_afternoon": "Good afternoon",
+    "good_night": "Good night",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "confirm": "Confirm",
+    "pay": "Pay"
+  },
+  "home": {
+    "hero_title": "Health and pharmacy in one wallet.",
+    "hero_subtitle": "AI Triage, verified doctors and 24h pharmacy.",
+    "wallet_card": "Wallet",
+    "meddy_consulta": "Meddy Consult",
+    "doctors": "Doctors",
+    "pharmacy": "Pharmacy",
+    "categories": "Explore by category",
+    "trust_strip": {
+      "doctors": "+120 doctors",
+      "available": "24/7"
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "payment_method": "Payment Method",
+    "address": "Delivery Address",
+    "summary": "Order Summary",
+    "total": "Total",
+    "delivery_fee": "Delivery Fee"
+  }
+}

@@ -23,6 +23,7 @@ import {
   ArrowDownToLine,
   Shield,
   Megaphone,
+  Globe,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -49,19 +50,23 @@ const menuItems = [
   { icon: Wallet, label: 'Contas Pagamento', path: '/admin/payment-accounts' },
   { icon: BarChart3, label: 'Relatórios', path: '/admin/reports' },
   { icon: Upload, label: 'Importar Dados', path: '/admin/import' },
+  { icon: Globe, label: 'Gestão do País', path: '/admin/country-settings', highlight: true },
   { icon: Settings, label: 'Configurações', path: '/admin/settings' },
+  { icon: Globe, label: 'Métricas Mundiais', path: '/admin/global-metrics', highlight: true },
 ];
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, hasRole, loading, signOut } = useAuth();
+  const isAdmin = hasRole('admin');
+  const isCountryManager = hasRole('country_manager');
 
   useEffect(() => {
-    if (!loading && (!user || !hasRole('admin'))) {
+    if (!loading && (!user || (!isAdmin && !isCountryManager))) {
       navigate('/auth');
     }
-  }, [user, loading, hasRole, navigate]);
+  }, [user, loading, isAdmin, isCountryManager, navigate]);
 
   if (loading) {
     return (
@@ -84,7 +89,7 @@ export default function AdminDashboard() {
     );
   }
 
-  if (!user || !hasRole('admin')) {
+  if (!user || (!isAdmin && !isCountryManager)) {
     return null;
   }
 

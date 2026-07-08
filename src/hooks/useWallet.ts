@@ -3,9 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 export interface WalletData {
-  balance_mzn: number;
+  balance: number;
   total_deposited: number;
   total_spent: number;
+  currency: string;
 }
 
 export function useWallet() {
@@ -17,18 +18,20 @@ export function useWallet() {
     if (!user) { setLoading(false); return; }
     const { data } = await supabase
       .from('wallets')
-      .select('balance_mzn, total_deposited, total_spent')
+      .select('balance_mzn, total_deposited, total_spent, currency')
       .eq('user_id', user.id)
       .maybeSingle();
+
     if (!data) {
       // Ensure wallet exists
       await supabase.from('wallets').insert({ user_id: user.id }).select().maybeSingle();
-      setWallet({ balance_mzn: 0, total_deposited: 0, total_spent: 0 });
+      setWallet({ balance: 0, total_deposited: 0, total_spent: 0, currency: 'MZN' });
     } else {
       setWallet({
-        balance_mzn: Number(data.balance_mzn),
+        balance: Number(data.balance_mzn),
         total_deposited: Number(data.total_deposited),
         total_spent: Number(data.total_spent),
+        currency: data.currency || 'MZN'
       });
     }
     setLoading(false);
@@ -45,9 +48,10 @@ export function useWallet() {
         { event: 'UPDATE', schema: 'public', table: 'wallets', filter: `user_id=eq.${user.id}` },
         (p: any) => {
           setWallet({
-            balance_mzn: Number(p.new.balance_mzn),
+            balance: Number(p.new.balance_mzn),
             total_deposited: Number(p.new.total_deposited),
             total_spent: Number(p.new.total_spent),
+            currency: p.new.currency || 'MZN'
           });
         })
       .subscribe();

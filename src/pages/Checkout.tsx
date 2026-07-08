@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
-import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake } from 'lucide-react';
+import { CouponInput } from '@/components/checkout/CouponInput';
+import { useCountry } from '@/contexts/CountryContext';
+import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake, Globe, Copy, ExternalLink, CheckCircle2 } from 'lucide-react';
 interface AppliedCoupon {
   id: string;
   code: string;
@@ -39,6 +41,7 @@ const allPaymentMethods: PayMethod[] = [
   { id: 'mpesa', name: 'M-Pesa', icon: '📱', description: 'Vodacom M-Pesa', requiresPhone: true },
   { id: 'emola', name: 'e-Mola', icon: '💰', description: 'Movitel e-Mola', requiresPhone: true },
   { id: 'mkesh', name: 'Mkesh', icon: '🏦', description: 'BCI Mkesh', requiresPhone: true },
+  { id: 'paypal', name: 'PayPal', icon: '🅿️', description: 'Pagamento global seguro', badge: 'Global' },
   { id: 'apple_pay', name: 'Apple Pay', icon: '', description: 'Toque para pagar (iOS/Safari)', badge: 'Rápido' },
   { id: 'google_pay', name: 'Google Pay', icon: '', description: 'Toque para pagar (Android/Chrome)', badge: 'Rápido' },
 ];
@@ -50,19 +53,51 @@ function detectSupportedPayments(): { applePay: boolean; googlePay: boolean } {
   return { applePay: !!applePay, googlePay };
 }
 
+function calculateCouponDiscount(coupon: AppliedCoupon | null, subtotal: number): number {
+  if (!coupon) return 0;
+  if (coupon.discount_type === 'percentage') {
+    return Math.floor((subtotal * coupon.discount_value) / 100);
+  }
+  return coupon.discount_value;
+}
+
 export default function Checkout() {
   const navigate = useNavigate();
   const { items, subtotal, clearCart, currentStoreId } = useCart();
   const { user } = useAuth();
-  
+  const { country } = useCountry();
+
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('mpesa');
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [supported] = useState(detectSupportedPayments());
-  const paymentMethods = allPaymentMethods.filter(m => {
-    if (m.id === 'apple_pay') return supported.applePay;
-    if (m.id === 'google_pay') return supported.googlePay;
-    return true;
-  });
+
+  const paymentMethods = useMemo(() => {
+    if (!country?.config?.payment_methods) return allPaymentMethods;
+
+    const countryMethods = country.config.payment_methods.map((m: any) => ({
+      id: m.id,
+      name: m.name,
+      icon: m.icon,
+      description: m.description,
+      requiresPhone: m.requires_phone || m.type === 'mobile_money',
+      badge: m.badge
+    }));
+
+    if (supported.applePay) {
+      countryMethods.push({ id: 'apple_pay', name: 'Apple Pay', icon: '🍎', description: 'Toque para pagar', badge: 'Rápido' });
+    }
+    if (supported.googlePay) {
+      countryMethods.push({ id: 'google_pay', name: 'Google Pay', icon: '🤖', description: 'Toque para pagar', badge: 'Rápido' });
+    }
+
+    return countryMethods;
+  }, [country, supported]);
+
+  useEffect(() => {
+    if (paymentMethods.length > 0 && !paymentMethod) {
+      setPaymentMethod(paymentMethods[0].id);
+    }
+  }, [paymentMethods, paymentMethod]);
   const selectedMethod = paymentMethods.find(m => m.id === paymentMethod) || paymentMethods[0];
   const requiresPhone = !!selectedMethod?.requiresPhone;
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -72,6 +107,7 @@ export default function Checkout() {
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [prescriptionId, setPrescriptionId] = useState<string | null>(null);
   const [requiresColdChain, setRequiresColdChain] = useState(false);
+  const [showQR, setShowQR] = useState<{ code: string; type: 'qr' | 'link' } | null>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('active_prescription');
@@ -192,6 +228,27 @@ export default function Checkout() {
 
       if (itemsError) throw itemsError;
 
+      // New Global Payment Logic for PIX/UPI/Stripe/PayPal
+      if (['pix', 'upi', 'stripe', 'paystack', 'ozow', 'paypal'].includes(paymentMethod)) {
+        const { data: globalPay, error: gpError } = await supabase.functions.invoke('process-global-payment', {
+          body: {
+            order_id: order.id,
+            user_id: user.id,
+            method: paymentMethod,
+            amount: total,
+            country_id: country?.id
+          }
+        });
+
+        if (gpError) throw gpError;
+
+        if (globalPay.qr_code) {
+          setShowQR({ code: globalPay.qr_code, type: globalPay.method_type });
+          setLoading(false);
+          return; // Wait for QR interaction
+        }
+      }
+
       const isInstant = paymentMethod === 'wallet' || paymentMethod === 'apple_pay' || paymentMethod === 'google_pay';
 
       // Debit wallet if the user chose it
@@ -303,27 +360,27 @@ export default function Checkout() {
             {items.map(item => (
               <div key={item.id} className="flex justify-between">
                 <span>{item.quantity}x {item.name}</span>
-                <span>{item.price * item.quantity} MZN</span>
+                <span>{item.price * item.quantity} {country?.currency_symbol || 'MZN'}</span>
               </div>
             ))}
             <div className="border-t border-border pt-2 mt-2">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>{subtotal} MZN</span>
+                <span>{subtotal} {country?.currency_symbol || 'MZN'}</span>
               </div>
               <div className="flex justify-between">
                 <span>Taxa de Entrega</span>
-                <span>{deliveryFee} MZN</span>
+                <span>{deliveryFee} {country?.currency_symbol || 'MZN'}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-primary">
                   <span>Desconto ({appliedCoupon?.code})</span>
-                  <span>-{discount} MZN</span>
+                  <span>-{discount} {country?.currency_symbol || 'MZN'}</span>
                 </div>
               )}
               <div className="flex justify-between font-bold text-lg pt-2">
                 <span>Total</span>
-                <span className="text-primary">{total} MZN</span>
+                <span className="text-primary">{total} {country?.currency_symbol || 'MZN'}</span>
               </div>
             </div>
           </div>
@@ -424,11 +481,83 @@ export default function Checkout() {
             <>
               {paymentMethod === 'apple_pay' && <Apple className="h-5 w-5 mr-2" />}
               {paymentMethod === 'wallet' && <Wallet className="h-5 w-5 mr-2" />}
-              Pagar {total} MZN
+              Pagar {total} {country?.currency_symbol || 'MZN'}
             </>
           )}
         </Button>
       </form>
+
+      {/* PIX / UPI / QR Code Dialog */}
+      <Dialog open={!!showQR} onOpenChange={(open) => !open && setShowQR(null)}>
+        <DialogContent className="max-w-[90vw] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-center">Pagamento via {selectedMethod?.name}</DialogTitle>
+            <DialogDescription className="text-center">
+              {showQR?.type === 'qr'
+                ? 'Escaneie o código abaixo com a app do seu banco para finalizar.'
+                : 'Clique no botão abaixo para concluir o pagamento seguro.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col items-center gap-6 py-4">
+            {showQR?.type === 'qr' ? (
+              <>
+                <div className="p-4 bg-white rounded-2xl border-2 border-primary/20 shadow-inner">
+                  {/* Real QR would be generated here, using placeholder for demo */}
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(showQR.code)}`}
+                    alt="Payment QR Code"
+                    className="w-48 h-48"
+                  />
+                </div>
+
+                <div className="w-full space-y-2">
+                  <p className="text-[10px] uppercase font-bold text-muted-foreground text-center">Código Copia e Cola</p>
+                  <div className="flex gap-2 p-2 bg-muted rounded-lg border">
+                    <code className="text-[10px] break-all flex-1 line-clamp-2">{showQR.code}</code>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 shrink-0"
+                      onClick={() => {
+                        navigator.clipboard.writeText(showQR.code);
+                        toast.success('Código copiado!');
+                      }}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <Button
+                className="w-full h-14 text-lg gap-2"
+                onClick={() => window.open(showQR?.code, '_blank')}
+              >
+                Abrir Portal de Pagamento <ExternalLink className="h-5 w-5" />
+              </Button>
+            )}
+
+            <div className="w-full pt-4 border-t space-y-3">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                Aguardando confirmação do banco...
+              </div>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  toast.success('Pedido confirmado! Redirecionando...');
+                  clearCart();
+                  navigate('/orders');
+                }}
+              >
+                Já paguei
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

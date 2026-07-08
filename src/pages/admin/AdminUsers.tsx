@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight } from 'lucide-react';
+import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe } from 'lucide-react';
+import { useCountry } from '@/contexts/CountryContext';
 
-type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic';
+type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager';
 
 interface UserWithRoles {
   id: string;
@@ -21,7 +22,7 @@ interface UserWithRoles {
   avatar_url: string | null;
   created_at: string;
   default_city: string | null;
-  roles: AppRole[];
+  roles: { role: AppRole; country_id?: string | null }[];
 }
 
 const roleLabels: Record<AppRole, string> = {
@@ -30,7 +31,8 @@ const roleLabels: Record<AppRole, string> = {
   driver: 'Entregador',
   admin: 'Admin',
   doctor: 'Médico',
-  clinic: 'Clínica'
+  clinic: 'Clínica',
+  country_manager: 'Gestor de País'
 };
 
 const roleColors: Record<AppRole, string> = {
@@ -39,7 +41,8 @@ const roleColors: Record<AppRole, string> = {
   driver: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
   admin: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
   doctor: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
-  clinic: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+  clinic: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
+  country_manager: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
 };
 
 export default function AdminUsers() {
@@ -48,6 +51,9 @@ export default function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedCountryForRole, setSelectedCountryForRole] = useState<string | null>(null);
+  const [pendingRole, setPendingRole] = useState<AppRole | null>(null);
+  const { allCountries } = useCountry();
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users', search, roleFilter],
@@ -67,26 +73,26 @@ export default function AdminUsers() {
       // Fetch all user roles
       const { data: allRoles, error: rolesError } = await supabase
         .from('user_roles')
-        .select('user_id, role');
+        .select('user_id, role, country_id');
       if (rolesError) throw rolesError;
 
       // Map roles to users
-      const rolesMap = new Map<string, AppRole[]>();
+      const rolesMap = new Map<string, { role: AppRole; country_id?: string | null }[]>();
       allRoles?.forEach(r => {
         const existing = rolesMap.get(r.user_id) || [];
-        existing.push(r.role as AppRole);
+        existing.push({ role: r.role as AppRole, country_id: r.country_id });
         rolesMap.set(r.user_id, existing);
       });
 
       // Combine data
       const usersWithRoles: UserWithRoles[] = (profiles || []).map(profile => ({
         ...profile,
-        roles: rolesMap.get(profile.user_id) || ['customer']
+        roles: rolesMap.get(profile.user_id) || [{ role: 'customer' as AppRole }]
       }));
 
       // Filter by role if specified
       if (roleFilter !== 'all') {
-        return usersWithRoles.filter(u => u.roles.includes(roleFilter as AppRole));
+        return usersWithRoles.filter(u => u.roles.some(r => r.role === roleFilter));
       }
 
       return usersWithRoles;
@@ -94,15 +100,16 @@ export default function AdminUsers() {
   });
 
   const addRoleMutation = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
+    mutationFn: async ({ userId, role, countryId }: { userId: string; role: AppRole; countryId?: string | null }) => {
       const { error } = await supabase
         .from('user_roles')
-        .insert({ user_id: userId, role });
+        .insert({ user_id: userId, role, country_id: countryId });
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast.success('Role adicionado com sucesso');
+      setSelectedCountryForRole(null);
     },
     onError: (error: any) => {
       if (error.code === '23505') {
@@ -146,12 +153,13 @@ export default function AdminUsers() {
 
   const stats = {
     total: users?.length || 0,
-    customers: users?.filter(u => u.roles.includes('customer')).length || 0,
-    storeOwners: users?.filter(u => u.roles.includes('store_owner')).length || 0,
-    drivers: users?.filter(u => u.roles.includes('driver')).length || 0,
-    admins: users?.filter(u => u.roles.includes('admin')).length || 0,
-    doctors: users?.filter(u => u.roles.includes('doctor')).length || 0,
-    clinics: users?.filter(u => u.roles.includes('clinic')).length || 0,
+    customers: users?.filter(u => u.roles.some(r => r.role === 'customer')).length || 0,
+    storeOwners: users?.filter(u => u.roles.some(r => r.role === 'store_owner')).length || 0,
+    drivers: users?.filter(u => u.roles.some(r => r.role === 'driver')).length || 0,
+    admins: users?.filter(u => u.roles.some(r => r.role === 'admin')).length || 0,
+    doctors: users?.filter(u => u.roles.some(r => r.role === 'doctor')).length || 0,
+    clinics: users?.filter(u => u.roles.some(r => r.role === 'clinic')).length || 0,
+    countryManagers: users?.filter(u => u.roles.some(r => r.role === 'country_manager')).length || 0,
   };
 
   return (
@@ -264,9 +272,9 @@ export default function AdminUsers() {
                       {user.full_name || 'Sem nome'}
                     </p>
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {user.roles.map(role => (
-                        <Badge key={role} variant="secondary" className={roleColors[role]}>
-                          {roleLabels[role]}
+                      {user.roles.map((r, idx) => (
+                        <Badge key={`${r.role}-${idx}`} variant="secondary" className={roleColors[r.role]}>
+                          {roleLabels[r.role]} {r.country_id ? `(${r.country_id})` : ''}
                         </Badge>
                       ))}
                     </div>
@@ -335,17 +343,17 @@ export default function AdminUsers() {
                   Roles do Utilizador
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {selectedUser.roles.map(role => (
+                  {selectedUser.roles.map((r, idx) => (
                     <Badge 
-                      key={role} 
-                      className={`${roleColors[role]} cursor-pointer`}
+                      key={`${r.role}-${idx}`}
+                      className={`${roleColors[r.role]} cursor-pointer`}
                       onClick={() => {
                         if (selectedUser.roles.length > 1) {
-                          if (confirm(`Remover role "${roleLabels[role]}"?`)) {
-                            removeRoleMutation.mutate({ userId: selectedUser.user_id, role });
+                          if (confirm(`Remover role "${roleLabels[r.role]}"${r.country_id ? ` em ${r.country_id}` : ''}?`)) {
+                            removeRoleMutation.mutate({ userId: selectedUser.user_id, role: r.role });
                             setSelectedUser(prev => prev ? {
                               ...prev,
-                              roles: prev.roles.filter(r => r !== role)
+                              roles: prev.roles.filter((_, i) => i !== idx)
                             } : null);
                           }
                         } else {
@@ -353,41 +361,68 @@ export default function AdminUsers() {
                         }
                       }}
                     >
-                      {roleLabels[role]} ×
+                      {roleLabels[r.role]} {r.country_id ? `(${r.country_id})` : ''} ×
                     </Badge>
                   ))}
                 </div>
                 
                 {/* Add Role */}
-                <div className="flex gap-2">
-                  <Select 
-                    onValueChange={(role: AppRole) => {
-                      if (!selectedUser.roles.includes(role)) {
-                        addRoleMutation.mutate({ userId: selectedUser.user_id, role });
+                <div className="space-y-3 p-3 bg-muted/30 rounded-lg border border-dashed">
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-1">
+                    <UserPlus className="h-3 w-3" /> Atribuir Novo Role
+                  </p>
+
+                  <div className="flex gap-2">
+                    <Select value={pendingRole || ''} onValueChange={(role: AppRole) => setPendingRole(role)}>
+                      <SelectTrigger className="flex-1 h-9 text-xs">
+                        <SelectValue placeholder="Escolha o role..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(['customer', 'doctor', 'clinic', 'store_owner', 'driver', 'admin', 'country_manager'] as AppRole[])
+                          .map(role => (
+                            <SelectItem key={role} value={role}>
+                              {roleLabels[role]}
+                            </SelectItem>
+                          ))
+                        }
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={selectedCountryForRole || 'global'} onValueChange={(v) => setSelectedCountryForRole(v === 'global' ? null : v)}>
+                      <SelectTrigger className="w-[100px] h-9 text-xs">
+                        <SelectValue placeholder="Global" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="global">Global</SelectItem>
+                        {allCountries.map(c => (
+                          <SelectItem key={c.id} value={c.id}>{c.id}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button
+                    size="sm"
+                    className="w-full h-8 text-xs font-bold"
+                    disabled={!pendingRole || addRoleMutation.isPending}
+                    onClick={() => {
+                      if (pendingRole && selectedUser) {
+                        addRoleMutation.mutate({
+                          userId: selectedUser.user_id,
+                          role: pendingRole,
+                          countryId: selectedCountryForRole
+                        });
+                        // Optimistic update for UI
                         setSelectedUser(prev => prev ? {
                           ...prev,
-                          roles: [...prev.roles, role]
+                          roles: [...prev.roles, { role: pendingRole, country_id: selectedCountryForRole }]
                         } : null);
+                        setPendingRole(null);
                       }
                     }}
                   >
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Adicionar role..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(['customer', 'doctor', 'clinic', 'store_owner', 'driver', 'admin'] as AppRole[])
-                        .filter(r => !selectedUser.roles.includes(r))
-                        .map(role => (
-                          <SelectItem key={role} value={role}>
-                            <span className="flex items-center gap-2">
-                              <UserPlus className="h-3 w-3" />
-                              {roleLabels[role]}
-                            </span>
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
+                    {addRoleMutation.isPending ? 'A processar...' : 'Confirmar Atribuição'}
+                  </Button>
                 </div>
               </div>
             </div>
