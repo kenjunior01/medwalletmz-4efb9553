@@ -121,8 +121,9 @@ Componente `ReferralBanner` com copy adaptado ao contexto moçambicano:
 ### 13. Base de Dados de Saúde Moçambicana (Seeding & Import) ✅
 
 - **Seed Inicial Massivo:** Inserção de +20 hospitais, clínicas e farmácias de referência em Maputo, Matola, Beira e Nampula com coordenadas reais e imagens de alta qualidade.
-- **Auto-Importador Google Maps:** Ferramenta administrativa para importar automaticamente centenas de locais via Google Places/Mapbox API para qualquer cidade de Moçambique.
+- **Auto-Importador de Alcance Nacional:** Ferramenta administrativa expandida para localizar estabelecimentos até nas zonas rurais (mais de 150 distritos e vilas mapeados via Google Places/Mapbox).
 - **Curation Dashboard:** Painel `/admin/curation` para validar e aprovar submissões da comunidade e importações em massa.
+- **Sistema de Avaliação Universal:** Utilizadores agora podem deixar comentários e classificações (estrelas) em qualquer farmácia, clínica ou hospital, promovendo a transparência e qualidade do serviço.
 - **Renderização Segura de Imagens:** Componente `SafeImage` implementado em toda a app para garantir que nenhuma lista quebre por links de imagem offline (fallback automático).
 
 ---

@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
-import { StoreReviews } from '@/components/reviews/StoreReviews';
+import { UniversalReviews } from '@/components/reviews/UniversalReviews';
 import { toast } from 'sonner';
 import { ArrowLeft, Star, Clock, MapPin, Plus, Minus, MessageSquare } from 'lucide-react';
 
@@ -259,7 +259,7 @@ export default function StoreDetail() {
           </TabsContent>
 
           <TabsContent value="reviews" className="mt-4">
-            <StoreReviews storeId={store.id} />
+            <UniversalReviews storeId={store.id} entityName={store.name} />
           </TabsContent>
         </Tabs>
       </div>

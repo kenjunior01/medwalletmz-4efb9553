@@ -59,18 +59,19 @@ Deno.serve(async (req) => {
   try {
     const {
       cities = [
-        // Todas as capitais provinciais + cidades relevantes
-        'Maputo', 'Matola', 'Boane', 'Marracuene',
-        'Xai-Xai', 'Chókwè', 'Inhambane', 'Maxixe', 'Vilanculos',
-        'Beira', 'Dondo', 'Chimoio', 'Manica', 'Gondola',
-        'Tete', 'Moatize',
-        'Quelimane', 'Mocuba', 'Gurué',
-        'Nampula', 'Nacala', 'Angoche',
-        'Pemba', 'Montepuez',
-        'Lichinga', 'Cuamba',
+        // MASSIVE LIST OF MOZAMBIQUE CITIES AND DISTRICTS (Rural + Urban)
+        'Maputo', 'Matola', 'Boane', 'Marracuene', 'Namaacha', 'Manhiça', 'Magude', 'Moamba', 'Xinavane',
+        'Xai-Xai', 'Chókwè', 'Chibuto', 'Bilene', 'Mandlakazi', 'Mabalane', 'Guijá', 'Chigubo', 'Massangena', 'Chicualacuala',
+        'Inhambane', 'Maxixe', 'Vilanculos', 'Massinga', 'Zavala', 'Inharrime', 'Jangamo', 'Homoíne', 'Morrumbene', 'Panda', 'Funhalouro', 'Mabote',
+        'Beira', 'Dondo', 'Nhamatanda', 'Búzi', 'Gorongosa', 'Marromeu', 'Caia', 'Chemba', 'Cheringoma', 'Muanza', 'Machanga', 'Chibabava',
+        'Chimoio', 'Manica', 'Gondola', 'Sussundenga', 'Catandica', 'Bárue', 'Mossurize', 'Machaze', 'Macate', 'Vanduzi',
+        'Tete', 'Moatize', 'Angónia', 'Tsangano', 'Mutarara', 'Changara', 'Cahora Bassa', 'Songo', 'Mágoè', 'Zumbo', 'Marávia', 'Chifunde', 'Macanga',
+        'Quelimane', 'Mocuba', 'Gurué', 'Alto Molócue', 'Milange', 'Nicoadala', 'Namacurra', 'Maganja da Costa', 'Pebane', 'Gilé', 'Ile', 'Lugela', 'Mocubela', 'Derre', 'Molumbo',
+        'Nampula', 'Nacala', 'Angoche', 'Monapo', 'Ilha de Moçambique', 'Meconta', 'Mogovolas', 'Moma', 'Ribáuè', 'Malema', 'Lalaua', 'Mecubúri', 'Memba', 'Eráti', 'Nacarôa', 'Liupo', 'Larde',
+        'Pemba', 'Montepuez', 'Mueda', 'Chiúre', 'Ancuabe', 'Balama', 'Namuno', 'Macomia', 'Mocímboa da Praia', 'Palma', 'Quissanga', 'Meluco', 'Ibo',
+        'Lichinga', 'Cuamba', 'Mandimba', 'Marrupa', 'Maúa', 'Mecanhelas', 'Mecula', 'Metarica', 'Majune', 'Muembe', 'Ngauma', 'Nipepe', 'Sanga'
       ],
       entities = ['pharmacy', 'clinic', 'hospital', 'laboratory'],
-      // 'commit' = publica direto (legacy behaviour).  default 'draft' = grava em place_proposals.
       mode = 'draft',
     } = await req.json();
 

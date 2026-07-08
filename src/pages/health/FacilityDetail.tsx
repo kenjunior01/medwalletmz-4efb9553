@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SafeImage } from '@/components/ui/safe-image';
-import { ArrowLeft, CheckCircle2, MapPin, Phone, Navigation } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MapPin, Phone, Navigation, Star } from 'lucide-react';
 import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from '@/lib/healthRoutes';
+import { UniversalReviews } from '@/components/reviews/UniversalReviews';
 
 export default function FacilityDetail() {
     const { id } = useParams<{ id: string }>();
@@ -67,6 +68,10 @@ export default function FacilityDetail() {
                     <div className="flex flex-wrap gap-2">
                         <Badge variant="secondary">{facility.type === 'hospital' ? 'Hospital' : facility.type === 'clinic' ? 'Clínica' : 'Instituição'}</Badge>
                         {facility.city && <Badge variant="outline"><MapPin className="mr-1 h-3 w-3" />{facility.city}</Badge>}
+                        <Badge variant="outline" className="text-yellow-600 bg-yellow-50 border-yellow-200">
+                            <Star className="mr-1 h-3 w-3 fill-yellow-600" />
+                            {facility.rating?.toFixed(1) || 'N/A'}
+                        </Badge>
                     </div>
 
                     <div className="space-y-2 text-sm text-muted-foreground">
@@ -79,6 +84,10 @@ export default function FacilityDetail() {
                             <Navigation className="mr-2 h-4 w-4" /> Ver rotas no Google Maps
                         </Button>
                     )}
+
+                    <div className="pt-4 border-t">
+                        <UniversalReviews clinicId={facility.id} entityName={facility.name} />
+                    </div>
                 </div>
             </div>
         </div>
