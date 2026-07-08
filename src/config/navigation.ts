@@ -1,6 +1,6 @@
 import {
   Home, Stethoscope, FileText, ClipboardList, User, Droplet, Pill, Building2, FlaskConical,
-  Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital,
+  Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -9,6 +9,8 @@ export type NavItem = {
   icon: LucideIcon;
   label: string;
   group?: string;
+  /** Renderizado como botão central grande (destaque) na BottomNav. */
+  highlight?: boolean;
 };
 
 export type RoleKey =
@@ -19,9 +21,9 @@ export type RoleKey =
 export const bottomNavByRole: Record<RoleKey, NavItem[]> = {
   customer: [
     { path: "/", icon: Home, label: "Início" },
-    { path: "/health/doctors", icon: Stethoscope, label: "Médicos" },
+    { path: "/health/facilities", icon: Hospital, label: "Instituições" },
+    { path: "/health/triage", icon: Video, label: "Consulta", highlight: true },
     { path: "/pharmacy", icon: Pill, label: "Farmácia" },
-    { path: "/blood", icon: Droplet, label: "Sangue" },
     { path: "/profile", icon: User, label: "Perfil" },
   ],
   doctor: [
