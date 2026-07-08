@@ -157,6 +157,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/admin/transactions", icon: Wallet, label: "Financeiro", group: "Gestão" },
     { path: "/admin/withdrawals", icon: Wallet, label: "Levantamentos", group: "Gestão" },
     { path: "/admin/subscriptions", icon: Shield, label: "Subscrições", group: "Gestão" },
+    { path: "/admin/subscription-plans", icon: Shield, label: "Planos", group: "Gestão" },
     { path: "/admin/settings", icon: Settings, label: "Definições", group: "Sistema" },
     { path: "/profile", icon: User, label: "Perfil", group: "Conta" },
   ],
