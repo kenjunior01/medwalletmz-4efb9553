@@ -76,21 +76,46 @@ export default function AdminImport() {
         if (missing.length) { failed++; errors.push(`${row.name || 'linha'}: faltam ${missing.join(', ')}`); continue; }
 
         let payload: any = { ...row };
-        if (key === 'pharmacies') payload = { ...payload, type: 'pharmacy', is_active: true };
-        if (key === 'clinics' || key === 'hospitals') {
-          payload = { ...payload, owner_id: payload.owner_id || adminId, is_active: true, is_verified: false };
-          if (key === 'hospitals' && !payload.description) payload.description = 'Hospital';
-        }
-        if (key === 'doctors' && typeof payload.languages === 'string') {
-          payload.languages = payload.languages.split(',').map((s: string) => s.trim()).filter(Boolean);
+
+        if (key === 'pharmacies' || key === 'clinics' || key === 'hospitals') {
+          const entityType = key === 'pharmacies' ? 'pharmacy' : key === 'hospitals' ? 'hospital' : 'clinic';
+          const rawImage = row.image_url ?? row.logo_url ?? row.photo_url ?? null;
+          const normalizedImage = typeof rawImage === 'string' && rawImage.trim()
+            ? rawImage.trim()
+            : null;
+          payload = {
+            source: 'user_submit',
+            entity_type: entityType,
+            name: row.name,
+            address: row.address ?? null,
+            city: row.city,
+            neighborhood: row.neighborhood ?? null,
+            phone: row.phone ?? null,
+            website: row.website ?? null,
+            description: row.description ?? (key === 'hospitals' ? 'Hospital' : key === 'clinics' ? 'Clínica' : null),
+            image_url: normalizedImage,
+            latitude: row.latitude ?? row.lat ?? null,
+            longitude: row.longitude ?? row.lng ?? null,
+            raw_payload: { imported_via_excel: true, original_row: row },
+            search_meta: { imported_via: 'excel', imported_at: new Date().toISOString() },
+            proposed_by: adminId ?? null,
+            status: 'pending',
+          };
+        } else if (key === 'doctors') {
+          if (typeof payload.languages === 'string') {
+            payload.languages = payload.languages.split(',').map((s: string) => s.trim()).filter(Boolean);
+          }
         }
 
-        const { error } = await (supabase.from(tpl.table as any) as any).insert(payload);
+        const { error } = key === 'pharmacies' || key === 'clinics' || key === 'hospitals'
+          ? await (supabase.from('place_proposals') as any).insert(payload)
+          : await (supabase.from(tpl.table as any) as any).insert(payload);
+
         if (error) { failed++; errors.push(`${row.name || row.user_id}: ${error.message}`); } else created++;
       }
 
       setResult({ created, failed, errors: errors.slice(0, 10), total: rows.length });
-      toast.success(`${created} criados, ${failed} com erro`);
+      toast.success(`${created} proposta(s) enviada(s) para curadoria, ${failed} com erro`);
     } catch (e: any) {
       toast.error(e.message);
     } finally {

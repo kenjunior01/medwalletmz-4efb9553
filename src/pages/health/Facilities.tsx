@@ -9,8 +9,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Hospital, Building2, FlaskConical, MapPin, Phone, CheckCircle2, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SafeImage } from "@/components/ui/safe-image";
 import { GoogleMap, type GMarker } from "@/components/maps/GoogleMap";
 import { haversineKm } from "@/lib/googleRoutes";
+import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from "@/lib/healthRoutes";
 import { Navigation } from "lucide-react";
 
 const TYPES = [
@@ -65,9 +67,10 @@ export default function Facilities() {
 
   const openDirections = (c: any) => {
     if (!c.latitude || !c.longitude) return;
-    const origin = userLoc ? `${userLoc.lat},${userLoc.lng}` : "";
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${c.latitude},${c.longitude}${origin ? `&origin=${origin}` : ""}&travelmode=driving`;
-    window.open(url, "_blank");
+    const origin = userLoc ? { lat: userLoc.lat, lng: userLoc.lng } : null;
+    const destination = { lat: c.latitude, lng: c.longitude };
+    const url = buildGoogleMapsDirectionsUrl(origin, destination, "driving");
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -111,7 +114,7 @@ export default function Facilities() {
         {TYPES.map(t => (
           <TabsContent key={t.key} value={t.key} className="mt-4">
             {loading ? (
-              <div className="grid gap-3 md:grid-cols-2">{[1,2,3,4].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>
+              <div className="grid gap-3 md:grid-cols-2">{[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>
             ) : withDist.length === 0 ? (
               <div className="bento-card p-8 text-center text-muted-foreground">
                 <t.icon className="h-10 w-10 mx-auto mb-2 opacity-40" />
@@ -130,39 +133,43 @@ export default function Facilities() {
               <div className="grid gap-3 md:grid-cols-2">
                 {withDist.map((c: any) => (
                   <div key={c.id} className="bento-card p-4 hover:shadow-medium transition-all">
-                   <button onClick={() => nav(`/clinic/${c.id}`)} className="w-full text-left">
-                    <div className="flex items-start gap-3">
-                      {c.logo_url ? (
-                        <img src={c.logo_url} alt={c.name} className="h-14 w-14 rounded-xl object-cover" />
-                      ) : (
-                        <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                          <t.icon className="h-7 w-7 text-primary" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <h3 className="font-bold truncate">{c.name}</h3>
-                          {c.is_verified && <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />}
-                        </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2">{c.description}</p>
-                        <div className="flex flex-wrap items-center gap-2 mt-2 text-[11px] text-muted-foreground">
-                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{c.city}</span>
-                          {c._dist !== null && (
-                            <span className="flex items-center gap-1 text-primary font-semibold">
-                              {c._dist < 1 ? `${Math.round(c._dist*1000)} m` : `${c._dist.toFixed(1)} km`}
-                            </span>
-                          )}
-                          {c.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{c.phone}</span>}
-                          <Badge variant="outline" className="h-4 text-[9px]">{t.label.slice(0, -1)}</Badge>
+                    <button onClick={() => nav(`/health/facilities/${c.id}`)} className="w-full text-left">
+                      <div className="flex items-start gap-3">
+                        {c.logo_url || c.image_url ? (
+                          <SafeImage
+                            src={getSafeImageUrl(c.logo_url || c.image_url)}
+                            alt={c.name}
+                            className="h-14 w-14 rounded-xl object-cover"
+                          />
+                        ) : (
+                          <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center">
+                            <t.icon className="h-7 w-7 text-primary" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <h3 className="font-bold truncate">{c.name}</h3>
+                            {c.is_verified && <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />}
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2">{c.description}</p>
+                          <div className="flex flex-wrap items-center gap-2 mt-2 text-[11px] text-muted-foreground">
+                            <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{c.city}</span>
+                            {c._dist !== null && (
+                              <span className="flex items-center gap-1 text-primary font-semibold">
+                                {c._dist < 1 ? `${Math.round(c._dist * 1000)} m` : `${c._dist.toFixed(1)} km`}
+                              </span>
+                            )}
+                            {c.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{c.phone}</span>}
+                            <Badge variant="outline" className="h-4 text-[9px]">{t.label.slice(0, -1)}</Badge>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                   </button>
-                   {c.latitude && c.longitude && (
-                     <Button size="sm" variant="outline" className="w-full mt-3" onClick={() => openDirections(c)}>
-                       <Navigation className="h-3.5 w-3.5 mr-1" /> Ver rotas no Google Maps
-                     </Button>
-                   )}
+                    </button>
+                    {c.latitude && c.longitude && (
+                      <Button size="sm" variant="outline" className="w-full mt-3" onClick={() => openDirections(c)}>
+                        <Navigation className="h-3.5 w-3.5 mr-1" /> Ver rotas no Google Maps
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>

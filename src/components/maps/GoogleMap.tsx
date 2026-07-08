@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loadGoogleMaps } from "@/lib/googleMapsLoader";
 
 export interface GMarker {
@@ -36,9 +36,11 @@ export function GoogleMap({
   const markerRefs = useRef<any[]>([]);
   const lineRef = useRef<any>(null);
   const infoRef = useRef<any>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    setLoadError(null);
     loadGoogleMaps().then((g) => {
       if (cancelled || !ref.current) return;
       mapRef.current = new g.maps.Map(ref.current, {
@@ -51,7 +53,12 @@ export function GoogleMap({
         fullscreenControl: false,
       });
       infoRef.current = new g.maps.InfoWindow();
-    }).catch((e) => console.warn("[GoogleMap]", e));
+    }).catch((e) => {
+      if (!cancelled) {
+        console.warn("[GoogleMap]", e);
+        setLoadError("Mapa indisponível neste momento. A localização e as rotas continuam acessíveis.");
+      }
+    });
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -68,13 +75,13 @@ export function GoogleMap({
         title: mk.title,
         icon: mk.color
           ? {
-              path: g.maps.SymbolPath.CIRCLE,
-              fillColor: mk.color,
-              fillOpacity: 1,
-              scale: 9,
-              strokeColor: "#ffffff",
-              strokeWeight: 2,
-            }
+            path: g.maps.SymbolPath.CIRCLE,
+            fillColor: mk.color,
+            fillOpacity: 1,
+            scale: 9,
+            strokeColor: "#ffffff",
+            strokeWeight: 2,
+          }
           : undefined,
       });
       if (mk.title || mk.description) {
@@ -112,6 +119,16 @@ export function GoogleMap({
   useEffect(() => {
     if (mapRef.current) mapRef.current.panTo(center);
   }, [center.lat, center.lng]);
+
+  if (loadError) {
+    return (
+      <div className={className} style={{ width: "100%", height }}>
+        <div className="flex h-full w-full items-center justify-center rounded-xl border border-dashed bg-muted/40 p-4 text-center text-sm text-muted-foreground">
+          {loadError}
+        </div>
+      </div>
+    );
+  }
 
   return <div ref={ref} className={className} style={{ width: "100%", height }} />;
 }

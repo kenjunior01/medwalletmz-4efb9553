@@ -105,6 +105,7 @@ import Ads from "./pages/ads/Ads";
 import AdForm from "./pages/ads/AdForm";
 import MyAds from "./pages/ads/MyAds";
 import Facilities from "./pages/health/Facilities";
+import FacilityDetail from "./pages/health/FacilityDetail";
 import LabDetail from "./pages/health/LabDetail";
 import MyLabOrders from "./pages/health/MyLabOrders";
 import AdminAds from "./pages/admin/AdminAds";
@@ -124,132 +125,133 @@ const App = () => (
         <LocationProvider>
           <DataSaverProvider>
             <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                {/* Main App Routes */}
-                <Route element={<AppLayout />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/pharmacy" element={<Pharmacy />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/orders" element={<Orders />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/store/:id" element={<StoreDetail />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/addresses" element={<Addresses />} />
-                  <Route path="/help" element={<Help />} />
-                  <Route path="/rewards" element={<Rewards />} />
-                  <Route path="/order/:id" element={<OrderTracking />} />
-                  <Route path="/health/doctors" element={<Doctors />} />
-                  <Route path="/health/book/:doctorId" element={<BookConsultation />} />
-                  <Route path="/health/consultations" element={<MyConsultations />} />
-                  <Route path="/health/sessions" element={<VideoSessions />} />
-                  <Route path="/health/consultation/:id" element={<ConsultationChat />} />
-                  <Route path="/health/profile" element={<HealthProfile />} />
-                  <Route path="/health/prescriptions" element={<MyPrescriptions />} />
-                  <Route path="/health/prescription/:id" element={<PrescriptionDetail />} />
-                  <Route path="/health/plans" element={<HealthPlans />} />
-                  <Route path="/subscribe" element={<SubscribePlans />} />
-                  <Route path="/subscribe/:planId" element={<Subscribe />} />
-                  <Route path="/subscriptions" element={<MySubscriptions />} />
-                  <Route path="/payment-settings" element={<PaymentSettings />} />
-                  <Route path="/health/triage" element={<Triage />} />
-                  <Route path="/health/records" element={<MedicalRecords />} />
-                  <Route path="/health/exams" element={<Exams />} />
-                  <Route path="/health/exams/lab/:id" element={<LabDetail />} />
-                  <Route path="/health/exams/my" element={<MyLabOrders />} />
-                  <Route path="/health/education" element={<HealthEducation />} />
-                  <Route path="/health/education/:slug" element={<HealthEducation />} />
-                  <Route path="/partners" element={<Partners />} />
-                  <Route path="/referrals" element={<Referrals />} />
-                  <Route path="/wallet" element={<Wallet />} />
-                  <Route path="/suggest-place" element={<SuggestPlace />} />
-                  <Route path="/withdraw" element={<Withdraw />} />
-                  <Route path="/health/insurance" element={<Insurance />} />
-                  <Route path="/insurance/:id" element={<InsuranceDetail />} />
-                  <Route path="/insurance/register" element={<InsuranceRegister />} />
-                  <Route path="/insurance/dashboard" element={<InsuranceDashboard />} />
-                  <Route path="/ads" element={<Ads />} />
-                  <Route path="/ads/new" element={<AdForm />} />
-                  <Route path="/ads/mine" element={<MyAds />} />
-                  <Route path="/health/facilities" element={<Facilities />} />
-                  <Route path="/blood" element={<BloodHub />} />
-                  <Route path="/blood/register-donor" element={<BloodDonorRegister />} />
-                  <Route path="/blood/request" element={<BloodRequestForm />} />
-                </Route>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  {/* Main App Routes */}
+                  <Route element={<AppLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/pharmacy" element={<Pharmacy />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/orders" element={<Orders />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/store/:id" element={<StoreDetail />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/addresses" element={<Addresses />} />
+                    <Route path="/help" element={<Help />} />
+                    <Route path="/rewards" element={<Rewards />} />
+                    <Route path="/order/:id" element={<OrderTracking />} />
+                    <Route path="/health/doctors" element={<Doctors />} />
+                    <Route path="/health/book/:doctorId" element={<BookConsultation />} />
+                    <Route path="/health/consultations" element={<MyConsultations />} />
+                    <Route path="/health/sessions" element={<VideoSessions />} />
+                    <Route path="/health/consultation/:id" element={<ConsultationChat />} />
+                    <Route path="/health/profile" element={<HealthProfile />} />
+                    <Route path="/health/prescriptions" element={<MyPrescriptions />} />
+                    <Route path="/health/prescription/:id" element={<PrescriptionDetail />} />
+                    <Route path="/health/plans" element={<HealthPlans />} />
+                    <Route path="/subscribe" element={<SubscribePlans />} />
+                    <Route path="/subscribe/:planId" element={<Subscribe />} />
+                    <Route path="/subscriptions" element={<MySubscriptions />} />
+                    <Route path="/payment-settings" element={<PaymentSettings />} />
+                    <Route path="/health/triage" element={<Triage />} />
+                    <Route path="/health/records" element={<MedicalRecords />} />
+                    <Route path="/health/exams" element={<Exams />} />
+                    <Route path="/health/exams/lab/:id" element={<LabDetail />} />
+                    <Route path="/health/exams/my" element={<MyLabOrders />} />
+                    <Route path="/health/education" element={<HealthEducation />} />
+                    <Route path="/health/education/:slug" element={<HealthEducation />} />
+                    <Route path="/partners" element={<Partners />} />
+                    <Route path="/referrals" element={<Referrals />} />
+                    <Route path="/wallet" element={<Wallet />} />
+                    <Route path="/suggest-place" element={<SuggestPlace />} />
+                    <Route path="/withdraw" element={<Withdraw />} />
+                    <Route path="/health/insurance" element={<Insurance />} />
+                    <Route path="/insurance/:id" element={<InsuranceDetail />} />
+                    <Route path="/insurance/register" element={<InsuranceRegister />} />
+                    <Route path="/insurance/dashboard" element={<InsuranceDashboard />} />
+                    <Route path="/ads" element={<Ads />} />
+                    <Route path="/ads/new" element={<AdForm />} />
+                    <Route path="/ads/mine" element={<MyAds />} />
+                    <Route path="/health/facilities" element={<Facilities />} />
+                    <Route path="/health/facilities/:id" element={<FacilityDetail />} />
+                    <Route path="/blood" element={<BloodHub />} />
+                    <Route path="/blood/register-donor" element={<BloodDonorRegister />} />
+                    <Route path="/blood/request" element={<BloodRequestForm />} />
+                  </Route>
 
-                {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
-                <Route path="/admin/bootstrap" element={<AdminBootstrap />} />
-                
-                {/* Auth */}
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/register" element={<RoleSelection />} />
+                  {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
+                  <Route path="/admin/bootstrap" element={<AdminBootstrap />} />
 
-                {/* Vídeo-consulta (fullscreen, sem layout) */}
-                <Route path="/health/video/:id" element={<VideoConsultation />} />
-                <Route path="/health/room/:id" element={<ConsultationRoom />} />
-                
-                {/* Admin Routes */}
-                <Route path="/admin" element={<AdminDashboard />}>
-                  <Route index element={<AdminHome />} />
-                  <Route path="stores" element={<AdminStores />} />
-                  <Route path="orders" element={<AdminOrders />} />
-                  <Route path="coupons" element={<AdminCoupons />} />
-                  <Route path="products" element={<AdminProducts />} />
-                  <Route path="reports" element={<AdminReports />} />
-                  <Route path="users" element={<AdminUsers />} />
-                  <Route path="drivers" element={<AdminDrivers />} />
-                  <Route path="subscriptions" element={<AdminSubscriptions />} />
-                  <Route path="subscription-plans" element={<AdminSubscriptionPlans />} />
-                  <Route path="payment-accounts" element={<AdminPaymentAccounts />} />
-                  <Route path="settings" element={<AdminSettings />} />
-                  <Route path="wallets" element={<AdminWallets />} />
-                  <Route path="commissions" element={<AdminCommissions />} />
-                  <Route path="platform-settings" element={<AdminPlatformSettings />} />
-                  <Route path="referrals" element={<AdminReferrals />} />
-                  <Route path="transactions" element={<AdminTransactions />} />
-                  <Route path="import" element={<AdminImport />} />
-                  <Route path="curation" element={<AdminCuration />} />
-                  <Route path="withdrawals" element={<AdminWithdrawals />} />
-                  <Route path="insurance" element={<AdminInsurance />} />
-                  <Route path="ads" element={<AdminAds />} />
-                  <Route path="labs" element={<AdminLabs />} />
-                </Route>
-                
-                {/* Store Owner Routes */}
-                <Route path="/store/register" element={<StoreOwnerRegister />} />
-                <Route path="/store/dashboard" element={<StoreOwnerDashboard />}>
-                  <Route index element={<StoreHome />} />
-                  <Route path="products" element={<StoreProducts />} />
-                  <Route path="orders" element={<StoreOrders />} />
-                  <Route path="reports" element={<StoreReports />} />
-                  <Route path="settings" element={<StoreSettings />} />
-                </Route>
+                  {/* Auth */}
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/register" element={<RoleSelection />} />
 
-                {/* Driver Routes */}
-                <Route path="/driver/register" element={<DriverRegister />} />
-                <Route path="/driver/dashboard" element={<DriverDashboard />} />
-                <Route path="/driver/history" element={<DriverHistory />} />
+                  {/* Vídeo-consulta (fullscreen, sem layout) */}
+                  <Route path="/health/video/:id" element={<VideoConsultation />} />
+                  <Route path="/health/room/:id" element={<ConsultationRoom />} />
 
-                {/* Doctor Routes */}
-                <Route path="/doctor/register" element={<DoctorRegister />} />
-                <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-                <Route path="/doctor/patients" element={<DoctorPatients />} />
-                <Route path="/doctor/prescription/new" element={<CreatePrescription />} />
-                <Route path="/doctor/availability" element={<DoctorAvailability />} />
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={<AdminDashboard />}>
+                    <Route index element={<AdminHome />} />
+                    <Route path="stores" element={<AdminStores />} />
+                    <Route path="orders" element={<AdminOrders />} />
+                    <Route path="coupons" element={<AdminCoupons />} />
+                    <Route path="products" element={<AdminProducts />} />
+                    <Route path="reports" element={<AdminReports />} />
+                    <Route path="users" element={<AdminUsers />} />
+                    <Route path="drivers" element={<AdminDrivers />} />
+                    <Route path="subscriptions" element={<AdminSubscriptions />} />
+                    <Route path="subscription-plans" element={<AdminSubscriptionPlans />} />
+                    <Route path="payment-accounts" element={<AdminPaymentAccounts />} />
+                    <Route path="settings" element={<AdminSettings />} />
+                    <Route path="wallets" element={<AdminWallets />} />
+                    <Route path="commissions" element={<AdminCommissions />} />
+                    <Route path="platform-settings" element={<AdminPlatformSettings />} />
+                    <Route path="referrals" element={<AdminReferrals />} />
+                    <Route path="transactions" element={<AdminTransactions />} />
+                    <Route path="import" element={<AdminImport />} />
+                    <Route path="curation" element={<AdminCuration />} />
+                    <Route path="withdrawals" element={<AdminWithdrawals />} />
+                    <Route path="insurance" element={<AdminInsurance />} />
+                    <Route path="ads" element={<AdminAds />} />
+                    <Route path="labs" element={<AdminLabs />} />
+                  </Route>
 
-                {/* Clinic Routes */}
-                <Route path="/clinic/register" element={<ClinicRegister />} />
-                <Route path="/clinic/dashboard" element={<ClinicDashboard />} />
+                  {/* Store Owner Routes */}
+                  <Route path="/store/register" element={<StoreOwnerRegister />} />
+                  <Route path="/store/dashboard" element={<StoreOwnerDashboard />}>
+                    <Route index element={<StoreHome />} />
+                    <Route path="products" element={<StoreProducts />} />
+                    <Route path="orders" element={<StoreOrders />} />
+                    <Route path="reports" element={<StoreReports />} />
+                    <Route path="settings" element={<StoreSettings />} />
+                  </Route>
 
-                {/* Lab Routes */}
-                <Route path="/lab/register" element={<LabRegister />} />
-                <Route path="/lab/dashboard" element={<LabDashboard />} />
+                  {/* Driver Routes */}
+                  <Route path="/driver/register" element={<DriverRegister />} />
+                  <Route path="/driver/dashboard" element={<DriverDashboard />} />
+                  <Route path="/driver/history" element={<DriverHistory />} />
 
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
+                  {/* Doctor Routes */}
+                  <Route path="/doctor/register" element={<DoctorRegister />} />
+                  <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+                  <Route path="/doctor/patients" element={<DoctorPatients />} />
+                  <Route path="/doctor/prescription/new" element={<CreatePrescription />} />
+                  <Route path="/doctor/availability" element={<DoctorAvailability />} />
+
+                  {/* Clinic Routes */}
+                  <Route path="/clinic/register" element={<ClinicRegister />} />
+                  <Route path="/clinic/dashboard" element={<ClinicDashboard />} />
+
+                  {/* Lab Routes */}
+                  <Route path="/lab/register" element={<LabRegister />} />
+                  <Route path="/lab/dashboard" element={<LabDashboard />} />
+
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
             </TooltipProvider>
           </DataSaverProvider>
         </LocationProvider>
