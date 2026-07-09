@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import {
   Stethoscope, Sparkles, FileText, Pill, MessageCircle, ArrowRight, Gift, Wallet,
   Plus, Briefcase, Star, TrendingUp, Calendar, Activity, Zap, Heart, ShieldCheck,
@@ -111,6 +112,8 @@ export default function Home() {
   };
 
   return (
+    <>
+      <Seo title="MedWallet — Consultas, farmácia e carteira de saúde MZ" description="Consultas médicas online, farmácia 24h com entrega e carteira MZN em Moçambique." path="/" />
     <div
       className="pb-6 animate-fade-in"
       style={{
@@ -547,5 +550,6 @@ export default function Home() {
         </button>
       </section>
     </div>
+    </>
   );
 }

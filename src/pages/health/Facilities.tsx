@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,6 +75,8 @@ export default function Facilities() {
   };
 
   return (
+    <>
+      <Seo title="Clínicas, hospitais e laboratórios | MedWallet" description="Directório de clínicas, hospitais e laboratórios em Moçambique com localização e contactos." path="/health/facilities" />
     <div className="p-4 flex flex-col gap-4 animate-fade-in">
       <div>
         <h1 className="text-2xl font-black flex items-center gap-2">
@@ -178,5 +181,6 @@ export default function Facilities() {
         ))}
       </Tabs>
     </div>
+    </>
   );
 }

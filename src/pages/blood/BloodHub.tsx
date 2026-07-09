@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,6 +46,8 @@ export default function BloodHub() {
   };
 
   return (
+    <>
+      <Seo title="Doação de sangue em Moçambique | MedWallet" description="Registe-se como dador ou peça sangue. Ligue doadores e pacientes em Moçambique." path="/blood" />
     <div className="p-4 space-y-4 max-w-4xl mx-auto">
       <div className="bento-card p-5 bg-gradient-to-br from-red-500/15 via-rose-500/10 to-transparent border-red-500/30">
         <div className="flex items-center gap-3 mb-2">
@@ -198,5 +201,6 @@ export default function BloodHub() {
         </TabsContent>
       </Tabs>
     </div>
+    </>
   );
 }

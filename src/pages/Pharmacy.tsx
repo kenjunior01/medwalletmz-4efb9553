@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation as useRouterLocation } from "react-router-dom";
 import { Search, Pill, Star, Clock, FileText, X, Zap, Globe } from "lucide-react";
@@ -107,6 +108,8 @@ export default function Pharmacy() {
     });
 
   return (
+    <>
+      <Seo title="Farmácias 24h com entrega em Moçambique | MedWallet" description="Encontre farmácias abertas 24h em Maputo e Moçambique. Peça medicamentos com entrega rápida." path="/pharmacy" />
     <div className="flex flex-col gap-4 p-4 animate-fade-in">
       {/* Header */}
       <div>
@@ -262,5 +265,6 @@ export default function Pharmacy() {
         )}
       </div>
     </div>
+    </>
   );
 }

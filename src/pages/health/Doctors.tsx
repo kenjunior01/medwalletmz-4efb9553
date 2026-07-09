@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -80,6 +81,8 @@ export default function Doctors() {
   }, [selectedSpecialty, coordinates]);
 
   return (
+    <>
+      <Seo title="Consultas médicas online e presenciais | MedWallet" description="Marque consultas com médicos verificados em Moçambique. Telemedicina e presencial." path="/health/doctors" />
     <div className="min-h-screen bg-background pb-24">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b">
         <div className="flex items-center gap-3 p-4">
@@ -252,5 +255,6 @@ function EmptyState({
         </p>
       </div>
     </Card>
+    </>
   );
 }

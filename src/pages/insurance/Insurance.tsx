@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +34,8 @@ export default function Insurance() {
   });
 
   return (
+    <>
+      <Seo title="Seguros de saúde em Moçambique | MedWallet" description="Compare planos de seguros de saúde disponíveis em Moçambique." path="/health/insurance" />
     <div className="p-4 flex flex-col gap-4 animate-fade-in">
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -129,5 +132,6 @@ export default function Insurance() {
         </div>
       )}
     </div>
+    </>
   );
 }
