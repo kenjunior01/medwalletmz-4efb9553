@@ -1,14 +1,24 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Coordinates {
   latitude: number;
   longitude: number;
 }
 
+interface CountryConfig {
+  id: string;
+  name: string;
+  currency_code: string;
+  currency_symbol: string;
+  phone_code: string;
+}
+
 interface LocationContextType {
   coordinates: Coordinates | null;
   city: string;
   countryCode: string;
+  countryConfig: CountryConfig | null;
   setCity: (city: string) => void;
   setCountryCode: (code: string) => void;
   loading: boolean;
@@ -26,25 +36,32 @@ const CITY_COORDINATES: Record<string, Coordinates & { country: string }> = {
   'São Paulo': { latitude: -23.5505, longitude: -46.6333, country: 'BR' },
   'Luanda': { latitude: -8.8390, longitude: 13.2894, country: 'AO' },
   'Lisboa': { latitude: 38.7223, longitude: -9.1393, country: 'PT' },
-  'New Delhi': { latitude: 28.6139, longitude: 77.2090, country: 'IN' },
 };
 
 export function LocationProvider({ children }: { children: ReactNode }) {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
-  const [city, setCity] = useState<string>(() => {
-    return localStorage.getItem('selectedCity') || 'Maputo';
-  });
-  const [countryCode, setCountryCode] = useState<string>(() => {
-    return localStorage.getItem('selectedCountry') || 'MZ';
-  });
+  const [city, setCity] = useState<string>(() => localStorage.getItem('selectedCity') || 'Maputo');
+  const [countryCode, setCountryCode] = useState<string>(() => localStorage.getItem('selectedCountry') || 'MZ');
+  const [countryConfig, setCountryConfig] = useState<CountryConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Fetch country settings from DB
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data } = await supabase
+        .from('countries')
+        .select('*')
+        .eq('id', countryCode)
+        .single();
+      if (data) setCountryConfig(data as CountryConfig);
+    };
+    fetchConfig();
+  }, [countryCode]);
 
   useEffect(() => {
     localStorage.setItem('selectedCity', city);
     localStorage.setItem('selectedCountry', countryCode);
-
-    // Set default coordinates for selected city
     if (!coordinates && CITY_COORDINATES[city]) {
       setCoordinates(CITY_COORDINATES[city]);
       setCountryCode(CITY_COORDINATES[city].country);

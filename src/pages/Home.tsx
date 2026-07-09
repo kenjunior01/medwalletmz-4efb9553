@@ -179,6 +179,28 @@ export default function Home() {
       </section>
       )}
 
+      {/* Uber-like Urgent Request Banner */}
+      <section className="px-4 mt-6">
+        <button
+          onClick={() => navigate('/health/triage')}
+          className="w-full bg-primary text-white p-5 rounded-[2rem] shadow-lg relative overflow-hidden text-left group active:scale-95 transition-transform"
+        >
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="max-w-[70%]">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Uber Health</span>
+                <h2 className="text-xl font-black">Meddy Agora</h2>
+              </div>
+              <p className="text-white/80 text-xs font-medium">Chamada urgente: O médico mais próximo atende em vídeo agora.</p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm group-hover:bg-white/30 transition-colors">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+          </div>
+          <div className="absolute -right-4 -bottom-4 h-32 w-32 bg-white/5 rounded-full blur-2xl" />
+        </button>
+      </section>
+
       <div className="px-4 mt-4">
         {dataSaver && (
           <Badge variant="secondary" className="mb-2 bg-emerald-500/10 text-emerald-600 border-emerald-500/20 gap-1.5 py-1">

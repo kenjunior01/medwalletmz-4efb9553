@@ -18,17 +18,23 @@ export function useWallet() {
     if (!user) { setLoading(false); return; }
     const { data } = await supabase
       .from('wallets')
-      .select('balance_mzn, total_deposited, total_spent, currency')
+      .select('balance, total_deposited, total_spent, currency, country_id')
       .eq('user_id', user.id)
       .maybeSingle();
 
     if (!data) {
-      // Ensure wallet exists
-      await supabase.from('wallets').insert({ user_id: user.id }).select().maybeSingle();
+      // Ensure wallet exists - now with country_id from profile
+      const { data: profile } = await supabase.from('profiles').select('country_id').eq('user_id', user.id).single();
+      await supabase.from('wallets').insert({
+        user_id: user.id,
+        country_id: profile?.country_id || 'MZ',
+        currency: 'MZN'
+      }).select().maybeSingle();
+
       setWallet({ balance: 0, total_deposited: 0, total_spent: 0, currency: 'MZN' });
     } else {
       setWallet({
-        balance: Number(data.balance_mzn),
+        balance: Number(data.balance),
         total_deposited: Number(data.total_deposited),
         total_spent: Number(data.total_spent),
         currency: data.currency || 'MZN'
@@ -48,7 +54,7 @@ export function useWallet() {
         { event: 'UPDATE', schema: 'public', table: 'wallets', filter: `user_id=eq.${user.id}` },
         (p: any) => {
           setWallet({
-            balance: Number(p.new.balance_mzn),
+            balance: Number(p.new.balance),
             total_deposited: Number(p.new.total_deposited),
             total_spent: Number(p.new.total_spent),
             currency: p.new.currency || 'MZN'
