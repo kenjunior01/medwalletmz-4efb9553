@@ -15,22 +15,27 @@ const QUERIES: Record<Entity, string> = {
   laboratory: 'laboratório de análises clínicas',
 };
 
-/**
- * Round 2 (curadoria Places):
- * Esta função agora grava em `place_proposals` (status='pending') em vez
- * de inserir directamente em stores/clinics. O admin revê/editar/aprova
- * na página /admin/curation antes de publicar.
- *
- * Comportamento mantido: deduplicação por external_id+city+entity_type.
- */
 // Mapbox Search Box — devolve POIs. Normaliza para o mesmo shape usado abaixo.
-async function searchText(query: string, city: string) {
+async function searchText(query: string, city: string, countryCode: string = 'mz') {
   const MAPBOX_TOKEN = Deno.env.get('MAPBOX_TOKEN');
   if (!MAPBOX_TOKEN) throw new Error('Missing MAPBOX_TOKEN');
 
-  const q = `${query} ${city} Moçambique`;
+  // Ajustar query com o nome do país se disponível
+  const countryNames: Record<string, string> = {
+    'mz': 'Moçambique',
+    'ao': 'Angola',
+    'br': 'Brasil',
+    'pt': 'Portugal',
+    'za': 'South Africa',
+    'in': 'India',
+    'us': 'USA',
+    'gb': 'United Kingdom'
+  };
+
+  const countryName = countryNames[countryCode.toLowerCase()] || '';
+  const q = `${query} ${city} ${countryName}`;
   const url = `https://api.mapbox.com/search/searchbox/v1/forward`
-    + `?q=${encodeURIComponent(q)}&country=mz&language=pt&limit=10`
+    + `?q=${encodeURIComponent(q)}&country=${countryCode.toLowerCase()}&language=pt&limit=10`
     + `&access_token=${encodeURIComponent(MAPBOX_TOKEN)}`;
 
   const res = await fetch(url);
@@ -89,21 +94,10 @@ Deno.serve(async (req) => {
     }
 
     const {
-      cities = [
-        // MASSIVE LIST OF MOZAMBIQUE CITIES AND DISTRICTS (Rural + Urban)
-        'Maputo', 'Matola', 'Boane', 'Marracuene', 'Namaacha', 'Manhiça', 'Magude', 'Moamba', 'Xinavane',
-        'Xai-Xai', 'Chókwè', 'Chibuto', 'Bilene', 'Mandlakazi', 'Mabalane', 'Guijá', 'Chigubo', 'Massangena', 'Chicualacuala',
-        'Inhambane', 'Maxixe', 'Vilanculos', 'Massinga', 'Zavala', 'Inharrime', 'Jangamo', 'Homoíne', 'Morrumbene', 'Panda', 'Funhalouro', 'Mabote',
-        'Beira', 'Dondo', 'Nhamatanda', 'Búzi', 'Gorongosa', 'Marromeu', 'Caia', 'Chemba', 'Cheringoma', 'Muanza', 'Machanga', 'Chibabava',
-        'Chimoio', 'Manica', 'Gondola', 'Sussundenga', 'Catandica', 'Bárue', 'Mossurize', 'Machaze', 'Macate', 'Vanduzi',
-        'Tete', 'Moatize', 'Angónia', 'Tsangano', 'Mutarara', 'Changara', 'Cahora Bassa', 'Songo', 'Mágoè', 'Zumbo', 'Marávia', 'Chifunde', 'Macanga',
-        'Quelimane', 'Mocuba', 'Gurué', 'Alto Molócue', 'Milange', 'Nicoadala', 'Namacurra', 'Maganja da Costa', 'Pebane', 'Gilé', 'Ile', 'Lugela', 'Mocubela', 'Derre', 'Molumbo',
-        'Nampula', 'Nacala', 'Angoche', 'Monapo', 'Ilha de Moçambique', 'Meconta', 'Mogovolas', 'Moma', 'Ribáuè', 'Malema', 'Lalaua', 'Mecubúri', 'Memba', 'Eráti', 'Nacarôa', 'Liupo', 'Larde',
-        'Pemba', 'Montepuez', 'Mueda', 'Chiúre', 'Ancuabe', 'Balama', 'Namuno', 'Macomia', 'Mocímboa da Praia', 'Palma', 'Quissanga', 'Meluco', 'Ibo',
-        'Lichinga', 'Cuamba', 'Mandimba', 'Marrupa', 'Maúa', 'Mecanhelas', 'Mecula', 'Metarica', 'Majune', 'Muembe', 'Ngauma', 'Nipepe', 'Sanga'
-      ],
+      cities = ['Maputo'],
       entities = ['pharmacy', 'clinic', 'hospital', 'laboratory'],
       mode = 'draft',
+      country_id = 'MZ',
     } = await req.json();
 
     const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
@@ -118,7 +112,7 @@ Deno.serve(async (req) => {
 
     for (const city of cities as string[]) {
       for (const entity of entities as Entity[]) {
-        const places = await searchText(QUERIES[entity], city);
+        const places = await searchText(QUERIES[entity], city, country_id);
         for (const p of places) {
           const name = p.displayName?.text ?? 'Sem nome';
           const address = p.formattedAddress ?? null;

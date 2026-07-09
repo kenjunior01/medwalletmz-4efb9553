@@ -127,6 +127,7 @@ import { SmartEngagementPopUp } from "@/components/notifications/SmartEngagement
 
 const queryClient = new QueryClient();
 
+// Initializing the app
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -143,7 +144,7 @@ const App = () => (
                   {/* Main App Routes */}
                   <Route element={<AppLayout />}>
                     <Route path="/" element={<Home />} />
-                    <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+                    <Route path="/auth/oauth/consent" element={<OAuthConsent />} />
                     <Route path="/pharmacy" element={<Pharmacy />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/orders" element={<Orders />} />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,9 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Download, Upload, Sparkles, MapPin, Info, ArrowRight, History } from 'lucide-react';
+import { Download, Upload, Sparkles, MapPin, Info, ArrowRight, History, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import { normalizeImageUrl } from '@/lib/healthRoutes';
+import { useCountry } from '@/contexts/CountryContext';
 
 type EntityKey = 'pharmacies' | 'clinics' | 'hospitals' | 'doctors';
 
@@ -51,9 +52,19 @@ function downloadTemplate(key: EntityKey) {
 }
 
 export default function AdminImport() {
+  const { country } = useCountry();
   const [busy, setBusy] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
-  const [cities, setCities] = useState('Maputo,Matola,Beira,Nampula,Quelimane,Tete,Chimoio,Xai-Xai,Pemba,Inhambane,Lichinga');
+  const [cities, setCities] = useState('');
+
+  // Carregar cidades padrão baseadas no país
+  useEffect(() => {
+    if (country?.id === 'MZ') setCities('Maputo, Matola, Beira, Nampula');
+    else if (country?.id === 'AO') setCities('Luanda, Benguela, Lubango, Huambo');
+    else if (country?.id === 'BR') setCities('São Paulo, Rio de Janeiro, Brasília, Salvador');
+    else if (country?.id === 'PT') setCities('Lisboa, Porto, Braga, Coimbra');
+    else setCities('');
+  }, [country]);
 
   const handleUpload = async (key: EntityKey, file: File) => {
     setBusy(key);
@@ -84,6 +95,7 @@ export default function AdminImport() {
           const normalizedImage = normalizeImageUrl(rawImage);
           payload = {
             source: 'user_submit',
+            country_id: country?.id || 'MZ', // Garantir country_id
             entity_type: entityType,
             name: row.name,
             address: row.address ?? null,
@@ -104,6 +116,7 @@ export default function AdminImport() {
           if (typeof payload.languages === 'string') {
             payload.languages = payload.languages.split(',').map((s: string) => s.trim()).filter(Boolean);
           }
+          payload.country_id = country?.id || 'MZ';
         }
 
         const { error } = key === 'pharmacies' || key === 'clinics' || key === 'hospitals'
@@ -123,27 +136,22 @@ export default function AdminImport() {
   };
 
   const handleAutoImport = async () => {
+    if (!cities.trim()) return toast.error("Indique pelo menos uma cidade");
     setBusy('auto');
     setResult(null);
     try {
       const cityList = cities.split(',').map((s) => s.trim()).filter(Boolean);
-      // mode: 'draft' (default) coloca em place_proposals para curadoria.
-      // muda para 'commit' se quiseres publicar direto (legacy).
       const { data, error } = await supabase.functions.invoke('import-places', {
-        body: { cities: cityList, entities: ['pharmacy', 'clinic', 'hospital', 'laboratory'], mode: 'draft' },
+        body: {
+          cities: cityList,
+          country_id: country?.id, // Enviar país para filtrar busca API
+          entities: ['pharmacy', 'clinic', 'hospital', 'laboratory'],
+          mode: 'draft'
+        },
       });
       if (error) throw error;
       setResult(data);
-      const proposed = data?.proposed ?? 0;
-      const stores = data?.createdStores ?? 0;
-      const clinics = data?.createdClinics ?? 0;
-      const skipped = data?.skipped ?? 0;
-      const mode = data?.mode ?? 'draft';
-      if (mode === 'draft') {
-        toast.success(`Importação concluída — ${proposed} proposta(s) em rascunhos (${skipped} duplicadas)`);
-      } else {
-        toast.success(`Importação concluída: ${stores} farmácias, ${clinics} clínicas/hospitais`);
-      }
+      toast.success(`Importação iniciada para ${country?.name}. Revê as propostas em /admin/curation.`);
     } catch (e: any) {
       toast.error(e.message || 'Erro na importação');
     } finally {
@@ -153,31 +161,37 @@ export default function AdminImport() {
 
   return (
     <div className="p-8 space-y-6 max-w-5xl">
-      <div>
-        <h1 className="text-2xl font-bold">Importar Dados</h1>
-        <p className="text-muted-foreground">Importação em massa via Excel ou auto-importação via Google Maps.</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-black flex items-center gap-2">
+            <Globe className="text-primary h-8 w-8" /> Importador Regional
+          </h1>
+          <p className="text-muted-foreground">Escalando o ecossistema MedWallet em {country?.name}.</p>
+        </div>
+        <Badge variant="outline" className="text-lg px-4 py-1 border-primary text-primary font-bold">
+          {country?.id}
+        </Badge>
       </div>
 
-      <Card className="border-primary/30 bg-primary/5">
+      <Card className="border-primary/30 bg-primary/5 shadow-premium">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" /> Auto-importar via Google Maps
+            <Sparkles className="h-5 w-5 text-primary" /> Auto-importar via Google Maps (API)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Procura farmácias, clínicas, hospitais e laboratórios no Google Places nas cidades indicadas.
-            Itens vão para <strong>rascunhos curados</strong> — revê e aprova em <Link to="/admin/curation" className="text-primary underline font-semibold">/admin/curation</Link> antes de publicar.
-            Itens duplicados (mesmo nome + cidade ou mesmo external_id) são ignorados.
+            Esta ferramenta utiliza a Google Places API para encontrar estabelecimentos de saúde reais em <strong>{country?.name}</strong>.
+            Tudo o que for encontrado será enviado para a tua fila de curadoria em <Link to="/admin/curation" className="text-primary underline font-bold">/admin/curation</Link>.
           </p>
           <div className="flex gap-2 items-end">
             <div className="flex-1">
-              <Label>Cidades (separadas por vírgula)</Label>
-              <Input value={cities} onChange={(e) => setCities(e.target.value)} placeholder="Maputo, Beira, Nampula" />
+              <Label>Cidades em {country?.name} (separadas por vírgula)</Label>
+              <Input value={cities} onChange={(e) => setCities(e.target.value)} placeholder="Ex: Maputo, Matola..." />
             </div>
-            <Button onClick={handleAutoImport} disabled={busy === 'auto'}>
+            <Button onClick={handleAutoImport} disabled={busy === 'auto'} className="font-bold">
               <MapPin className="h-4 w-4 mr-2" />
-              {busy === 'auto' ? 'A importar...' : 'Importar agora'}
+              {busy === 'auto' ? 'A contactar Google API...' : 'Importar Estabelecimentos'}
             </Button>
           </div>
 

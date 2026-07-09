@@ -14,6 +14,7 @@ export default function OAuthConsent() {
 
   useEffect(() => {
     let active = true;
+    console.log("OAuthConsent: authorizationId", authorizationId);
     (async () => {
       if (!authorizationId) {
         setError("Pedido de autorização inválido (falta authorization_id).");
