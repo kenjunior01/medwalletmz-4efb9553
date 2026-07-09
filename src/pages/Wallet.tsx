@@ -41,6 +41,9 @@ const methodLabel: Record<string, string> = {
   emola: 'e-Mola',
   mkesh: 'Mkesh',
   bank: 'Transferência Bancária',
+  paypal: 'PayPal',
+  stripe: 'Cartão',
+  pix: 'PIX',
 };
 
 export default function Wallet() {
@@ -120,6 +123,18 @@ export default function Wallet() {
   const currency = wallet?.currency || 'MZN';
   const symbol = getCurrencySymbol(currency as any);
   const filteredAccounts = accounts.filter(a => a.method === method);
+
+  const supportedMethods = country?.config?.payment_methods || [
+    { id: 'mpesa', name: 'M-Pesa' },
+    { id: 'emola', name: 'e-Mola' },
+    { id: 'mkesh', name: 'Mkesh' }
+  ];
+
+  useEffect(() => {
+    if (supportedMethods.length > 0 && !method) {
+      setMethod(supportedMethods[0].id);
+    }
+  }, [supportedMethods, method]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -238,10 +253,10 @@ export default function Wallet() {
             <div>
               <label className="text-sm font-bold">{t('wallet.choose_method')}</label>
               <Tabs value={method} onValueChange={setMethod} className="mt-2">
-                <TabsList className="grid grid-cols-3 w-full">
-                  <TabsTrigger value="mpesa">M-Pesa</TabsTrigger>
-                  <TabsTrigger value="emola">e-Mola</TabsTrigger>
-                  <TabsTrigger value="mkesh">Mkesh</TabsTrigger>
+                <TabsList className={`grid w-full`} style={{ gridTemplateColumns: `repeat(${supportedMethods.length}, 1fr)` }}>
+                  {supportedMethods.map((m: any) => (
+                    <TabsTrigger key={m.id} value={m.id}>{m.name}</TabsTrigger>
+                  ))}
                 </TabsList>
               </Tabs>
             </div>

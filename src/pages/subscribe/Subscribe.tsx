@@ -12,6 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Copy, Upload, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { useCountry } from '@/contexts/CountryContext';
+
 interface Plan {
   id: string;
   name: string;
@@ -32,12 +34,16 @@ const methodLabel: Record<string, string> = {
   emola: 'e-Mola',
   mkesh: 'Mkesh',
   bank: 'Transferência Bancária',
+  paypal: 'PayPal',
+  stripe: 'Stripe',
+  pix: 'PIX',
 };
 
 export default function Subscribe() {
   const { planId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country } = useCountry();
   const [plan, setPlan] = useState<Plan | null>(null);
   const [accounts, setAccounts] = useState<PayAccount[]>([]);
   const [method, setMethod] = useState<string>('mpesa');
@@ -46,6 +52,18 @@ export default function Subscribe() {
   const [notes, setNotes] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const supportedMethods = country?.config?.payment_methods || [
+    { id: 'mpesa', name: 'M-Pesa' },
+    { id: 'emola', name: 'e-Mola' },
+    { id: 'mkesh', name: 'Mkesh' }
+  ];
+
+  useEffect(() => {
+    if (supportedMethods.length > 0 && !method) {
+      setMethod(supportedMethods[0].id);
+    }
+  }, [supportedMethods, method]);
 
   useEffect(() => {
     if (!planId) return;
@@ -143,10 +161,10 @@ export default function Subscribe() {
         <div>
           <Label className="text-sm font-semibold">1. Escolha o método</Label>
           <Tabs value={method} onValueChange={setMethod} className="mt-2">
-            <TabsList className="grid grid-cols-3 w-full">
-              <TabsTrigger value="mpesa">M-Pesa</TabsTrigger>
-              <TabsTrigger value="emola">e-Mola</TabsTrigger>
-              <TabsTrigger value="mkesh">Mkesh</TabsTrigger>
+            <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${supportedMethods.length}, 1fr)` }}>
+              {supportedMethods.map((m: any) => (
+                <TabsTrigger key={m.id} value={m.id}>{m.name}</TabsTrigger>
+              ))}
             </TabsList>
           </Tabs>
         </div>
