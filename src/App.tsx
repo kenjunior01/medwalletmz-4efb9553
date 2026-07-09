@@ -95,6 +95,7 @@ import AdminTransactions from "./pages/admin/AdminTransactions";
 import AdminImport from "./pages/admin/AdminImport";
 import AdminCuration from "./pages/admin/AdminCuration";
 import GlobalMetrics from "./pages/admin/GlobalMetrics";
+import GlobalCommandCenter from "./pages/admin/GlobalCommandCenter";
 import FinancialDashboard from "./pages/admin/FinancialDashboard";
 import CountrySettings from "./pages/admin/CountrySettings";
 import AdminBootstrap from "./pages/AdminBootstrap";
@@ -108,7 +109,9 @@ import Ads from "./pages/ads/Ads";
 import AdForm from "./pages/ads/AdForm";
 import MyAds from "./pages/ads/MyAds";
 import Facilities from "./pages/health/Facilities";
+import FacilityExplorer from "./pages/health/FacilityExplorer";
 import FacilityDetail from "./pages/health/FacilityDetail";
+import LegalDocs from "./pages/LegalDocs";
 import LabDetail from "./pages/health/LabDetail";
 import MyLabOrders from "./pages/health/MyLabOrders";
 import AdminAds from "./pages/admin/AdminAds";
@@ -173,6 +176,7 @@ const App = () => (
                     <Route path="/referrals" element={<Referrals />} />
                     <Route path="/wallet" element={<Wallet />} />
                     <Route path="/legal" element={<Legal />} />
+                    <Route path="/legal/:type" element={<LegalDocs />} />
                     <Route path="/suggest-place" element={<SuggestPlace />} />
                     <Route path="/health/insurance" element={<Insurance />} />
                     <Route path="/insurance/:id" element={<InsuranceDetail />} />
@@ -182,6 +186,7 @@ const App = () => (
                     <Route path="/ads/new" element={<AdForm />} />
                     <Route path="/ads/mine" element={<MyAds />} />
                     <Route path="/health/facilities" element={<Facilities />} />
+                    <Route path="/health/explorer" element={<FacilityExplorer />} />
                     <Route path="/health/facilities/:id" element={<FacilityDetail />} />
                     <Route path="/blood" element={<BloodHub />} />
                     <Route path="/blood/register-donor" element={<BloodDonorRegister />} />
@@ -225,6 +230,7 @@ const App = () => (
                     <Route path="ads" element={<AdminAds />} />
                     <Route path="labs" element={<AdminLabs />} />
                     <Route path="global-metrics" element={<GlobalMetrics />} />
+                    <Route path="global-command" element={<GlobalCommandCenter />} />
                     <Route path="financial" element={<FinancialDashboard />} />
                     <Route path="country-settings" element={<CountrySettings />} />
                   </Route>
