@@ -24,7 +24,7 @@ export interface MeddyMessage {
 
 export type Context = 'home' | 'empty_doctors' | 'empty_pharmacies' | 'triage' | 'orders' | 'profile' | 'curation' | 'education' | 'wallet' | 'nudge' | 'default';
 
-const messages: Record<MeddyRole, Record<Context, MeddyMessage[]>> = {
+const messages: Record<MeddyRole, Partial<Record<Context, MeddyMessage[]>>> = {
   patient: {
     home: [
       { text: "Olá, {{name}}! Sou a Meddy 🌿 Posso ajudar-te a encontrar médico, farmácia ou marcar teleconsulta em {{city}}.", emoji: "🌿" },

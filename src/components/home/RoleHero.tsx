@@ -23,7 +23,7 @@ function pickRole(roles: AppRole[]): AppRole {
   return priority.find(r => roles.includes(r)) || "customer";
 }
 
-const CONFIGS: Record<AppRole, Config> = {
+const CONFIGS: Partial<Record<AppRole, Config>> = {
   admin: {
     tag: "Painel Admin",
     title: "Governa toda a plataforma",

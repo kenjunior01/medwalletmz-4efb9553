@@ -54,8 +54,8 @@ export default function BookConsultation() {
     const gross = Number(doctor.consultation_fee || 0);
     const discount = coupon?.discount ?? 0;
     const finalAmount = Math.max(gross - discount, 0);
-    if ((wallet?.balance_mzn ?? 0) < finalAmount) {
-      toast.error(`Saldo insuficiente. Faltam ${(finalAmount - (wallet?.balance_mzn ?? 0)).toFixed(2)} MZN`);
+    if ((wallet?.balance ?? 0) < finalAmount) {
+      toast.error(`Saldo insuficiente. Faltam ${(finalAmount - (wallet?.balance ?? 0)).toFixed(2)} MZN`);
       navigate('/wallet');
       return;
     }
@@ -107,7 +107,7 @@ export default function BookConsultation() {
   const gross = Number(doctor.consultation_fee || 0);
   const discount = coupon?.discount ?? 0;
   const finalAmount = Math.max(gross - discount, 0);
-  const lowBalance = (wallet?.balance_mzn ?? 0) < finalAmount;
+  const lowBalance = (wallet?.balance ?? 0) < finalAmount;
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -186,7 +186,7 @@ export default function BookConsultation() {
               <span>Total a debitar</span><span>{finalAmount.toFixed(2)} MZN</span>
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground pt-1">
-              <Wallet className="h-3 w-3" /> Saldo: {(wallet?.balance_mzn ?? 0).toFixed(2)} MZN
+              <Wallet className="h-3 w-3" /> Saldo: {(wallet?.balance ?? 0).toFixed(2)} MZN
             </div>
             {lowBalance && (
               <div className="flex items-center gap-1 text-xs text-destructive pt-1">

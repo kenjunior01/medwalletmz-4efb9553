@@ -71,14 +71,14 @@ export default function AdminUsers() {
       }
 
       // Fetch all user roles
-      const { data: allRoles, error: rolesError } = await supabase
+      const { data: allRoles, error: rolesError } = await (supabase as any)
         .from('user_roles')
         .select('user_id, role, country_id');
       if (rolesError) throw rolesError;
 
       // Map roles to users
       const rolesMap = new Map<string, { role: AppRole; country_id?: string | null }[]>();
-      allRoles?.forEach(r => {
+      (allRoles as any[])?.forEach((r: any) => {
         const existing = rolesMap.get(r.user_id) || [];
         existing.push({ role: r.role as AppRole, country_id: r.country_id });
         rolesMap.set(r.user_id, existing);
@@ -101,7 +101,7 @@ export default function AdminUsers() {
 
   const addRoleMutation = useMutation({
     mutationFn: async ({ userId, role, countryId }: { userId: string; role: AppRole; countryId?: string | null }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('user_roles')
         .insert({ user_id: userId, role, country_id: countryId });
       if (error) throw error;
@@ -122,7 +122,7 @@ export default function AdminUsers() {
 
   const removeRoleMutation = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('user_roles')
         .delete()
         .eq('user_id', userId)

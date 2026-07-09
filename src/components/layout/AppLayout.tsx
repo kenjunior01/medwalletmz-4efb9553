@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { BottomNav } from "./BottomNav";
 import { Header } from "./Header";
@@ -37,9 +38,10 @@ export function AppLayout() {
 
   // Dynamic branding injection
   useEffect(() => {
-    if (country?.branding_config) {
+    const cfg = (country as any)?.branding_config;
+    if (cfg) {
       const root = document.documentElement;
-      const branding = country.branding_config;
+      const branding = cfg;
 
       if (branding.primary_color) {
         root.style.setProperty('--primary', branding.primary_color);

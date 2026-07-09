@@ -26,7 +26,8 @@ import {
   Zap,
   ArrowRight
 } from 'lucide-react';
-import { Snowflake, Zap, ShieldCheck } from 'lucide-react';
+import { Snowflake, ShieldCheck } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { 
   StatWidget, 
@@ -484,7 +485,7 @@ export default function DriverDashboard() {
                     <div className="flex items-center gap-2">
                       Entregas Ativas
                       {assignments.length > 1 && (
-                        <Button size="xs" variant="outline" className="h-7 text-[10px] gap-1" onClick={optimizeRoutes} disabled={optimizing}>
+                        <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={optimizeRoutes} disabled={optimizing}>
                           <Zap className={cn("h-3 w-3 text-secondary", optimizing && "animate-pulse")} />
                           Otimizar Rota
                         </Button>

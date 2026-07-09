@@ -209,7 +209,7 @@ export default function Home() {
               <div>
                 <p className="text-[10px] uppercase tracking-wider opacity-75 font-bold">Carteira {country?.currency_code || 'MZN'}</p>
                 <p className="text-3xl font-black mt-1 leading-none flex items-baseline num-pulse">
-                  <NumberFlow value={Number(wallet?.balance_mzn ?? 0)} format={{ maximumFractionDigits: 0 }} className="tabular-nums" />
+                  <NumberFlow value={Number(wallet?.balance ?? 0)} format={{ maximumFractionDigits: 0 }} className="tabular-nums" />
                   <span className="text-base font-semibold ml-1.5 opacity-80">{country?.currency_code || 'MZN'}</span>
                 </p>
               </div>
