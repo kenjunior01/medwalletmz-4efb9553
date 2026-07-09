@@ -17,6 +17,7 @@ import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
+import OAuthConsent from "./pages/OAuthConsent";
 import StoreDetail from "./pages/StoreDetail";
 import Checkout from "./pages/Checkout";
 import Addresses from "./pages/Addresses";
@@ -142,6 +143,7 @@ const App = () => (
                   {/* Main App Routes */}
                   <Route element={<AppLayout />}>
                     <Route path="/" element={<Home />} />
+                    <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                     <Route path="/pharmacy" element={<Pharmacy />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/orders" element={<Orders />} />
