@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -129,5 +130,6 @@ export default function Insurance() {
         </div>
       )}
     </div>
+    </>
   );
 }

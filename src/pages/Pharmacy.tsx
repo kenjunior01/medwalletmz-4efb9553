@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation as useRouterLocation } from "react-router-dom";
 import { Search, Pill, Star, Clock, FileText, X, Zap, Globe } from "lucide-react";
@@ -262,5 +263,6 @@ export default function Pharmacy() {
         )}
       </div>
     </div>
+    </>
   );
 }

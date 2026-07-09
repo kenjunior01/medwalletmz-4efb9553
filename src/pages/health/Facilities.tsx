@@ -1,3 +1,4 @@
+import { Seo } from "@/components/Seo";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -178,5 +179,6 @@ export default function Facilities() {
         ))}
       </Tabs>
     </div>
+    </>
   );
 }
