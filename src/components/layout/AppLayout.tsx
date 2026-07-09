@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { BottomNav } from "./BottomNav";
 import { Header } from "./Header";
@@ -11,6 +11,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useDeviceType } from "@/hooks/useDeviceType";
 import { useCapacitor } from "@/hooks/useCapacitor";
 import { useCountry } from "@/contexts/CountryContext";
+import { Loader2 } from "lucide-react";
 import type { Context } from "@/components/mascot/MeddyMessages";
 
 /**
@@ -62,7 +63,13 @@ export function AppLayout() {
         <Header />
         <div className="flex-1 w-full max-w-6xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
           <main className={`flex-1 min-w-0 ${isMobile ? "pb-20" : ""}`}>
-            <Outlet />
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-screen">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            }>
+              <Outlet />
+            </Suspense>
           </main>
           {device === "desktop" && <DesktopRail />}
         </div>
