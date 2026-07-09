@@ -12,15 +12,58 @@ serve(async (req) => {
   }
 
   try {
+    // Admin-only endpoint
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const userClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data: claims, error: claimsErr } = await userClient.auth.getClaims(authHeader.replace('Bearer ', ''));
+    if (claimsErr || !claims?.claims?.sub) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
+    // Verify admin role
+    const { data: roles } = await supabaseClient
+      .from('user_roles').select('role').eq('user_id', claims.claims.sub).eq('role', 'admin').maybeSingle();
+    if (!roles) {
+      return new Response(JSON.stringify({ error: 'forbidden: admin only' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Allow-list of translatable fields
+    const ALLOWED_FIELDS: Record<string, string[]> = {
+      stores: ['name', 'description'],
+      clinics: ['name', 'description'],
+      hospitals: ['name', 'description'],
+      products: ['name', 'description'],
+      medical_specialties: ['name', 'description'],
+      achievements: ['name', 'description'],
+    };
+
     const { table_name, record_id, column_name, source_text, target_locales } = await req.json()
 
     if (!source_text || !target_locales) {
       throw new Error('Missing source_text or target_locales')
+    }
+    if (!ALLOWED_FIELDS[table_name]?.includes(column_name)) {
+      return new Response(JSON.stringify({ error: 'field_not_translatable' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const translations = []
