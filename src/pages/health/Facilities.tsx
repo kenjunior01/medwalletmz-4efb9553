@@ -182,6 +182,5 @@ export default function Facilities() {
       </Tabs>
     </div>
     </>
-    </>
   );
 }

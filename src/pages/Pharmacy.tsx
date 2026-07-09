@@ -266,6 +266,5 @@ export default function Pharmacy() {
       </div>
     </div>
     </>
-    </>
   );
 }

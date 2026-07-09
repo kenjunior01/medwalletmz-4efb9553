@@ -202,6 +202,5 @@ export default function BloodHub() {
       </Tabs>
     </div>
     </>
-    </>
   );
 }

@@ -256,6 +256,5 @@ function EmptyState({
       </div>
     </Card>
     </>
-    </>
   );
 }
