@@ -99,6 +99,7 @@ import GlobalMetrics from "./pages/admin/GlobalMetrics";
 import GlobalCommandCenter from "./pages/admin/GlobalCommandCenter";
 import FinancialDashboard from "./pages/admin/FinancialDashboard";
 import CountrySettings from "./pages/admin/CountrySettings";
+import CountryDashboard from "./pages/admin/CountryDashboard";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import AdminInsurance from "./pages/admin/AdminInsurance";
@@ -236,6 +237,7 @@ const App = () => (
                     <Route path="global-command" element={<GlobalCommandCenter />} />
                     <Route path="financial" element={<FinancialDashboard />} />
                     <Route path="country-settings" element={<CountrySettings />} />
+                    <Route path="country-dashboard" element={<CountryDashboard />} />
                   </Route>
 
                   {/* Store Owner Routes */}

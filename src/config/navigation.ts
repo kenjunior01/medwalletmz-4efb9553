@@ -15,13 +15,21 @@ export type NavItem = {
 
 export type RoleKey =
   | "customer" | "doctor" | "clinic" | "hospital"
-  | "lab" | "store_owner" | "driver" | "admin";
+  | "lab" | "store_owner" | "driver" | "admin" | "country_manager";
 
 /** Primary 5 items for mobile BottomNav per role. */
 export const bottomNavByRole: Record<RoleKey, NavItem[]> = {
+  // ... existing roles
+  country_manager: [
+    { path: "/admin/country-dashboard", icon: LayoutDashboard, label: "Painel" },
+    { path: "/admin/curation", icon: Shield, label: "Aprovações" },
+    { path: "/admin/transactions", icon: Wallet, label: "Financeiro" },
+    { path: "/help", icon: MessageSquare, label: "Suporte" },
+    { path: "/profile", icon: User, label: "Perfil" },
+  ],
   customer: [
     { path: "/", icon: Home, label: "Início" },
-    { path: "/health/facilities", icon: Hospital, label: "Instituições" },
+    { path: "/health/facilities", icon: Hospital, label: "Hospitais" },
     { path: "/health/triage", icon: Video, label: "Consulta", highlight: true },
     { path: "/pharmacy", icon: Pill, label: "Farmácia" },
     { path: "/profile", icon: User, label: "Perfil" },

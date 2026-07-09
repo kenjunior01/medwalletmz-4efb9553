@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, FileText, Upload, Share2, Trash2, Download, Sparkles, Scan, Search } from 'lucide-react';
+import { ArrowLeft, Plus, FileText, Upload, Share2, Trash2, Download, Sparkles, Scan, Search, Globe2, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -29,6 +29,32 @@ export default function MedicalRecords() {
   const [file, setFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [scanning, setScanning] = useState(false);
+
+  const exportFHIR = (record: any) => {
+    // FHIR (Fast Healthcare Interoperability Resources) simulation
+    const fhirResource = {
+      resourceType: "DocumentReference",
+      status: "current",
+      type: { text: record.title },
+      subject: { reference: `Patient/${user?.id}` },
+      date: new Date().toISOString(),
+      content: [{
+        attachment: {
+          contentType: record.file_mime || "application/pdf",
+          url: record.file_url,
+          title: record.title
+        }
+      }]
+    };
+
+    const blob = new Blob([JSON.stringify(fhirResource, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `FHIR-${record.id}.json`;
+    a.click();
+    toast.success('Exportado no padrão global FHIR/HL7');
+  };
 
   const simulateOCR = async () => {
     if (!file) return toast.error('Carrega um ficheiro primeiro');
@@ -192,6 +218,13 @@ export default function MedicalRecords() {
         </Dialog>
       </header>
 
+      <div className="px-4 py-2 bg-emerald-50 border-b border-emerald-100 flex items-center gap-2">
+        <ShieldCheck className="h-4 w-4 text-emerald-600" />
+        <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">
+          Registos Protegidos · Compatível com padrão Global FHIR/HL7
+        </p>
+      </div>
+
       <section className="p-4 space-y-3">
         {records.length === 0 ? (
           <Card className="p-6 text-center">
@@ -239,6 +272,9 @@ export default function MedicalRecords() {
                     </div>
                   </DialogContent>
                 </Dialog>
+                <Button size="sm" variant="ghost" onClick={() => exportFHIR(r)} className="text-muted-foreground">
+                  <Globe2 className="h-3 w-3 mr-1" /> FHIR
+                </Button>
                 <Button size="sm" variant="ghost" onClick={() => remove(r.id)} className="text-destructive">
                   <Trash2 className="h-3 w-3" />
                 </Button>

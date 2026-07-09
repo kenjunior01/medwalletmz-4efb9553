@@ -13,7 +13,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
 import { CouponInput } from '@/components/checkout/CouponInput';
 import { useCountry } from '@/contexts/CountryContext';
-import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake, Globe, Copy, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake, Globe, Copy, ExternalLink, CheckCircle2, Receipt, CreditCard } from 'lucide-react';
+import { calculateTaxes } from '@/lib/taxEngine';
+import { convertCurrency, formatCurrency } from '@/lib/currencyService';
+
 interface AppliedCoupon {
   id: string;
   code: string;
@@ -42,9 +45,15 @@ const allPaymentMethods: PayMethod[] = [
   { id: 'mpesa', name: 'M-Pesa', icon: '📱', description: 'Vodacom M-Pesa', requiresPhone: true },
   { id: 'emola', name: 'e-Mola', icon: '💰', description: 'Movitel e-Mola', requiresPhone: true },
   { id: 'mkesh', name: 'Mkesh', icon: '🏦', description: 'BCI Mkesh', requiresPhone: true },
-  { id: 'paypal', name: 'PayPal', icon: '🅿️', description: 'Pagamento global seguro', badge: 'Global' },
-  { id: 'apple_pay', name: 'Apple Pay', icon: '', description: 'Toque para pagar (iOS/Safari)', badge: 'Rápido' },
-  { id: 'google_pay', name: 'Google Pay', icon: '', description: 'Toque para pagar (Android/Chrome)', badge: 'Rápido' },
+  { id: 'mbway', name: 'MB WAY', icon: '📲', description: 'Portugal - Pagamento Imediato', requiresPhone: true },
+  { id: 'bizum', name: 'Bizum', icon: '📱', description: 'Espanha - Pago al instante', requiresPhone: true },
+  { id: 'pix', name: 'PIX', icon: '💎', description: 'Brasil - Pagamento Instantâneo', requiresPhone: true },
+  { id: 'venmo', name: 'Venmo', icon: '💙', description: 'USA - Social Payments' },
+  { id: 'revolut', name: 'Revolut Pay', icon: '💳', description: 'UK/Europe - Fast Checkout' },
+  { id: 'stripe', name: 'Cartão de Crédito', icon: '💳', description: 'Visa, Mastercard via Stripe', badge: 'Seguro' },
+  { id: 'paypal', name: 'PayPal', icon: '🅿️', description: 'Pagamento global seguro via PayPal', badge: 'Global' },
+  { id: 'apple_pay', name: 'Apple Pay', icon: '🍎', description: 'Toque para pagar (iOS/Safari)', badge: 'Rápido' },
+  { id: 'google_pay', name: 'Google Pay', icon: '🤖', description: 'Toque para pagar (Android/Chrome)', badge: 'Rápido' },
 ];
 
 function detectSupportedPayments(): { applePay: boolean; googlePay: boolean } {
@@ -139,8 +148,18 @@ export default function Checkout() {
     };
     fetchDeliveryFee();
   }, [currentStoreId, items]);
+
+  const taxInfo = useMemo(() => calculateTaxes(subtotal, country?.id || 'MZ', 'pharmacy'), [subtotal, country]);
   const discount = calculateCouponDiscount(appliedCoupon, subtotal);
-  const total = subtotal + deliveryFee - discount;
+  const total = subtotal + deliveryFee + taxInfo.amount - discount;
+
+  const [convertedTotal, setConvertedTotal] = useState<{ amount: number; rate: number } | null>(null);
+
+  useEffect(() => {
+    if (country?.id !== 'MZ' && country?.currency_code) {
+      convertCurrency(total, 'MZN', country.currency_code).then(setConvertedTotal);
+    }
+  }, [total, country]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -373,6 +392,10 @@ export default function Checkout() {
                 <span>{t('checkout.delivery_fee')}</span>
                 <span>{deliveryFee} {country?.currency_symbol || 'MZN'}</span>
               </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span className="flex items-center gap-1"><Receipt className="h-3 w-3" /> {taxInfo.name} ({Math.round(taxInfo.rate * 100)}%)</span>
+                <span>{taxInfo.amount} {country?.currency_symbol || 'MZN'}</span>
+              </div>
               {discount > 0 && (
                 <div className="flex justify-between text-primary">
                   <span>{t('checkout.discount')} ({appliedCoupon?.code})</span>
@@ -381,7 +404,14 @@ export default function Checkout() {
               )}
               <div className="flex justify-between font-bold text-lg pt-2">
                 <span>{t('checkout.total')}</span>
-                <span className="text-primary">{total} {country?.currency_symbol || 'MZN'}</span>
+                <div className="text-right">
+                  <span className="text-primary">{total} {country?.currency_symbol || 'MZN'}</span>
+                  {convertedTotal && (
+                    <p className="text-[10px] text-muted-foreground font-normal">
+                      ≈ {formatCurrency(convertedTotal.amount, country?.currency_code || 'USD')}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -430,6 +460,10 @@ export default function Checkout() {
                       <span className="text-xl font-black tracking-tight">G Pay</span>
                     ) : method.id === 'wallet' ? (
                       <Wallet className="h-6 w-6 text-primary" />
+                    ) : method.id === 'stripe' ? (
+                      <CreditCard className="h-6 w-6 text-blue-600" />
+                    ) : method.id === 'paypal' ? (
+                      <span className="text-xl font-bold text-blue-800 italic">PayPal</span>
                     ) : (
                       <span className="text-2xl">{method.icon}</span>
                     )}

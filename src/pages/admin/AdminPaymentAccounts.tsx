@@ -72,6 +72,7 @@ export default function AdminPaymentAccounts() {
               <SelectContent>
                 <SelectItem value="mpesa">M-Pesa</SelectItem>
                 <SelectItem value="paypal">PayPal</SelectItem>
+                <SelectItem value="stripe">Stripe</SelectItem>
                 <SelectItem value="pix">PIX</SelectItem>
                 <SelectItem value="bank">Banco</SelectItem>
               </SelectContent>
