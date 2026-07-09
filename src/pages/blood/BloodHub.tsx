@@ -43,6 +43,9 @@ export default function BloodHub() {
       window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
     }
   };
+
+  return (
+    <div className="p-4 space-y-4 max-w-4xl mx-auto">
       <div className="bento-card p-5 bg-gradient-to-br from-red-500/15 via-rose-500/10 to-transparent border-red-500/30">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-11 w-11 rounded-2xl bg-red-500/20 flex items-center justify-center">

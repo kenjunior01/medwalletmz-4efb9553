@@ -178,34 +178,3 @@ async function getSupabase() {
   }
 }
 
-/** Haversine puro (km). */
-export function haversineKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
-  const R = 6371;
-  const dLat = (b.lat - a.lat) * Math.PI / 180;
-  const dLon = (b.lng - a.lng) * Math.PI / 180;
-  const lat1 = a.lat * Math.PI / 180;
-  const lat2 = b.lat * Math.PI / 180;
-  const x =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
-}
-
-/** Formatar duração (segundos → "X min" / "1h 5min"). */
-export function fmtDuration(sec: number) {
-  if (!Number.isFinite(sec) || sec <= 0) return '—';
-  const m = Math.round(sec / 60);
-  if (m < 60) return `${m} min`;
-  const h = Math.floor(m / 60);
-  return `${h}h ${m % 60}min`;
-}
-
-/** Import dinâmico para evitar SSR/circular issues. */
-async function getSupabase() {
-  try {
-    const mod = await import('@/integrations/supabase/client');
-    return mod.supabase;
-  } catch {
-    return null;
-  }
-}
