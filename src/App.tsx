@@ -133,8 +133,8 @@ const App = () => (
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
-                <SmartEngagementPopUp />
                 <BrowserRouter>
+                <SmartEngagementPopUp />
                 <Routes>
                   {/* Main App Routes */}
                   <Route element={<AppLayout />}>
