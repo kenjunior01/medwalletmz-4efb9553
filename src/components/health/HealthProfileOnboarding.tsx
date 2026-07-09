@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Heart, Activity, AlertTriangle, ShieldCheck, ChevronRight, X } from 'lucide-react';
+import { cn } from "@/lib/utils";
 import { toast } from 'sonner';
 
 export function HealthProfileOnboarding() {
@@ -134,8 +135,4 @@ export function HealthProfileOnboarding() {
       </motion.div>
     </div>
   );
-}
-
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ');
 }

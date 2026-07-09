@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
   // Desativar esbuild para minificação e usar o padrão interno do Vite de forma conservadora
   build: {
     target: 'es2020',
-    minify: 'esbuild', // Vamos manter esbuild mas com configurações seguras
+    minify: 'esbuild',
     cssMinify: true,
     sourcemap: false,
     chunkSizeWarningLimit: 2000,
@@ -37,9 +37,9 @@ export default defineConfig(({ mode }) => ({
     mcpPlugin(),
     VitePWA({
       registerType: "autoUpdate",
-      manifest: false, // Desativar geração de manifest no build para isolar erro
+      manifest: false,
       workbox: {
-        maximumFileSizeToCacheInBytes: 3000000,
+        maximumFileSizeToCacheInBytes: 10000000,
         globPatterns: ["**/*.{js,css,html}"],
       }
     }),

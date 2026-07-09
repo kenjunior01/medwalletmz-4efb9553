@@ -2,6 +2,7 @@
  * Google Environmental APIs helper.
  * Uses Google Air Quality API and weather patterns to provide health advice.
  */
+import { supabase } from "@/integrations/supabase/client";
 
 const GOOGLE_API_KEY = "AIzaSyCSmjlxj48ngrPinTo4gdVBzmBf9CPVrFU";
 

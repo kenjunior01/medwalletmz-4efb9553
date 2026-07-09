@@ -281,7 +281,7 @@ export default function Home() {
               </div>
             </div>
             <div className="absolute -right-10 -bottom-10 h-40 w-40 bg-secondary/10 rounded-full blur-3xl" />
-          </section>
+          </button>
         </section>
 
         <AirQualityWidget />

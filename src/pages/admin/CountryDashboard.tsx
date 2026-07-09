@@ -73,7 +73,7 @@ export default function CountryDashboard() {
             <Badge className="bg-emerald-500 text-white">+12% este mês</Badge>
           </div>
           <p className="text-3xl font-black">
-            {stats?.totalVolume.toLocaleString()} <span className="text-lg opacity-50">{country?.currency_code}</span>
+            {stats?.totalVolume?.toLocaleString() || '0'} <span className="text-lg opacity-50">{country?.currency_code}</span>
           </p>
           <p className="text-xs text-muted-foreground mt-1">Volume total transacionado na região.</p>
         </Card>

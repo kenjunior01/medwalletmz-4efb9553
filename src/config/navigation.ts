@@ -15,11 +15,18 @@ export type NavItem = {
 
 export type RoleKey =
   | "customer" | "doctor" | "clinic" | "hospital"
-  | "lab" | "store_owner" | "driver" | "admin" | "country_manager";
+  | "lab" | "store_owner" | "driver" | "admin" | "country_manager" | "insurance";
 
 /** Primary 5 items for mobile BottomNav per role. */
 export const bottomNavByRole: Record<RoleKey, NavItem[]> = {
   // ... existing roles
+  insurance: [
+    { path: "/insurance/dashboard", icon: LayoutDashboard, label: "Painel" },
+    { path: "/insurance/register", icon: Shield, label: "Subscrições" },
+    { path: "/help", icon: MessageSquare, label: "Ajuda" },
+    { path: "/profile", icon: User, label: "Perfil" },
+    { path: "/", icon: Home, label: "Início" },
+  ],
   country_manager: [
     { path: "/admin/country-dashboard", icon: LayoutDashboard, label: "Painel" },
     { path: "/admin/curation", icon: Shield, label: "Aprovações" },
@@ -165,6 +172,19 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/admin/subscriptions", icon: Shield, label: "Subscrições", group: "Gestão" },
     { path: "/admin/subscription-plans", icon: Shield, label: "Planos", group: "Gestão" },
     { path: "/admin/settings", icon: Settings, label: "Definições", group: "Sistema" },
+    { path: "/profile", icon: User, label: "Perfil", group: "Conta" },
+  ],
+  country_manager: [
+    { path: "/admin/country-dashboard", icon: LayoutDashboard, label: "Painel", group: "Região" },
+    { path: "/admin/curation", icon: Shield, label: "Aprovações", group: "Região" },
+    { path: "/admin/transactions", icon: Wallet, label: "Financeiro", group: "Região" },
+    { path: "/admin/country-settings", icon: Settings, label: "Configurações", group: "Região" },
+    { path: "/profile", icon: User, label: "Perfil", group: "Conta" },
+  ],
+  insurance: [
+    { path: "/insurance/dashboard", icon: LayoutDashboard, label: "Painel", group: "Seguros" },
+    { path: "/insurance/register", icon: Shield, label: "Nova Apólice", group: "Seguros" },
+    { path: "/wallet", icon: Wallet, label: "Financeiro", group: "Conta" },
     { path: "/profile", icon: User, label: "Perfil", group: "Conta" },
   ],
 };

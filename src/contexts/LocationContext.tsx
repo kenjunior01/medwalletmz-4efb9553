@@ -118,6 +118,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       coordinates,
       city,
       countryCode,
+      countryConfig,
       setCity,
       setCountryCode,
       loading,
