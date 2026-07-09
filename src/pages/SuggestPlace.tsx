@@ -144,8 +144,8 @@ export default function SuggestPlace() {
         latitude: lat ? Number(lat) : coordinates?.latitude ?? null,
         longitude: lng ? Number(lng) : coordinates?.longitude ?? null,
         proposed_by: user.id,
-        reward_mzn: rewardMzn,
-        reward_joy_coins: rewardJoy,
+        // reward_mzn / reward_joy_coins are enforced server-side by the
+        // enforce_place_proposal_reward trigger — never trust client values.
         status: "pending",
       };
 

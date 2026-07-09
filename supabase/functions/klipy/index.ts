@@ -1,5 +1,7 @@
 // KLIPY proxy via Lovable Connector Gateway.
 // Usage: POST { kind: 'trending'|'search', media: 'gifs'|'stickers'|'emojis', query?, page?, customer_id }
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -10,6 +12,24 @@ const GATEWAY = "https://connector-gateway.lovable.dev/klipy";
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const sb = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data: c, error: cErr } = await sb.auth.getClaims(authHeader.replace("Bearer ", ""));
+    if (cErr || !c?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const KLIPY_API_KEY = Deno.env.get("KLIPY_API_KEY");
     if (!LOVABLE_API_KEY || !KLIPY_API_KEY) {

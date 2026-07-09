@@ -3,7 +3,7 @@
 // supabase function: mcp
 // Bundled from src/lib/mcp/index.ts by @lovable.dev/mcp-js.
 // src/lib/mcp/index.ts
-import { defineMcp } from "npm:@lovable.dev/mcp-js@0.20.0";
+import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.20.0";
 
 // src/lib/mcp/tools/echo.ts
 import { defineTool } from "npm:@lovable.dev/mcp-js@0.20.0";
@@ -18,11 +18,16 @@ var echo_default = defineTool({
 });
 
 // src/lib/mcp/index.ts
+var projectRef = "pfqruzusjjxyidhqkiob";
 var mcp_default = defineMcp({
   name: "medwallet-mcp",
   title: "MedWallet MCP",
   version: "0.1.0",
   instructions: "Tools for MedWallet \u2014 a Mozambican health super-app (pharmacies, doctors, wallet). Use `echo` to verify connectivity. More tools will be added over time.",
+  auth: auth.oauth.issuer({
+    issuer: `https://${projectRef}.supabase.co/auth/v1`,
+    acceptedAudiences: "authenticated"
+  }),
   tools: [echo_default]
 });
 
