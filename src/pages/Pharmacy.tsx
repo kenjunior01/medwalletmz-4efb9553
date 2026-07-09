@@ -108,6 +108,8 @@ export default function Pharmacy() {
     });
 
   return (
+    <>
+      <Seo title="Farmácias 24h com entrega em Moçambique | MedWallet" description="Encontre farmácias abertas 24h em Maputo e Moçambique. Peça medicamentos com entrega rápida." path="/pharmacy" />
     <div className="flex flex-col gap-4 p-4 animate-fade-in">
       {/* Header */}
       <div>
@@ -263,6 +265,7 @@ export default function Pharmacy() {
         )}
       </div>
     </div>
+    </>
     </>
   );
 }
