@@ -6,6 +6,7 @@ import { OfflineBanner } from "./OfflineBanner";
 import { DesktopRail } from "./DesktopRail";
 import { AppSidebar } from "./AppSidebar";
 import { MeddyFloating } from "@/components/mascot/MeddyFloating";
+import { SmartEngagementPopUp } from "@/components/notifications/SmartEngagementPopUp";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useDeviceType } from "@/hooks/useDeviceType";
 import { useCapacitor } from "@/hooks/useCapacitor";
@@ -67,6 +68,7 @@ export function AppLayout() {
         </div>
         {isMobile && <BottomNav />}
       </div>
+      <SmartEngagementPopUp />
       <MeddyFloating context={context} />
     </div>
   );

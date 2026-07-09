@@ -40,8 +40,20 @@ const CITY_COORDINATES: Record<string, Coordinates & { country: string }> = {
 
 export function LocationProvider({ children }: { children: ReactNode }) {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
-  const [city, setCity] = useState<string>(() => localStorage.getItem('selectedCity') || 'Maputo');
-  const [countryCode, setCountryCode] = useState<string>(() => localStorage.getItem('selectedCountry') || 'MZ');
+  const [city, setCity] = useState<string>(() => {
+    try {
+      return localStorage.getItem('selectedCity') || 'Maputo';
+    } catch {
+      return 'Maputo';
+    }
+  });
+  const [countryCode, setCountryCode] = useState<string>(() => {
+    try {
+      return localStorage.getItem('selectedCountry') || 'MZ';
+    } catch {
+      return 'MZ';
+    }
+  });
   const [countryConfig, setCountryConfig] = useState<CountryConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

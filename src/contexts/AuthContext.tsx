@@ -116,14 +116,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // THEN check for existing session
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setSession(session);
-      setUser(session?.user ?? null);
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
 
-      await loadRoles(session?.user ?? null);
+        if (!mounted) return;
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
 
-      if (mounted) setLoading(false);
+        await loadRoles(data.session?.user ?? null);
+      } catch (err) {
+        console.error("Session load error:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     })();
 
     return () => {

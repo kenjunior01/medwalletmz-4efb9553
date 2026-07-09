@@ -140,7 +140,6 @@ const App = () => (
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
-                <SmartEngagementPopUp />
                 <Routes>
                   {/* Main App Routes */}
                   <Route element={<AppLayout />}>

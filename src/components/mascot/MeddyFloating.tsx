@@ -144,16 +144,20 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
     return String(source).trim().split(/\s+/)[0];
   }, [profile?.full_name, user?.email]);
 
-  // Não mostrar para utilizadores não autenticados (Auth page mostra login)
-  if (!user || dismissed) return null;
-
   const activeContext = isNudge ? 'nudge' : context;
   const state: MeddyState = open ? (isNudge ? 'concerned' : 'waving') : 'idle';
   const message = pickMeddyMessage(role, activeContext as any, lastText);
-  const personalizedText = message?.text
-    .replace(/XXXX/g, String(metric))
-    .replace(/{{name}}/g, firstName)
-    .replace(/{{city}}/g, profile?.default_city || 'Moçambique');
+
+  const personalizedText = useMemo(() => {
+    if (!message?.text) return "";
+    return message.text
+      .replace(/XXXX/g, String(metric))
+      .replace(/{{name}}/g, firstName)
+      .replace(/{{city}}/g, profile?.default_city || 'Moçambique');
+  }, [message, metric, firstName, profile]);
+
+  // Não mostrar para utilizadores não autenticados (Auth page mostra login)
+  if (!user || dismissed) return null;
 
   const cycleMessage = () => {
     setIsNudge(false);
@@ -340,7 +344,7 @@ function ClipboardIcon(props: any)    { return <Clipboard {...props} />; }
 function PackageIcon(props: any)      { return <Package {...props} />; }
 function TruckIcon(props: any)       { return <Truck {...props} />; }
 function HistoryIcon(props: any)     { return <History {...props} />; }
-function MapIcon(props: any)         { return <Map {...props} />; }
+function MapIcon(props: any)         { return <MapIconLucide {...props} />; }
 function BuildingIcon(props: any)    { return <Building2 {...props} />; }
 function ShieldIcon(props: any)      { return <Shield {...props} />; }
 function UploadIcon(props: any)      { return <Upload {...props} />; }
@@ -349,7 +353,11 @@ function BookIcon(props: any)        { return <BookOpen {...props} />; }
 function SuggestIcon(props: any)     { return <MapPinPlus {...props} />; }
 
 // Icons (real)
-import { Stethoscope, Calendar, Users, Wallet, Pill, Clipboard, Package, Truck, History, Map, Shield, Upload, BookOpen, MapPinPlus, Building2 } from 'lucide-react';
+import {
+  Stethoscope, Calendar, Users, Wallet, Pill, Clipboard,
+  Package, Truck, History, Map as MapIconLucide, Shield,
+  Upload, BookOpen, MapPinPlus, Building2
+} from 'lucide-react';
 
 function roleLabel(r: MeddyRole): string {
   return {

@@ -10,8 +10,12 @@ const Ctx = createContext<DataSaverCtx | null>(null);
 
 function detectInitial(): boolean {
   if (typeof window === "undefined") return false;
-  const saved = localStorage.getItem("data-saver");
-  if (saved !== null) return saved === "1";
+  try {
+    const saved = localStorage.getItem("data-saver");
+    if (saved !== null) return saved === "1";
+  } catch (e) {
+    console.warn('LocalStorage blocked', e);
+  }
   // Respect Save-Data header / connection hint
   const conn = (navigator as any).connection;
   if (conn?.saveData) return true;

@@ -29,7 +29,11 @@ function applyTheme(theme: Theme) {
 export function ThemeToggle() {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === "undefined") return "system";
-    return (localStorage.getItem(STORAGE_KEY) as Theme) || "system";
+    try {
+      return (localStorage.getItem(STORAGE_KEY) as Theme) || "system";
+    } catch {
+      return "system";
+    }
   });
 
   const setTheme = useCallback((next: Theme) => {

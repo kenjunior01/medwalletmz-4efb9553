@@ -49,8 +49,13 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   const [country, setCountry] = useState<Country | null>(null);
   const [allCountries, setAllCountries] = useState<Country[]>([]);
   const [locale, setLocale] = useState(() => {
-    const saved = localStorage.getItem('appLocale');
-    if (saved) return saved;
+    try {
+      const saved = localStorage.getItem('appLocale');
+      if (saved) return saved;
+    } catch (e) {
+      console.warn('LocalStorage blocked', e);
+    }
+
     // Detect browser language
     const browserLang = navigator.language.split('-')[0];
     const map: Record<string, string> = {
