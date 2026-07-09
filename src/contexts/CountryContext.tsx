@@ -71,7 +71,23 @@ export function CountryProvider({ children }: { children: ReactNode }) {
     let current = translations[locale] || translations['pt'];
 
     for (const key of keys) {
-      if (!current || current[key] === undefined) return path;
+      if (!current || current[key] === undefined) {
+        // Fallback to 'pt' if current locale doesn't have the key
+        if (locale !== 'pt') {
+          let fallback = translations['pt'];
+          for (const fallbackKey of keys) {
+            if (!fallback || fallback[fallbackKey] === undefined) {
+              console.warn(`Missing translation key: ${path}`);
+              return path;
+            }
+            fallback = fallback[fallbackKey];
+          }
+          current = fallback;
+          break;
+        }
+        console.warn(`Missing translation key: ${path}`);
+        return path;
+      }
       current = current[key];
     }
 
@@ -84,6 +100,20 @@ export function CountryProvider({ children }: { children: ReactNode }) {
     }
 
     return current;
+  };
+
+  // Helper for dynamic translation using Google Cloud (via Edge Function)
+  const translateDynamic = async (text: string, target?: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('google-translate', {
+        body: { text, target_lang: target || locale, source_lang: 'pt' }
+      });
+      if (error) throw error;
+      return data.translatedText;
+    } catch (e) {
+      console.warn('Dynamic translation failed', e);
+      return text;
+    }
   };
 
   useEffect(() => {

@@ -124,5 +124,41 @@
     "auto_update_notice": "This document is automatically updated based on your current location.",
     "cookies_policy": "Cookies Policy",
     "medical_responsibility": "Medical Responsibility"
+  },
+  "header": {
+    "select_country": "Select country",
+    "deliver_at": "Deliver at",
+    "select_language": "Select language",
+    "notifications": "Notifications",
+    "greetings": {
+      "bom_dia": "Good morning",
+      "boa_tarde": "Good afternoon",
+      "boa_noite": "Good night"
+    }
+  },
+  "pharmacy": {
+    "title": "Pharmacy",
+    "subtitle": "Medicines and health products",
+    "all_cities": "all cities",
+    "only_my_city": "Only in my city ({{city}})",
+    "show_all": "Show all",
+    "order_with_prescription": "Order with prescription",
+    "priority_notice": "Will be marked as priority at checkout",
+    "express_delivery": "Express Delivery",
+    "delivery_time_desc": "Medicines in up to 1 hour",
+    "search_placeholder": "Search pharmacies...",
+    "filters": {
+      "all": "All",
+      "24h": "24h",
+      "top_rated": "Top Rated",
+      "nearby": "Nearby"
+    },
+    "no_pharmacies": "No pharmacies found.",
+    "no_pharmacies_city": "No approved pharmacies in {{city}}.",
+    "view_all_cities": "View in all cities",
+    "try_adjust_search": "Try adjusting your search.",
+    "delivery": "Delivery",
+    "pickup": "In-store pickup",
+    "view_products": "View Products"
   }
 }

@@ -17,16 +17,28 @@ import { SafeImage } from "@/components/ui/safe-image";
 
 type Store = Tables<"stores">;
 
-const filters = ["Todas", "24h", "Melhor Avaliado", "Próximo"];
-
 export default function Pharmacy() {
   const navigate = useNavigate();
   const routerLocation = useRouterLocation();
   const { city: selectedCity, coordinates } = useLocation();
+  const { t } = useCountry();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todas");
   const [pharmacies, setPharmacies] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const filters = [
+    t('pharmacy.filters.all'),
+    t('pharmacy.filters.24h'),
+    t('pharmacy.filters.top_rated'),
+    t('pharmacy.filters.nearby')
+  ];
+
+  useEffect(() => {
+    if (!activeFilter || !filters.includes(activeFilter)) {
+      setActiveFilter(filters[0]);
+    }
+  }, [filters]);
   const [activePrescription, setActivePrescription] = useState<string | null>(null);
   const [onlyMyCity, setOnlyMyCity] = useState<boolean>(() => {
     return localStorage.getItem("filter_only_my_city") !== "0";
@@ -113,15 +125,15 @@ export default function Pharmacy() {
     <div className="flex flex-col gap-4 p-4 animate-fade-in">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Farmácia</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('pharmacy.title')}</h1>
         <p className="text-muted-foreground text-sm">
-          Medicamentos e produtos de saúde{onlyMyCity && selectedCity ? ` em ${selectedCity}` : " · todas as cidades"}
+          {t('pharmacy.subtitle')}{onlyMyCity && selectedCity ? ` en ${selectedCity}` : ` · ${t('pharmacy.all_cities')}`}
         </p>
       </div>
 
       <div className="flex items-center justify-between bento-card p-3">
         <Label htmlFor="only-city" className="text-sm cursor-pointer">
-          {onlyMyCity ? `Só na minha cidade (${selectedCity})` : "Mostrar tudo"}
+          {onlyMyCity ? t('pharmacy.only_my_city', { city: selectedCity }) : t('pharmacy.show_all')}
         </Label>
         <Switch id="only-city" checked={onlyMyCity} onCheckedChange={setOnlyMyCity} />
       </div>
@@ -133,9 +145,9 @@ export default function Pharmacy() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold flex items-center gap-1">
-              <Zap className="h-3 w-3 text-pharmacy" /> Encomenda com receita
+              <Zap className="h-3 w-3 text-pharmacy" /> {t('pharmacy.order_with_prescription')}
             </p>
-            <p className="text-xs text-muted-foreground">Será marcada como prioritária no checkout</p>
+            <p className="text-xs text-muted-foreground">{t('pharmacy.priority_notice')}</p>
           </div>
           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={clearPrescription}>
             <X className="h-4 w-4" />
@@ -149,8 +161,8 @@ export default function Pharmacy() {
           <Pill className="h-6 w-6 text-pharmacy" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-sm">Entrega Expressa</h3>
-          <p className="text-xs text-muted-foreground">Medicamentos em até 1 hora</p>
+          <h3 className="font-semibold text-sm">{t('pharmacy.express_delivery')}</h3>
+          <p className="text-xs text-muted-foreground">{t('pharmacy.delivery_time_desc')}</p>
         </div>
         <Badge className="bg-pharmacy text-white">24h</Badge>
       </div>
@@ -161,7 +173,7 @@ export default function Pharmacy() {
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Pesquisar farmácias..."
+          placeholder={t('pharmacy.search_placeholder')}
           className="pl-10 h-11 rounded-xl"
         />
       </div>

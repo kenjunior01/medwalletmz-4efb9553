@@ -39,6 +39,27 @@
     "categories": "Explora por categoria",
     "fast_verification": "Verificação rápida",
     "payments_24h": "Pagamentos 24h",
+    "provider_panel": "Painel profissional",
+    "your_business": "O teu negócio",
+    "doctor_dashboard": "Painel médico",
+    "deliveries": "Entregas",
+    "clinics": "Clínicas",
+    "laboratories": "Laboratórios",
+    "hospitals": "Hospitais",
+    "exams": "Exames",
+    "plans": "Planos",
+    "insurance": "Seguros",
+    "solidarity": "Solidários",
+    "ads": "Anúncios",
+    "for_professionals": "PARA PROFISSIONAIS",
+    "work_with_medwallet": "Trabalha com a MedWallet",
+    "become_provider_desc": "Médico, farmácia, motorista ou clínica — recebe pacientes/pedidos e a tua carteira em MZN.",
+    "im_doctor": "Sou médico",
+    "have_pharmacy": "Tenho farmácia",
+    "do_deliveries": "Faço entregas",
+    "competitive_commission": "Comissão competitiva, pagamentos diários",
+    "suggest_place_title": "Conheces uma farmácia ou clínica?",
+    "suggest_place_desc": "Sugere e, quando publicarmos, recebes saldo + Pulse automaticamente.",
     "trust_strip": {
       "doctors": "+120 médicos",
       "available": "24/7"
@@ -124,5 +145,41 @@
     "auto_update_notice": "Este documento é atualizado automaticamente com base na sua localização atual.",
     "cookies_policy": "Política de Cookies",
     "medical_responsibility": "Responsabilidade Médica"
+  },
+  "header": {
+    "select_country": "Selecionar país",
+    "deliver_at": "Entregar em",
+    "select_language": "Selecionar idioma",
+    "notifications": "Notificações",
+    "greetings": {
+      "bom_dia": "Bom dia",
+      "boa_tarde": "Boa tarde",
+      "boa_noite": "Boa noite"
+    }
+  },
+  "pharmacy": {
+    "title": "Farmácia",
+    "subtitle": "Medicamentos e produtos de saúde",
+    "all_cities": "todas as cidades",
+    "only_my_city": "Só na minha cidade ({{city}})",
+    "show_all": "Mostrar tudo",
+    "order_with_prescription": "Encomenda com receita",
+    "priority_notice": "Será marcada como prioritária no checkout",
+    "express_delivery": "Entrega Expressa",
+    "delivery_time_desc": "Medicamentos em até 1 hora",
+    "search_placeholder": "Pesquisar farmácias...",
+    "filters": {
+      "all": "Todas",
+      "24h": "24h",
+      "top_rated": "Melhor Avaliado",
+      "nearby": "Próximo"
+    },
+    "no_pharmacies": "Nenhuma farmácia encontrada.",
+    "no_pharmacies_city": "Sem farmácias aprovadas em {{city}}.",
+    "view_all_cities": "Ver em todas as cidades",
+    "try_adjust_search": "Tenta ajustar a pesquisa.",
+    "delivery": "Entrega",
+    "pickup": "Levantamento na loja",
+    "view_products": "Ver Produtos"
   }
 }

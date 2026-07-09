@@ -434,16 +434,16 @@ export default function Home() {
         <h2 className="text-xl font-black mb-3">{t('home.categories')}</h2>
         <div className="grid grid-cols-4 gap-2">
           {[
-            { icon: Stethoscope, label: 'Médicos', color: 'pharmacy', to: '/health/doctors' },
-            { icon: Pill, label: 'Farmácia', color: 'emerald', to: '/pharmacy' },
-            { icon: Activity, label: 'Exames', color: 'secondary', to: '/health/exams' },
-            { icon: Heart, label: 'Planos', color: 'destructive', to: '/health/plans' },
-            { icon: Heart, label: 'Seguros', color: 'primary', to: '/health/insurance' },
-            { icon: HandHeart, label: 'Solidários', color: 'rose-500', to: '/solidarity' },
-            { icon: Briefcase, label: 'Anúncios', color: 'secondary', to: '/ads' },
-            { icon: Activity, label: 'Clínicas', color: 'primary', to: '/health/facilities?type=clinic' },
-            { icon: Activity, label: 'Hospitais', color: 'destructive', to: '/health/facilities?type=hospital' },
-            { icon: Activity, label: 'Laboratórios', color: 'secondary', to: '/health/facilities?type=laboratory' },
+            { icon: Stethoscope, label: t('home.doctors'), color: 'pharmacy', to: '/health/doctors' },
+            { icon: Pill, label: t('home.pharmacy'), color: 'emerald', to: '/pharmacy' },
+            { icon: Activity, label: t('home.exams'), color: 'secondary', to: '/health/exams' },
+            { icon: Heart, label: t('home.plans'), color: 'destructive', to: '/health/plans' },
+            { icon: Heart, label: t('home.insurance'), color: 'primary', to: '/health/insurance' },
+            { icon: HandHeart, label: t('home.solidarity'), color: 'rose-500', to: '/solidarity' },
+            { icon: Briefcase, label: t('home.ads'), color: 'secondary', to: '/ads' },
+            { icon: Activity, label: t('home.clinics'), color: 'primary', to: '/health/facilities?type=clinic' },
+            { icon: Activity, label: t('home.hospitals'), color: 'destructive', to: '/health/facilities?type=hospital' },
+            { icon: Activity, label: t('home.laboratories'), color: 'secondary', to: '/health/facilities?type=laboratory' },
           ].map(c => (
             <button key={c.label} onClick={() => navigate(c.to)}
               className="bento-card aspect-square p-2 flex flex-col items-center justify-center gap-1.5">
@@ -461,28 +461,28 @@ export default function Home() {
         <section className="px-4 mt-6">
           <div className="bento-card p-5 gradient-mesh">
             <div className="flex items-center gap-2 text-[11px] uppercase font-bold tracking-wider text-secondary">
-              <Briefcase className="h-3.5 w-3.5" /> Painel profissional
+              <Briefcase className="h-3.5 w-3.5" /> {t('home.provider_panel')}
             </div>
-            <h3 className="text-xl font-black mt-1.5">O teu negócio</h3>
+            <h3 className="text-xl font-black mt-1.5">{t('home.your_business')}</h3>
             <div className="flex gap-2 mt-3 flex-wrap">
               {roles.includes('doctor') && (
                 <Button size="sm" variant="secondary" onClick={() => navigate('/doctor/dashboard')}>
-                  <Stethoscope className="h-3.5 w-3.5 mr-1" /> Painel médico
+                  <Stethoscope className="h-3.5 w-3.5 mr-1" /> {t('home.doctor_dashboard')}
                 </Button>
               )}
               {roles.includes('store_owner') && (
                 <Button size="sm" variant="secondary" onClick={() => navigate('/store/dashboard')}>
-                  <Building2 className="h-3.5 w-3.5 mr-1" /> Farmácia
+                  <Building2 className="h-3.5 w-3.5 mr-1" /> {t('home.pharmacy')}
                 </Button>
               )}
               {roles.includes('driver') && (
                 <Button size="sm" variant="secondary" onClick={() => navigate('/driver/dashboard')}>
-                  <Truck className="h-3.5 w-3.5 mr-1" /> Entregas
+                  <Truck className="h-3.5 w-3.5 mr-1" /> {t('home.deliveries')}
                 </Button>
               )}
               {roles.includes('clinic') && (
                 <Button size="sm" variant="secondary" onClick={() => navigate('/clinic/dashboard')}>
-                  <Building2 className="h-3.5 w-3.5 mr-1" /> Clínica
+                  <Building2 className="h-3.5 w-3.5 mr-1" /> {t('home.clinics')}
                 </Button>
               )}
             </div>
@@ -496,27 +496,27 @@ export default function Home() {
           <div className="bento-card p-5 bg-gradient-to-br from-primary via-primary to-secondary text-primary-foreground relative overflow-hidden">
             <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-secondary/30 blur-2xl" />
             <div className="relative">
-              <Badge className="bg-gold text-gold-foreground border-0 mb-2">PARA PROFISSIONAIS</Badge>
-              <h3 className="text-2xl font-black leading-tight">Trabalha com a MedWallet</h3>
+              <Badge className="bg-gold text-gold-foreground border-0 mb-2">{t('home.for_professionals')}</Badge>
+              <h3 className="text-2xl font-black leading-tight">{t('home.work_with_medwallet')}</h3>
               <p className="text-sm opacity-90 mt-2 max-w-[260px]">
-                Médico, farmácia, motorista ou clínica — recebe pacientes/pedidos e a tua carteira em MZN.
+                {t('home.become_provider_desc')}
               </p>
               <div className="grid grid-cols-2 gap-2 mt-4">
                 <Button size="sm" variant="secondary" onClick={() => navigate('/doctor/register')}>
-                  <Stethoscope className="h-3.5 w-3.5 mr-1" /> Sou médico
+                  <Stethoscope className="h-3.5 w-3.5 mr-1" /> {t('home.im_doctor')}
                 </Button>
                 <Button size="sm" variant="secondary" onClick={() => navigate('/store/register')}>
-                  <Building2 className="h-3.5 w-3.5 mr-1" /> Tenho farmácia
+                  <Building2 className="h-3.5 w-3.5 mr-1" /> {t('home.have_pharmacy')}
                 </Button>
                 <Button size="sm" variant="secondary" onClick={() => navigate('/driver/register')}>
-                  <Truck className="h-3.5 w-3.5 mr-1" /> Faço entregas
+                  <Truck className="h-3.5 w-3.5 mr-1" /> {t('home.do_deliveries')}
                 </Button>
                 <Button size="sm" variant="secondary" onClick={() => navigate('/clinic/register')}>
-                  <Building2 className="h-3.5 w-3.5 mr-1" /> Clínica
+                  <Building2 className="h-3.5 w-3.5 mr-1" /> {t('home.clinics')}
                 </Button>
               </div>
               <div className="flex items-center gap-1 text-[10px] opacity-75 mt-3">
-                <TrendingUp className="h-3 w-3" /> Comissão competitiva, pagamentos diários
+                <TrendingUp className="h-3 w-3" /> {t('home.competitive_commission')}
               </div>
             </div>
           </div>
@@ -536,13 +536,13 @@ export default function Home() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <p className="font-black text-base">Conheces uma farmácia ou clínica?</p>
+                <p className="font-black text-base">{t('home.suggest_place_title')}</p>
                 <Badge className="bg-gold text-gold-foreground border-0 text-[9px]">
-                  <Award className="h-3 w-3 mr-0.5" /> +25 MZN
+                  <Award className="h-3 w-3 mr-0.5" /> +25 {country?.currency_code || 'MZN'}
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Sugere e, quando publicarmos, recebes saldo + Pulse automaticamente.
+                {t('home.suggest_place_desc')}
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-gold group-hover:translate-x-1 transition" />

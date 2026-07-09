@@ -18,14 +18,17 @@ Deno.serve(async (req) => {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const sb = createClient(
+    const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
       { global: { headers: { Authorization: authHeader } } }
     );
-    const { data: c, error: cErr } = await sb.auth.getClaims(authHeader.replace("Bearer ", ""));
-    if (cErr || !c?.claims) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+
+    // Get user from JWT instead of getClaims which might fail in some environments
+    const { data: { user }, error: userErr } = await supabaseClient.auth.getUser();
+
+    if (userErr || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized", details: userErr }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

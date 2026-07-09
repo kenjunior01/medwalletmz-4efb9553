@@ -51,11 +51,38 @@ function getGreeting(): { text: string; emoji: string; gradient: string } {
 
 export function Header() {
   const { city: selectedCity, setCity: setSelectedCity } = useAppLocation();
-  const { country, allCountries, setCountryById, locale, setLocale } = useCountry();
+  const { country, allCountries, setCountryById, locale, setLocale, t } = useCountry();
   const greeting = useMemo(() => getGreeting(), []);
   const { user } = useAuth();
   const navigate = useNavigate();
   const [unread, setUnread] = useState(0);
+
+  // Dynamic cities based on country config
+  const cities = useMemo(() => {
+    if (country?.config?.provinces) return country.config.provinces;
+    if (country?.config?.cities) return country.config.cities;
+
+    // Default cities per country if not in config
+    const defaults: Record<string, string[]> = {
+      'MZ': ["Maputo", "Beira", "Nampula", "Quelimane", "Tete", "Chimoio", "Pemba", "Inhambane"],
+      'AO': ["Luanda", "Benguela", "Huambo", "Lubango", "Cabinda"],
+      'BR': ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza"],
+      'PT': ["Lisboa", "Porto", "Braga", "Coimbra", "Setúbal"],
+      'US': ["New York", "Los Angeles", "Chicago", "Houston", "Miami"],
+      'GB': ["London", "Manchester", "Birmingham", "Leeds", "Glasgow"],
+      'ZA': ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth"],
+      'IN': ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad"]
+    };
+
+    return defaults[country?.id || 'MZ'] || ["Maputo"];
+  }, [country]);
+
+  // Ensure selectedCity is valid for the new country
+  useEffect(() => {
+    if (cities.length > 0 && !cities.includes(selectedCity)) {
+      setSelectedCity(cities[0]);
+    }
+  }, [cities, selectedCity, setSelectedCity]);
 
   useEffect(() => {
     if (!user) { setUnread(0); return; }
@@ -84,8 +111,8 @@ export function Header() {
           {allCountries.length > 1 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Selecionar país" className="h-10 w-10 rounded-xl hover:bg-primary/10">
-                  {country?.id === 'MZ' ? '🇲🇿' : <Globe className="h-4 w-4" />}
+                <Button variant="ghost" size="icon" aria-label={t('header.select_country')} className="h-10 w-10 rounded-xl hover:bg-primary/10">
+                  {country?.flag_url ? <img src={country.flag_url} alt={country.name} className="w-5 h-5" /> : (country?.id === 'MZ' ? '🇲🇿' : <Globe className="h-4 w-4" />)}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-48 glass rounded-xl p-1">
@@ -113,7 +140,7 @@ export function Header() {
                   <MapPin className="h-4 w-4 text-primary" />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="text-[10px] text-muted-foreground font-medium">Entregar em</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">{t('header.deliver_at')}</span>
                   <span className="font-bold text-sm">{selectedCity}</span>
                 </div>
                 <ChevronDown className="h-3 w-3 text-muted-foreground" />
@@ -141,7 +168,7 @@ export function Header() {
         {/* Logo with Greeting */}
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
           <span className="text-xs text-muted-foreground flex items-center gap-1">
-            {greeting.emoji} {greeting.text}
+            {greeting.emoji} {t(`header.greetings.${greeting.text.toLowerCase().replace(' ', '_')}`)}
           </span>
           <div className="flex items-center gap-1">
             <Sparkles className="h-3.5 w-3.5 text-secondary" />
@@ -157,7 +184,7 @@ export function Header() {
           {country && country.supported_locales.length > 1 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Selecionar idioma" className="h-10 w-10 rounded-xl hover:bg-primary/10">
+                <Button variant="ghost" size="icon" aria-label={t('header.select_language')} className="h-10 w-10 rounded-xl hover:bg-primary/10">
                   <Languages className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
@@ -178,7 +205,7 @@ export function Header() {
           )}
 
           <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={() => navigate('/orders')} aria-label="Notificações" className="relative hover:bg-primary/10 rounded-xl transition-all h-10 w-10">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/orders')} aria-label={t('header.notifications')} className="relative hover:bg-primary/10 rounded-xl transition-all h-10 w-10">
             <Bell className="h-4 w-4" />
             {unread > 0 && (
               <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-accent text-accent-foreground text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-background shadow-md">
