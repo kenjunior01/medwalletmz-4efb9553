@@ -42,7 +42,7 @@ export default function InsuranceDetail() {
     <div className="p-4 flex flex-col gap-4 animate-fade-in">
       <div className="bento-card p-5">
         <div className="flex items-start gap-4">
-          {c.logo_url ? <img src={c.logo_url} className="h-20 w-20 rounded-2xl object-cover" /> :
+          {c.logo_url ? <img src={c.logo_url} alt={`Logótipo ${c.name ?? 'da seguradora'}`} className="h-20 w-20 rounded-2xl object-cover" /> :
             <div className="h-20 w-20 rounded-2xl bg-primary/10 flex items-center justify-center"><Shield className="h-10 w-10 text-primary" /></div>}
           <div className="flex-1">
             <div className="flex items-center gap-2"><h1 className="text-2xl font-black">{c.name}</h1>{c.is_verified && <CheckCircle2 className="h-5 w-5 text-primary" />}</div>

@@ -202,7 +202,7 @@ export default function Profile() {
         <div className="relative">
           <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center overflow-hidden">
             {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              <img src={profile.avatar_url} alt="Foto de perfil" className="w-full h-full object-cover" />
             ) : (
               <User className="h-8 w-8 text-primary" />
             )}

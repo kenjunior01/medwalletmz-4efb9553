@@ -1,0 +1,26 @@
+# MedWallet
+
+> MedWallet is a Mozambique-focused health super-app: online medical consultations, 24h pharmacy delivery, health records and an MZN health wallet.
+
+## Pages
+
+- [Home](/): App overview and entry points.
+- [Pharmacy](/pharmacy): Browse pharmacies and order medication with delivery.
+- [Doctors](/health/doctors): Find and book medical consultations.
+- [Health facilities](/health/facilities): Directory of clinics and hospitals.
+- [Facility explorer](/health/explorer): Map-based facility search.
+- [Lab exams](/health/exams): Order laboratory exams online.
+- [Health education](/health/education): Articles on health topics from the clinical team.
+- [Health plans](/health/plans): Subscription health plans.
+- [Symptom triage](/health/triage): AI-guided symptom triage.
+- [Insurance](/health/insurance): Health insurance providers and plans.
+- [Blood donation hub](/blood): Blood donors and requests.
+- [Solidarity](/solidarity): Community solidarity initiatives.
+- [Partners](/partners): Partner program information.
+- [Subscribe](/subscribe): Subscription plans overview.
+- [Legal](/legal): Terms, privacy and legal documents.
+- [Help](/help): Support and FAQ.
+
+## Optional
+
+- [Sign in](/auth): Authentication.

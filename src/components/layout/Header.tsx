@@ -84,7 +84,7 @@ export function Header() {
           {allCountries.length > 1 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/10">
+                <Button variant="ghost" size="icon" aria-label="Selecionar país" className="h-10 w-10 rounded-xl hover:bg-primary/10">
                   {country?.id === 'MZ' ? '🇲🇿' : <Globe className="h-4 w-4" />}
                 </Button>
               </DropdownMenuTrigger>
@@ -157,7 +157,7 @@ export function Header() {
           {country && country.supported_locales.length > 1 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/10">
+                <Button variant="ghost" size="icon" aria-label="Selecionar idioma" className="h-10 w-10 rounded-xl hover:bg-primary/10">
                   <Languages className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>

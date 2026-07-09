@@ -308,7 +308,7 @@ function ArticleDetail({ article, related, loading, onBack, user, navigate }: { 
         </Button>
         <div className="flex-1 min-w-0">
           <Badge variant="outline" className="text-[10px] mb-0.5">{meta.label}</Badge>
-          <h1 className="text-base font-bold truncate">{article.title}</h1>
+          <span className="text-base font-bold truncate block">{article.title}</span>
         </div>
         <Button variant="ghost" size="icon" onClick={share} aria-label="Partilhar">
           <Share2 className="h-4 w-4" />
