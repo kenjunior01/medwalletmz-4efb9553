@@ -38,8 +38,11 @@ import pt from '@/i18n/pt.json';
 import ptBR from '@/i18n/pt-BR.json';
 import en from '@/i18n/en.json';
 import hi from '@/i18n/hi.json';
+import es from '@/i18n/es.json';
+import fr from '@/i18n/fr.json';
+import af from '@/i18n/af.json';
 
-const translations: Record<string, any> = { pt, 'pt-BR': ptBR, en, hi };
+const translations: Record<string, any> = { pt, 'pt-BR': ptBR, en, hi, es, fr, af };
 
 export function CountryProvider({ children }: { children: ReactNode }) {
   const { countryCode: gpsCountry } = useLocation();
@@ -49,10 +52,16 @@ export function CountryProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem('appLocale');
     if (saved) return saved;
     // Detect browser language
-    const browserLang = navigator.language;
-    if (browserLang.startsWith('pt')) return browserLang === 'pt-BR' ? 'pt-BR' : 'pt';
-    if (browserLang.startsWith('hi')) return 'hi';
-    return 'en';
+    const browserLang = navigator.language.split('-')[0];
+    const map: Record<string, string> = {
+      'pt': 'pt',
+      'en': 'en',
+      'hi': 'hi',
+      'es': 'es',
+      'fr': 'fr',
+      'af': 'af'
+    };
+    return map[browserLang] || 'en';
   });
   const [loading, setLoading] = useState(true);
 

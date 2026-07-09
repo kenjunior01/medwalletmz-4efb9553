@@ -1,0 +1,14 @@
+{
+  "common": {
+    "good_morning": "Bonjour",
+    "good_afternoon": "Bon après-midi",
+    "good_night": "Bonne nuit",
+    "save": "Enregistrer",
+    "cancel": "Annuler"
+  },
+  "home": {
+    "meddy_consulta": "Consultation Urgente",
+    "hero_title": "La santé numérique dans votre main",
+    "hero_subtitle": "Médecins, pharmacie et paiements en un seul endroit."
+  }
+}

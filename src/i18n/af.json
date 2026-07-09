@@ -1,0 +1,14 @@
+{
+  "common": {
+    "good_morning": "Goeiemôre",
+    "good_afternoon": "Goeiemiddag",
+    "good_night": "Goeie nag",
+    "save": "Stoor",
+    "cancel": "Kanselleer"
+  },
+  "home": {
+    "meddy_consulta": "Dringende Konsultasie",
+    "hero_title": "Digitale gesondheid in jou hand",
+    "hero_subtitle": "Dokters, apteek en betalings op een plek."
+  }
+}

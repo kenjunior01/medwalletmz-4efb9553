@@ -64,10 +64,17 @@ export function useWallet() {
     return () => { supabase.removeChannel(ch); };
   }, [user]);
 
-  const deposit = async (amount: number, method: string = 'mpesa') => {
+  const deposit = async (amount: number, method?: string) => {
     if (!user) throw new Error('Sem sessão');
+
+    // Auto-select best method if none provided
+    const { data: profile } = await supabase.from('profiles').select('country_id').eq('user_id', user.id).single();
+    const { data: country } = await supabase.from('countries').select('config').eq('id', profile?.country_id).single();
+
+    const preferredMethod = method || country?.config?.payments?.[0] || 'card';
+
     const { data, error } = await supabase.rpc('wallet_deposit', {
-      _user_id: user.id, _amount: amount, _method: method,
+      _user_id: user.id, _amount: amount, _method: preferredMethod,
     });
     if (error) throw error;
     await load();

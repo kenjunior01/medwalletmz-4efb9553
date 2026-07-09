@@ -1,0 +1,14 @@
+{
+  "common": {
+    "good_morning": "Buenos días",
+    "good_afternoon": "Buenas tardes",
+    "good_night": "Buenas noches",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "home": {
+    "meddy_consulta": "Consulta Urgente",
+    "hero_title": "Salud digital en tu mano",
+    "hero_subtitle": "Médicos, farmacia y pagos en un solo lugar."
+  }
+}
