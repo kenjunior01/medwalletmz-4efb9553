@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/contexts/LocationContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";

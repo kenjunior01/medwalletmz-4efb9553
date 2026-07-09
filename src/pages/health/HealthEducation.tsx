@@ -90,12 +90,12 @@ export default function HealthEducation() {
     }).then(() => {});
   }, [article?.id, user?.id]);
 
-  // Se tiver slug, abre o detalhe
-  if (slug) return <ArticleDetail article={article} related={related} loading={loadingOne} onBack={() => navigate("/health/education")} user={user} navigate={navigate} />;
-
   const featured = articles?.find((a: any) => a.is_featured) || articles?.[0];
   const rest = articles?.filter((a: any) => a.id !== featured?.id) ?? [];
   const related = articles?.filter((a: any) => a.id !== article?.id && a.category === article?.category).slice(0, 3) ?? [];
+
+  // Se tiver slug, abre o detalhe
+  if (slug) return <ArticleDetail article={article} related={related} loading={loadingOne} onBack={() => navigate("/health/education")} user={user} navigate={navigate} />;
 
   return (
     <div className="min-h-screen bg-background pb-24">
