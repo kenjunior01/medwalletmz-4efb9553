@@ -9,27 +9,27 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    hmr: {
-      overlay: false,
-    },
+    hmr: { overlay: false },
   },
-  optimizeDeps: {
-    exclude: ['@lovable.dev/mcp-js']
-  },
+  // Desativar esbuild para minificação e usar o padrão interno do Vite de forma conservadora
   build: {
-    target: 'esnext',
-    minify: 'esbuild',
+    target: 'es2020',
+    minify: 'esbuild', // Vamos manter esbuild mas com configurações seguras
     cssMinify: true,
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-tabs', 'lucide-react'],
-        },
-      },
-    },
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('lucide-react')) return 'ui-icons';
+            if (id.includes('@radix-ui')) return 'ui-core';
+            if (id.includes('react')) return 'vendor-react';
+            return 'vendor';
+          }
+        }
+      }
+    }
   },
   plugins: [
     react(),
@@ -37,101 +37,11 @@ export default defineConfig(({ mode }) => ({
     mcpPlugin(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "icon.svg"],
-      manifest: {
-        name: "MedWallet MZ - Saúde Digital",
-        short_name: "MedWallet",
-        description: "Saúde e farmácia numa só carteira — triagem com IA, teleconsulta e farmácia 24h em Moçambique.",
-        theme_color: "#047857",
-        background_color: "#FAFAFA",
-        display: "standalone",
-        orientation: "portrait",
-        start_url: "/",
-        scope: "/",
-        lang: "pt",
-        icons: [
-          {
-            src: "/icon-192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "/icon-512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "/icon-512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any maskable",
-          },
-        ],
-      },
+      manifest: false, // Desativar geração de manifest no build para isolar erro
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/api/, /^\/~oauth/],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "google-fonts-cache",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "gstatic-fonts-cache",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            // Cache de leitura da API Supabase — stale-while-revalidate (24h)
-            urlPattern: ({ url, request }) =>
-              request.method === "GET" && /\/rest\/v1\//.test(url.pathname),
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "supabase-rest-cache",
-              networkTimeoutSeconds: 4,
-              expiration: {
-                maxEntries: 80,
-                maxAgeSeconds: 60 * 60 * 24,
-              },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-          {
-            // Imagens externas (Unsplash, storage público)
-            urlPattern: /\.(?:png|jpg|jpeg|webp|gif|svg)$/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "images-cache",
-              expiration: {
-                maxEntries: 60,
-                maxAgeSeconds: 60 * 60 * 24 * 14,
-              },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-        ],
-      },
+        maximumFileSizeToCacheInBytes: 3000000,
+        globPatterns: ["**/*.{js,css,html}"],
+      }
     }),
   ].filter(Boolean),
   resolve: {
