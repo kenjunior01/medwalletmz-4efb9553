@@ -41,28 +41,29 @@ export default function CountrySettings() {
     queryKey: ['my-country-settings', currentCountry?.id],
     enabled: !!currentCountry?.id,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('countries')
         .select('*')
         .eq('id', currentCountry!.id)
         .single();
 
       if (error) throw error;
-      return data;
+      return data as any;
     }
   });
 
   useEffect(() => {
-    if (countryData) {
-      if (countryData.branding_config) setBranding(countryData.branding_config);
-      if (countryData.commission_rates) setCommissions(countryData.commission_rates);
-      if (countryData.compliance_config) setCompliance(countryData.compliance_config);
+    const cd: any = countryData;
+    if (cd) {
+      if (cd.branding_config) setBranding(cd.branding_config);
+      if (cd.commission_rates) setCommissions(cd.commission_rates);
+      if (cd.compliance_config) setCompliance(cd.compliance_config);
     }
   }, [countryData]);
 
   const updateMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('countries')
         .update({
           branding_config: branding,

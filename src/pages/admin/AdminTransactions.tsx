@@ -170,9 +170,9 @@ export default function AdminTransactions() {
                       <Badge variant="outline" className={`text-[10px] capitalize ${STATUS_COLOR[t.status] || ''}`}>{t.status}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground truncate">{t.description || t.reference_type}</p>
-                    {t.metadata?.payment_reference && (
+                    {(t.metadata as any)?.payment_reference && (
                       <p className="text-[10px] font-mono bg-muted/50 inline-block px-1 rounded mt-0.5">
-                        REF: {t.metadata.payment_reference} · TEL: {t.metadata.payment_phone || '—'}
+                        REF: {(t.metadata as any).payment_reference} · TEL: {(t.metadata as any).payment_phone || '—'}
                       </p>
                     )}
                     <p className="text-[10px] text-muted-foreground">{new Date(t.created_at).toLocaleString('pt-PT')}</p>

@@ -87,7 +87,7 @@ export default function Wallet() {
     setSubmitting(true);
     try {
       // Inserir transação pendente para validação manual (Offline)
-      const { error } = await supabase.from('wallet_transactions').insert({
+      const { error } = await (supabase as any).from('wallet_transactions').insert({
         user_id: user?.id,
         amount: amt,
         type: 'deposit',

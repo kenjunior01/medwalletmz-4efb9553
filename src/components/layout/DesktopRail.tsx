@@ -41,7 +41,7 @@ export function DesktopRail() {
           <Wallet className="h-4 w-4 opacity-90" />
         </div>
         <p className="text-3xl font-black mt-2 leading-none">
-          {(wallet?.balance_mzn ?? 0).toLocaleString("pt-MZ")}
+          {(wallet?.balance ?? 0).toLocaleString("pt-MZ")}
           <span className="text-sm font-semibold ml-1.5 opacity-80">MZN</span>
         </p>
         <p className="text-[11px] opacity-70 mt-2">↘ Desconto auto em todas as compras</p>

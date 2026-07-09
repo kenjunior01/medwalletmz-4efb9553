@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Meddy, type MeddyRole, type MeddyState } from './Meddy';
 import { pickMeddyMessage, type MeddyMessage, type Context } from './MeddyMessages';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ interface Props {
  */
 export function MeddyFloating({ context = 'default', position = 'bottom-right' }: Props) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { user, roles } = useAuth();
   const [open, setOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);

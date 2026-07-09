@@ -27,7 +27,7 @@ export default function Solidarity() {
   const { data: requests, isLoading, refetch } = useQuery({
     queryKey: ["medical-aid-requests"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("medical_aid_requests")
         .select("*")
         .eq("status", "approved")
@@ -58,7 +58,7 @@ export default function Solidarity() {
 
     setLoading(true);
     try {
-      const { error } = await supabase.from("medical_aid_requests").insert({
+      const { error } = await (supabase as any).from("medical_aid_requests").insert({
         user_id: user.id,
         ...form,
         patient_age: form.patient_age ? Number(form.patient_age) : null,

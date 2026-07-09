@@ -29,7 +29,7 @@ export function UniversalReviews({ storeId, clinicId, entityName }: UniversalRev
   const { data: reviews, isLoading } = useQuery({
     queryKey: ['reviews', storeId || clinicId],
     queryFn: async () => {
-      let q = supabase.from('reviews').select('*');
+      let q: any = (supabase as any).from('reviews').select('*');
       if (storeId) q = q.eq('store_id', storeId);
       if (clinicId) q = q.eq('clinic_id', clinicId);
       const { data, error } = await q.order('created_at', { ascending: false }).limit(20);

@@ -95,7 +95,7 @@ export function SmartEngagementPopUp() {
     setShow(true);
     localStorage.setItem("smart-popup-last-show", String(Date.now()));
 
-    supabase.from('user_engagement_logs').insert({
+    (supabase as any).from('user_engagement_logs').insert({
       user_id: user.id,
       type: selectedType,
       action: 'shown'
@@ -156,7 +156,7 @@ export function SmartEngagementPopUp() {
 
   const logAction = (action: string) => {
     if (!user) return;
-    supabase.from('user_engagement_logs').insert({
+    (supabase as any).from('user_engagement_logs').insert({
       user_id: user.id,
       type: type,
       action: action
