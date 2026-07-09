@@ -32,9 +32,20 @@ export function useUserRoles() {
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         if (cancelled) return;
-        setRoles((data || []).map((r: any) => r.role));
+        if (error) {
+          console.error("Erro ao buscar papéis do utilizador:", error);
+          setRoles([]);
+        } else {
+          setRoles((data || []).map((r: any) => r.role as AppRole));
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        if (cancelled) return;
+        console.error("Erro fatal ao buscar papéis:", err);
+        setRoles([]);
         setLoading(false);
       });
     return () => { cancelled = true; };
