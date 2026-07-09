@@ -167,6 +167,7 @@ export default function Doctors() {
         specialtyName={activeSpec?.name}
       />
     </div>
+    </>
   );
 }
 
@@ -184,6 +185,7 @@ function EmptyState({
   onChat: () => void;
 }) {
   return (
+    <>
     <Card className="overflow-hidden border-none shadow-md">
       {/* Meddy aparece a olhar e a pensar */}
       <div className="bg-gradient-to-br from-primary/10 via-secondary/5 to-pharmacy/10 pt-4">
