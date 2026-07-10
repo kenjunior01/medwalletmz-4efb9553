@@ -212,20 +212,20 @@ export default function Pharmacy() {
             <Pill className="h-12 w-12 mx-auto mb-2 opacity-50" />
             <p className="font-semibold">
               {onlyMyCity && selectedCity
-                ? `Sem farmácias aprovadas em ${selectedCity}.`
-                : "Nenhuma farmácia encontrada."}
+                ? t('pharmacy.no_pharmacies_city', { city: selectedCity })
+                : t('pharmacy.no_pharmacies')}
             </p>
             {onlyMyCity ? (
               <Button variant="outline" size="sm" className="mt-3" onClick={() => setOnlyMyCity(false)}>
-                <Globe className="h-4 w-4 mr-1" /> Ver em todas as cidades
+                <Globe className="h-4 w-4 mr-1" /> {t('pharmacy.view_all_cities')}
               </Button>
             ) : (
               <div className="space-y-4">
-                <p className="text-sm mt-1">Tenta ajustar a pesquisa.</p>
+                <p className="text-sm mt-1">{t('pharmacy.try_adjust_search')}</p>
                 <div className="pt-4 border-t">
-                  <p className="text-xs font-bold uppercase tracking-widest mb-3">É proprietário de uma farmácia?</p>
+                  <p className="text-xs font-bold uppercase tracking-widest mb-3">{t('home.have_pharmacy')}</p>
                   <Button variant="outline" className="rounded-xl border-pharmacy text-pharmacy hover:bg-pharmacy/5" onClick={() => navigate('/store/register')}>
-                    <Plus className="h-4 w-4 mr-2" /> Registar Minha Farmácia
+                    <Pill className="h-4 w-4 mr-2" /> {t('profile.register_pharmacy')}
                   </Button>
                 </div>
               </div>
@@ -272,13 +272,13 @@ export default function Pharmacy() {
                 <div className="flex items-center justify-between">
                   {(pharmacy as any).delivery_enabled ? (
                     <span className="text-xs text-muted-foreground">
-                      Entrega: {pharmacy.delivery_fee || 0} {country?.currency_code || 'MZN'}
+                      {t('pharmacy.delivery')}: {pharmacy.delivery_fee || 0} {country?.currency_code || 'MZN'}
                     </span>
                   ) : (
-                    <span className="text-xs text-muted-foreground">Levantamento na loja</span>
+                    <span className="text-xs text-muted-foreground">{t('pharmacy.pickup')}</span>
                   )}
                   <Button size="sm" className="h-7 text-xs rounded-full bg-pharmacy hover:bg-pharmacy/90">
-                    Ver Produtos
+                    {t('pharmacy.view_products')}
                   </Button>
                 </div>
               </div>

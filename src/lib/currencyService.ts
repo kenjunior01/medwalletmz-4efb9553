@@ -20,6 +20,12 @@ const FALLBACK_RATES: Record<string, number> = {
   'ZAR_MZN': 3.45,
   'MZN_EUR': 0.015,
   'EUR_MZN': 66.5,
+  'MZN_INR': 1.33,
+  'INR_MZN': 0.75,
+  'MZN_BRL': 0.082,
+  'BRL_MZN': 12.2,
+  'MZN_AOA': 14.5,
+  'AOA_MZN': 0.069,
 };
 
 export async function convertCurrency(

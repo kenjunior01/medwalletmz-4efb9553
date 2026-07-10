@@ -22,14 +22,14 @@ import { useQuery } from '@tanstack/react-query';
 import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
 import { GoogleMap } from '@/components/maps/GoogleMap';
 
-const ENTITY_TYPES = [
-  { v: 'pharmacy', label: 'Farmácia', icon: Store, hint: 'Vende medicamentos ao público' },
-  { v: 'clinic', label: 'Clínica', icon: Building2, hint: 'Consultas e exames ambulatórios' },
-  { v: 'hospital', label: 'Hospital', icon: Hospital, hint: 'Atendimento com internamento' },
-  { v: 'lab', label: 'Laboratório', icon: Building2, hint: 'Análises clínicas / imagens' },
-];
+import { useCountry } from '@/contexts/CountryContext';
 
-const MZ_CITIES = ['Maputo', 'Matola', 'Beira', 'Nampula', 'Quelimane', 'Tete', 'Xai-Xai', 'Lichinga', 'Pemba', 'Inhambane'];
+const ENTITY_TYPES = [
+  { v: 'pharmacy', label: 'pharmacy', icon: Store, hint: 'Vende medicamentos ao público' },
+  { v: 'clinic', label: 'clinic', icon: Building2, hint: 'Consultas e exames ambulatórios' },
+  { v: 'hospital', label: 'hospitals', icon: Hospital, hint: 'Atendimento com internamento' },
+  { v: 'lab', label: 'laboratories', icon: Building2, hint: 'Análises clínicas / imagens' },
+];
 
 /**
  * /suggest-place — qualquer utilizador autenticado pode sugerir
@@ -37,17 +37,20 @@ const MZ_CITIES = ['Maputo', 'Matola', 'Beira', 'Nampula', 'Quelimane', 'Tete', 
  *
  * - Vai para `place_proposals` com source='user_submit', status='pending'.
  * - O admin revê em /admin/curation e aprova.
- * - Na aprovação: o utilizador recebe +25 MZN na wallet + +50 Pulse
+ * - Na aprovação: o utilizador recebe saldo na wallet + Pulse
  *   (configurável em place_proposal_settings).
  */
 export default function SuggestPlace() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country, t } = useCountry();
   const { coordinates, requestLocation, loading: gpsLoading } = useLocation();
+
+  const availableCities = country?.config?.cities || ['Maputo', 'Matola', 'Beira', 'Nampula'];
 
   const [entityType, setEntityType] = useState("pharmacy");
   const [name, setName] = useState("");
-  const [city, setCity] = useState("Maputo");
+  const [city, setCity] = useState(availableCities[0]);
   const [neighborhood, setNeighborhood] = useState("");
   const [referencePoint, setReferencePoint] = useState("");
   const [address, setAddress] = useState("");
@@ -86,15 +89,15 @@ export default function SuggestPlace() {
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center p-6">
           <Store className="h-10 w-10 mx-auto text-primary mb-2" />
-          <h2 className="font-bold text-lg">Sugerir farmácia ou clínica</h2>
+          <h2 className="font-bold text-lg">{t('health.suggest_place')}</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Para sugerir um novo local, precisas estar autenticado.
+            {t('profile.login_to_continue')}
           </p>
           <Button className="mt-4 w-full" onClick={() => navigate("/auth")}>
-            Entrar / Criar conta
+            {t('auth.login')} / {t('auth.register')}
           </Button>
           <Button variant="ghost" className="mt-2 w-full" onClick={() => navigate(-1)}>
-            Voltar
+            {t('common.back')}
           </Button>
         </Card>
       </div>
@@ -125,8 +128,8 @@ export default function SuggestPlace() {
   };
 
   const submit = async () => {
-    if (!name.trim()) return toast.error("Indica o nome do local");
-    if (!city) return toast.error("Indica a cidade");
+    if (!name.trim()) return toast.error(t('health.place_name_label'));
+    if (!city) return toast.error(t('common.error'));
     setSubmitting(true);
     try {
       const payload: any = {
@@ -144,17 +147,16 @@ export default function SuggestPlace() {
         latitude: lat ? Number(lat) : coordinates?.latitude ?? null,
         longitude: lng ? Number(lng) : coordinates?.longitude ?? null,
         proposed_by: user.id,
-        // reward_mzn / reward_joy_coins are enforced server-side by the
-        // enforce_place_proposal_reward trigger — never trust client values.
+        country_id: country?.id || 'MZ',
         status: "pending",
       };
 
       const { error } = await (supabase as any).from("place_proposals").insert(payload);
       if (error) throw error;
       setDone(true);
-      toast.success("Sugestão enviada! Vamos analisar e avisar-te.");
+      toast.success(t('health.suggest_success_title'));
     } catch (e: any) {
-      toast.error(e?.message ?? "Erro a enviar");
+      toast.error(e?.message ?? t('common.error'));
     } finally {
       setSubmitting(false);
     }
@@ -166,14 +168,14 @@ export default function SuggestPlace() {
         <Card className="max-w-md w-full text-center">
           <CardContent className="p-6">
             <CheckCircle2 className="h-14 w-14 text-primary mx-auto mb-2" />
-            <h2 className="font-bold text-lg">Sugestão enviada!</h2>
+            <h2 className="font-bold text-lg">{t('health.suggest_success_title')}</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Vamos validar as informações e publicar. Quando for aprovada, recebes:
+              {t('health.suggest_success_desc')}
             </p>
             <div className="bg-primary/5 rounded-lg p-3 mt-3 flex items-center justify-center gap-4">
               <div className="text-center">
                 <p className="text-2xl font-black text-primary">+{rewardMzn}</p>
-                <p className="text-[10px] text-muted-foreground">MZN</p>
+                <p className="text-[10px] text-muted-foreground">{country?.currency_code || 'MZN'}</p>
               </div>
               <div className="text-2xl text-muted-foreground">+</div>
               <div className="text-center">
@@ -181,14 +183,11 @@ export default function SuggestPlace() {
                 <p className="text-[10px] text-muted-foreground">Pulse</p>
               </div>
             </div>
-            <p className="text-[11px] text-muted-foreground mt-3">
-              A notificação chega via push + email assim que o admin publicar.
-            </p>
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-2 mt-6">
               <Button variant="outline" className="flex-1" onClick={() => { setDone(false); setName(""); setAddress(""); setPhone(""); setDescription(""); setImageUrl(""); setNeighborhood(""); setReferencePoint(""); }}>
-                Sugerir outro
+                {t('health.suggest_another')}
               </Button>
-              <Button className="flex-1" onClick={() => navigate("/")}>Concluído</Button>
+              <Button className="flex-1" onClick={() => navigate("/")}>{t('health.done')}</Button>
             </div>
           </CardContent>
         </Card>
@@ -203,9 +202,9 @@ export default function SuggestPlace() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-lg font-bold">Sugerir local</h1>
+          <h1 className="text-lg font-bold">{t('health.suggest_place')}</h1>
           <p className="text-[11px] text-muted-foreground">
-            Ajuda a comunidade — ganhas saldo quando publicarmos.
+            {t('home.suggest_place_desc')}
           </p>
         </div>
       </header>
@@ -219,10 +218,10 @@ export default function SuggestPlace() {
               <Award className="h-5 w-5 text-gold-foreground" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-bold">+{rewardMzn} MZN + {rewardJoy} 🪙</p>
-              <p className="text-[11px] text-muted-foreground">quando o local for aprovado pelo admin</p>
+              <p className="text-sm font-bold">+{rewardMzn} {country?.currency_code || 'MZN'} + {rewardJoy} 🪙</p>
+              <p className="text-[11px] text-muted-foreground">{t('health.suggest_place_hero_desc')}</p>
             </div>
-            <Badge className="bg-primary/15 text-primary border-primary/30 text-[10px]">BÓNUS</Badge>
+            <Badge className="bg-primary/15 text-primary border-primary/30 text-[10px] uppercase font-black">BÓNUS</Badge>
           </div>
         </Card>
       </section>
@@ -240,19 +239,19 @@ export default function SuggestPlace() {
           </CardHeader>
           <CardContent className="pt-0">
             <div className="grid grid-cols-4 gap-2">
-              {ENTITY_TYPES.map((t) => {
-                const Icon = t.icon;
-                const active = entityType === t.v;
+              {ENTITY_TYPES.map((type) => {
+                const Icon = type.icon;
+                const active = entityType === type.v;
                 return (
                   <button
                     type="button"
-                    key={t.v}
-                    onClick={() => setEntityType(t.v)}
+                    key={type.v}
+                    onClick={() => setEntityType(type.v)}
                     className={`p-2 rounded-xl border text-center transition ${active ? "border-primary bg-primary/10" : "border-border bg-card"
                       }`}
                   >
                     <Icon className={`h-5 w-5 mx-auto ${active ? "text-primary" : "text-muted-foreground"}`} />
-                    <p className="text-[10px] font-semibold mt-1">{t.label}</p>
+                    <p className="text-[10px] font-semibold mt-1">{t(`nav.${type.label}`)}</p>
                   </button>
                 );
               })}
@@ -262,51 +261,51 @@ export default function SuggestPlace() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Identificação</CardTitle>
+            <CardTitle className="text-sm">{t('health.identification')}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0 space-y-3">
             <div>
-              <Label>Nome do local *</Label>
+              <Label>{t('health.place_name_label')}</Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: Farmácia do Bairro"
+                placeholder={t('health.place_name_placeholder')}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label>Cidade *</Label>
+                <Label>{t('doctor_register.country_of_practice')} / {t('common.in')}</Label>
                 <Select value={city} onValueChange={setCity}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {MZ_CITIES.map((c) => (
+                    {availableCities.map((c) => (
                       <SelectItem key={c} value={c}>{c}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Bairro / Zona</Label>
+                <Label>{t('health.neighborhood_label')}</Label>
                 <Input
                   value={neighborhood}
                   onChange={(e) => setNeighborhood(e.target.value)}
-                  placeholder="Ex: Polana Caniço"
+                  placeholder={t('health.neighborhood_placeholder')}
                 />
               </div>
             </div>
 
             <div>
-              <Label>Ponto de referência</Label>
+              <Label>{t('health.reference_point_label')}</Label>
               <Input
                 value={referencePoint}
                 onChange={(e) => setReferencePoint(e.target.value)}
-                placeholder="Ex: perto do mercado municipal, ao lado do BCI"
+                placeholder={t('health.reference_point_placeholder')}
               />
             </div>
 
             <div>
-              <Label>Endereço (rua, número)</Label>
+              <Label>{t('health.address_label')}</Label>
               <GoogleAddressInput
                 value={address}
                 onChange={(val, info) => {
@@ -317,7 +316,7 @@ export default function SuggestPlace() {
                     if (info.neighborhood) setNeighborhood(info.neighborhood);
                   }
                 }}
-                placeholder="Av. 24 de Julho, nº 123"
+                placeholder={t('health.address_placeholder')}
               />
             </div>
           </CardContent>
@@ -325,16 +324,16 @@ export default function SuggestPlace() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Contactos e imagem</CardTitle>
+            <CardTitle className="text-sm">{t('health.contacts_and_image')}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0 space-y-3">
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label>Telefone</Label>
+                <Label>{t('doctor_register.phone')}</Label>
                 <Input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+258 84 ..."
+                  placeholder={country?.config?.phone_placeholder || "+258 ..."}
                 />
               </div>
               <div>
@@ -347,7 +346,7 @@ export default function SuggestPlace() {
               </div>
             </div>
             <div>
-              <Label>URL da foto (opcional)</Label>
+              <Label>{t('health.photo_url_label')}</Label>
               <div className="flex gap-2">
                 <Input
                   value={imageUrl}
@@ -368,16 +367,16 @@ export default function SuggestPlace() {
                 </label>
               </div>
               <p className="text-[10px] text-muted-foreground mt-1">
-                Carrega uma foto para ajudar a identificar o local.
+                {t('health.photo_upload_hint')}
               </p>
             </div>
             <div>
-              <Label>Observações</Label>
+              <Label>{t('health.observations_label')}</Label>
               <Textarea
                 rows={2}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Horário, especialidade, se tem atendimento 24h..."
+                placeholder={t('health.observations_placeholder')}
               />
             </div>
           </CardContent>
@@ -386,7 +385,7 @@ export default function SuggestPlace() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
-              <MapPin className="h-4 w-4" /> Localização exata
+              <MapPin className="h-4 w-4" /> {t('health.exact_location')}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0 space-y-3">
@@ -439,23 +438,22 @@ export default function SuggestPlace() {
               {gpsLoading
                 ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
                 : <Navigation className="h-3.5 w-3.5 mr-1" />}
-              Usar minha localização GPS
+              {t('health.use_my_location')}
             </Button>
             <p className="text-[10px] text-muted-foreground">
-              Dica: Arrasta o pin ou clica no mapa para ajustar a posição.
+              {t('health.map_hint')}
             </p>
           </CardContent>
         </Card>
 
-        <Button type="submit" disabled={submitting} className="w-full h-12">
+        <Button type="submit" disabled={submitting} className="w-full h-12 font-black">
           {submitting
-            ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> A enviar…</>
-            : <><Sparkles className="h-4 w-4 mr-2" /> Submeter e ganhar +{rewardMzn} MZN</>}
+            ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {t('common.loading')}</>
+            : <><Sparkles className="h-4 w-4 mr-2" /> {t('health.submit_and_earn')} +{rewardMzn} {country?.currency_code || 'MZN'}</>}
         </Button>
 
         <p className="text-[10px] text-muted-foreground text-center">
-          Submetendo, confirmas que as informações são verdadeiras. A equipa MedWallet
-          pode ajustar antes de publicar.
+          {t('health.submit_notice')}
         </p>
       </form>
     </div>

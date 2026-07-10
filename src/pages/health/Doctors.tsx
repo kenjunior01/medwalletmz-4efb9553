@@ -10,6 +10,7 @@ import { Stethoscope, Star, Clock, CheckCircle2, ArrowLeft, Bell, Sparkles, Vide
 import WaitlistDialog from '@/components/providers/WaitlistDialog';
 import { MeddyEmptyState } from '@/components/mascot/MeddyEmptyState';
 import { useLocation } from '@/contexts/LocationContext';
+import { useCountry } from '@/contexts/CountryContext';
 import { haversineKm } from '@/lib/googleRoutes';
 
 interface Specialty { id: string; name: string; slug: string; icon: string }
@@ -32,6 +33,7 @@ interface Doctor {
 }
 
 export default function Doctors() {
+  const { country, t } = useCountry();
   const navigate = useNavigate();
   const { coordinates, city } = useLocation();
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
@@ -82,7 +84,7 @@ export default function Doctors() {
 
   return (
     <>
-      <Seo title="Consultas médicas online e presenciais | MedWallet" description="Marque consultas com médicos verificados em Moçambique. Telemedicina e presencial." path="/health/doctors" />
+      <Seo title={`${t('home.doctors')} | MedWallet`} description={t('doctor_register.join_subtitle')} path="/health/doctors" />
     <div className="min-h-screen bg-background pb-24">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b">
         <div className="flex items-center gap-3 p-4">
@@ -90,8 +92,8 @@ export default function Doctors() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="font-bold text-lg">Médicos</h1>
-            <p className="text-xs text-muted-foreground">Consultas online por chat seguro</p>
+            <h1 className="font-bold text-lg">{t('home.doctors')}</h1>
+            <p className="text-xs text-muted-foreground">{t('doctor_register.join_subtitle')}</p>
           </div>
         </div>
         <div className="flex gap-2 overflow-x-auto px-4 pb-3 scrollbar-none">
@@ -100,7 +102,7 @@ export default function Doctors() {
             variant={selectedSpecialty === null ? 'default' : 'outline'}
             className="cursor-pointer whitespace-nowrap px-3 py-1.5"
           >
-            Todas
+            {t('pharmacy.filters.all')}
           </Badge>
           {specialties.map((s) => (
             <Badge
@@ -142,14 +144,14 @@ export default function Doctors() {
                   </p>
                   <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><Star className="h-3 w-3 fill-gold text-gold" />{(d.rating || 0).toFixed(1)}</span>
-                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{d.years_experience || 0} anos</span>
+                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{d.years_experience || 0} {t('doctor_register.years_experience').toLowerCase()}</span>
                     <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{d.distance !== Infinity ? `${d.distance.toFixed(1)} km` : (d.profiles?.default_city || city)}</span>
                   </div>
                   {d.bio && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{d.bio}</p>}
                   <div className="flex items-center justify-between mt-3">
-                    <span className="font-bold text-pharmacy">{d.consultation_fee} MZN</span>
+                    <span className="font-bold text-pharmacy">{d.consultation_fee} {country?.currency_code || 'MZN'}</span>
                     <Button size="sm" onClick={() => navigate(`/health/book/${d.id}`)}>
-                      Marcar consulta
+                      {t('health.book_now')}
                     </Button>
                   </div>
                 </div>
@@ -184,6 +186,9 @@ function EmptyState({
   onEducation: () => void;
   onChat: () => void;
 }) {
+  const { t } = useCountry();
+  const navigate = useNavigate();
+
   return (
     <>
     <Card className="overflow-hidden border-none shadow-md">
@@ -192,8 +197,8 @@ function EmptyState({
         <MeddyEmptyState
           role="doctor"
           state="thinking"
-          title="Ainda sem médicos nesta especialidade"
-          message="Estamos a expandir a rede. Entretanto, há alternativas já disponíveis — escolhe uma:"
+          title={t('health.no_doctors_title')}
+          message={t('health.no_doctors_message')}
         />
       </div>
 
@@ -206,8 +211,8 @@ function EmptyState({
             <Bell className="h-4 w-4" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-bold text-sm">Avisa-me quando houver</p>
-            <p className="text-[11px] opacity-90">Notificação imediata assim que estiver disponível</p>
+            <p className="font-bold text-sm">{t('health.notify_me')}</p>
+            <p className="text-[11px] opacity-90">{t('health.notify_me_desc')}</p>
           </div>
         </button>
 
@@ -219,8 +224,8 @@ function EmptyState({
             <Sparkles className="h-4 w-4 text-secondary-foreground" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-bold text-sm">Fazer Meddy Consulta agora</p>
-            <p className="text-[11px] text-muted-foreground">Avaliação inicial dos sintomas em segundos</p>
+            <p className="font-bold text-sm">{t('home.meddy_consulta')}</p>
+            <p className="text-[11px] text-muted-foreground">{t('home.hero_subtitle')}</p>
           </div>
         </button>
 
@@ -232,8 +237,8 @@ function EmptyState({
             <MessageCircle className="h-4 w-4 text-foreground" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-bold text-sm">Chat médico geral</p>
-            <p className="text-[11px] text-muted-foreground">Fala com clínico geral (qualquer especialidade)</p>
+            <p className="font-bold text-sm">{t('health.chat_general_title')}</p>
+            <p className="text-[11px] text-muted-foreground">{t('health.chat_general_desc')}</p>
           </div>
         </button>
 
@@ -245,15 +250,15 @@ function EmptyState({
             <Video className="h-4 w-4 text-amber-600" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-bold text-sm">Ler artigos de saúde</p>
-            <p className="text-[11px] text-muted-foreground">Conteúdo educativo sobre a sua condição</p>
+            <p className="font-bold text-sm">{t('health.health_education')}</p>
+            <p className="text-[11px] text-muted-foreground">{t('health.mozambique_guides')}</p>
           </div>
         </button>
       </CardContent>
 
       <div className="px-4 pb-4 pt-1">
         <p className="text-[10px] text-muted-foreground text-center font-bold uppercase tracking-wider">
-          És médico? <button className="text-primary hover:underline transition-all" onClick={() => navigate('/doctor/register')}>Cria o teu perfil profissional</button>
+          {t('home.are_you_professional')} <button className="text-primary hover:underline transition-all" onClick={() => navigate('/doctor/register')}>{t('home.work_with_medwallet')}</button>
         </p>
       </div>
     </Card>

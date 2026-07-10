@@ -39,6 +39,12 @@ const STATIC_COUNTRIES: Country[] = [
     default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Africa/Maputo',
     config: {
       cities: ["Maputo", "Beira", "Nampula", "Quelimane", "Tete", "Chimoio", "Pemba", "Inhambane"],
+      phone_placeholder: "+258 8X XXX XXXX",
+      registration_defaults: {
+        consultation_fee: 500,
+        delivery_fee: 50,
+        vehicle_plate: "ABC-123-MZ"
+      },
       payment_methods: [
         { id: "mpesa", name: "M-Pesa", type: "mobile_money", icon: "📱", description: "Vodacom M-Pesa", requires_phone: true },
         { id: "emola", name: "e-Mola", type: "mobile_money", icon: "💰", description: "Movitel e-Mola", requires_phone: true },
@@ -57,6 +63,12 @@ const STATIC_COUNTRIES: Country[] = [
     default_locale: 'pt-BR', supported_locales: ['pt-BR', 'en', 'es'], timezone: 'America/Sao_Paulo',
     config: {
       cities: ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza", "Belo Horizonte", "Manaus", "Curitiba"],
+      phone_placeholder: "+55 (XX) 9XXXX-XXXX",
+      registration_defaults: {
+        consultation_fee: 150,
+        delivery_fee: 15,
+        vehicle_plate: "ABC1D23"
+      },
       payment_methods: [
         { id: "pix", name: "PIX", type: "mobile_money", icon: "💎", description: "Pagamento Instantâneo", requires_phone: true },
         { id: "stripe", name: "Cartão de Crédito", type: "card", icon: "💳", description: "Visa/Mastercard via Stripe" },
@@ -74,6 +86,12 @@ const STATIC_COUNTRIES: Country[] = [
     default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Africa/Luanda',
     config: {
       cities: ["Luanda", "Benguela", "Huambo", "Lubango", "Cabinda", "Malanje", "Namibe"],
+      phone_placeholder: "+244 9XX XXX XXX",
+      registration_defaults: {
+        consultation_fee: 5000,
+        delivery_fee: 1000,
+        vehicle_plate: "LD-00-00-AA"
+      },
       payment_methods: [
         { id: "unitel_money", name: "Unitel Money", type: "mobile_money", icon: "📱", description: "Pagamento Unitel", requires_phone: true },
         { id: "multicaixa", name: "Multicaixa Express", type: "bank", icon: "🏦", description: "Referência Multicaixa" },
@@ -91,6 +109,12 @@ const STATIC_COUNTRIES: Country[] = [
     default_locale: 'en', supported_locales: ['en', 'af'], timezone: 'Africa/Johannesburg',
     config: {
       cities: ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", "Bloemfontein"],
+      phone_placeholder: "+27 XX XXX XXXX",
+      registration_defaults: {
+        consultation_fee: 400,
+        delivery_fee: 60,
+        vehicle_plate: "ABC 123 GP"
+      },
       payment_methods: [
         { id: "paystack", name: "Paystack", type: "card", icon: "💳", description: "Card or Bank Transfer" },
         { id: "ozow", name: "Ozow", type: "bank", icon: "🇿🇦", description: "Instant EFT" },
@@ -108,6 +132,12 @@ const STATIC_COUNTRIES: Country[] = [
     default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Europe/Lisbon',
     config: {
       cities: ["Lisboa", "Porto", "Braga", "Coimbra", "Setúbal", "Aveiro", "Faro"],
+      phone_placeholder: "+351 9XX XXX XXX",
+      registration_defaults: {
+        consultation_fee: 40,
+        delivery_fee: 5,
+        vehicle_plate: "AA-00-AA"
+      },
       payment_methods: [
         { id: "mbway", name: "MB WAY", type: "mobile_money", icon: "📱", description: "Pagamento MB WAY", requires_phone: true },
         { id: "stripe", name: "Stripe", type: "card", icon: "💳", description: "Cartão de Crédito/Débito" },
@@ -125,6 +155,12 @@ const STATIC_COUNTRIES: Country[] = [
     default_locale: 'hi', supported_locales: ['hi', 'en'], timezone: 'Asia/Kolkata',
     config: {
       cities: ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata"],
+      phone_placeholder: "+91 XXXXX-XXXXX",
+      registration_defaults: {
+        consultation_fee: 800,
+        delivery_fee: 100,
+        vehicle_plate: "MH 01 AB 1234"
+      },
       payment_methods: [
         { id: "upi", name: "UPI", type: "mobile_money", icon: "📱", description: "GPay / PhonePe / Paytm", requires_phone: true },
         { id: "card", name: "Credit/Debit Card", type: "card", icon: "💳", description: "Visa/Mastercard via Razorpay" },

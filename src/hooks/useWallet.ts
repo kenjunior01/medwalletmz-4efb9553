@@ -28,7 +28,10 @@ export function useWallet() {
       const { data: profile } = await supabase.from('profiles').select('country_id' as any).eq('user_id', user.id).single() as any;
 
       const defaultCountry = profile?.country_id || 'MZ';
-      const defaultCurrency = defaultCountry === 'MZ' ? 'MZN' : defaultCountry === 'BR' ? 'BRL' : 'USD';
+      const currencyMap: Record<string, string> = {
+        'MZ': 'MZN', 'BR': 'BRL', 'AO': 'AOA', 'ZA': 'ZAR', 'PT': 'EUR', 'IN': 'INR'
+      };
+      const defaultCurrency = currencyMap[defaultCountry] || 'USD';
 
       await supabase.from('wallets').insert({
         user_id: user.id,

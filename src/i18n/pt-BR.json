@@ -16,6 +16,15 @@
     "driver": "Entregador",
     "more": "Mais"
   },
+  "referrals": {
+    "program_title": "Programa de Indicação",
+    "invite_and_earn": "Convide e ganhe em {{city}}",
+    "description": "Cada amigo que se inscrever com seu código recebe bônus de boas-vindas — e você também.",
+    "your_code": "Seu código",
+    "whatsapp_text": "Estou usando a MedWallet para falar com médicos e receber medicamentos em {{city}} 🇧🇷. Use meu código {{code}} e ambos ganhamos bônus: {{link}}",
+    "copied": "Link copiado!",
+    "details": "Detalhes do programa"
+  },
   "home": {
     "hero_title": "Saúde e farmácia em uma só carteira.",
     "hero_subtitle": "Triagem com IA, médicos verificados e farmácia 24h.",
@@ -125,5 +134,48 @@
     "auto_update_notice": "Este documento é atualizado automaticamente com base na sua localização atual.",
     "cookies_policy": "Política de Cookies",
     "medical_responsibility": "Responsabilidade Médica"
+  },
+  "health": {
+    "my_medications": "Meus Medicamentos",
+    "add": "Adicionar",
+    "taken": "Tomado",
+    "antibiotic_warning": "Lembre-se: Não interrompa o tratamento de antibióticos sem consultar seu médico.",
+    "upcoming_consultation": "Próxima Consulta",
+    "new_consultation": "Nova Consulta",
+    "book_now": "Marcar agora",
+    "under_2_min": "Em menos de 2 min",
+    "urgent": "Urgente",
+    "meddy_now": "Meddy Agora",
+    "meddy_now_desc": "O médico mais próximo disponível em vídeo para triagem imediata.",
+    "health_education": "Educação em Saúde",
+    "mozambique_guides": "Guias Locais",
+    "help_payment": "Ajuda & {{method}}",
+    "support_24h": "Suporte 24h MedWallet",
+    "grow_with_medwallet": "Cresça com a MedWallet",
+    "provider_desc": "Junte sua clínica, farmácia ou laboratório à maior rede digital de saúde.",
+    "suggest_place": "Sugira um Local",
+    "map_health_country": "Ajude a mapear a saúde em {{country}}",
+    "followup_title": "Consulta de retorno · {{specialty}}",
+    "followup_subtitle": "Faz {{days}} dias desde a última consulta.",
+    "continue_doctor_title": "Continue com Dr(a). da última consulta",
+    "mark_contact": "Marque novo contato",
+    "recent_triage_title": "Triagem recente — confirme com médico",
+    "suggestion": "Sugestão",
+    "article_malaria_title": "Malária: Guia de Prevenção",
+    "article_malaria_subtitle": "Aprenda a proteger sua família",
+    "article_hypertension_title": "Hipertensão: Cuidados Essenciais",
+    "article_hypertension_subtitle": "Controle sua pressão arterial",
+    "weather_rainy_title": "Época de chuvas em {{country}}",
+    "weather_rainy_subtitle": "Aumente o cuidado com água e mosquitos.",
+    "referral_promo_title": "Ganhe {{amount}} {{currency}} convidando amigos",
+    "referral_promo_subtitle": "Saldo grátis para teleconsultas"
+  },
+  "greeting": {
+    "good_morning": "Bom dia, {{name}}!",
+    "day_region": "Hoje em {{city}} está um dia ideal para focar na sua saúde.",
+    "tip_water": "Dica: Beba água morna com limão para despertar o metabolismo.",
+    "remind_pressure": "Lembrete: Já verificou sua pressão arterial esta semana?",
+    "activate_alerts": "Ativar Alertas",
+    "understood": "Entendido"
   }
 }

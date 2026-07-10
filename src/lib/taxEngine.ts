@@ -36,6 +36,16 @@ const COUNTRY_TAX_CONFIGS: Record<string, TaxConfig> = {
       'consultation': 0.15
     }
   },
+  'AO': {
+    countryId: 'AO',
+    taxName: 'IVA',
+    defaultRate: 0.14,
+    serviceTaxes: {
+      'pharmacy': 0.14,
+      'consultation': 0.05,
+      'lab': 0.14
+    }
+  },
   'PT': {
     countryId: 'PT',
     taxName: 'IVA',

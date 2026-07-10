@@ -1,4 +1,4 @@
-export type CurrencyCode = 'MZN' | 'BRL' | 'AOA' | 'INR' | 'EUR' | 'USD';
+export type CurrencyCode = 'MZN' | 'BRL' | 'AOA' | 'INR' | 'EUR' | 'USD' | 'ZAR';
 
 export const CURRENCIES: Record<CurrencyCode, { symbol: string; locale: string; name: string }> = {
   MZN: { symbol: 'MT', locale: 'pt-MZ', name: 'Metical' },
@@ -7,6 +7,7 @@ export const CURRENCIES: Record<CurrencyCode, { symbol: string; locale: string; 
   INR: { symbol: '₹', locale: 'en-IN', name: 'Rupia' },
   EUR: { symbol: '€', locale: 'pt-PT', name: 'Euro' },
   USD: { symbol: '$', locale: 'en-US', name: 'Dólar' },
+  ZAR: { symbol: 'R', locale: 'en-ZA', name: 'Rand' },
 };
 
 export function formatCurrency(amount: number, code: CurrencyCode = 'MZN'): string {

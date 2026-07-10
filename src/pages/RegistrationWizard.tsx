@@ -5,7 +5,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import { OnboardingLayout } from '@/components/layout/OnboardingLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card as ShadcnCard, CardContent as ShadcnCardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -58,7 +58,7 @@ export default function RegistrationWizard() {
     specialtyId: '',
     licenseNumber: '',
     bio: '',
-    consultationFee: '500',
+    consultationFee: String(country?.config?.registration_defaults?.consultation_fee || 500),
     yearsExperience: '0',
 
     // Store/Clinic/Lab specific
@@ -68,7 +68,7 @@ export default function RegistrationWizard() {
     licenseUrl: '',
     logoUrl: '',
     deliveryTime: '30-45 min',
-    deliveryFee: '50',
+    deliveryFee: String(country?.config?.registration_defaults?.delivery_fee || 50),
 
     // Driver specific
     vehicleType: '',
@@ -76,6 +76,17 @@ export default function RegistrationWizard() {
     licenseCartaUrl: '',
     licenseViaturaUrl: '',
   });
+
+  useEffect(() => {
+    if (country) {
+      setFormData(prev => ({
+        ...prev,
+        city: country.config?.cities?.[0] || prev.city,
+        consultationFee: String(country.config?.registration_defaults?.consultation_fee || 500),
+        deliveryFee: String(country.config?.registration_defaults?.delivery_fee || 50),
+      }));
+    }
+  }, [country]);
 
   useEffect(() => {
     // Detect role from URL param or pathname
@@ -248,7 +259,7 @@ export default function RegistrationWizard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {roleOptions.map((role) => (
-                <Card
+                <ShadcnCard
                   key={role.id}
                   className={cn(
                     "cursor-pointer transition-all duration-300 border-2 relative group overflow-hidden h-full",
@@ -258,7 +269,7 @@ export default function RegistrationWizard() {
                   )}
                   onClick={() => setSelectedRole(role.id as Role)}
                 >
-                  <CardContent className="p-6">
+                  <ShadcnCardContent className="p-6">
                     <div className="flex flex-col gap-4">
                       <div className={cn(
                         "w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-300",
@@ -272,13 +283,13 @@ export default function RegistrationWizard() {
                         <p className="text-xs text-muted-foreground leading-relaxed">{role.description}</p>
                       </div>
                     </div>
-                  </CardContent>
+                  </ShadcnCardContent>
                   {selectedRole === role.id && (
                     <div className="absolute bottom-3 right-3 bg-primary text-white p-1 rounded-full">
                       <ShieldCheck className="h-4 w-4" />
                     </div>
                   )}
-                </Card>
+                </ShadcnCard>
               ))}
             </div>
 
@@ -325,7 +336,7 @@ export default function RegistrationWizard() {
                   <div className="relative group">
                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
-                      placeholder="+258 ..."
+                      placeholder={country?.config?.phone_placeholder || "+258 ..."}
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
                       className="pl-12 h-14 rounded-2xl border-2 border-slate-100 focus:border-primary/30 transition-all bg-white shadow-sm font-medium"
@@ -497,7 +508,7 @@ export default function RegistrationWizard() {
                   <div className="space-y-2 animate-in fade-in duration-300">
                     <Label>Placa do Veículo *</Label>
                     <Input
-                      placeholder="Ex: ABC-123-MZ"
+                      placeholder={`Ex: ${country?.config?.registration_defaults?.vehicle_plate || 'ABC-123-MZ'}`}
                       value={formData.licensePlate}
                       onChange={(e) => handleInputChange('licensePlate', e.target.value.toUpperCase())}
                       className="h-14 rounded-2xl"
@@ -510,7 +521,7 @@ export default function RegistrationWizard() {
                   <div className="space-y-1">
                     <p className="text-xs font-bold text-emerald-900">Ganhos Garantidos</p>
                     <p className="text-[10px] text-emerald-700 leading-tight">
-                      Como parceiro MedWallet, você recebe pagamentos semanais via M-Pesa e suporte priorizado.
+                      Como parceiro MedWallet, você recebe pagamentos semanais via {country?.config?.payment_methods?.[0]?.name || 'M-Pesa'} e suporte priorizado.
                     </p>
                   </div>
                 </div>
@@ -526,7 +537,7 @@ export default function RegistrationWizard() {
       case 4: // Verification
         return (
           <div className="space-y-6 animate-in slide-in-from-right duration-500">
-            <Card className="p-6 border-2 border-primary/20 bg-primary/5 rounded-[2rem]">
+            <ShadcnCard className="p-6 border-2 border-primary/20 bg-primary/5 rounded-[2rem]">
               <div className="flex gap-4">
                 <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
                   <ShieldCheck className="h-6 w-6 text-primary" />
@@ -541,7 +552,7 @@ export default function RegistrationWizard() {
                   </div>
                 </div>
               </div>
-            </Card>
+            </ShadcnCard>
 
             <div className="space-y-6">
               {selectedRole === 'driver' ? (
@@ -589,7 +600,7 @@ export default function RegistrationWizard() {
               <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <p className="text-[10px] text-amber-800 font-black leading-tight uppercase tracking-wider">
-                  O seu perfil passará por uma curadoria manual pelo Gestor Regional de {country?.name || 'Moçambique'}.
+                  O seu perfil passará por uma curadoria manual pelo Gestor Regional de {country?.name || 'MedWallet'}.
                 </p>
                 <p className="text-[9px] text-amber-700/70 font-bold uppercase tracking-tighter">
                   Tempo estimado: 2 a 24 horas úteis.

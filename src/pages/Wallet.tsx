@@ -44,6 +44,11 @@ const methodLabel: Record<string, string> = {
   paypal: 'PayPal',
   stripe: 'Cartão',
   pix: 'PIX',
+  upi: 'UPI',
+  paystack: 'Paystack',
+  ozow: 'Ozow',
+  unitel_money: 'Unitel Money',
+  multicaixa: 'Multicaixa',
 };
 
 export default function Wallet() {
@@ -79,14 +84,14 @@ export default function Wallet() {
 
   const copy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copiado!');
+    toast.success(t('referrals.copied'));
   };
 
   const handleDeposit = async () => {
     const amt = parseFloat(amount);
     const currencySymbol = symbol || 'MZN';
-    if (!amt || amt < 50) { toast.error(`Mínimo 50 ${currencySymbol}`); return; }
-    if (!reference || !phone) { toast.error('Preencha a referência e o seu número'); return; }
+    if (!amt || amt < 50) { toast.error(`${t('common.error')}: Min 50 ${currencySymbol}`); return; }
+    if (!reference || !phone) { toast.error(t('doctor_register.required_fields_error')); return; }
 
     setSubmitting(true);
     try {
@@ -96,7 +101,7 @@ export default function Wallet() {
         amount: amt,
         type: 'deposit',
         status: 'pending',
-        description: `Depósito via ${methodLabel[method]} - Ref: ${reference}`,
+        description: `Depósito via ${methodLabel[method] || method} - Ref: ${reference}`,
         metadata: {
           payment_method: method,
           payment_reference: reference,
@@ -107,7 +112,7 @@ export default function Wallet() {
 
       if (error) throw error;
 
-      toast.success('Solicitação de depósito enviada! Aguarda validação (até 24h).');
+      toast.success(t('wallet.success_msg') || 'Solicitação enviada!');
       setOpen(false);
       setAmount('');
       setReference('');
@@ -291,7 +296,12 @@ export default function Wallet() {
               </div>
               <div>
                 <Label htmlFor="dep-phone" className="text-xs">{t('wallet.sending_number')}</Label>
-                <Input id="dep-phone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="84 / 85 / 82 / 86..." />
+                <Input
+                  id="dep-phone"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                  placeholder={country?.config?.phone_placeholder || "Número de envio"}
+                />
               </div>
             </div>
 

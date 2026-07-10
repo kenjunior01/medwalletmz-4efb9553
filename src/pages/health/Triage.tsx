@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocation } from '@/contexts/LocationContext';
+import { useCountry } from '@/contexts/CountryContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +35,7 @@ const sevColor: Record<string, string> = {
 export default function Triage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country, t } = useCountry();
   const { coordinates, calculateDistance, countryCode } = useLocation();
   const [symptoms, setSymptoms] = useState('');
   const [age, setAge] = useState('');
@@ -106,7 +108,7 @@ export default function Triage() {
   };
 
   const run = async () => {
-    if (!symptoms.trim()) return toast.error('Descreve os sintomas');
+    if (!symptoms.trim()) return toast.error(t('doctor_register.required_fields_error'));
     setLoading(true);
     setResult(null);
     try {
@@ -130,7 +132,7 @@ export default function Triage() {
         });
       }
     } catch (e: any) {
-      toast.error(e.message ?? 'Erro na triagem');
+      toast.error(e.message ?? t('common.error'));
     } finally {
       setLoading(false);
     }
@@ -166,10 +168,9 @@ export default function Triage() {
         <Card className="p-4 bg-destructive/10 border-destructive/20 flex gap-3 items-start">
           <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
           <div className="space-y-1">
-            <p className="text-xs font-black text-destructive uppercase tracking-widest">Aviso de Emergência</p>
+            <p className="text-xs font-black text-destructive uppercase tracking-widest">{t('health.urgent')}</p>
             <p className="text-[11px] leading-relaxed">
-              Esta avaliação não substitui uma consulta médica. Se estiver a sentir falta de ar grave ou dor no peito,
-              ligue imediatamente para o <b>84 144</b> ou dirija-se ao hospital mais próximo.
+              {t('health.triage_emergency_warning', { number: t('health.emergency_call') })}
             </p>
           </div>
         </Card>
@@ -181,7 +182,7 @@ export default function Triage() {
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Descreva como se sente</Label>
+              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t('health.symptoms_label')}</Label>
               <button
                 onClick={toggleRecording}
                 className={cn(
@@ -190,7 +191,7 @@ export default function Triage() {
                 )}
               >
                 {isRecording ? <MicOff className="h-3 w-3" /> : <Mic className="h-3 w-3" />}
-                {isRecording ? `A gravar... ${recordingTime}s` : "Falar Sintomas"}
+                {isRecording ? `... ${recordingTime}s` : t('home.meddy_consulta')}
               </button>
             </div>
             <div className="relative">
@@ -198,7 +199,7 @@ export default function Triage() {
                 rows={4}
                 value={symptoms}
                 onChange={(e) => setSymptoms(e.target.value)}
-                placeholder="Ex: Sinto uma dor de cabeça forte há 2 dias, febre 38.5, náuseas..."
+                placeholder={t('health.symptoms_placeholder')}
                 className="rounded-2xl border-2 focus:border-primary/50 transition-all resize-none text-sm leading-relaxed p-4"
               />
               <AnimatePresence>
@@ -227,7 +228,7 @@ export default function Triage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Idade</Label>
+              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t('health.age_label')}</Label>
               <Input
                 type="number"
                 value={age}
@@ -237,7 +238,7 @@ export default function Triage() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Duração</Label>
+              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t('health.duration_label')}</Label>
               <Input
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
@@ -256,7 +257,7 @@ export default function Triage() {
               <Loader2 className="h-6 w-6 animate-spin" />
             ) : (
               <span className="flex items-center gap-2">
-                Analisar Sintomas <Sparkles className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                {t('health.analyze_symptoms')} <Sparkles className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </span>
             )}
           </Button>
@@ -275,10 +276,10 @@ export default function Triage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="h-5 w-5 text-emerald-500" />
-                    <p className="text-xs uppercase font-black tracking-widest text-muted-foreground">Relatório Meddy</p>
+                    <p className="text-xs uppercase font-black tracking-widest text-muted-foreground">{t('health.triage_report')}</p>
                   </div>
                   <Badge className={cn("rounded-full px-3 py-1 font-black uppercase text-[9px] tracking-widest", sevColor[result.severity] ?? 'bg-muted')}>
-                    Severidade: {result.severity}
+                    {t('health.severity_label')}: {result.severity}
                   </Badge>
                 </div>
 
@@ -295,7 +296,7 @@ export default function Triage() {
                   {result.red_flags && result.red_flags.length > 0 && (
                     <div className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4">
                       <p className="text-[10px] font-black text-destructive uppercase tracking-widest mb-2 flex items-center gap-2">
-                        <AlertTriangle className="h-3 w-3" /> Sinais de alerta detectados
+                        <AlertTriangle className="h-3 w-3" /> {t('health.recent_triage_title')}
                       </p>
                       <ul className="space-y-1.5">
                         {result.red_flags.map((r, i) => (
@@ -311,18 +312,18 @@ export default function Triage() {
 
                 <div className="pt-4 border-t flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Especialidade Sugerida</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">{t('health.suggested_specialty_label')}</p>
                     <p className="font-black text-lg text-primary">{result.suggested_specialty}</p>
                   </div>
                   <Button className="rounded-xl font-bold bg-secondary hover:bg-secondary/90 shadow-md" onClick={() => navigate('/health/doctors')}>
-                    Marcar Consulta
+                    {t('health.book_doctor')}
                   </Button>
                 </div>
               </Card>
 
               {nearbyDoctors.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Especialistas Disponíveis Agora</h3>
+                  <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">{t('health.available_specialists')}</h3>
                   <div className="grid grid-cols-1 gap-2">
                     {nearbyDoctors.map((d: any) => (
                       <Card
@@ -336,16 +337,16 @@ export default function Triage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-bold text-sm flex items-center gap-1 truncate">
-                              Dr(a). {d.profiles?.full_name || 'Médico'}
+                              Dr(a). {d.profiles?.full_name || t('common.doctor')}
                               {d.is_verified && <CheckCircle2 className="h-3 w-3 text-primary" />}
                             </p>
                             <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
-                              {d.medical_specialties?.name || 'Clínica Geral'}
-                              {d._dist != null && ` · ${d._dist.toFixed(1)} km de distância`}
+                              {d.medical_specialties?.name || t('doctor_register.specialty_placeholder')}
+                              {d._dist != null && ` · ${d._dist.toFixed(1)} km`}
                             </p>
                           </div>
                           <Button size="sm" variant="ghost" className="rounded-lg group-hover:bg-primary group-hover:text-white transition-colors">
-                            Reservar
+                            {t('health.reserve')}
                           </Button>
                         </div>
                       </Card>

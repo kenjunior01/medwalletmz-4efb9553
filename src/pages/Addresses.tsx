@@ -22,16 +22,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { getNeighborhoodsForCity } from '@/lib/maputo-neighborhoods';
+import { getNeighborhoodsForCity } from '@/lib/regional-neighborhoods';
 
 import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
-
-const cities = [
-  'Maputo', 'Matola', 'Beira', 'Nampula', 'Quelimane',
-  'Tete', 'Chimoio', 'Pemba', 'Inhambane', 'Xai-Xai'
-];
 
 const labelIcons: Record<string, any> = {
   'Casa': Home,
@@ -50,13 +46,20 @@ interface AddressForm {
 export default function Addresses() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country } = useCountry();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  const availableCities = country?.config?.cities || [
+    'Maputo', 'Matola', 'Beira', 'Nampula', 'Quelimane',
+    'Tete', 'Chimoio', 'Pemba', 'Inhambane', 'Xai-Xai'
+  ];
+
   const [form, setForm] = useState<AddressForm>({
     label: 'Casa',
     address_line: '',
-    city: 'Maputo',
+    city: availableCities[0] || 'Maputo',
     is_default: false
   });
   const [neighborhood, setNeighborhood] = useState<string>('');
@@ -263,7 +266,7 @@ export default function Addresses() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {cities.map(city => (
+                    {availableCities.map(city => (
                       <SelectItem key={city} value={city}>{city}</SelectItem>
                     ))}
                   </SelectContent>

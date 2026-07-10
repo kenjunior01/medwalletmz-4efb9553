@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCountry } from "@/contexts/CountryContext";
 import { Sparkles, ArrowRight, Stethoscope, Pill, FileText, BookOpen, Video, Activity, ChevronRight, Gift, ShieldCheck, CloudRain } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,6 +30,7 @@ type Hint =
   | { kind: "referral"; title: string; subtitle: string; icon: any; };
 
 export function PersonalizedForYou() {
+  const { country, t } = useCountry();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -86,16 +88,16 @@ export function PersonalizedForYou() {
         return {
           kind: "doctor",
           doctorId: last.doctor_id,
-          title: `Consulta de retorno · ${spec ?? "Clínico"}`,
-          subtitle: `Faz ${daysAgo} dias desde a última consulta.`,
+          title: t('health.followup_title', { specialty: spec ?? t('common.doctor') }),
+          subtitle: t('health.followup_subtitle', { days: String(daysAgo) }),
           icon: Stethoscope,
         };
       }
       return {
         kind: "doctor",
         doctorId: last.doctor_id,
-        title: `Continua com Dr(a). da última consulta`,
-        subtitle: spec ? `Especialidade: ${spec}` : "Marca novo contacto",
+        title: t('health.continue_doctor_title'),
+        subtitle: spec ? `${t('doctor_register.specialty')}: ${spec}` : t('health.mark_contact'),
         icon: Stethoscope,
       };
     }
@@ -105,32 +107,45 @@ export function PersonalizedForYou() {
     if (lastTriage && (lastTriage.severity === "alta" || lastTriage.severity === "moderada")) {
       return {
         kind: "triage",
-        title: "Triagem recente — confirma com médico",
-        subtitle: `Sugestão: ${lastTriage.suggested_specialty ?? "clínico geral"}`,
+        title: t('health.recent_triage_title'),
+        subtitle: `${t('health.suggestion')}: ${lastTriage.suggested_specialty ?? t('common.doctor')}`,
         icon: Activity,
       };
     }
 
-    // 3) Sugerir artigo educacional sobre hipertensão (condição mais comum em MZ)
+    // 3) Sugerir artigo educacional (Malária em África, ou genérico)
     const malariaArticle = articles?.find((a: any) => a.slug?.includes("malaria"));
-    if (malariaArticle && Math.random() > 0.5) {
+    if (malariaArticle && country?.id === 'MZ' && Math.random() > 0.5) {
       return {
         kind: "article",
         slug: malariaArticle.slug,
-        title: "Malária: Guia de Prevenção MZ",
-        subtitle: "Aprende a proteger a tua família",
+        title: t('health.article_malaria_title'),
+        subtitle: t('health.article_malaria_subtitle'),
         icon: ShieldCheck,
       };
     }
 
-    // 4) Weather Insight (Google Weather API) - Foco em prevenção (ex: Cólera em época de chuvas)
-    const month = new Date().getMonth();
-    const isRainySeason = month >= 10 || month <= 3; // Novembro a Março em MZ
+    const hypertensionArticle = articles?.find((a: any) => a.slug?.includes("hipertensao") || a.slug?.includes("hypertension"));
+    if (hypertensionArticle) {
+      return {
+        kind: "article",
+        slug: hypertensionArticle.slug,
+        title: t('health.article_hypertension_title'),
+        subtitle: t('health.article_hypertension_subtitle'),
+        icon: Activity,
+      };
+    }
+
+    // 4) Weather Insight (Google Weather API) - Adaptativo por país
+    const month = new Date().getHours(); // Just a variation or use month
+    const currentMonth = new Date().getMonth();
+    const isRainySeason = country?.id === 'MZ' && (currentMonth >= 10 || currentMonth <= 3);
+
     if (isRainySeason) {
       return {
         kind: "weather",
-        title: "Época de chuvas em Moçambique",
-        subtitle: "Aumenta o cuidado com água e mosquitos.",
+        title: t('health.weather_rainy_title', { country: country?.name || '' }),
+        subtitle: t('health.weather_rainy_subtitle'),
         icon: CloudRain,
       };
     }
@@ -138,11 +153,11 @@ export function PersonalizedForYou() {
     // 5) Se não tem amigos convidados, sugerir referral
     return {
       kind: "referral",
-      title: "Ganha 25 MZN convidando amigos",
-      subtitle: "Saldo grátis para teleconsultas",
+      title: t('health.referral_promo_title', { amount: '25', currency: country?.currency_code || 'MZN' }),
+      subtitle: t('health.referral_promo_subtitle'),
       icon: Gift,
     };
-  }, [user, consultations, triageLogs, articles]);
+  }, [user, consultations, triageLogs, articles, country, t]);
 
   if (!user || !hint) return null;
 

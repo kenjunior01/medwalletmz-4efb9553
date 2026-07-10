@@ -7,7 +7,7 @@ import {
   Globe2, Users, Building2, TrendingUp, AlertTriangle,
   Search, Filter, Store, Hospital, FlaskConical,
   ShieldCheck, MapPin, ArrowRight, Download, BarChart3,
-  ChevronRight
+  ChevronRight, Zap
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";

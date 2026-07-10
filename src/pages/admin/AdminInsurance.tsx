@@ -6,86 +6,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 import { Shield, CheckCircle2, XCircle, MapPin, Mail, Phone, Globe } from "lucide-react";
 
-export default function AdminInsurance() {
-  const qc = useQueryClient();
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin-insurance"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("insurance_companies")
-        .select("*")
-        .order("created_at", { ascending: false });
-      return data || [];
-    },
-  });
-
-  const approve = async (id: string) => {
-    const { error } = await supabase
-      .from("insurance_companies")
-      .update({ is_verified: true, is_active: true })
-      .eq("id", id);
-    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
-    toast({ title: "Seguradora aprovada" });
-    qc.invalidateQueries({ queryKey: ["admin-insurance"] });
-  };
-
-  const reject = async (id: string) => {
-    const { error } = await supabase
-      .from("insurance_companies")
-      .update({ is_verified: false, is_active: false })
-      .eq("id", id);
-    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
-    toast({ title: "Seguradora suspensa" });
-    qc.invalidateQueries({ queryKey: ["admin-insurance"] });
-  };
-
-  const pending = (data || []).filter((c: any) => !c.is_verified);
-  const approved = (data || []).filter((c: any) => c.is_verified);
-
-  return (
-    <div className="p-4 flex flex-col gap-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-black flex items-center gap-2">
-          <Shield className="h-6 w-6 text-primary" /> Seguradoras
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Aprova ou rejeita perfis de seguradoras. Só as aprovadas aparecem publicamente.
-        </p>
-      </div>
-
-      {isLoading ? (
-        <div className="grid gap-3">{[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>
-      ) : (
-        <>
-          <section>
-            <h2 className="text-lg font-bold mb-2">
-              Pendentes <Badge variant="secondary" className="ml-1">{pending.length}</Badge>
-            </h2>
-            {pending.length === 0 ? (
-              <p className="text-sm text-muted-foreground bento-card p-4">Nenhum pedido pendente.</p>
-            ) : (
-              <div className="grid gap-3 md:grid-cols-2">
-                {pending.map((c: any) => <Card key={c.id} c={c} onApprove={approve} onReject={reject} />)}
-              </div>
-            )}
-          </section>
-
-          <section>
-            <h2 className="text-lg font-bold mb-2">
-              Aprovadas <Badge className="ml-1">{approved.length}</Badge>
-            </h2>
-            <div className="grid gap-3 md:grid-cols-2">
-              {approved.map((c: any) => <Card key={c.id} c={c} onApprove={approve} onReject={reject} />)}
-            </div>
-          </section>
-        </>
-      )}
-    </div>
-  );
+interface InsuranceCompany {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  description: string | null;
+  city: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  is_verified: boolean;
+  is_active: boolean;
 }
 
-function Card({ c, onApprove, onReject }: { c: any; onApprove: (id: string) => void; onReject: (id: string) => void }) {
+const InsuranceCard = ({ c, onApprove, onReject }: { c: InsuranceCompany; onApprove: (id: string) => void; onReject: (id: string) => void }) => {
   return (
     <div className="bento-card p-4">
       <div className="flex items-start gap-3">
@@ -130,6 +64,85 @@ function Card({ c, onApprove, onReject }: { c: any; onApprove: (id: string) => v
           </Button>
         )}
       </div>
+    </div>
+  );
+};
+
+export default function AdminInsurance() {
+  const qc = useQueryClient();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-insurance"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("insurance_companies")
+        .select("*")
+        .order("created_at", { ascending: false });
+      return (data as InsuranceCompany[]) || [];
+    },
+  });
+
+  const approve = async (id: string) => {
+    const { error } = await supabase
+      .from("insurance_companies")
+      .update({ is_verified: true, is_active: true })
+      .eq("id", id);
+    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
+    toast({ title: "Seguradora aprovada" });
+    qc.invalidateQueries({ queryKey: ["admin-insurance"] });
+  };
+
+  const reject = async (id: string) => {
+    const { error } = await supabase
+      .from("insurance_companies")
+      .update({ is_verified: false, is_active: false })
+      .eq("id", id);
+    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
+    toast({ title: "Seguradora suspensa" });
+    qc.invalidateQueries({ queryKey: ["admin-insurance"] });
+  };
+
+  const pending = (data || []).filter((c) => !c.is_verified);
+  const approved = (data || []).filter((c) => c.is_verified);
+
+  return (
+    <div className="p-4 flex flex-col gap-6 animate-fade-in">
+      <div>
+        <h1 className="text-2xl font-black flex items-center gap-2">
+          <Shield className="h-6 w-6 text-primary" /> Seguradoras
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Aprova ou rejeita perfis de seguradoras. Só as aprovadas aparecem publicamente.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <div className="grid gap-3">{[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>
+      ) : (
+        <>
+          <section>
+            <h2 className="text-lg font-bold mb-2">
+              Pendentes <Badge variant="secondary" className="ml-1">{pending.length}</Badge>
+            </h2>
+            {pending.length === 0 ? (
+              <p className="text-sm text-muted-foreground bento-card p-4">Nenhum pedido pendente.</p>
+            ) : (
+              <div className="grid gap-3 md:grid-cols-2">
+                {pending.map((c) => <InsuranceCard key={c.id} c={c} onApprove={approve} onReject={reject} />)}
+              </div>
+            )}
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold mb-2">
+              Aprovadas <Badge className="ml-1">{approved.length}</Badge>
+            </h2>
+            <div className="grid gap-3 md:grid-cols-2">
+              {approved.map((c) => <InsuranceCard key={c.id} c={c} onApprove={approve} onReject={reject} />)}
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 }

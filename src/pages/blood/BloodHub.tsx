@@ -5,11 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Droplet, AlertCircle, Calendar, MapPin, Plus, Heart, Users,
   Share2, Info, Zap, Award, ShieldCheck, ChevronRight, Activity,
-  Gift, Star
+  Gift, Star, CheckCircle2
 } from "lucide-react";
 import { toast } from "sonner";
 import { GoogleMap } from "@/components/maps/GoogleMap";
