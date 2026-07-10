@@ -101,6 +101,7 @@
     "available_balance": "Saldo disponível",
     "deposited": "Depositado",
     "spent": "Gasto",
+    "secure_instant": "Seguro & Instantâneo",
     "deposit": "Depositar",
     "deposit_bonus": "Bónus de depósito",
     "deposit_bonus_desc": "Recebes +{{percent}}% em cada depósito.",
@@ -243,11 +244,12 @@
     "meddy_now_desc": "O médico mais próximo disponível em vídeo para triagem imediata.",
     "health_education": "Educação Saúde",
     "mozambique_guides": "Guias para Moçambique",
-    "help_mpesa": "Ajuda & M-Pesa",
+    "help_payment": "Ajuda & {{method}}",
     "support_24h": "Suporte 24h MedWallet",
     "grow_with_medwallet": "Cresce com a MedWallet",
     "provider_desc": "Junta a tua clínica, farmácia ou laboratório à maior rede digital de MZ.",
     "suggest_place": "Sugere um Local",
+    "map_health_country": "Ajuda a mapear a saúde em {{country}}",
     "map_health_mz": "Ajuda a mapear a saúde em Moçambique"
   },
   "auth": {
@@ -305,7 +307,7 @@
   },
   "greeting": {
     "good_morning": "Bom dia, {{name}}!",
-    "day_maputo": "Hoje em Maputo está um dia ideal para focar na tua saúde.",
+    "day_region": "Hoje em {{city}} está um dia ideal para focar na tua saúde.",
     "tip_water": "Dica: Bebe água morna com limão para despertar o metabolismo.",
     "remind_pressure": "Lembrete: Já verificaste a tua tensão arterial esta semana?",
     "activate_alerts": "Ativar Alertas",

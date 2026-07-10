@@ -252,8 +252,8 @@ function EmptyState({
       </CardContent>
 
       <div className="px-4 pb-4 pt-1">
-        <p className="text-[10px] text-muted-foreground text-center">
-          És médico? <button className="text-primary underline" onClick={() => window.location.assign('/doctor/register')}>Junta-te à MedWallet</button>
+        <p className="text-[10px] text-muted-foreground text-center font-bold uppercase tracking-wider">
+          És médico? <button className="text-primary hover:underline transition-all" onClick={() => navigate('/doctor/register')}>Cria o teu perfil profissional</button>
         </p>
       </div>
     </Card>

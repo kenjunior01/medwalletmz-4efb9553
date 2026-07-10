@@ -59,11 +59,11 @@ export default function AdminImport() {
 
   // Carregar cidades padrão baseadas no país
   useEffect(() => {
-    if (country?.id === 'MZ') setCities('Maputo, Matola, Beira, Nampula');
-    else if (country?.id === 'AO') setCities('Luanda, Benguela, Lubango, Huambo');
-    else if (country?.id === 'BR') setCities('São Paulo, Rio de Janeiro, Brasília, Salvador');
-    else if (country?.id === 'PT') setCities('Lisboa, Porto, Braga, Coimbra');
-    else setCities('');
+    if (country?.config?.cities) {
+      setCities(country.config.cities.slice(0, 5).join(', '));
+    } else {
+      setCities('');
+    }
   }, [country]);
 
   const handleUpload = async (key: EntityKey, file: File) => {

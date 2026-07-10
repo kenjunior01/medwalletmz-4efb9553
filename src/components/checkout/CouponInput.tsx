@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Tag, X, Loader2, Check } from 'lucide-react';
+import { useCountry } from '@/contexts/CountryContext';
 
 interface Coupon {
   id: string;
@@ -31,8 +32,11 @@ interface CouponInputProps {
 
 export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCoupon, serviceType = 'order', eventType }: CouponInputProps) {
   const { user } = useAuth();
+  const { country } = useCountry();
   const [couponCode, setCouponCode] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const currencySymbol = country?.currency_symbol || 'MZN';
 
   const validateCoupon = async () => {
     if (!couponCode.trim()) {
@@ -58,7 +62,7 @@ export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCo
         discount: r.discount, final_value: r.final_value,
       });
       setCouponCode('');
-      toast.success(`Cupom "${r.code}" aplicado — desconto de ${r.discount} MZN`);
+      toast.success(`Cupom "${r.code}" aplicado — desconto de ${r.discount} ${currencySymbol}`);
     } catch (error) {
       console.error('Coupon validation error:', error);
       toast.error('Erro ao validar cupom');
@@ -94,14 +98,14 @@ export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCo
                 {' • '}
                 {appliedCoupon.discount_type === 'percentage' 
                   ? `${appliedCoupon.discount_value}% de desconto`
-                  : `${appliedCoupon.discount_value} MZN de desconto`
+                  : `${appliedCoupon.discount_value} ${currencySymbol} de desconto`
                 }
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="font-bold text-green-700 dark:text-green-300">
-              -{discount} MZN
+              -{discount} {currencySymbol}
             </span>
             <Button
               variant="ghost"

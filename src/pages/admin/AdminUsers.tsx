@@ -47,19 +47,21 @@ const roleColors: Record<AppRole, string> = {
 
 export default function AdminUsers() {
   const queryClient = useQueryClient();
+  const { country, allCountries } = useCountry();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCountryForRole, setSelectedCountryForRole] = useState<string | null>(null);
   const [pendingRole, setPendingRole] = useState<AppRole | null>(null);
-  const { allCountries } = useCountry();
 
   const { data: users, isLoading } = useQuery({
-    queryKey: ['admin-users', search, roleFilter],
+    queryKey: ['admin-users', search, roleFilter, country?.id],
     queryFn: async () => {
       // Fetch profiles via admin RPC (avoids exposing sensitive columns to signed-in users)
-      const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full');
+      const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full', {
+        p_country_id: country?.id
+      });
       if (profilesError) throw profilesError;
       let profiles: any[] = profilesRaw || [];
       if (search) {
@@ -70,11 +72,16 @@ export default function AdminUsers() {
         );
       }
 
-      // Fetch all user roles
-      const { data: allRoles, error: rolesError } = await (supabase as any)
+      // Fetch user roles - filtered by country if manager
+      let rQuery = (supabase as any)
         .from('user_roles')
         .select('user_id, role, country_id');
-      if (rolesError) throw rolesError;
+
+      if (country?.id) {
+        rQuery = rQuery.eq('country_id', country.id);
+      }
+
+      const { data: allRoles, error: rolesError } = await rQuery;
 
       // Map roles to users
       const rolesMap = new Map<string, { role: AppRole; country_id?: string | null }[]>();
@@ -318,7 +325,7 @@ export default function AdminUsers() {
                 </div>
                 <div>
                   <p className="text-lg font-semibold">{selectedUser.full_name || 'Sem nome'}</p>
-                  <p className="text-sm text-muted-foreground">{selectedUser.default_city || 'Maputo'}</p>
+                  <p className="text-sm text-muted-foreground">{selectedUser.default_city || country?.config?.cities?.[0] || 'Maputo'}</p>
                 </div>
               </div>
 

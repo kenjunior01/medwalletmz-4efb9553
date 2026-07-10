@@ -220,7 +220,15 @@ export default function Pharmacy() {
                 <Globe className="h-4 w-4 mr-1" /> Ver em todas as cidades
               </Button>
             ) : (
-              <p className="text-sm mt-1">Tenta ajustar a pesquisa.</p>
+              <div className="space-y-4">
+                <p className="text-sm mt-1">Tenta ajustar a pesquisa.</p>
+                <div className="pt-4 border-t">
+                  <p className="text-xs font-bold uppercase tracking-widest mb-3">É proprietário de uma farmácia?</p>
+                  <Button variant="outline" className="rounded-xl border-pharmacy text-pharmacy hover:bg-pharmacy/5" onClick={() => navigate('/store/register')}>
+                    <Plus className="h-4 w-4 mr-2" /> Registar Minha Farmácia
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
         ) : (

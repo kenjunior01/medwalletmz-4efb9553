@@ -107,7 +107,12 @@ export default function HealthEducation() {
           <h1 className="text-lg font-bold flex items-center gap-2">
             <BookOpen className="h-4 w-4 text-primary" /> Saúde em Moçambique
           </h1>
-          <p className="text-[11px] text-muted-foreground">Artigos da equipa clínica MedWallet — baseados na realidade local</p>
+          <div className="flex items-center gap-2">
+            <p className="text-[11px] text-muted-foreground">Artigos baseados na realidade local</p>
+            <Badge variant="outline" className="h-4 text-[8px] bg-emerald-50 text-emerald-700 border-emerald-100 font-black flex items-center gap-1">
+              <ShieldCheck className="h-2 w-2" /> DISPONÍVEL OFFLINE
+            </Badge>
+          </div>
         </div>
       </header>
 

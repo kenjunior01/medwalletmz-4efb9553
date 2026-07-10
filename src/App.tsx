@@ -23,7 +23,7 @@ import Checkout from "./pages/Checkout";
 import Addresses from "./pages/Addresses";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
-import RoleSelection from "./pages/RoleSelection";
+import RegistrationWizard from "./pages/RegistrationWizard";
 import Rewards from "./pages/Rewards";
 import OrderTracking from "./pages/OrderTracking";
 
@@ -41,7 +41,6 @@ import AdminSettings from "./pages/admin/AdminSettings";
 
 // Store Owner Pages
 import StoreOwnerDashboard from "./pages/store/StoreOwnerDashboard";
-import StoreOwnerRegister from "./pages/store/StoreOwnerRegister";
 import StoreHome from "./pages/store/StoreHome";
 import StoreProducts from "./pages/store/StoreProducts";
 import StoreOrders from "./pages/store/StoreOrders";
@@ -50,7 +49,6 @@ import StoreReports from "./pages/store/StoreReports";
 
 // Driver Pages
 import DriverDashboard from "./pages/driver/DriverDashboard";
-import DriverRegister from "./pages/driver/DriverRegister";
 import DriverHistory from "./pages/driver/DriverHistory";
 
 // Health Pages
@@ -59,7 +57,6 @@ import BookConsultation from "./pages/health/BookConsultation";
 import MyConsultations from "./pages/health/MyConsultations";
 import ConsultationChat from "./pages/health/ConsultationChat";
 import HealthProfile from "./pages/health/HealthProfile";
-import DoctorRegister from "./pages/doctor/DoctorRegister";
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
 import DoctorPatients from "./pages/doctor/DoctorPatients";
 import CreatePrescription from "./pages/doctor/CreatePrescription";
@@ -70,7 +67,6 @@ import HealthPlans from "./pages/health/HealthPlans";
 import Subscribe from "./pages/subscribe/Subscribe";
 import SubscribePlans from "./pages/subscribe/SubscribePlans";
 import MySubscriptions from "./pages/MySubscriptions";
-import ClinicRegister from "./pages/clinic/ClinicRegister";
 import ClinicDashboard from "./pages/clinic/ClinicDashboard";
 import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
 import AdminSubscriptionPlans from "./pages/admin/AdminSubscriptionPlans";
@@ -100,12 +96,12 @@ import GlobalCommandCenter from "./pages/admin/GlobalCommandCenter";
 import FinancialDashboard from "./pages/admin/FinancialDashboard";
 import CountrySettings from "./pages/admin/CountrySettings";
 import CountryDashboard from "./pages/admin/CountryDashboard";
+import RegionalOnboarding from "./pages/admin/RegionalOnboarding";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import AdminInsurance from "./pages/admin/AdminInsurance";
 import Insurance from "./pages/insurance/Insurance";
 import InsuranceDetail from "./pages/insurance/InsuranceDetail";
-import InsuranceRegister from "./pages/insurance/InsuranceRegister";
 import InsuranceDashboard from "./pages/insurance/InsuranceDashboard";
 import Ads from "./pages/ads/Ads";
 import AdForm from "./pages/ads/AdForm";
@@ -118,7 +114,6 @@ import LabDetail from "./pages/health/LabDetail";
 import MyLabOrders from "./pages/health/MyLabOrders";
 import AdminAds from "./pages/admin/AdminAds";
 import AdminLabs from "./pages/admin/AdminLabs";
-import LabRegister from "./pages/lab/LabRegister";
 import LabDashboard from "./pages/lab/LabDashboard";
 import BloodHub from "./pages/blood/BloodHub";
 import BloodDonorRegister from "./pages/blood/BloodDonorRegister";
@@ -183,7 +178,7 @@ const App = () => (
                     <Route path="/suggest-place" element={<SuggestPlace />} />
                     <Route path="/health/insurance" element={<Insurance />} />
                     <Route path="/insurance/:id" element={<InsuranceDetail />} />
-                    <Route path="/insurance/register" element={<InsuranceRegister />} />
+                    <Route path="/insurance/register" element={<RegistrationWizard />} />
                     <Route path="/insurance/dashboard" element={<InsuranceDashboard />} />
                     <Route path="/ads" element={<Ads />} />
                     <Route path="/ads/new" element={<AdForm />} />
@@ -202,7 +197,7 @@ const App = () => (
 
                   {/* Auth */}
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/register" element={<RoleSelection />} />
+                  <Route path="/register" element={<RegistrationWizard />} />
 
                   {/* Vídeo-consulta (fullscreen, sem layout) */}
                   <Route path="/health/video/:id" element={<VideoConsultation />} />
@@ -237,10 +232,12 @@ const App = () => (
                     <Route path="financial" element={<FinancialDashboard />} />
                     <Route path="country-settings" element={<CountrySettings />} />
                     <Route path="country-dashboard" element={<CountryDashboard />} />
+                    <Route path="regional-onboarding" element={<RegionalOnboarding />} />
                   </Route>
 
                   {/* Store Owner Routes */}
-                  <Route path="/store/register" element={<StoreOwnerRegister />} />
+                  <Route path="/store/register" element={<RegistrationWizard />} />
+                  <Route path="/pharmacy/register" element={<RegistrationWizard />} />
                   <Route path="/store/dashboard" element={<StoreOwnerDashboard />}>
                     <Route index element={<StoreHome />} />
                     <Route path="products" element={<StoreProducts />} />
@@ -250,23 +247,24 @@ const App = () => (
                   </Route>
 
                   {/* Driver Routes */}
-                  <Route path="/driver/register" element={<DriverRegister />} />
+                  <Route path="/driver/register" element={<RegistrationWizard />} />
                   <Route path="/driver/dashboard" element={<DriverDashboard />} />
                   <Route path="/driver/history" element={<DriverHistory />} />
 
                   {/* Doctor Routes */}
-                  <Route path="/doctor/register" element={<DoctorRegister />} />
+                  <Route path="/doctor/register" element={<RegistrationWizard />} />
                   <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
                   <Route path="/doctor/patients" element={<DoctorPatients />} />
                   <Route path="/doctor/prescription/new" element={<CreatePrescription />} />
                   <Route path="/doctor/availability" element={<DoctorAvailability />} />
 
                   {/* Clinic Routes */}
-                  <Route path="/clinic/register" element={<ClinicRegister />} />
+                  <Route path="/clinic/register" element={<RegistrationWizard />} />
+                  <Route path="/hospital/register" element={<RegistrationWizard />} />
                   <Route path="/clinic/dashboard" element={<ClinicDashboard />} />
 
                   {/* Lab Routes */}
-                  <Route path="/lab/register" element={<LabRegister />} />
+                  <Route path="/lab/register" element={<RegistrationWizard />} />
                   <Route path="/lab/dashboard" element={<LabDashboard />} />
 
                   <Route path="*" element={<NotFound />} />

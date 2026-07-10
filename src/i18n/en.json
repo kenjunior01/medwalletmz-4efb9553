@@ -209,7 +209,7 @@
     "meddy_now_desc": "The nearest doctor available on video for immediate triage.",
     "health_education": "Health Education",
     "mozambique_guides": "Mozambique Guides",
-    "help_mpesa": "Help & M-Pesa",
+    "help_payment": "Help & {{method}}",
     "support_24h": "24h MedWallet Support",
     "grow_with_medwallet": "Grow with MedWallet",
     "provider_desc": "Join your clinic, pharmacy or lab to the largest digital network in MZ.",

@@ -37,32 +37,105 @@ const STATIC_COUNTRIES: Country[] = [
   {
     id: 'MZ', name: 'Moçambique', currency_code: 'MZN', currency_symbol: 'MT', phone_code: '258',
     default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Africa/Maputo',
-    config: { cities: ["Maputo", "Beira", "Nampula", "Quelimane", "Tete", "Chimoio", "Pemba", "Inhambane"] }
+    config: {
+      cities: ["Maputo", "Beira", "Nampula", "Quelimane", "Tete", "Chimoio", "Pemba", "Inhambane"],
+      payment_methods: [
+        { id: "mpesa", name: "M-Pesa", type: "mobile_money", icon: "📱", description: "Vodacom M-Pesa", requires_phone: true },
+        { id: "emola", name: "e-Mola", type: "mobile_money", icon: "💰", description: "Movitel e-Mola", requires_phone: true },
+        { id: "mkesh", name: "Mkesh", type: "mobile_money", icon: "🏦", description: "BCI Mkesh", requires_phone: true },
+        { id: "wallet", name: "Carteira MedWallet", type: "wallet", icon: "💳", description: "Débito do saldo MZN", badge: "Instantâneo" }
+      ],
+      support: {
+        whatsapp: "258848547887",
+        phone: "+258 84 854 7887",
+        email: "suporte@medwallet.co.mz"
+      }
+    }
   },
   {
     id: 'BR', name: 'Brasil', currency_code: 'BRL', currency_symbol: 'R$', phone_code: '55',
     default_locale: 'pt-BR', supported_locales: ['pt-BR', 'en', 'es'], timezone: 'America/Sao_Paulo',
-    config: { cities: ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza", "Belo Horizonte", "Manaus", "Curitiba"] }
+    config: {
+      cities: ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza", "Belo Horizonte", "Manaus", "Curitiba"],
+      payment_methods: [
+        { id: "pix", name: "PIX", type: "mobile_money", icon: "💎", description: "Pagamento Instantâneo", requires_phone: true },
+        { id: "stripe", name: "Cartão de Crédito", type: "card", icon: "💳", description: "Visa/Mastercard via Stripe" },
+        { id: "wallet", name: "Carteira MedWallet", type: "wallet", icon: "👛", description: "Saldo em Reais" }
+      ],
+      support: {
+        whatsapp: "5511999999999",
+        phone: "+55 11 9999-9999",
+        email: "suporte.br@medwallet.com"
+      }
+    }
   },
   {
     id: 'AO', name: 'Angola', currency_code: 'AOA', currency_symbol: 'Kz', phone_code: '244',
     default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Africa/Luanda',
-    config: { cities: ["Luanda", "Benguela", "Huambo", "Lubango", "Cabinda", "Malanje", "Namibe"] }
+    config: {
+      cities: ["Luanda", "Benguela", "Huambo", "Lubango", "Cabinda", "Malanje", "Namibe"],
+      payment_methods: [
+        { id: "unitel_money", name: "Unitel Money", type: "mobile_money", icon: "📱", description: "Pagamento Unitel", requires_phone: true },
+        { id: "multicaixa", name: "Multicaixa Express", type: "bank", icon: "🏦", description: "Referência Multicaixa" },
+        { id: "wallet", name: "Carteira MedWallet", type: "wallet", icon: "👛", description: "Saldo em Kwanzas" }
+      ],
+      support: {
+        whatsapp: "244999999999",
+        phone: "+244 999 999 999",
+        email: "suporte.ao@medwallet.com"
+      }
+    }
   },
   {
     id: 'ZA', name: 'South Africa', currency_code: 'ZAR', currency_symbol: 'R', phone_code: '27',
     default_locale: 'en', supported_locales: ['en', 'af'], timezone: 'Africa/Johannesburg',
-    config: { cities: ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", "Bloemfontein"] }
-  },
-  {
-    id: 'IN', name: 'India', currency_code: 'INR', currency_symbol: '₹', phone_code: '91',
-    default_locale: 'hi', supported_locales: ['hi', 'en'], timezone: 'Asia/Kolkata',
-    config: { cities: ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata"] }
+    config: {
+      cities: ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", "Bloemfontein"],
+      payment_methods: [
+        { id: "paystack", name: "Paystack", type: "card", icon: "💳", description: "Card or Bank Transfer" },
+        { id: "ozow", name: "Ozow", type: "bank", icon: "🇿🇦", description: "Instant EFT" },
+        { id: "wallet", name: "MedWallet (ZAR)", type: "wallet", icon: "👛", description: "Pay with ZAR balance" }
+      ],
+      support: {
+        whatsapp: "27119999999",
+        phone: "+27 11 999 9999",
+        email: "support.za@medwallet.com"
+      }
+    }
   },
   {
     id: 'PT', name: 'Portugal', currency_code: 'EUR', currency_symbol: '€', phone_code: '351',
     default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Europe/Lisbon',
-    config: { cities: ["Lisboa", "Porto", "Braga", "Coimbra", "Setúbal", "Aveiro", "Faro"] }
+    config: {
+      cities: ["Lisboa", "Porto", "Braga", "Coimbra", "Setúbal", "Aveiro", "Faro"],
+      payment_methods: [
+        { id: "mbway", name: "MB WAY", type: "mobile_money", icon: "📱", description: "Pagamento MB WAY", requires_phone: true },
+        { id: "stripe", name: "Stripe", type: "card", icon: "💳", description: "Cartão de Crédito/Débito" },
+        { id: "wallet", name: "Carteira MedWallet", type: "wallet", icon: "👛", description: "Saldo em Euros" }
+      ],
+      support: {
+        whatsapp: "351999999999",
+        phone: "+351 999 999 999",
+        email: "suporte.pt@medwallet.com"
+      }
+    }
+  },
+  {
+    id: 'IN', name: 'India', currency_code: 'INR', currency_symbol: '₹', phone_code: '91',
+    default_locale: 'hi', supported_locales: ['hi', 'en'], timezone: 'Asia/Kolkata',
+    config: {
+      cities: ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata"],
+      payment_methods: [
+        { id: "upi", name: "UPI", type: "mobile_money", icon: "📱", description: "GPay / PhonePe / Paytm", requires_phone: true },
+        { id: "card", name: "Credit/Debit Card", type: "card", icon: "💳", description: "Visa/Mastercard via Razorpay" },
+        { id: "wallet", name: "MedWallet (INR)", type: "wallet", icon: "👛", description: "Pay with INR balance" }
+      ],
+      support: {
+        whatsapp: "919999999999",
+        phone: "+91 999 999 9999",
+        email: "support.in@medwallet.com"
+      }
+    }
   }
 ];
 

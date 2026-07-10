@@ -84,7 +84,8 @@ export default function Wallet() {
 
   const handleDeposit = async () => {
     const amt = parseFloat(amount);
-    if (!amt || amt < 50) { toast.error('Mínimo 50 MZN'); return; }
+    const currencySymbol = symbol || 'MZN';
+    if (!amt || amt < 50) { toast.error(`Mínimo 50 ${currencySymbol}`); return; }
     if (!reference || !phone) { toast.error('Preencha a referência e o seu número'); return; }
 
     setSubmitting(true);

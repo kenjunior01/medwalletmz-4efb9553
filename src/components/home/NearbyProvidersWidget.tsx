@@ -7,10 +7,12 @@ import { MapPin, Stethoscope, Pill, Navigation, Loader2, Clock, Sparkles } from 
 import { Button } from '@/components/ui/button';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { fetchRouteDistance, fmtDuration, haversineKm } from '@/lib/googleRoutes';
+import { useCountry } from '@/contexts/CountryContext';
 
 export function NearbyProvidersWidget() {
   const navigate = useNavigate();
   const { coordinates, city, requestLocation, loading, calculateDistance } = useLocation();
+  const { country } = useCountry();
   const { settings } = usePlatformSettings();
   const radiusKm = Number(settings.nearby_radius_km) || 25;
   const ranking = (settings.nearby_ranking as string) || 'distance';
@@ -192,7 +194,7 @@ export function NearbyProvidersWidget() {
                     {it.distance != null ? `${it.distance.toFixed(1)} km` : city}
                   </span>
                   {it.kind === 'doctor' && (
-                    <span className="font-black text-primary">{it.consultation_fee} MZN</span>
+                    <span className="font-black text-primary">{it.consultation_fee} {country?.currency_code || 'MZN'}</span>
                   )}
                 </div>
                 {route ? (

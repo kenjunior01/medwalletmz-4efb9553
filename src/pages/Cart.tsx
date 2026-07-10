@@ -3,11 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
+import { useCountry } from "@/contexts/CountryContext";
 
 export default function Cart() {
   const navigate = useNavigate();
   const { items, removeItem, updateQuantity, subtotal, totalItems } = useCart();
-  
+  const { country } = useCountry();
+
+  const currencySymbol = country?.currency_symbol || 'MZN';
+
   // Delivery fee is calculated at checkout based on the store
 
   if (items.length === 0) {
@@ -55,7 +59,7 @@ export default function Cart() {
               <h3 className="font-medium text-sm truncate">{item.name}</h3>
               <p className="text-xs text-muted-foreground truncate">{item.store_name}</p>
               <div className="flex items-center justify-between mt-2">
-                <span className="font-bold text-food">{item.price} MZN</span>
+                <span className="font-bold text-food">{item.price} {currencySymbol}</span>
                 <div className="flex items-center gap-2">
                   <Button 
                     variant="outline" 
@@ -95,7 +99,7 @@ export default function Cart() {
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Subtotal ({totalItems} {totalItems === 1 ? 'item' : 'itens'})</span>
-            <span>{subtotal} MZN</span>
+            <span>{subtotal} {currencySymbol}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Taxa de Entrega</span>
@@ -104,7 +108,7 @@ export default function Cart() {
           <Separator />
           <div className="flex justify-between font-bold text-base">
             <span>Subtotal</span>
-            <span className="text-primary">{subtotal} MZN</span>
+            <span className="text-primary">{subtotal} {currencySymbol}</span>
           </div>
         </div>
       </div>
@@ -116,9 +120,10 @@ export default function Cart() {
           className="w-full rounded-xl h-12 text-base font-semibold"
           onClick={() => navigate("/checkout")}
         >
-          Finalizar Pedido • {subtotal} MZN
+          Finalizar Pedido • {subtotal} {currencySymbol}
         </Button>
       </div>
     </div>
   );
 }
+

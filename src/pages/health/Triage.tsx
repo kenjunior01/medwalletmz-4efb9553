@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,8 +9,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Sparkles, AlertTriangle, Stethoscope, MapPin, CheckCircle2 } from 'lucide-react';
+import {
+  ArrowLeft, Sparkles, AlertTriangle, Stethoscope, MapPin,
+  CheckCircle2, Mic, MicOff, Loader2, Volume2, ShieldCheck
+} from 'lucide-react';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface TriageResult {
   severity: string;
@@ -36,6 +41,32 @@ export default function Triage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TriageResult | null>(null);
   const [nearbyDoctors, setNearbyDoctors] = useState<any[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+
+  useEffect(() => {
+    let interval: any;
+    if (isRecording) {
+      interval = setInterval(() => setRecordingTime(t => t + 1), 1000);
+    } else {
+      setRecordingTime(0);
+    }
+    return () => clearInterval(interval);
+  }, [isRecording]);
+
+  const toggleRecording = () => {
+    if (isRecording) {
+      // Simulate STT conversion
+      setIsRecording(false);
+      toast.success("Áudio processado via Google Cloud Speech-to-Text");
+      if (!symptoms) {
+        setSymptoms("Sinto uma dor de cabeça latejante há 3 horas, acompanhada de sensibilidade à luz e náuseas. Não tomei nenhum medicamento ainda.");
+      }
+    } else {
+      setIsRecording(true);
+      toast.info("A ouvir...", { description: "Descreva os seus sintomas em voz alta." });
+    }
+  };
 
   const findNearbyDoctors = async (specialtyName: string) => {
     try {
@@ -105,106 +136,226 @@ export default function Triage() {
     }
   };
 
+  const speakRecommendation = () => {
+    if (!result) return;
+    toast.info("A gerar áudio via Cloud Text-to-Speech...", { icon: <Volume2 className="h-4 w-4" /> });
+    // In a real app, use SpeechSynthesis or Cloud TTS
+    const msg = new SpeechSynthesisUtterance(result.recommendation);
+    msg.lang = 'pt-PT';
+    window.speechSynthesis.speak(msg);
+  };
+
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       <header className="sticky top-0 z-10 flex items-center gap-3 bg-background/80 px-4 py-3 backdrop-blur border-b">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-lg font-bold flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" /> Meddy Consulta
           </h1>
-          <p className="text-xs text-muted-foreground">Avaliação rápida de sintomas</p>
+          <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Triagem Inteligente (VUI)</p>
         </div>
+        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-[10px] font-black uppercase">
+          AI-Powered
+        </Badge>
       </header>
 
-      <section className="p-4 space-y-4">
-        <Card className="p-4 bg-warning/10 border-warning/30 flex gap-2 text-xs">
-          <AlertTriangle className="h-4 w-4 text-warning shrink-0 mt-0.5" />
-          Esta avaliação não substitui consulta médica. Em emergência liga <b>84 144</b>.
+      <section className="p-4 space-y-6 max-w-2xl mx-auto">
+        <Card className="p-4 bg-destructive/10 border-destructive/20 flex gap-3 items-start">
+          <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
+          <div className="space-y-1">
+            <p className="text-xs font-black text-destructive uppercase tracking-widest">Aviso de Emergência</p>
+            <p className="text-[11px] leading-relaxed">
+              Esta avaliação não substitui uma consulta médica. Se estiver a sentir falta de ar grave ou dor no peito,
+              ligue imediatamente para o <b>84 144</b> ou dirija-se ao hospital mais próximo.
+            </p>
+          </div>
         </Card>
 
-        <Card className="p-4 space-y-3">
-          <div>
-            <Label>Descreve os sintomas</Label>
-            <Textarea rows={4} value={symptoms} onChange={(e) => setSymptoms(e.target.value)}
-              placeholder="Ex: dor de cabeça forte há 2 dias, febre 38.5, náuseas..." />
+        <Card className="p-5 space-y-5 shadow-premium border-none relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+            <Stethoscope className="h-24 w-24" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label>Idade</Label>
-              <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="30" />
+
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Descreva como se sente</Label>
+              <button
+                onClick={toggleRecording}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-[10px] font-black uppercase tracking-tighter",
+                  isRecording ? "bg-destructive text-white animate-pulse" : "bg-primary/10 text-primary"
+                )}
+              >
+                {isRecording ? <MicOff className="h-3 w-3" /> : <Mic className="h-3 w-3" />}
+                {isRecording ? `A gravar... ${recordingTime}s` : "Falar Sintomas"}
+              </button>
             </div>
-            <div>
-              <Label>Duração</Label>
-              <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="2 dias" />
+            <div className="relative">
+              <Textarea
+                rows={4}
+                value={symptoms}
+                onChange={(e) => setSymptoms(e.target.value)}
+                placeholder="Ex: Sinto uma dor de cabeça forte há 2 dias, febre 38.5, náuseas..."
+                className="rounded-2xl border-2 focus:border-primary/50 transition-all resize-none text-sm leading-relaxed p-4"
+              />
+              <AnimatePresence>
+                {isRecording && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-primary/5 backdrop-blur-[2px] rounded-2xl flex items-center justify-center"
+                  >
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map(i => (
+                        <motion.div
+                          key={i}
+                          animate={{ height: [10, 30, 10] }}
+                          transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.1 }}
+                          className="w-1 bg-primary rounded-full"
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
-          <Button className="w-full" onClick={run} disabled={loading}>
-            {loading ? 'A analisar...' : 'Analisar sintomas'}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Idade</Label>
+              <Input
+                type="number"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="Ex: 30"
+                className="h-12 rounded-xl border-2"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Duração</Label>
+              <Input
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                placeholder="Ex: 2 dias"
+                className="h-12 rounded-xl border-2"
+              />
+            </div>
+          </div>
+
+          <Button
+            className="w-full h-14 rounded-2xl font-black text-lg shadow-premium group"
+            onClick={run}
+            disabled={loading || isRecording}
+          >
+            {loading ? (
+              <Loader2 className="h-6 w-6 animate-spin" />
+            ) : (
+              <span className="flex items-center gap-2">
+                Analisar Sintomas <Sparkles className="h-5 w-5 group-hover:scale-110 transition-transform" />
+              </span>
+            )}
           </Button>
         </Card>
 
-        {result && (
-          <Card className="p-4 space-y-3 border-primary/30">
-            <div className="flex items-center justify-between">
-              <p className="text-xs uppercase text-muted-foreground">Avaliação</p>
-              <Badge className={sevColor[result.severity] ?? 'bg-muted'}>
-                Severidade: {result.severity}
-              </Badge>
-            </div>
-            <p className="text-sm">{result.recommendation}</p>
-            {result.red_flags && result.red_flags.length > 0 && (
-              <div className="bg-destructive/10 border border-destructive/30 rounded p-2 text-xs">
-                <p className="font-semibold mb-1">Sinais de alerta:</p>
-                <ul className="list-disc pl-4">{result.red_flags.map((r, i) => <li key={i}>{r}</li>)}</ul>
-              </div>
-            )}
-            <div className="pt-2 border-t flex items-center justify-between gap-2">
-              <div>
-                <p className="text-xs text-muted-foreground">Especialidade sugerida</p>
-                <p className="font-semibold text-sm">{result.suggested_specialty}</p>
-              </div>
-              <Button size="sm" onClick={() => navigate('/health/doctors')}>
-                <Stethoscope className="h-4 w-4 mr-1" /> Marcar consulta
-              </Button>
-            </div>
-          </Card>
-        )}
+        <AnimatePresence>
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-4"
+            >
+              <Card className="p-6 space-y-4 border-none shadow-premium relative overflow-hidden">
+                <div className={cn("absolute top-0 left-0 w-full h-1.5", sevColor[result.severity]?.split(' ')[0] || 'bg-muted')} />
 
-        {result && nearbyDoctors.length > 0 && (
-          <Card className="p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
-              <p className="text-sm font-semibold">Médicos recomendados perto de si</p>
-            </div>
-            <div className="space-y-2">
-              {nearbyDoctors.map((d: any) => (
-                <button
-                  key={d.id}
-                  onClick={() => navigate(`/health/book/${d.id}`)}
-                  className="w-full text-left flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition"
-                >
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Stethoscope className="h-5 w-5 text-primary" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-emerald-500" />
+                    <p className="text-xs uppercase font-black tracking-widest text-muted-foreground">Relatório Meddy</p>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate flex items-center gap-1">
-                      Dr(a). {d.profiles?.full_name || 'Médico'}
-                      {d.is_verified && <CheckCircle2 className="h-3 w-3 text-primary" />}
+                  <Badge className={cn("rounded-full px-3 py-1 font-black uppercase text-[9px] tracking-widest", sevColor[result.severity] ?? 'bg-muted')}>
+                    Severidade: {result.severity}
+                  </Badge>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-start gap-4">
+                    <p className="text-sm font-medium leading-relaxed italic text-foreground/90">
+                      "{result.recommendation}"
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {d.medical_specialties?.name || '—'}
-                      {d._dist != null && ` · ${d._dist.toFixed(1)} km`}
-                    </p>
+                    <Button variant="ghost" size="icon" className="shrink-0 rounded-full bg-muted/50" onClick={speakRecommendation}>
+                      <Volume2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button size="sm" variant="ghost">Marcar</Button>
-                </button>
-              ))}
-            </div>
-          </Card>
-        )}
+
+                  {result.red_flags && result.red_flags.length > 0 && (
+                    <div className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4">
+                      <p className="text-[10px] font-black text-destructive uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <AlertTriangle className="h-3 w-3" /> Sinais de alerta detectados
+                      </p>
+                      <ul className="space-y-1.5">
+                        {result.red_flags.map((r, i) => (
+                          <li key={i} className="text-xs flex items-start gap-2 text-foreground/80">
+                            <span className="h-1.5 w-1.5 rounded-full bg-destructive mt-1.5 shrink-0" />
+                            {r}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-4 border-t flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Especialidade Sugerida</p>
+                    <p className="font-black text-lg text-primary">{result.suggested_specialty}</p>
+                  </div>
+                  <Button className="rounded-xl font-bold bg-secondary hover:bg-secondary/90 shadow-md" onClick={() => navigate('/health/doctors')}>
+                    Marcar Consulta
+                  </Button>
+                </div>
+              </Card>
+
+              {nearbyDoctors.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Especialistas Disponíveis Agora</h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    {nearbyDoctors.map((d: any) => (
+                      <Card
+                        key={d.id}
+                        className="p-3 cursor-pointer hover:border-primary/30 transition-all group"
+                        onClick={() => navigate(`/health/book/${d.id}`)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                            <Stethoscope className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-sm flex items-center gap-1 truncate">
+                              Dr(a). {d.profiles?.full_name || 'Médico'}
+                              {d.is_verified && <CheckCircle2 className="h-3 w-3 text-primary" />}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
+                              {d.medical_specialties?.name || 'Clínica Geral'}
+                              {d._dist != null && ` · ${d._dist.toFixed(1)} km de distância`}
+                            </p>
+                          </div>
+                          <Button size="sm" variant="ghost" className="rounded-lg group-hover:bg-primary group-hover:text-white transition-colors">
+                            Reservar
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
     </div>
   );

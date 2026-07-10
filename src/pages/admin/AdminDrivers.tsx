@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Search, Truck, Phone, MapPin, Calendar, CheckCircle, XCircle, Clock, Package, ShieldCheck, Snowflake } from 'lucide-react';
+import { Search, Truck, Phone, MapPin, Calendar, CheckCircle, XCircle, Clock, Package, ShieldCheck, Snowflake, Globe } from 'lucide-react';
+import { useCountry } from '@/contexts/CountryContext';
 
 interface Driver {
   id: string;
@@ -35,6 +36,7 @@ interface DriverStats {
 
 export default function AdminDrivers() {
   const queryClient = useQueryClient();
+  const { country } = useCountry();
   const [search, setSearch] = useState('');
   const [availabilityFilter, setAvailabilityFilter] = useState<string>('all');
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
@@ -42,9 +44,11 @@ export default function AdminDrivers() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: drivers, isLoading } = useQuery({
-    queryKey: ['admin-drivers', search, availabilityFilter],
+    queryKey: ['admin-drivers', search, availabilityFilter, country?.id],
     queryFn: async () => {
-      const { data: raw, error } = await (supabase.rpc as any)('list_profiles_admin_full');
+      const { data: raw, error } = await (supabase.rpc as any)('list_profiles_admin_full', {
+        p_country_id: country?.id
+      });
       if (error) throw error;
       let list: any[] = (raw || []).filter((p: any) => p.vehicle_type);
       if (search) {
@@ -324,7 +328,7 @@ export default function AdminDrivers() {
                 )}
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{selectedDriver.default_city || 'Maputo'}</span>
+                  <span>{selectedDriver.default_city || country?.config?.cities?.[0] || 'Maputo'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />

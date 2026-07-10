@@ -126,10 +126,22 @@ export default function Facilities() {
                     ? `Sem ${t.label.toLowerCase()} aprovadas em ${city}.`
                     : `Sem ${t.label.toLowerCase()} registadas.`}
                 </p>
-                {onlyMyCity && (
+                {onlyMyCity ? (
                   <Button variant="outline" size="sm" className="mt-3" onClick={() => setOnlyMyCity(false)}>
                     <Globe className="h-4 w-4 mr-1" /> Ver em todas as cidades
                   </Button>
+                ) : (
+                  <div className="pt-4 mt-4 border-t border-border/50">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 opacity-60">Gerente de Unidade?</p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-2xl border-primary/20 text-primary hover:bg-primary/5 font-bold"
+                      onClick={() => nav(tab === 'laboratory' ? '/lab/register' : '/clinic/register')}
+                    >
+                      Registar {t.label.slice(0, -1)} na MedWallet
+                    </Button>
+                  </div>
                 )}
               </div>
             ) : (

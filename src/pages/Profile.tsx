@@ -325,6 +325,17 @@ export default function Profile() {
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
         <button
+          onClick={() => navigate("/lab/register")}
+          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+        >
+          <FlaskConical className="h-5 w-5 text-cyan-500" />
+          <div className="flex-1 text-left">
+            <span className="font-medium text-sm block">Registar Laboratório</span>
+            <span className="text-xs text-muted-foreground">Receba pedidos de exames e publique resultados</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+        <button
           onClick={() => navigate("/driver/register")}
           className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
         >

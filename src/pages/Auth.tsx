@@ -120,6 +120,9 @@ export default function Auth() {
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
         redirect_uri: window.location.origin,
+        extraParams: {
+          country_id: country?.id || 'MZ'
+        }
       });
       console.log(`Resultado OAuth ${provider}:`, result);
 
@@ -130,7 +133,9 @@ export default function Auth() {
       }
       if (result.redirected) return;
       toast.success(t('common.welcome'));
-      navigate('/');
+      // Sempre redirecionar para seleção de perfil após login social bem-sucedido
+      // para garantir que novos usuários possam escolher seu perfil profissional se desejarem
+      navigate('/register');
     } catch (e) {
       console.error("Erro fatal no OAuth:", e);
       toast.error(t('auth.error_auth'));
@@ -140,7 +145,9 @@ export default function Auth() {
 
   useEffect(() => {
     if (user && !authLoading) {
-      navigate('/');
+      // Redireciona para /register em vez de / para permitir que o utilizador
+      // escolha o seu papel (Médico, Farmácia, etc.) ou continue como Paciente.
+      navigate('/register');
     }
   }, [user, authLoading, navigate]);
 
@@ -173,7 +180,13 @@ export default function Auth() {
         toast.error(error.message.includes('Invalid login credentials') ? t('auth.invalid_credentials') : t('common.error'));
       } else {
         toast.success(t('auth.welcome_back'));
-        navigate('/');
+        const searchParams = new URLSearchParams(location.search);
+        // Se já vier com modo profissional, mantém. Caso contrário, deixa o usuário escolher.
+        if (searchParams.get('mode') === 'professional') {
+          navigate('/register');
+        } else {
+          navigate('/register');
+        }
       }
     } catch (err) {
       toast.error(t('common.error'));
@@ -187,12 +200,13 @@ export default function Auth() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const { error } = await signUp(email, password, fullName, referralCode);
+      const { error } = await signUp(email, password, fullName, referralCode, country?.id);
       if (error) {
         toast.error(error.message.includes('already registered') ? t('auth.email_registered') : t('common.error'));
       } else {
         toast.success(t('auth.account_created'));
-        navigate('/');
+        // Redireciona sempre para seleção de perfil após novo registo
+        navigate('/register');
       }
     } catch (err) {
       toast.error(t('common.error'));

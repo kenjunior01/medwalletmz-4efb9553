@@ -34,6 +34,7 @@ import {
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCountry } from '@/contexts/CountryContext';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -125,6 +126,7 @@ export default function AdminCuration() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { hasRole, loading } = useAuth();
+  const { country } = useCountry();
   const [tab, setTab] = useState<'pending' | 'in_review' | 'approved' | 'rejected' | 'all'>('pending');
   const [sourceFilter, setSourceFilter] = useState<'all' | 'google_places' | 'user_submit' | 'legacy'>('all');
   const [cityFilter, setCityFilter] = useState('all');
@@ -137,13 +139,17 @@ export default function AdminCuration() {
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const citiesQuery = useQuery<string[]>({
-    queryKey: ['curation-cities'],
+    queryKey: ['curation-cities', country?.id],
     enabled: !loading && hasRole('admin'),
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      let q = (supabase as any)
         .from('place_proposals')
         .select('city')
         .order('city', { ascending: true });
+
+      if (country?.id) q = q.eq('country_id', country.id);
+
+      const { data, error } = await q;
       if (error) throw error;
       return Array.from(new Set((data ?? []).map((r: any) => r.city).filter(Boolean)));
     },
@@ -151,10 +157,13 @@ export default function AdminCuration() {
   });
 
   const statsQuery = useQuery<Record<string, number>>({
-    queryKey: ['curation-stats'],
+    queryKey: ['curation-stats', country?.id],
     enabled: !loading && hasRole('admin'),
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from('place_proposals').select('status');
+      let q = (supabase as any).from('place_proposals').select('status');
+      if (country?.id) q = q.eq('country_id', country.id);
+
+      const { data, error } = await q;
       if (error) throw error;
       return (data ?? []).reduce((acc: Record<string, number>, r: any) => {
         acc[r.status] = (acc[r.status] || 0) + 1;
@@ -165,15 +174,16 @@ export default function AdminCuration() {
   });
 
   const proposalsQuery = useQuery<Proposal[]>({
-    queryKey: ['curation-proposals', tab, sourceFilter, cityFilter, typeFilter, search.trim(), page],
+    queryKey: ['curation-proposals', country?.id, tab, sourceFilter, cityFilter, typeFilter, search.trim(), page],
     enabled: !loading && hasRole('admin'),
     queryFn: async () => {
       let q = (supabase as any)
         .from('place_proposals')
-        .select('id, source, entity_type, name, address, city, neighborhood, reference_point, phone, website, description, image_url, latitude, longitude, status, reward_mzn, reward_joy_coins, reward_paid, review_notes, created_at, updated_at, raw_payload, search_meta, proposed_by')
+        .select('id, source, entity_type, name, address, city, neighborhood, reference_point, phone, website, description, image_url, latitude, longitude, status, reward_mzn, reward_joy_coins, reward_paid, review_notes, created_at, updated_at, raw_payload, search_meta, proposed_by, country_id')
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
+      if (country?.id) q = q.eq('country_id', country.id);
       if (tab !== 'all') q = q.eq('status', tab);
       if (sourceFilter !== 'all') q = q.eq('source', sourceFilter);
       if (cityFilter !== 'all') q = q.eq('city', cityFilter);
@@ -185,14 +195,22 @@ export default function AdminCuration() {
       if (error) throw error;
 
       const rows = (data ?? []) as Proposal[];
-      const { data: storesData } = await (supabase as any)
+
+      let sq = (supabase as any)
         .from('stores')
         .select('id, name, address, city, phone, website, description, image_url, latitude, longitude, type, created_at')
         .order('created_at', { ascending: false });
-      const { data: clinicsData } = await (supabase as any)
+
+      if (country?.id) sq = sq.eq('country_id', country.id);
+      const { data: storesData } = await sq;
+
+      let cq = (supabase as any)
         .from('clinics')
         .select('id, name, address, city, phone, website, description, logo_url, latitude, longitude, created_at')
         .order('created_at', { ascending: false });
+
+      if (country?.id) cq = cq.eq('country_id', country.id);
+      const { data: clinicsData } = await cq;
 
       const legacyRows: Proposal[] = [
         ...(storesData ?? []).map((row: any) => ({

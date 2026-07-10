@@ -15,22 +15,11 @@ import {
   PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { useMemo } from "react";
-
-const METHODS = [
-  { value: "mpesa", label: "M-Pesa" },
-  { value: "emola", label: "e-Mola" },
-  { value: "mkesh", label: "Mkesh" },
-  { value: "bank", label: "Transferência bancária" },
-];
-
-const STATUS_META: Record<string, { label: string; color: string; icon: any }> = {
-  pending: { label: "Pendente", color: "bg-amber-500/15 text-amber-600 border-amber-500/30", icon: Clock },
-  paid: { label: "Pago", color: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30", icon: CheckCircle2 },
-  rejected: { label: "Rejeitado", color: "bg-rose-500/15 text-rose-600 border-rose-500/30", icon: XCircle },
-};
+import { useCountry } from "@/contexts/CountryContext";
 
 export default function Withdraw() {
   const { user } = useAuth();
+  const { country } = useCountry();
   const [balance, setBalance] = useState<number>(0);
   const [isPro, setIsPro] = useState<boolean | null>(null);
   const [minAmt, setMinAmt] = useState<number>(100);
@@ -43,15 +32,35 @@ export default function Withdraw() {
   const [history, setHistory] = useState<any[]>([]);
   const [txSeries, setTxSeries] = useState<any[]>([]);
 
+  const currencyCode = country?.currency_code || 'MZN';
+
+  const methods = useMemo(() => {
+    return country?.config?.payment_methods?.map((m: any) => ({
+      value: m.id,
+      label: m.name
+    })) || [
+      { value: "mpesa", label: "M-Pesa" },
+      { value: "emola", label: "e-Mola" },
+      { value: "mkesh", label: "Mkesh" },
+      { value: "bank", label: "Transferência bancária" },
+    ];
+  }, [country]);
+
+  useEffect(() => {
+    if (methods.length > 0 && !method) {
+      setMethod(methods[0].value);
+    }
+  }, [methods, method]);
+
   const load = async () => {
     if (!user) return;
     const [{ data: w }, { data: roles }, { data: ps }, { data: hist }] = await Promise.all([
-      supabase.from("wallets").select("balance_mzn").eq("user_id", user.id).maybeSingle(),
+      supabase.from("wallets").select("balance, balance_mzn").eq("user_id", user.id).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", user.id),
-      supabase.from("platform_settings").select("value").eq("key", "withdrawal_min_mzn").maybeSingle(),
+      supabase.from("platform_settings").select("value").eq("key", `withdrawal_min_${currencyCode.toLowerCase()}`).maybeSingle(),
       supabase.from("withdrawal_requests").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
     ]);
-    setBalance(Number(w?.balance_mzn ?? 0));
+    setBalance(Number(w?.balance || w?.balance_mzn || 0));
     const pro = (roles ?? []).some((r: any) => ["doctor", "clinic", "store_owner", "driver", "admin"].includes(r.role));
     setIsPro(pro);
     if (ps?.value != null) setMinAmt(Number(ps.value));
@@ -72,7 +81,7 @@ export default function Withdraw() {
     );
   };
 
-  useEffect(() => { load(); }, [user?.id]);
+  useEffect(() => { load(); }, [user?.id, currencyCode]);
 
   // Realtime updates on this user's withdrawal history + wallet balance
   useEffect(() => {
@@ -105,7 +114,7 @@ export default function Withdraw() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const amt = Number(amount);
-    if (!amt || amt < minAmt) { toast.error(`Valor mínimo ${minAmt} MZN`); return; }
+    if (!amt || amt < minAmt) { toast.error(`Valor mínimo ${minAmt} ${currencyCode}`); return; }
     if (amt > balance) { toast.error("Saldo insuficiente"); return; }
     if (!destination.trim()) { toast.error("Indica o número/conta de destino"); return; }
     setLoading(true);
@@ -134,14 +143,20 @@ export default function Withdraw() {
     );
   }
 
+  const STATUS_META: Record<string, { label: string; color: string; icon: any }> = {
+    pending: { label: "Pendente", color: "bg-amber-500/15 text-amber-600 border-amber-500/30", icon: Clock },
+    paid: { label: "Pago", color: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30", icon: CheckCircle2 },
+    rejected: { label: "Rejeitado", color: "bg-rose-500/15 text-rose-600 border-rose-500/30", icon: XCircle },
+  };
+
   return (
     <div className="container max-w-3xl py-6 space-y-6">
       <div className="rounded-2xl bg-gradient-to-br from-primary/90 to-primary p-6 text-primary-foreground shadow-lg">
         <div className="flex items-center gap-2 text-sm opacity-90"><Wallet className="h-4 w-4" /> Saldo disponível</div>
-        <div className="text-4xl font-bold mt-1">{balance.toLocaleString("pt-PT")} <span className="text-lg opacity-80">MZN</span></div>
+        <div className="text-4xl font-bold mt-1">{balance.toLocaleString("pt-PT")} <span className="text-lg opacity-80">{currencyCode}</span></div>
         <div className="flex items-center justify-between mt-2 text-xs opacity-90">
-          <span>Mínimo por pedido: {minAmt} MZN</span>
-          <span>Retido: <strong>{stats.held.toLocaleString("pt-PT")} MZN</strong></span>
+          <span>Mínimo por pedido: {minAmt} {currencyCode}</span>
+          <span>Retido: <strong>{stats.held.toLocaleString("pt-PT")} {currencyCode}</strong></span>
         </div>
       </div>
 
@@ -154,7 +169,7 @@ export default function Withdraw() {
                 <LineChart data={txSeries} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
                   <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={(v: any) => `${Number(v).toLocaleString("pt-PT")} MZN`} />
+                  <Tooltip formatter={(v: any) => `${Number(v).toLocaleString("pt-PT")} ${currencyCode}`} />
                   <Line type="monotone" dataKey="saldo" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
@@ -172,7 +187,7 @@ export default function Withdraw() {
                   <Pie data={stats.pie} dataKey="value" nameKey="name" innerRadius={40} outerRadius={70} paddingAngle={2}>
                     {stats.pie.map((s, i) => <Cell key={i} fill={s.color} />)}
                   </Pie>
-                  <Tooltip formatter={(v: any) => `${Number(v).toLocaleString("pt-PT")} MZN`} />
+                  <Tooltip formatter={(v: any) => `${Number(v).toLocaleString("pt-PT")} ${currencyCode}`} />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
@@ -188,14 +203,14 @@ export default function Withdraw() {
         <CardContent>
           <form onSubmit={submit} className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <Label>Valor (MZN)</Label>
+              <Label>Valor ({currencyCode})</Label>
               <Input type="number" min={minAmt} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={`Ex: ${minAmt}`} />
             </div>
             <div>
               <Label>Método</Label>
               <Select value={method} onValueChange={setMethod}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{METHODS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                <SelectContent>{methods.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
@@ -225,7 +240,7 @@ export default function Withdraw() {
             return (
               <div key={h.id} className="flex items-center justify-between rounded-lg border p-3">
                 <div>
-                  <div className="font-semibold">{Number(h.amount).toLocaleString("pt-PT")} MZN <span className="text-xs text-muted-foreground">via {h.method}</span></div>
+                  <div className="font-semibold">{Number(h.amount).toLocaleString("pt-PT")} {currencyCode} <span className="text-xs text-muted-foreground">via {h.method}</span></div>
                   <div className="text-xs text-muted-foreground">{new Date(h.created_at).toLocaleString("pt-PT")} · {h.destination}</div>
                   {h.admin_notes && <div className="text-xs mt-1">Nota: {h.admin_notes}</div>}
                 </div>

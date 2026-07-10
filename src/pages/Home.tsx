@@ -116,7 +116,11 @@ export default function Home() {
 
   return (
     <>
-      <Seo title="MedWallet — Consultas, farmácia e carteira de saúde MZ" description="Consultas médicas online, farmácia 24h com entrega e carteira MZN em Moçambique." path="/" />
+      <Seo
+        title={`MedWallet ${country?.id || 'MZ'} — Consultas, farmácia e carteira de saúde`}
+        description={`Consultas médicas online, farmácia 24h com entrega e carteira ${country?.currency_code || 'MZN'} em ${country?.name || 'Moçambique'}.`}
+        path="/"
+      />
 
       <HealthProfileOnboarding />
       <MorningGreeting />
@@ -204,14 +208,14 @@ export default function Home() {
               className="bento-card p-5 bg-gradient-to-br from-primary to-primary/80 text-white flex flex-col justify-between h-40"
             >
               <div>
-                <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">Saldo MedWallet</p>
+                <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">{t('home.wallet_card')}</p>
                 <div className="flex items-baseline gap-1 mt-1">
                   <NumberFlow value={Number(wallet?.balance ?? 0)} className="text-3xl font-black tabular-nums" />
                   <span className="text-xs font-bold opacity-80">{country?.currency_code || 'MZN'}</span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] opacity-60">Seguro & Instantâneo</span>
+                <span className="text-[10px] opacity-60">{t('wallet.secure_instant')}</span>
                 <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur">
                   <Plus className="h-4 w-4" />
                 </div>
@@ -298,7 +302,7 @@ export default function Home() {
             </div>
             <div>
               <p className="font-black text-sm">{t('health.health_education')}</p>
-              <p className="text-[10px] text-muted-foreground font-medium">{t('health.mozambique_guides')}</p>
+              <p className="text-[10px] text-muted-foreground font-medium">Guias locais</p>
             </div>
           </button>
 
@@ -310,7 +314,7 @@ export default function Home() {
               <MessageCircle className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="font-black text-sm">{t('health.help_mpesa')}</p>
+              <p className="font-black text-sm">{t('health.help_payment', { method: country?.config?.payment_methods?.[0]?.name || 'M-Pesa' })}</p>
               <p className="text-[10px] text-muted-foreground font-medium">{t('health.support_24h')}</p>
             </div>
           </button>
@@ -318,7 +322,7 @@ export default function Home() {
 
         <ReferralBanner />
 
-        <KlipyBanner query="mozambique healthcare" />
+        <KlipyBanner query={`${country?.name || 'mozambique'} healthcare`} />
 
         {/* ============ BECOME A PROVIDER ============ */}
         <section className="px-4">
@@ -360,9 +364,9 @@ export default function Home() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <p className="font-black text-base">{t('health.suggest_place')}</p>
-                  <Badge className="bg-gold text-gold-foreground border-0 text-[10px] font-black">+25 MZN</Badge>
+                  <Badge className="bg-gold text-gold-foreground border-0 text-[10px] font-black">+25 {country?.currency_code || 'MZN'}</Badge>
                 </div>
-                <p className="text-xs text-muted-foreground font-medium mt-0.5">{t('health.map_health_mz')}</p>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">{t('health.map_health_country', { country: country?.name || 'Moçambique' })}</p>
               </div>
               <ArrowRight className="h-5 w-5 text-gold group-hover:translate-x-1 transition" />
             </div>

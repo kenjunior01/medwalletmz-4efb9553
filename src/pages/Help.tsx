@@ -27,150 +27,155 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-const WHATSAPP_NUMBER = "258848547887";
-
-const supportOptions = [
-  {
-    icon: MessageCircle,
-    label: "WhatsApp",
-    description: "Resposta em minutos",
-    action: () => window.open(`https://wa.me/${WHATSAPP_NUMBER}`, "_blank"),
-    color: "bg-green-500",
-  },
-  {
-    icon: Phone,
-    label: "Ligar",
-    description: "+258 84 854 7887",
-    action: () => window.open("tel:+258848547887", "_blank"),
-    color: "bg-blue-500",
-  },
-  {
-    icon: Mail,
-    label: "Email",
-    description: "suporte@mozambiapp.co.mz",
-    action: () => window.open("mailto:suporte@mozambiapp.co.mz", "_blank"),
-    color: "bg-purple-500",
-  },
-];
-
-const faqCategories = [
-  {
-    icon: ShoppingBag,
-    title: "Pedidos",
-    questions: [
-      {
-        q: "Como faço um pedido?",
-        a: "Basta escolher uma farmácia, adicionar itens ao carrinho e finalizar o checkout com o seu endereço e método de pagamento preferido.",
-      },
-      {
-        q: "Posso cancelar um pedido?",
-        a: "Sim, você pode cancelar antes do pedido ser confirmado pela farmácia. Após a confirmação, entre em contacto com o suporte.",
-      },
-      {
-        q: "Como vejo o histórico de pedidos?",
-        a: 'Acesse a aba "Pedidos" no menu inferior para ver todos os seus pedidos ativos e histórico.',
-      },
-    ],
-  },
-  {
-    icon: Truck,
-    title: "Entregas",
-    questions: [
-      {
-        q: "Qual o tempo de entrega?",
-        a: "O tempo varia de 20 a 60 minutos, dependendo da distância e tipo de estabelecimento.",
-      },
-      {
-        q: "Como rastreio minha entrega?",
-        a: "Quando o entregador estiver a caminho, você verá um mapa em tempo real na página do pedido.",
-      },
-      {
-        q: "E se o entregador não encontrar meu endereço?",
-        a: "O entregador ligará para você. Certifique-se de adicionar pontos de referência no endereço.",
-      },
-    ],
-  },
-  {
-    icon: CreditCard,
-    title: "Pagamentos & M-Pesa",
-    questions: [
-      {
-        q: "Quais métodos de pagamento são aceites?",
-        a: "Aceitamos M-Pesa, e-Mola, Mkesh e a carteira MedWallet (MZN). O pagamento é feito na confirmação do pedido ou da consulta.",
-      },
-      {
-        q: "Como deposito na minha carteira MedWallet via M-Pesa?",
-        a: 'Abre M-Pesa → "Enviar dinheiro" → insere o número MedWallet → mete o valor → confirma. O saldo é creditado em segundos. Vê o passo-a-passo ilustrado abaixo.',
-      },
-      {
-        q: "É seguro pagar pelo app?",
-        a: "Sim! Usamos encriptação de ponta a ponta e não armazenamos dados sensíveis. As transações M-Pesa são processadas pela Vodacom.",
-      },
-      {
-        q: "Posso pedir reembolso?",
-        a: "Sim, em caso de problemas com o pedido ou consulta. Entre em contacto com o suporte via WhatsApp para solicitar.",
-      },
-    ],
-  },
-  {
-    icon: Stethoscope,
-    title: "Consultas & Telemedicina",
-    questions: [
-      {
-        q: "Como funciona a teleconsulta por vídeo?",
-        a: 'Marca a consulta, e na hora agendada recebes um botão "Iniciar vídeo" no chat. Funciona directamente no browser, sem instalar nada.',
-      },
-      {
-        q: "Posso avaliar o médico depois?",
-        a: "Sim! Após cada consulta, podes dar 1–5 estrelas e deixar um comentário. A tua avaliação ajuda outros pacientes.",
-      },
-      {
-        q: "Não há médico na minha especialidade. O que faço?",
-        a: "Podes juntar-te à lista de espera — avisamos-te assim que houver profissional disponível. Entretanto, fala com clínico geral ou faz Meddy Consulta.",
-      },
-    ],
-  },
-  {
-    icon: User,
-    title: "Conta",
-    questions: [
-      {
-        q: "Como altero meus dados?",
-        a: 'Acesse seu Perfil e clique em "Editar" para alterar nome, telefone ou foto.',
-      },
-      {
-        q: "Esqueci minha senha",
-        a: 'Na tela de login, clique em "Esqueci a senha" e siga as instruções enviadas por email.',
-      },
-      {
-        q: "Como apago minha conta?",
-        a: "Entre em contacto com o suporte via WhatsApp para solicitar a exclusão da conta.",
-      },
-    ],
-  },
-  {
-    icon: Handshake,
-    title: "Apoio Médico & Solidariedade",
-    questions: [
-      {
-        q: "Como posso pedir apoio para uma cirurgia?",
-        a: "Acesse a aba 'Solidários' na Home e clique em 'Pedir Apoio'. Deverá preencher o formulário detalhado e anexar o relatório médico. Todos os casos são validados pela MedWallet.",
-      },
-      {
-        q: "Como são feitas as doações?",
-        a: "As doações são feitas via M-Pesa ou Carteira MedWallet diretamente para o caso escolhido. O MedWallet garante que 100% do valor chega ao hospital de destino.",
-      },
-      {
-        q: "É seguro doar?",
-        a: "Sim. Apenas publicamos casos com relatórios médicos verificados e hospitais parceiros confirmados.",
-      },
-    ],
-  },
-];
-
 export default function Help() {
   const navigate = useNavigate();
+  const { country, t } = useCountry();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const supportNumber = country?.config?.support?.whatsapp || "258848547887";
+  const supportPhone = country?.config?.support?.phone || "+258 84 854 7887";
+  const supportEmail = country?.config?.support?.email || "suporte@medwallet.co.mz";
+
+  const supportOptions = [
+    {
+      icon: MessageCircle,
+      label: "WhatsApp",
+      description: "Resposta em minutos",
+      action: () => window.open(`https://wa.me/${supportNumber}`, "_blank"),
+      color: "bg-green-500",
+    },
+    {
+      icon: Phone,
+      label: "Ligar",
+      description: supportPhone,
+      action: () => window.open(`tel:${supportPhone.replace(/\s/g, "")}`, "_blank"),
+      color: "bg-blue-500",
+    },
+    {
+      icon: Mail,
+      label: "Email",
+      description: supportEmail,
+      action: () => window.open(`mailto:${supportEmail}`, "_blank"),
+      color: "bg-purple-500",
+    },
+  ];
+
+  const mainPaymentMethod = country?.config?.payment_methods?.find((m: any) => m.type === 'mobile_money') || { name: 'M-Pesa' };
+
+  const faqCategories = [
+    {
+      icon: ShoppingBag,
+      title: "Pedidos",
+      questions: [
+        {
+          q: "Como faço um pedido?",
+          a: "Basta escolher uma farmácia, adicionar itens ao carrinho e finalizar o checkout com o seu endereço e método de pagamento preferido.",
+        },
+        {
+          q: "Posso cancelar um pedido?",
+          a: "Sim, você pode cancelar antes do pedido ser confirmado pela farmácia. Após a confirmação, entre em contacto com o suporte.",
+        },
+        {
+          q: "Como vejo o histórico de pedidos?",
+          a: 'Acesse a aba "Pedidos" no menu inferior para ver todos os seus pedidos ativos e histórico.',
+        },
+      ],
+    },
+    {
+      icon: Truck,
+      title: "Entregas",
+      questions: [
+        {
+          q: "Qual o tempo de entrega?",
+          a: "O tempo varia de 20 a 60 minutos, dependendo da distância e tipo de estabelecimento.",
+        },
+        {
+          q: "Como rastreio minha entrega?",
+          a: "Quando o entregador estiver a caminho, você verá um mapa em tempo real na página do pedido.",
+        },
+        {
+          q: "E se o entregador não encontrar meu endereço?",
+          a: "O entregador ligará para você. Certifique-se de adicionar pontos de referência no endereço.",
+        },
+      ],
+    },
+    {
+      icon: CreditCard,
+      title: `Pagamentos & ${mainPaymentMethod.name}`,
+      questions: [
+        {
+          q: "Quais métodos de pagamento são aceites?",
+          a: `Aceitamos ${country?.config?.payment_methods?.map((m: any) => m.name).join(", ") || 'M-Pesa, e-Mola'} e a carteira MedWallet (${country?.currency_code || 'MZN'}). O pagamento é feito na confirmação do pedido ou da consulta.`,
+        },
+        {
+          q: `Como deposito na minha carteira MedWallet via ${mainPaymentMethod.name}?`,
+          a: `Abre ${mainPaymentMethod.name} → "Enviar dinheiro" → insere o número MedWallet → mete o valor → confirma. O saldo é creditado em segundos. Vê o passo-a-passo ilustrado abaixo.`,
+        },
+        {
+          q: "É seguro pagar pelo app?",
+          a: "Sim! Usamos encriptação de ponta a ponta e não armazenamos dados sensíveis. As transações são processadas com segurança pelos operadores locais.",
+        },
+        {
+          q: "Posso pedir reembolso?",
+          a: "Sim, em caso de problemas com o pedido ou consulta. Entre em contacto com o suporte via WhatsApp para solicitar.",
+        },
+      ],
+    },
+    {
+      icon: Stethoscope,
+      title: "Consultas & Telemedicina",
+      questions: [
+        {
+          q: "Como funciona a teleconsulta por vídeo?",
+          a: 'Marca a consulta, e na hora agendada recebes um botão "Iniciar vídeo" no chat. Funciona directamente no browser, sem instalar nada.',
+        },
+        {
+          q: "Posso avaliar o médico depois?",
+          a: "Sim! Após cada consulta, podes dar 1–5 estrelas e deixar um comentário. A tua avaliação ajuda outros pacientes.",
+        },
+        {
+          q: "Não há médico na minha especialidade. O que faço?",
+          a: "Podes juntar-te à lista de espera — avisamos-te assim que houver profissional disponível. Entretanto, fala com clínico geral ou faz Meddy Consulta.",
+        },
+      ],
+    },
+    {
+      icon: User,
+      title: "Conta",
+      questions: [
+        {
+          q: "Como altero meus dados?",
+          a: 'Acesse seu Perfil e clique em "Editar" para alterar nome, telefone ou foto.',
+        },
+        {
+          q: "Esqueci minha senha",
+          a: 'Na tela de login, clique em "Esqueci a senha" e siga as instruções enviadas por email.',
+        },
+        {
+          q: "Como apago minha conta?",
+          a: "Entre em contacto com o suporte via WhatsApp para solicitar a exclusão da conta.",
+        },
+      ],
+    },
+    {
+      icon: Handshake,
+      title: "Apoio Médico & Solidariedade",
+      questions: [
+        {
+          q: "Como posso pedir apoio para uma cirurgia?",
+          a: "Acesse a aba 'Solidários' na Home e clique em 'Pedir Apoio'. Deverá preencher o formulário detalhado e anexar o relatório médico. Todos os casos são validados pela MedWallet.",
+        },
+        {
+          q: "Como são feitas as doações?",
+          a: `As doações são feitas via ${mainPaymentMethod.name} ou Carteira MedWallet diretamente para o caso escolhido. O MedWallet garante que 100% do valor chega ao hospital de destino.`,
+        },
+        {
+          q: "É seguro doar?",
+          a: "Sim. Apenas publicamos casos com relatórios médicos verificados e hospitais parceiros confirmados.",
+        },
+      ],
+    },
+  ];
 
   const filteredCategories = faqCategories
     .map((category) => ({
@@ -224,7 +229,7 @@ export default function Help() {
                   <option.icon className="h-5 w-5 text-white" />
                 </div>
                 <p className="font-medium text-sm">{option.label}</p>
-                <p className="text-xs text-muted-foreground mt-1">{option.description}</p>
+                <p className="text-xs text-muted-foreground mt-1 truncate">{option.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -241,7 +246,7 @@ export default function Help() {
           </CardContent>
         </Card>
 
-        {/* M-Pesa Quick Guide (rec 5.3 — integração M-Pesa) */}
+        {/* Dynamic Payment Guide */}
         <Card className="overflow-hidden border-amber-500/30 bg-amber-500/5">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
@@ -249,7 +254,7 @@ export default function Help() {
                 <Wallet className="h-4 w-4 text-amber-600" />
               </div>
               <div>
-                <p className="font-bold text-sm">M-Pesa em 4 passos</p>
+                <p className="font-bold text-sm">{mainPaymentMethod.name} em 4 passos</p>
                 <p className="text-[11px] text-muted-foreground">Como depositar na tua carteira MedWallet</p>
               </div>
               <Badge className="ml-auto bg-amber-500/20 text-amber-700 border-amber-500/30 text-[9px]">
@@ -258,28 +263,30 @@ export default function Help() {
             </div>
             <ol className="text-xs space-y-1.5 mt-2 list-decimal pl-5 text-foreground/90">
               <li>
-                Abre o <strong>M-Pesa</strong> e escolhe <strong>Enviar dinheiro</strong>.
+                Abre o <strong>{mainPaymentMethod.name}</strong> e escolhe <strong>Enviar dinheiro</strong>.
               </li>
               <li>
-                Insere o número MedWallet: <strong>84 000 0000</strong>.
+                Insere o número MedWallet: <strong>{supportNumber}</strong>.
               </li>
-              <li>Indica o valor (mín. 50 MZN) e confirma com o teu PIN.</li>
+              <li>Indica o valor (mín. 50 {country?.currency_symbol || 'MZN'}) e confirma com o teu PIN.</li>
               <li>Recebes o saldo na carteira MedWallet em segundos.</li>
             </ol>
-            <p className="text-[10px] text-muted-foreground mt-2 italic">
-              Também aceitamos <strong>e-Mola</strong> e <strong>Mkesh</strong> nas consultas e farmácia.
-            </p>
+            {country?.config?.payment_methods?.length > 1 && (
+              <p className="text-[10px] text-muted-foreground mt-2 italic">
+                Também aceitamos <strong>{country.config.payment_methods.filter((m: any) => m.id !== mainPaymentMethod.id).map((m: any) => m.name).join(", ")}</strong> nas consultas e farmácia.
+              </p>
+            )}
           </CardContent>
         </Card>
 
-        {/* Quick actions (rec 5.2 / 5.3 — parcerias + educação + lista de espera) */}
+        {/* Quick actions */}
         <div className="grid grid-cols-3 gap-2">
           <button
             onClick={() => navigate("/health/education")}
             className="bento-card p-3 flex flex-col items-center gap-1 text-center hover:shadow-md transition"
           >
             <BookOpen className="h-5 w-5 text-primary" />
-            <span className="text-[10px] font-semibold">Saúde MZ</span>
+            <span className="text-[10px] font-semibold">Saúde {country?.id || 'MZ'}</span>
           </button>
           <button
             onClick={() => navigate("/partners")}
@@ -335,10 +342,11 @@ export default function Help() {
           </div>
           <div className="text-center">
             <MapPin className="h-8 w-8 mx-auto text-primary mb-2" />
-            <p className="text-xs font-medium">Maputo & mais</p>
+            <p className="text-xs font-medium">{country?.config?.cities?.[0] || 'Maputo'} & mais</p>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

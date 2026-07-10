@@ -29,12 +29,13 @@ Esta versão aplica as **recomendações do relatório estratégico "MedWallet e
 - Tabela `health_articles` + `article_views` (métricas de leitura).
 - Banner de entrada na Home ligando a `/health/education`.
 
-### 2. Lista de Espera de Profissionais · `rec 1.2 / 4.1` ✅
-Resolve a fricção do estado "**Nenhum médico disponível nesta especialidade**" — agora o paciente escolhe:
-- 🔔 **Avisa-me quando houver** — entra na lista de espera (tabela `provider_waitlist`).
-- ✨ **Fazer triagem com IA agora**.
-- 💬 **Chat médico geral** (clínico geral).
-- 📚 **Ler artigos de saúde**.
+### 2. Fluxo de Registo Unificado (Harmonização Premium) ✅
+Resolve a fragmentação do registo de profissionais e unidades:
+- **RegistrationWizard:** Um único fluxo multi-step para Médicos, Farmácias, Clínicas, Laboratórios e Seguradoras.
+- **OnboardingLayout:** Design premium (glassmorphism) e transições fluidas.
+- **Integração de Stock:** Opções de sincronização de inventário para farmácias logo no registo.
+- **Document AI Ready:** Badges de verificação automática via Google Document AI.
+- **Curation Gateway:** Encaminhamento direto para o Gestor Regional após submissão.
 
 ### 3. Página de Parcerias (MISAU / Empresas / ONGs) · `rec 5.3` ✅
 - **Nova rota:** `/partners`
@@ -109,7 +110,8 @@ Componente `ReferralBanner` com copy adaptado ao contexto moçambicano:
 - **Renderização Segura de Imagens:** Componente `SafeImage` implementado em toda a app para garantir que nenhuma lista quebre por links de imagem offline (fallback automático).
 
 ### 14. Escalabilidade Global & Conversão Real-Time ✅
-- **Google Finance (via SearchAPI):** Conversão de moeda em tempo real integrada em `currencyService.ts`. Permite visualizar preços em moedas globais (USD, EUR, ZAR) baseados em taxas de mercado atualizadas.
+- **Expansão para a Índia:** Adição do suporte completo ao idioma **Hindi** e integração regional para o mercado indiano, incluindo suporte a pagamentos UPI.
+- **Google Finance (via SearchAPI):** Conversão de moeda em tempo real integrada em `currencyService.ts`. Permite visualizar preços em moedas globais (USD, EUR, ZAR, INR) baseados em taxas de mercado atualizadas.
 - **Motor Fiscal Dinâmico:** Cálculo de impostos (IVA, VAT, ISS) adaptativo por país e tipo de serviço em `taxEngine.ts`.
 - **Interoperabilidade FHIR:** Exportação de registos médicos seguindo o padrão internacional HL7 FHIR para aceitação em hospitais globais.
 - **Gestão Regional:** Nova role `country_manager` e dashboard administrativo dedicado para supervisão local por país.
