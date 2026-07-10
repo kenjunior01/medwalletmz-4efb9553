@@ -31,7 +31,11 @@ if (!container) {
   try {
     console.log("Criando root do React...");
     const root = createRoot(container);
-    root.render(<div style={{padding: 40, fontSize: 24}}>HELLO WORLD TEST</div>);
+    root.render(
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    );
     console.log("Renderização inicial disparada.");
   } catch (error) {
     console.error("Erro durante a renderização inicial:", error);
