@@ -129,9 +129,7 @@ import { SmartEngagementPopUp } from "@/components/notifications/SmartEngagement
 const queryClient = new QueryClient();
 
 // Initializing the app
-const App = () => {
-  console.log("App component rendering");
-  return (
+const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <LocationProvider>
@@ -282,6 +280,5 @@ const App = () => {
   </AuthProvider>
 </QueryClientProvider>
 );
-};
 
 export default App;

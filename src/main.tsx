@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Log para depuração na plataforma
@@ -33,7 +34,9 @@ if (!container) {
     const root = createRoot(container);
     root.render(
       <ErrorBoundary>
-        <App />
+        <HelmetProvider>
+          <App />
+        </HelmetProvider>
       </ErrorBoundary>
     );
     console.log("Renderização inicial disparada.");
