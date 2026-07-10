@@ -38,23 +38,6 @@ export function AppLayout() {
   const device = useDeviceType();
   const isMobile = device === "mobile";
 
-  // Dynamic branding injection
-  useEffect(() => {
-    const cfg = (country as any)?.branding_config;
-    if (cfg) {
-      const root = document.documentElement;
-      const branding = cfg;
-
-      if (branding.primary_color) {
-        root.style.setProperty('--primary', branding.primary_color);
-        // We could also calculate hsl values here if needed for shadcn
-      }
-      if (branding.accent_color) {
-        root.style.setProperty('--accent', branding.accent_color);
-      }
-    }
-  }, [country]);
-
   return (
     <div className="min-h-screen bg-background flex">
       {!isMobile && <AppSidebar />}
@@ -62,7 +45,7 @@ export function AppLayout() {
         <OfflineBanner />
         <Header />
         <div className="flex-1 w-full max-w-6xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
-          <main className={`flex-1 min-w-0 ${isMobile ? "pb-20" : ""}`}>
+          <main className={`flex-1 min-w-0 ${isMobile ? "pb-24" : ""}`}>
             <Suspense fallback={
               <div className="flex items-center justify-center h-screen">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />

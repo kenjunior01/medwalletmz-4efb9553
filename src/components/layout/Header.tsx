@@ -59,19 +59,18 @@ export function Header() {
 
   // Dynamic cities based on country config
   const cities = useMemo(() => {
-    if (country?.config?.provinces) return country.config.provinces;
     if (country?.config?.cities) return country.config.cities;
+    if (country?.config?.provinces) return country.config.provinces;
 
-    // Default cities per country if not in config
+    // These fallbacks are now handled in CountryContext STATIC_COUNTRIES,
+    // but we keep this as a secondary safety layer.
     const defaults: Record<string, string[]> = {
       'MZ': ["Maputo", "Beira", "Nampula", "Quelimane", "Tete", "Chimoio", "Pemba", "Inhambane"],
       'AO': ["Luanda", "Benguela", "Huambo", "Lubango", "Cabinda"],
       'BR': ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza"],
       'PT': ["Lisboa", "Porto", "Braga", "Coimbra", "Setúbal"],
-      'US': ["New York", "Los Angeles", "Chicago", "Houston", "Miami"],
-      'GB': ["London", "Manchester", "Birmingham", "Leeds", "Glasgow"],
-      'ZA': ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth"],
-      'IN': ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad"]
+      'ZA': ["Johannesburg", "Cape Town", "Durban", "Pretoria"],
+      'IN': ["Mumbai", "Delhi", "Bangalore"]
     };
 
     return defaults[country?.id || 'MZ'] || ["Maputo"];

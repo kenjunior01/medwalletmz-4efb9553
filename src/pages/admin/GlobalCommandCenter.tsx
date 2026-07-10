@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 export default function GlobalCommandCenter() {
@@ -17,7 +18,7 @@ export default function GlobalCommandCenter() {
 
   const loadData = async () => {
     setLoading(true);
-    const { data: cData } = await supabase.from('countries').select('*').order('name');
+    const { data: cData } = await (supabase.from('countries' as any) as any).select('*').order('name');
     const { data: mData } = await supabase
       .from('country_management' as any)
       .select('*, profiles:user_id(full_name, phone)');

@@ -29,34 +29,81 @@ interface LocationContextType {
 
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
-// Default coordinates for major cities
+// Default coordinates for major hubs
 const CITY_COORDINATES: Record<string, Coordinates & { country: string }> = {
   'Maputo': { latitude: -25.9692, longitude: 32.5732, country: 'MZ' },
   'Beira': { latitude: -19.8436, longitude: 34.8389, country: 'MZ' },
   'São Paulo': { latitude: -23.5505, longitude: -46.6333, country: 'BR' },
+  'Rio de Janeiro': { latitude: -22.9068, longitude: -43.1729, country: 'BR' },
   'Luanda': { latitude: -8.8390, longitude: 13.2894, country: 'AO' },
   'Lisboa': { latitude: 38.7223, longitude: -9.1393, country: 'PT' },
+  'Johannesburg': { latitude: -26.2041, longitude: 28.0473, country: 'ZA' },
+  'Mumbai': { latitude: 19.0760, longitude: 72.8777, country: 'IN' },
+};
+
+const DEFAULT_CITY_BY_COUNTRY: Record<string, string> = {
+  'MZ': 'Maputo',
+  'BR': 'São Paulo',
+  'AO': 'Luanda',
+  'ZA': 'Johannesburg',
+  'IN': 'Mumbai',
+  'PT': 'Lisboa',
+};
+
+const guessCountryFromTimezone = (): string => {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if (tz.includes('Sao_Paulo') || tz.includes('Brazil')) return 'BR';
+  if (tz.includes('Luanda')) return 'AO';
+  if (tz.includes('Johannesburg')) return 'ZA';
+  if (tz.includes('Kolkata')) return 'IN';
+  if (tz.includes('Lisbon')) return 'PT';
+  if (tz.includes('Maputo')) return 'MZ';
+  return 'MZ';
 };
 
 export function LocationProvider({ children }: { children: ReactNode }) {
-  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
-  const [city, setCity] = useState<string>(() => {
+  const [countryCode, setCountryCodeState] = useState<string>(() => {
     try {
-      return localStorage.getItem('selectedCity') || 'Maputo';
-    } catch {
-      return 'Maputo';
-    }
-  });
-  const [countryCode, setCountryCode] = useState<string>(() => {
-    try {
-      return localStorage.getItem('selectedCountry') || 'MZ';
+      return localStorage.getItem('selectedCountry') || guessCountryFromTimezone();
     } catch {
       return 'MZ';
     }
   });
+
+  const [city, setCityState] = useState<string>(() => {
+    try {
+      return localStorage.getItem('selectedCity') || DEFAULT_CITY_BY_COUNTRY[countryCode] || 'Maputo';
+    } catch {
+      return 'Maputo';
+    }
+  });
+
+  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [countryConfig, setCountryConfig] = useState<CountryConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Update country code with persistence
+  const setCountryCode = (code: string) => {
+    setCountryCodeState(code);
+    localStorage.setItem('selectedCountry', code);
+    // If country changes, pick default city for that country
+    const defaultCity = DEFAULT_CITY_BY_COUNTRY[code];
+    if (defaultCity) {
+      setCityState(defaultCity);
+      localStorage.setItem('selectedCity', defaultCity);
+    }
+  };
+
+  // Update city with persistence
+  const setCity = (newCity: string) => {
+    setCityState(newCity);
+    localStorage.setItem('selectedCity', newCity);
+    // If we have static coords for this city, use them
+    if (CITY_COORDINATES[newCity]) {
+      setCoordinates(CITY_COORDINATES[newCity]);
+    }
+  };
 
   // Fetch country settings from DB
   useEffect(() => {
@@ -65,20 +112,17 @@ export function LocationProvider({ children }: { children: ReactNode }) {
         .from('countries')
         .select('*')
         .eq('id', countryCode)
-        .single();
+        .maybeSingle();
       if (data) setCountryConfig(data as CountryConfig);
     };
     fetchConfig();
   }, [countryCode]);
 
   useEffect(() => {
-    localStorage.setItem('selectedCity', city);
-    localStorage.setItem('selectedCountry', countryCode);
     if (!coordinates && CITY_COORDINATES[city]) {
       setCoordinates(CITY_COORDINATES[city]);
-      setCountryCode(CITY_COORDINATES[city].country);
     }
-  }, [city, countryCode]);
+  }, [city]);
 
   const requestLocation = () => {
     if (!navigator.geolocation) {
@@ -99,9 +143,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       },
       (err) => {
         setError('Não foi possível obter a localização');
-        console.error('Geolocation error:', err);
         setLoading(false);
-        // Fall back to city coordinates
         if (CITY_COORDINATES[city]) {
           setCoordinates(CITY_COORDINATES[city]);
         }
@@ -110,11 +152,9 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  // Haversine formula to calculate distance in km
   const calculateDistance = (lat: number, lng: number): number | null => {
     if (!coordinates) return null;
-    
-    const R = 6371; // Earth's radius in km
+    const R = 6371;
     const dLat = (lat - coordinates.latitude) * Math.PI / 180;
     const dLon = (lng - coordinates.longitude) * Math.PI / 180;
     const a = 

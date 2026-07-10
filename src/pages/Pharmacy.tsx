@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/contexts/LocationContext";
+import { useCountry } from "@/contexts/CountryContext";
 import { Tables } from "@/integrations/supabase/types";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -15,13 +16,14 @@ import { haversineKm } from "@/lib/googleRoutes";
 import { MapPin } from "lucide-react";
 import { SafeImage } from "@/components/ui/safe-image";
 
-type Store = Tables<"stores">;
+// Simplify type to avoid deep instantiation errors
+type Store = any;
 
 export default function Pharmacy() {
   const navigate = useNavigate();
   const routerLocation = useRouterLocation();
   const { city: selectedCity, coordinates } = useLocation();
-  const { t } = useCountry();
+  const { country, t } = useCountry();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Todas");
   const [pharmacies, setPharmacies] = useState<Store[]>([]);
@@ -107,11 +109,11 @@ export default function Pharmacy() {
     })
     .sort((a, b) => {
       switch (activeFilter) {
-        case "Melhor Avaliado":
+        case t('pharmacy.filters.top_rated'):
           return (b.rating || 0) - (a.rating || 0);
-        case "Próximo":
+        case t('pharmacy.filters.nearby'):
           return a.distance - b.distance;
-        case "24h":
+        case t('pharmacy.filters.24h'):
           // assume as que têm delivery_fee mais alto ou flag (não há is_24h explicito, mas podemos simular)
           return (a.delivery_fee || 0) - (b.delivery_fee || 0);
         default:
@@ -121,18 +123,18 @@ export default function Pharmacy() {
 
   return (
     <>
-      <Seo title="Farmácias 24h com entrega em Moçambique | MedWallet" description="Encontre farmácias abertas 24h em Maputo e Moçambique. Peça medicamentos com entrega rápida." path="/pharmacy" />
+      <Seo title={`${t('pharmacy.title')} 24h | MedWallet`} description={t('pharmacy.subtitle')} path="/pharmacy" />
     <div className="flex flex-col gap-4 p-4 animate-fade-in">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">{t('pharmacy.title')}</h1>
-        <p className="text-muted-foreground text-sm">
-          {t('pharmacy.subtitle')}{onlyMyCity && selectedCity ? ` en ${selectedCity}` : ` · ${t('pharmacy.all_cities')}`}
+        <h1 className="text-2xl font-black text-foreground">{t('pharmacy.title')}</h1>
+        <p className="text-muted-foreground text-sm font-medium">
+          {t('pharmacy.subtitle')}{onlyMyCity && selectedCity ? ` em ${selectedCity}` : ` · ${t('pharmacy.all_cities')}`}
         </p>
       </div>
 
-      <div className="flex items-center justify-between bento-card p-3">
-        <Label htmlFor="only-city" className="text-sm cursor-pointer">
+      <div className="flex items-center justify-between bento-card p-3 border-2 border-primary/10">
+        <Label htmlFor="only-city" className="text-sm cursor-pointer font-bold">
           {onlyMyCity ? t('pharmacy.only_my_city', { city: selectedCity }) : t('pharmacy.show_all')}
         </Label>
         <Switch id="only-city" checked={onlyMyCity} onCheckedChange={setOnlyMyCity} />
@@ -262,7 +264,7 @@ export default function Pharmacy() {
                 <div className="flex items-center justify-between">
                   {(pharmacy as any).delivery_enabled ? (
                     <span className="text-xs text-muted-foreground">
-                      Entrega: {pharmacy.delivery_fee || 0} MZN
+                      Entrega: {pharmacy.delivery_fee || 0} {country?.currency_code || 'MZN'}
                     </span>
                   ) : (
                     <span className="text-xs text-muted-foreground">Levantamento na loja</span>

@@ -13,7 +13,20 @@
     "pay": "Pagar",
     "doctor": "Médico",
     "pharmacy": "Farmácia",
-    "driver": "Entregador"
+    "driver": "Entregador",
+    "in": "em",
+    "moments": "Momentos MedWallet",
+    "friend": "amigo",
+    "visitor": "visitante"
+  },
+  "referrals": {
+    "program_title": "Programa de Indicação",
+    "invite_and_earn": "Convida e ganha em {{city}}",
+    "description": "Cada amigo que se inscrever com o teu código recebe bónus de boas-vindas — e tu também.",
+    "your_code": "Teu código",
+    "whatsapp_text": "Estou a usar a MedWallet para falar com médicos e receber medicamentos em {{city}} 🇲🇿. Usa o meu código {{code}} e ambos ganhamos bónus: {{link}}",
+    "copied": "Link copiado!",
+    "details": "Detalhes do programa"
   },
   "home": {
     "hero_title": "Saúde, farmácia numa só carteira.",
@@ -181,5 +194,17 @@
     "delivery": "Entrega",
     "pickup": "Levantamento na loja",
     "view_products": "Ver Produtos"
+  },
+  "profile": {
+    "menu": {
+      "wallet": "Minha Carteira",
+      "addresses": "Meus Endereços",
+      "suggest": "Sugerir farmácia ou clínica",
+      "referrals": "Convidar Amigos",
+      "subscriptions": "Minhas Subscrições",
+      "settings": "Configurações",
+      "help": "Ajuda & Suporte",
+      "legal": "Termos Legais"
+    }
   }
 }

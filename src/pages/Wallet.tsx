@@ -178,10 +178,10 @@ export default function Wallet() {
 
           <div className="grid grid-cols-1 gap-2 mt-5">
             <Button
-              className="neu-btn h-12 bg-transparent hover:bg-transparent text-foreground font-semibold"
+              className="neu-btn h-12 text-foreground font-bold border-none"
               onClick={() => setOpen(true)}
             >
-              <Plus className="h-4 w-4 mr-1" aria-hidden="true" /> {t('wallet.deposit')}
+              <Plus className="h-5 w-5 mr-1" aria-hidden="true" /> {t('wallet.deposit')}
             </Button>
           </div>
         </PanelShell>

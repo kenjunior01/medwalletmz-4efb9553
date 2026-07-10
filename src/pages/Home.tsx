@@ -98,7 +98,7 @@ export default function Home() {
     },
   });
 
-  const firstName = profile?.full_name?.split(' ')[0] || (user ? 'amigo' : 'visitante');
+  const firstName = profile?.full_name?.split(' ')[0] || (user ? t('common.friend') : t('common.visitor'));
   const { enabled: dataSaver } = useDataSaver();
   const [isListening, setIsListening] = useState(false);
 
@@ -122,14 +122,7 @@ export default function Home() {
       <MorningGreeting />
       <EmergencySOS />
 
-      <div
-        className="pb-24 animate-fade-in space-y-6"
-        style={{
-          '--primary': country?.branding_config?.primary_color || '#0a192f',
-          '--secondary': country?.branding_config?.secondary_color || '#14b8a6',
-          '--accent': country?.branding_config?.accent_color || '#fbbf24'
-        } as any}
-      >
+      <div className="pb-24 animate-fade-in space-y-6">
         {/* ============ HERO SECTION ============ */}
         {showRoleHero ? (
           <RoleHero roles={roles as any} name={firstName !== 'visitante' ? firstName : undefined} />

@@ -196,7 +196,7 @@ export function NearbyProvidersWidget() {
                   )}
                 </div>
                 {route ? (
-                  <div className="mt-1 text-[10px] text-emerald-700 bg-emerald-500/10 rounded px-1.5 py-0.5 inline-flex items-center gap-0.5">
+                  <div className="mt-1 text-[10px] font-bold text-emerald bg-emerald/10 rounded px-1.5 py-0.5 inline-flex items-center gap-0.5 border border-emerald/10">
                     <Clock className="h-3 w-3" /> {fmtDuration(route.etaSec)} <Sparkles className="h-3 w-3 ml-0.5" />
                   </div>
                 ) : null}

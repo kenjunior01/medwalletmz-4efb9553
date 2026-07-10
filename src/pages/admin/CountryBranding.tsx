@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { hexToHslComponents } from '@/lib/colors';
 
 export default function CountryBranding() {
-  const { country, reload } = useCountry() as any;
+  const { country, reload } = useCountry();
   const [config, setConfig] = useState<any>({
     primary_color: '#047857',
     secondary_color: '#fbbf24',
@@ -23,15 +24,26 @@ export default function CountryBranding() {
 
   const save = async () => {
     try {
+      if (!country?.id) return;
+
       const { error } = await supabase
-        .from('countries')
-        .update({ branding_config: config })
+        .from('countries' as any)
+        .update({ branding_config: config } as any)
         .eq('id', country.id);
 
       if (error) throw error;
+
       toast.success("Identidade visual actualizada com sucesso!");
-      // Forçar atualização do CSS no root
-      document.documentElement.style.setProperty('--primary', config.primary_color);
+
+      // Update local styles correctly using HSL conversion
+      if (config.primary_color) {
+        document.documentElement.style.setProperty('--primary', hexToHslComponents(config.primary_color));
+      }
+      if (config.secondary_color) {
+        document.documentElement.style.setProperty('--secondary', hexToHslComponents(config.secondary_color));
+      }
+
+      await reload();
     } catch (e: any) {
       toast.error("Erro ao guardar: " + e.message);
     }

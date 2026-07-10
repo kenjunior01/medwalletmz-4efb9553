@@ -20,9 +20,13 @@ export default function FacilityDetail() {
     const { data: facility, isLoading: loading } = useQuery({
         queryKey: ['facility', id],
         queryFn: async () => {
-            const { data, error } = await supabase.from('clinics').select('*').eq('id', id).maybeSingle();
+            const { data, error } = await supabase
+                .from('clinics')
+                .select('*')
+                .eq('id', id)
+                .maybeSingle();
             if (error) throw error;
-            return data;
+            return data as any;
         },
         enabled: !!id
     });

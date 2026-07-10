@@ -15,34 +15,41 @@ export default function LegalDocs() {
 
   useEffect(() => {
     async function fetchDoc() {
+      if (!country?.id) return;
       setLoading(true);
-      // Try to find the doc for specific country and language
-      let { data } = await supabase
-        .from('legal_documents')
-        .select('content')
-        .eq('country_id', country?.id)
-        .eq('type', type || 'terms_of_service')
-        .eq('language_code', locale)
-        .eq('is_active', true)
-        .order('version', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      // Fallback to English if not found in user language
-      if (!data) {
-        const { data: fallback } = await supabase
-          .from('legal_documents')
+      try {
+        // Try to find the doc for specific country and language
+        let { data } = await supabase
+          .from('legal_documents' as any)
           .select('content')
-          .eq('country_id', country?.id)
+          .eq('country_id', country.id)
           .eq('type', type || 'terms_of_service')
-          .eq('language_code', 'en')
+          .eq('language_code', locale)
+          .eq('is_active', true)
+          .order('version', { ascending: false })
           .limit(1)
-          .maybeSingle();
-        data = fallback;
-      }
+          .maybeSingle() as any;
 
-      setContent(data?.content || 'Document not found for this region.');
-      setLoading(false);
+        // Fallback to English if not found in user language
+        if (!data) {
+          const { data: fallback } = await supabase
+            .from('legal_documents' as any)
+            .select('content')
+            .eq('country_id', country.id)
+            .eq('type', type || 'terms_of_service')
+            .eq('language_code', 'en')
+            .limit(1)
+            .maybeSingle() as any;
+          data = fallback;
+        }
+
+        setContent(data?.content || 'Document not found for this region.');
+      } catch (e) {
+        console.error("Error fetching legal doc:", e);
+        setContent('Error loading document.');
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchDoc();

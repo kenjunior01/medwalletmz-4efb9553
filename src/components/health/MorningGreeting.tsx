@@ -66,12 +66,12 @@ export function MorningGreeting() {
               </p>
 
               <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-primary bg-primary/5 p-2 rounded-lg">
-                  <Coffee className="h-3 w-3" />
+                <div className="flex items-center gap-2 text-xs font-bold text-primary bg-primary/10 p-2.5 rounded-xl border border-primary/10">
+                  <Coffee className="h-3.5 w-3.5" />
                   Dica: Bebe água morna com limão para despertar o metabolismo.
                 </div>
-                <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 bg-emerald-50/50 p-2 rounded-lg">
-                  <Heart className="h-3 w-3" />
+                <div className="flex items-center gap-2 text-xs font-bold text-emerald bg-emerald/10 p-2.5 rounded-xl border border-emerald/10">
+                  <Heart className="h-3.5 w-3.5" />
                   Lembrete: Já verificaste a tua tensão arterial esta semana?
                 </div>
               </div>

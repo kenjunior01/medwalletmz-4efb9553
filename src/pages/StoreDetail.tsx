@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
 import { useLocation } from '@/contexts/LocationContext';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,6 +19,7 @@ export default function StoreDetail() {
   const navigate = useNavigate();
   const { addItem, items, updateQuantity } = useCart();
   const { calculateDistance } = useLocation();
+  const { country } = useCountry();
   const { isStoreFavorite, isProductFavorite, toggleStoreFavorite, toggleProductFavorite } = useFavorites();
 
   const { data: store, isLoading: storeLoading } = useQuery({
@@ -152,7 +154,7 @@ export default function StoreDetail() {
             )}
             
             {(store as any).delivery_enabled ? (
-              <Badge variant="secondary">Taxa: {store.delivery_fee} MZN</Badge>
+              <Badge variant="secondary">Taxa: {store.delivery_fee} {country?.currency_code || 'MZN'}</Badge>
             ) : (
               <Badge variant="outline">Levantamento na loja</Badge>
             )}
@@ -215,7 +217,7 @@ export default function StoreDetail() {
                             <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
                               {product.description}
                             </p>
-                            <p className="text-primary font-bold mt-2">{product.price} MZN</p>
+                            <p className="text-primary font-bold mt-2">{product.price} {country?.currency_code || 'MZN'}</p>
                           </div>
                           
                           <div className="flex flex-col justify-end">

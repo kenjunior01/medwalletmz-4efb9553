@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2, Gift, PlusCircle, Award, History, ShieldCheck } from "lucide-react";
+import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2, Gift, PlusCircle, Award, ShieldCheck, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,22 +16,10 @@ import { LanguageSelector } from "@/components/layout/LanguageSelector";
 
 type Profile = Tables<"profiles">;
 
-const menuItems = [
-  { icon: Wallet, label: "Minha Carteira", href: "/wallet" },
-  { icon: MapPin, label: "Meus Endereços", href: "/addresses" },
-  { icon: PlusCircle, label: "Sugerir farmácia ou clínica", href: "/suggest-place", highlight: true, reward: true },
-  { icon: Gift, label: "Convidar Amigos", href: "/referrals" },
-  { icon: Crown, label: "Minhas Subscrições", href: "/subscriptions" },
-  { icon: Wallet, label: "Dados de Pagamento", href: "/payment-settings" },
-  { icon: Bell, label: "Notificações", href: "/notifications" },
-  { icon: Settings, label: "Configurações", href: "/settings" },
-  { icon: HelpCircle, label: "Ajuda & Suporte", href: "/help" },
-  { icon: ShieldCheck, label: "Termos Legais", href: "/legal" },
-];
-
 export default function Profile() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { country, t } = useCountry();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
@@ -39,6 +27,17 @@ export default function Profile() {
   const [editPhone, setEditPhone] = useState("");
   const [saving, setSaving] = useState(false);
   const [stats, setStats] = useState({ orders: 0, prescriptions: 0, coupons: 0 });
+
+  const menuItems = [
+    { icon: Wallet, label: t('profile.menu.wallet'), href: "/wallet" },
+    { icon: MapPin, label: t('profile.menu.addresses'), href: "/addresses" },
+    { icon: PlusCircle, label: t('profile.menu.suggest'), href: "/suggest-place", highlight: true, reward: true },
+    { icon: Gift, label: t('profile.menu.referrals'), href: "/referrals" },
+    { icon: Crown, label: t('profile.menu.subscriptions'), href: "/subscriptions" },
+    { icon: Settings, label: t('profile.menu.settings'), href: "/settings" },
+    { icon: HelpCircle, label: t('profile.menu.help'), href: "/help" },
+    { icon: ShieldCheck, label: t('profile.menu.legal'), href: "/legal" },
+  ];
 
   useEffect(() => {
     if (user) {
