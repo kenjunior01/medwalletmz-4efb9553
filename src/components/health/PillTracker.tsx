@@ -5,8 +5,10 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useCountry } from '@/contexts/CountryContext';
 
 export function PillTracker() {
+  const { t } = useCountry();
   const [meds, setMeds] = useState([
     { id: 1, name: 'Paracetamol', dosage: '500mg', time: '08:00', taken: true },
     { id: 2, name: 'Amoxicilina', dosage: '1g', time: '14:00', taken: false },
@@ -21,10 +23,10 @@ export function PillTracker() {
     <section className="px-4 mt-6">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-xl font-black flex items-center gap-2">
-          <Pill className="h-5 w-5 text-emerald-500" /> Meus Medicamentos
+          <Pill className="h-5 w-5 text-emerald-500" /> {t('health.my_medications')}
         </h2>
         <Button variant="ghost" size="sm" className="text-primary font-bold">
-          <Plus className="h-4 w-4 mr-1" /> Adicionar
+          <Plus className="h-4 w-4 mr-1" /> {t('health.add')}
         </Button>
       </div>
 
@@ -51,7 +53,7 @@ export function PillTracker() {
               </div>
               <div className="flex items-center gap-1.5 mt-1 text-[11px] font-bold text-muted-foreground">
                 <Clock className="h-3 w-3" /> {med.time}
-                {med.taken && <span className="text-emerald-600 ml-1 flex items-center gap-0.5"><CheckCircle2 className="h-3 w-3" /> Tomado</span>}
+                {med.taken && <span className="text-emerald-600 ml-1 flex items-center gap-0.5"><CheckCircle2 className="h-3 w-3" /> {t('health.taken')}</span>}
               </div>
             </div>
 
@@ -70,7 +72,7 @@ export function PillTracker() {
         <div className="bg-amber-500/5 border border-amber-500/20 p-3 rounded-2xl flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
           <p className="text-[11px] font-medium text-amber-800 leading-tight">
-            Lembra-te: Não interrompas o tratamento de antibióticos sem consultar o teu médico.
+            {t('health.antibiotic_warning')}
           </p>
         </div>
       </div>

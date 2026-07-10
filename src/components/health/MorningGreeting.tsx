@@ -5,9 +5,11 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useCountry } from '@/contexts/CountryContext';
 
 export function MorningGreeting() {
   const { user } = useAuth();
+  const { t } = useCountry();
   const [show, setShow] = useState(false);
   const [profile, setProfile] = useState<any>(null);
 
@@ -37,7 +39,7 @@ export function MorningGreeting() {
 
   if (!show) return null;
 
-  const firstName = profile?.full_name?.split(' ')[0] || 'Amigo';
+  const firstName = profile?.full_name?.split(' ')[0] || t('common.friend');
 
   return (
     <AnimatePresence>
@@ -60,28 +62,28 @@ export function MorningGreeting() {
             </div>
 
             <div className="flex-1">
-              <h3 className="font-black text-lg leading-tight">Bom dia, {firstName}! 🇲🇿</h3>
+              <h3 className="font-black text-lg leading-tight">{t('greeting.good_morning', { name: firstName })} 🇲🇿</h3>
               <p className="text-sm text-muted-foreground mt-1 font-medium">
-                Hoje em Maputo está um dia ideal para focar na tua saúde.
+                {t('greeting.day_maputo')}
               </p>
 
               <div className="mt-4 space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-primary bg-primary/10 p-2.5 rounded-xl border border-primary/10">
                   <Coffee className="h-3.5 w-3.5" />
-                  Dica: Bebe água morna com limão para despertar o metabolismo.
+                  {t('greeting.tip_water')}
                 </div>
                 <div className="flex items-center gap-2 text-xs font-bold text-emerald bg-emerald/10 p-2.5 rounded-xl border border-emerald/10">
                   <Heart className="h-3.5 w-3.5" />
-                  Lembrete: Já verificaste a tua tensão arterial esta semana?
+                  {t('greeting.remind_pressure')}
                 </div>
               </div>
 
               <div className="flex gap-2 mt-4">
                 <Button size="sm" className="flex-1 rounded-xl h-10 font-bold" onClick={() => { dismiss(); /* Navigate to triage or similar */ }}>
-                  <Bell className="h-3.5 w-3.5 mr-1.5" /> Ativar Alertas
+                  <Bell className="h-3.5 w-3.5 mr-1.5" /> {t('greeting.activate_alerts')}
                 </Button>
                 <Button size="sm" variant="outline" className="flex-1 rounded-xl h-10 font-bold" onClick={dismiss}>
-                  Entendido
+                  {t('greeting.understood')}
                 </Button>
               </div>
             </div>

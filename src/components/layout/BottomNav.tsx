@@ -43,12 +43,13 @@ export function BottomNav() {
       <div className="flex items-end justify-around py-2 px-1 relative">
         {navItems.slice(0, 4).map(({ path, icon: Icon, label, highlight }) => {
           const isActive = location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
+          const translatedLabel = t(label);
           if (highlight) {
             return (
               <NavLink
                 key={path}
                 to={path}
-                aria-label={label}
+                aria-label={translatedLabel}
                 className="flex flex-col items-center -mt-8 mx-1 mb-1"
               >
                 <div className={cn(
@@ -58,7 +59,7 @@ export function BottomNav() {
                 )}>
                   <Icon className="h-7 w-7" />
                 </div>
-                <span className="text-[10px] font-black mt-1.5 text-primary uppercase tracking-tighter">{label}</span>
+                <span className="text-[10px] font-black mt-1.5 text-primary uppercase tracking-tighter">{translatedLabel}</span>
               </NavLink>
             );
           }
@@ -86,7 +87,7 @@ export function BottomNav() {
                   )}
                 />
               </div>
-              <span className="text-[9px] font-black uppercase tracking-tight">{label}</span>
+              <span className="text-[9px] font-black uppercase tracking-tight">{translatedLabel}</span>
             </NavLink>
           );
         })}
@@ -153,7 +154,7 @@ export function BottomNav() {
                             <div className="h-11 w-11 rounded-2xl bg-muted/50 border border-border flex items-center justify-center shadow-sm group-hover:text-primary group-hover:bg-primary/5 group-hover:border-primary/20 transition-all">
                               <item.icon className="h-5 w-5" />
                             </div>
-                            <span className="font-black text-sm tracking-tight">{item.label}</span>
+                            <span className="font-black text-sm tracking-tight">{t(item.label)}</span>
                           </div>
                           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                         </button>

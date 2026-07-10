@@ -104,10 +104,10 @@ export default function Profile() {
 
       setProfile((prev) => prev ? { ...prev, full_name: editName, phone: editPhone } : null);
       setEditOpen(false);
-      toast.success("Perfil atualizado com sucesso!");
+      toast.success(t('profile.update_success'));
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
-      toast.error("Erro ao atualizar perfil");
+      toast.error(t('profile.update_error'));
     } finally {
       setSaving(false);
     }
@@ -127,11 +127,11 @@ export default function Profile() {
             <User className="h-8 w-8 text-primary" />
           </div>
           <div className="flex-1">
-            <h1 className="text-xl font-bold">Visitante</h1>
-            <p className="text-sm text-muted-foreground">Faça login para continuar</p>
+            <h1 className="text-xl font-bold">{t('profile.visitor')}</h1>
+            <p className="text-sm text-muted-foreground">{t('profile.login_to_continue')}</p>
           </div>
           <Button variant="outline" size="sm" className="rounded-full" onClick={() => navigate("/auth")}>
-            Entrar
+            {t('auth.login')}
           </Button>
         </div>
 
@@ -139,17 +139,17 @@ export default function Profile() {
           <div className="bg-card rounded-xl border border-border p-3 text-center">
             <Package className="h-6 w-6 mx-auto mb-1 text-primary" />
             <p className="text-2xl font-bold text-primary">0</p>
-            <p className="text-xs text-muted-foreground">Pedidos</p>
+            <p className="text-xs text-muted-foreground">{t('profile.orders')}</p>
           </div>
           <div className="bg-card rounded-xl border border-border p-3 text-center">
             <FileText className="h-6 w-6 mx-auto mb-1 text-secondary" />
             <p className="text-2xl font-bold text-secondary">0</p>
-            <p className="text-xs text-muted-foreground">Receitas</p>
+            <p className="text-xs text-muted-foreground">{t('profile.prescriptions')}</p>
           </div>
           <div className="bg-card rounded-xl border border-border p-3 text-center">
             <Ticket className="h-6 w-6 mx-auto mb-1 text-accent" />
             <p className="text-2xl font-bold text-accent">0</p>
-            <p className="text-xs text-muted-foreground">Cupons</p>
+            <p className="text-xs text-muted-foreground">{t('profile.coupons')}</p>
           </div>
         </div>
 
@@ -211,7 +211,7 @@ export default function Profile() {
           </button>
         </div>
         <div className="flex-1">
-          <h1 className="text-xl font-bold">{profile?.full_name || "Utilizador"}</h1>
+          <h1 className="text-xl font-bold">{profile?.full_name || t('profile.user')}</h1>
           <p className="text-sm text-muted-foreground">{user.email}</p>
           {profile?.phone && (
             <p className="text-xs text-muted-foreground">{profile.phone}</p>
@@ -230,7 +230,7 @@ export default function Profile() {
         >
           <Package className="h-6 w-6 mx-auto mb-1 text-primary" />
           <p className="text-2xl font-bold text-primary">{stats.orders}</p>
-          <p className="text-xs text-muted-foreground">Pedidos</p>
+          <p className="text-xs text-muted-foreground">{t('profile.orders')}</p>
         </button>
         <button 
           onClick={() => navigate("/health/prescriptions")}
@@ -238,12 +238,12 @@ export default function Profile() {
         >
           <FileText className="h-6 w-6 mx-auto mb-1 text-secondary" />
           <p className="text-2xl font-bold text-secondary">{stats.prescriptions}</p>
-          <p className="text-xs text-muted-foreground">Receitas</p>
+          <p className="text-xs text-muted-foreground">{t('profile.prescriptions')}</p>
         </button>
         <div className="bg-card rounded-xl border border-border p-3 text-center">
           <Ticket className="h-6 w-6 mx-auto mb-1 text-accent" />
           <p className="text-2xl font-bold text-accent">{stats.coupons}</p>
-          <p className="text-xs text-muted-foreground">Cupons</p>
+          <p className="text-xs text-muted-foreground">{t('profile.coupons')}</p>
         </div>
       </div>
 
@@ -297,8 +297,8 @@ export default function Profile() {
         >
           <Stethoscope className="h-5 w-5 text-pharmacy" />
           <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">Seja Médico Parceiro</span>
-            <span className="text-xs text-muted-foreground">Atenda pacientes online</span>
+            <span className="font-medium text-sm block">{t('profile.become_doctor')}</span>
+            <span className="text-xs text-muted-foreground">{t('profile.treat_online')}</span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
@@ -308,8 +308,8 @@ export default function Profile() {
         >
           <Building2 className="h-5 w-5 text-gold" />
           <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">Registar Clínica</span>
-            <span className="text-xs text-muted-foreground">Gerir equipa de médicos</span>
+            <span className="font-medium text-sm block">{t('profile.register_clinic')}</span>
+            <span className="text-xs text-muted-foreground">{t('profile.manage_team')}</span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
@@ -319,8 +319,8 @@ export default function Profile() {
         >
           <Store className="h-5 w-5 text-green-500" />
           <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">Registar Farmácia</span>
-            <span className="text-xs text-muted-foreground">Venda medicamentos online</span>
+            <span className="font-medium text-sm block">{t('profile.register_pharmacy')}</span>
+            <span className="text-xs text-muted-foreground">{t('profile.sell_online')}</span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
@@ -330,8 +330,8 @@ export default function Profile() {
         >
           <Truck className="h-5 w-5 text-orange-500" />
           <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">Seja um Entregador</span>
-            <span className="text-xs text-muted-foreground">Entregue medicamentos com prioridade</span>
+            <span className="font-medium text-sm block">{t('profile.become_driver')}</span>
+            <span className="text-xs text-muted-foreground">{t('profile.deliver_priority')}</span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
@@ -344,7 +344,7 @@ export default function Profile() {
         onClick={handleLogout}
       >
         <LogOut className="h-5 w-5" />
-        Terminar Sessão
+        {t('profile.logout')}
       </Button>
 
       {/* App Version */}
@@ -356,11 +356,11 @@ export default function Profile() {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Editar Perfil</DialogTitle>
+            <DialogTitle>{t('profile.edit_profile')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Nome Completo</label>
+              <label className="text-sm font-medium mb-1.5 block">{t('profile.full_name')}</label>
               <Input
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
@@ -368,7 +368,7 @@ export default function Profile() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Telefone</label>
+              <label className="text-sm font-medium mb-1.5 block">{t('profile.phone')}</label>
               <Input
                 value={editPhone}
                 onChange={(e) => setEditPhone(e.target.value)}
@@ -378,10 +378,10 @@ export default function Profile() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditOpen(false)}>
-              Cancelar
+              {t('common.cancel')}
             </Button>
             <Button onClick={handleSaveProfile} disabled={saving}>
-              {saving ? "Salvando..." : "Salvar"}
+              {saving ? t('profile.saving') : t('common.save')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { lovable } from '@/integrations/lovable/index';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useCountry } from '@/contexts/CountryContext';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
@@ -102,6 +103,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signIn, signUp, loading: authLoading } = useAuth();
+  const { t, country } = useCountry();
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<'login' | 'register'>('login');
 
@@ -114,21 +116,24 @@ export default function Auth() {
 
   const handleOAuth = async (provider: 'google' | 'apple') => {
     setLoading(true);
+    console.log(`Iniciando OAuth com ${provider}...`);
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
         redirect_uri: window.location.origin,
       });
+      console.log(`Resultado OAuth ${provider}:`, result);
+
       if (result.error) {
-        toast.error('Erro ao entrar com ' + provider);
+        toast.error(t('auth.error_google'));
         setLoading(false);
         return;
       }
       if (result.redirected) return;
-      toast.success('Bem-vindo!');
+      toast.success(t('common.welcome'));
       navigate('/');
     } catch (e) {
-      console.error(e);
-      toast.error('Erro de autenticação');
+      console.error("Erro fatal no OAuth:", e);
+      toast.error(t('auth.error_auth'));
       setLoading(false);
     }
   };
@@ -165,13 +170,13 @@ export default function Auth() {
     try {
       const { error } = await signIn(email, password, referralCode);
       if (error) {
-        toast.error(error.message.includes('Invalid login credentials') ? 'Email ou senha incorretos' : 'Erro ao fazer login');
+        toast.error(error.message.includes('Invalid login credentials') ? t('auth.invalid_credentials') : t('common.error'));
       } else {
-        toast.success('Bem-vindo de volta!');
+        toast.success(t('auth.welcome_back'));
         navigate('/');
       }
     } catch (err) {
-      toast.error("Ocorreu um erro inesperado");
+      toast.error(t('common.error'));
     } finally {
       setLoading(false);
     }
@@ -184,13 +189,13 @@ export default function Auth() {
     try {
       const { error } = await signUp(email, password, fullName, referralCode);
       if (error) {
-        toast.error(error.message.includes('already registered') ? 'Este email já está registrado' : 'Erro ao criar conta');
+        toast.error(error.message.includes('already registered') ? t('auth.email_registered') : t('common.error'));
       } else {
-        toast.success('Conta criada com sucesso!');
+        toast.success(t('auth.account_created'));
         navigate('/');
       }
     } catch (err) {
-      toast.error("Ocorreu um erro inesperado");
+      toast.error(t('common.error'));
     } finally {
       setLoading(false);
     }
@@ -209,7 +214,7 @@ export default function Auth() {
           </div>
           <Sparkles className="absolute -top-2 -right-2 text-secondary h-6 w-6 animate-pulse" />
         </motion.div>
-        <p className="mt-4 font-black text-primary animate-pulse tracking-widest uppercase text-xs">A carregar MedWallet...</p>
+        <p className="mt-4 font-black text-primary animate-pulse tracking-widest uppercase text-xs">{t('common.loading')}</p>
       </div>
     );
   }
@@ -234,7 +239,7 @@ export default function Auth() {
         </Button>
         <div className="flex items-center gap-2 bg-white/50 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm">
           <Globe className="h-4 w-4 text-secondary" />
-          <span className="text-[10px] font-black uppercase tracking-wider">Moçambique</span>
+          <span className="text-[10px] font-black uppercase tracking-wider">{country?.name || 'MedWallet'}</span>
         </div>
       </motion.div>
 
@@ -285,13 +290,13 @@ export default function Auth() {
                     value="login"
                     className="rounded-xl font-black transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg py-3"
                   >
-                    Entrar
+                    {t('auth.login')}
                   </TabsTrigger>
                   <TabsTrigger
                     value="register"
                     className="rounded-xl font-black transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg py-3"
                   >
-                    Registrar
+                    {t('auth.register')}
                   </TabsTrigger>
                 </TabsList>
 
@@ -319,13 +324,13 @@ export default function Auth() {
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                           </svg>
                         </div>
-                        Entrar com Google
+                        {t('auth.sign_in_google')}
                       </Button>
 
                       <div className="relative py-4">
                         <div className="absolute inset-0 flex items-center"><span className="w-full border-t-2 border-slate-100" /></div>
                         <div className="relative flex justify-center text-[10px] uppercase">
-                          <span className="bg-white/40 px-6 text-muted-foreground font-black tracking-[0.3em]">Ou com o teu Email</span>
+                          <span className="bg-white/40 px-6 text-muted-foreground font-black tracking-[0.3em]">{t('auth.or_with_email')}</span>
                         </div>
                       </div>
                     </div>
@@ -333,7 +338,7 @@ export default function Auth() {
                     {tab === 'login' ? (
                       <form onSubmit={handleLogin} className="space-y-5">
                         <div className="space-y-2">
-                          <Label htmlFor="email" className="font-black text-[10px] uppercase tracking-widest text-primary/60 ml-2">Endereço de Email</Label>
+                          <Label htmlFor="email" className="font-black text-[10px] uppercase tracking-widest text-primary/60 ml-2">{t('auth.email_address')}</Label>
                           <div className="relative group">
                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             <Input
@@ -350,8 +355,8 @@ export default function Auth() {
 
                         <div className="space-y-2">
                           <div className="flex justify-between items-center px-2">
-                            <Label htmlFor="password" className="font-black text-[10px] uppercase tracking-widest text-primary/60">Senha de Acesso</Label>
-                            <button type="button" className="text-[10px] font-black text-secondary hover:underline uppercase tracking-tighter">Esqueceste?</button>
+                            <Label htmlFor="password" className="font-black text-[10px] uppercase tracking-widest text-primary/60">{t('auth.password')}</Label>
+                            <button type="button" className="text-[10px] font-black text-secondary hover:underline uppercase tracking-tighter">{t('auth.forgot_password')}</button>
                           </div>
                           <div className="relative group">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -373,13 +378,13 @@ export default function Auth() {
                           disabled={loading}
                         >
                           <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">ACESSAR MINHA CARTEIRA <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
+                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">{t('auth.access_wallet')} <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
                         </Button>
                       </form>
                     ) : (
                       <form onSubmit={handleRegister} className="space-y-5">
                         <div className="space-y-2">
-                          <Label htmlFor="fullName" className="font-black text-[10px] uppercase tracking-widest text-primary/60 ml-2">Nome Completo</Label>
+                          <Label htmlFor="fullName" className="font-black text-[10px] uppercase tracking-widest text-primary/60 ml-2">{t('auth.full_name')}</Label>
                           <div className="relative group">
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             <Input
@@ -395,7 +400,7 @@ export default function Auth() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="registerEmail" className="font-black text-[10px] uppercase tracking-widest text-primary/60 ml-2">Teu Melhor Email</Label>
+                          <Label htmlFor="registerEmail" className="font-black text-[10px] uppercase tracking-widest text-primary/60 ml-2">{t('auth.best_email')}</Label>
                           <div className="relative group">
                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             <Input
@@ -411,7 +416,7 @@ export default function Auth() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="registerPassword" className="font-black text-[10px] uppercase tracking-widest text-primary/60 ml-2">Cria uma Senha Forte</Label>
+                          <Label htmlFor="registerPassword" className="font-black text-[10px] uppercase tracking-widest text-primary/60 ml-2">{t('auth.strong_password')}</Label>
                           <div className="relative group">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             <Input
@@ -432,7 +437,7 @@ export default function Auth() {
                           disabled={loading}
                         >
                           <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">CRIAR CONTA GRÁTIS <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
+                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">{t('auth.create_account')} <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
                         </Button>
                       </form>
                     )}
@@ -449,7 +454,7 @@ export default function Auth() {
               className="mt-6 p-5 rounded-[2rem] bg-secondary/10 border-2 border-secondary/20 text-center backdrop-blur-md"
             >
               <p className="text-xs font-black text-secondary flex items-center justify-center gap-3 uppercase tracking-wider">
-                <Zap className="h-4 w-4 fill-current" /> Convite Ativado: <span className="bg-secondary text-white px-3 py-1 rounded-full">{referralCode}</span>
+                <Zap className="h-4 w-4 fill-current" /> {t('auth.invite_activated')}: <span className="bg-secondary text-white px-3 py-1 rounded-full">{referralCode}</span>
               </p>
             </motion.div>
           )}

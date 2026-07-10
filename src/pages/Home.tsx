@@ -229,7 +229,7 @@ export default function Home() {
           >
             <div>
               <p className={cn("text-[10px] uppercase font-bold tracking-widest", upcoming ? "text-secondary" : "text-muted-foreground")}>
-                {upcoming ? 'Próxima Consulta' : 'Nova Consulta'}
+                {upcoming ? t('health.upcoming_consultation') : t('health.new_consultation')}
               </p>
               {upcoming ? (
                 <div className="mt-2">
@@ -242,8 +242,8 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="mt-2">
-                  <p className="text-lg font-black leading-tight">Marcar agora</p>
-                  <p className="text-xs font-medium text-muted-foreground">Em menos de 2 min</p>
+                  <p className="text-lg font-black leading-tight">{t('health.book_now')}</p>
+                  <p className="text-xs font-medium text-muted-foreground">{t('health.under_2_min')}</p>
                 </div>
               )}
             </div>
@@ -262,11 +262,11 @@ export default function Home() {
             <div className="relative z-10 flex items-center justify-between">
               <div className="max-w-[70%]">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge className="bg-secondary text-white border-0 font-bold uppercase tracking-widest text-[9px]">Urgente</Badge>
-                  <h2 className="text-2xl font-black">Meddy Agora</h2>
+                  <Badge className="bg-secondary text-white border-0 font-bold uppercase tracking-widest text-[9px]">{t('health.urgent')}</Badge>
+                  <h2 className="text-2xl font-black">{t('health.meddy_now')}</h2>
                 </div>
                 <p className="text-white/80 text-xs font-bold leading-relaxed">
-                  O médico mais próximo disponível em vídeo para triagem imediata.
+                  {t('health.meddy_now_desc')}
                 </p>
               </div>
               <div className="h-14 w-14 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:bg-white/20 transition-colors">
@@ -297,8 +297,8 @@ export default function Home() {
               <BookOpen className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <p className="font-black text-sm">Educação Saúde</p>
-              <p className="text-[10px] text-muted-foreground font-medium">Guias para Moçambique</p>
+              <p className="font-black text-sm">{t('health.health_education')}</p>
+              <p className="text-[10px] text-muted-foreground font-medium">{t('health.mozambique_guides')}</p>
             </div>
           </button>
 
@@ -310,8 +310,8 @@ export default function Home() {
               <MessageCircle className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="font-black text-sm">Ajuda & M-Pesa</p>
-              <p className="text-[10px] text-muted-foreground font-medium">Suporte 24h MedWallet</p>
+              <p className="font-black text-sm">{t('health.help_mpesa')}</p>
+              <p className="text-[10px] text-muted-foreground font-medium">{t('health.support_24h')}</p>
             </div>
           </button>
         </section>
@@ -325,17 +325,17 @@ export default function Home() {
           <div className="bento-card p-6 bg-gradient-to-br from-slate-900 to-primary text-white relative overflow-hidden">
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
-                <Badge className="bg-gold text-gold-foreground border-0 font-black">PROFISSIONAIS</Badge>
+                <Badge className="bg-gold text-gold-foreground border-0 font-black">{t('home.for_professionals')}</Badge>
               </div>
-              <h3 className="text-2xl font-black leading-tight">Cresce com a MedWallet</h3>
-              <p className="text-xs opacity-70 mt-2 font-medium">Junta a tua clínica, farmácia ou laboratório à maior rede digital de MZ.</p>
+              <h3 className="text-2xl font-black leading-tight">{t('health.grow_with_medwallet')}</h3>
+              <p className="text-xs opacity-70 mt-2 font-medium">{t('health.provider_desc')}</p>
 
               <div className="grid grid-cols-2 gap-2 mt-5">
                 {[
-                  { label: "Médico", icon: Stethoscope, to: "/doctor/register" },
-                  { label: "Farmácia", icon: Pill, to: "/store/register" },
-                  { label: "Clínica", icon: Building2, to: "/clinic/register" },
-                  { label: "Laboratório", icon: FlaskConical, to: "/lab/register" },
+                  { label: t('common.doctor'), icon: Stethoscope, to: "/doctor/register" },
+                  { label: t('common.pharmacy'), icon: Pill, to: "/store/register" },
+                  { label: t('home.clinics'), icon: Building2, to: "/clinic/register" },
+                  { label: t('home.laboratories'), icon: FlaskConical, to: "/lab/register" },
                 ].map(b => (
                   <Button key={b.label} variant="secondary" size="sm" className="bg-white/10 hover:bg-white/20 border-white/10 text-white font-bold h-10 rounded-xl" onClick={() => navigate(b.to)}>
                     <b.icon className="h-3.5 w-3.5 mr-1.5" /> {b.label}
@@ -359,10 +359,10 @@ export default function Home() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="font-black text-base">Sugere um Local</p>
+                  <p className="font-black text-base">{t('health.suggest_place')}</p>
                   <Badge className="bg-gold text-gold-foreground border-0 text-[10px] font-black">+25 MZN</Badge>
                 </div>
-                <p className="text-xs text-muted-foreground font-medium mt-0.5">Ajuda a mapear a saúde em Moçambique</p>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">{t('health.map_health_mz')}</p>
               </div>
               <ArrowRight className="h-5 w-5 text-gold group-hover:translate-x-1 transition" />
             </div>

@@ -3,12 +3,14 @@ import { cn } from "@/lib/utils";
 import { sidebarByRole } from "@/config/navigation";
 import { usePrimaryRole } from "@/hooks/usePrimaryRole";
 import { useDeviceType } from "@/hooks/useDeviceType";
+import { useCountry } from "@/contexts/CountryContext";
 
 /** Sidebar for tablet (icons only) and desktop (icons + labels grouped). */
 export function AppSidebar() {
   const { pathname } = useLocation();
   const { role } = usePrimaryRole();
   const device = useDeviceType();
+  const { t } = useCountry();
   const items = sidebarByRole[role] ?? sidebarByRole.customer;
   const compact = device === "tablet";
 
@@ -46,11 +48,12 @@ export function AppSidebar() {
                 const active =
                   pathname === path ||
                   (path !== "/" && pathname.startsWith(path));
+                const translatedLabel = t(label);
                 return (
                   <li key={path}>
                     <NavLink
                       to={path}
-                      title={compact ? label : undefined}
+                      title={compact ? translatedLabel : undefined}
                       className={cn(
                         "flex items-center gap-3 mx-2 px-2 py-2 rounded-lg text-sm transition-colors",
                         active
@@ -60,7 +63,7 @@ export function AppSidebar() {
                       )}
                     >
                       <Icon className="h-4 w-4 shrink-0" />
-                      {!compact && <span className="truncate">{label}</span>}
+                      {!compact && <span className="truncate">{translatedLabel}</span>}
                     </NavLink>
                   </li>
                 );
