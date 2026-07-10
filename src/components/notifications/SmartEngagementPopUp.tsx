@@ -12,8 +12,7 @@ import { Button } from "@/components/ui/button";
 
 /**
  * SmartEngagementPopUp — Sistema de notificações "In-App" inteligentes.
- * Aparece estrategicamente para converter o utilizador em ações chave.
- * Agora integrado com Google Air Quality & Weather API para notificações adaptativas.
+ * Corrigido: Proteção contra ações indefinidas em alertas ambientais.
  */
 
 type PopUpType = "referral" | "education" | "blood" | "profile" | "triage" | "subscription" | "environmental";
@@ -23,14 +22,16 @@ export function SmartEngagementPopUp() {
   const { user } = useAuth();
   const [show, setShow] = useState(false);
   const [type, setType] = useState<PopUpType>("referral");
-  const [envContext, setEnvContext] = useState<{ title: string; desc: string; icon: any; color: string } | null>(null);
+  const [envContext, setEnvContext] = useState<{ title: string; desc: string; icon: any; color: string; action?: () => void; btnText?: string } | null>(null);
 
   useEffect(() => {
+    if (!user) return;
+
     const lastShow = localStorage.getItem("smart-popup-last-show");
     const now = Date.now();
     const h = new Date().getHours();
 
-    const cooldown = 1000 * 60 * 60 * 6; // Reduzido para 6h para alertas climáticos
+    const cooldown = 1000 * 60 * 60 * 6; // 6 horas
 
     if (lastShow && now - Number(lastShow) < cooldown) return;
 
@@ -47,7 +48,6 @@ export function SmartEngagementPopUp() {
     let selectedType: PopUpType = "referral";
     const rand = Math.random();
 
-    // 1. Verificação de Alertas Ambientais Adaptativos (Prioridade Máxima)
     try {
       const { data: profile } = await supabase
         .from('patient_profiles')
@@ -57,28 +57,31 @@ export function SmartEngagementPopUp() {
 
       const conditions = (profile?.chronic_conditions || []).map((c: string) => c.toLowerCase());
 
-      // Simulação de dados de API (Calor em Maputo / Poluição)
+      // Simulação de dados de API
       const isExtremeHeat = true;
       const isBadAirQuality = false;
 
       if (isExtremeHeat && conditions.some(c => c.includes('hipertensão') || c.includes('coração') || c.includes('diabetes'))) {
         setEnvContext({
           title: "Alerta de Calor: Cuida do teu Coração",
-          desc: "Está muito calor em Maputo. Como tens uma condição crónica, evita sair entre as 11h e 16h e bebe muita água.",
+          desc: "Está muito calor em Maputo. Como tens uma condição crónica, evita sair entre as 11h e 16h.",
           icon: ThermometerSun,
-          color: "bg-orange-500 text-white"
+          color: "bg-orange-500 text-white",
+          btnText: "Dicas de Saúde",
+          action: () => navigate("/health/education/hipertensao")
         });
         selectedType = "environmental";
       } else if (isBadAirQuality && conditions.some(c => c.includes('asma') || c.includes('respiratória'))) {
         setEnvContext({
           title: "Qualidade do Ar Crítica",
-          desc: "Níveis de poluição altos hoje. Recomendamos o uso de máscara ou evitar zonas de tráfego intenso.",
+          desc: "Níveis de poluição altos. Recomendamos o uso de máscara em zonas de tráfego.",
           icon: Wind,
-          color: "bg-slate-600 text-white"
+          color: "bg-slate-600 text-white",
+          btnText: "Ver Guia",
+          action: () => navigate("/health/education")
         });
         selectedType = "environmental";
       } else {
-        // Fallback para lógica temporal normal
         if (hour >= 6 && hour < 12) {
           selectedType = rand < 0.7 ? "triage" : "profile";
         } else if (hour >= 12 && hour < 19) {
@@ -95,7 +98,8 @@ export function SmartEngagementPopUp() {
     setShow(true);
     localStorage.setItem("smart-popup-last-show", String(Date.now()));
 
-    (supabase as any).from('user_engagement_logs').insert({
+    // Log silêncioso
+    supabase.from('user_engagement_logs' as any).insert({
       user_id: user.id,
       type: selectedType,
       action: 'shown'
@@ -122,7 +126,7 @@ export function SmartEngagementPopUp() {
     },
     blood: {
       title: "Herói em Maputo",
-      desc: "Precisamos de doadores do teu tipo de sangue hoje. Vê onde podes ajudar.",
+      desc: "Precisamos de doadores hoje. Vê onde podes ajudar.",
       icon: Heart,
       color: "bg-red-500 text-white",
       action: () => navigate("/blood"),
@@ -138,7 +142,7 @@ export function SmartEngagementPopUp() {
     },
     triage: {
       title: "Como te sentes hoje?",
-      desc: "Faz uma avaliação rápida de sintomas com o Meddy IA em menos de 1 minuto.",
+      desc: "Faz uma avaliação rápida de sintomas com o Meddy IA.",
       icon: Stethoscope,
       color: "bg-secondary text-secondary-foreground",
       action: () => navigate("/health/triage"),
@@ -146,7 +150,7 @@ export function SmartEngagementPopUp() {
     },
     subscription: {
       title: "Acesso Ilimitado?",
-      desc: "Com o Health Pass tens consultas grátis e descontos em todas as farmácias.",
+      desc: "Com o Health Pass tens consultas grátis e descontos em farmácias.",
       icon: Crown,
       color: "bg-slate-900 text-white",
       action: () => navigate("/health/plans"),
@@ -156,7 +160,7 @@ export function SmartEngagementPopUp() {
 
   const logAction = (action: string) => {
     if (!user) return;
-    (supabase as any).from('user_engagement_logs').insert({
+    supabase.from('user_engagement_logs' as any).insert({
       user_id: user.id,
       type: type,
       action: action
@@ -164,7 +168,7 @@ export function SmartEngagementPopUp() {
   };
 
   const current = config[type];
-  if (!current) return null;
+  if (!current || !current.title) return null;
   const Icon = current.icon;
 
   return (
@@ -177,7 +181,7 @@ export function SmartEngagementPopUp() {
           className="fixed bottom-20 left-4 right-4 z-50 pointer-events-none"
         >
           <div className="bg-card border border-border shadow-2xl rounded-2xl p-4 pointer-events-auto flex gap-4 items-start relative overflow-hidden max-w-sm mx-auto">
-            <div className={`absolute top-0 left-0 w-1 h-full ${current.color.split(' ')[0]}`} />
+            <div className={`absolute top-0 left-0 w-1 h-full ${current.color?.split(' ')[0] || 'bg-primary'}`} />
 
             <div className={`h-12 w-12 rounded-xl shrink-0 flex items-center justify-center ${current.color}`}>
               <Icon className="h-6 w-6" />
@@ -189,13 +193,15 @@ export function SmartEngagementPopUp() {
                 {current.desc}
               </p>
               <div className="mt-3 flex gap-2">
-                <Button
-                  size="sm"
-                  className={`h-8 text-[10px] px-3 font-bold rounded-full ${current.color} border-none`}
-                  onClick={() => { setShow(false); logAction('clicked'); current.action(); }}
-                >
-                  {current.btnText} <ArrowRight className="h-3 w-3 ml-1" />
-                </Button>
+                {current.action && (
+                  <Button
+                    size="sm"
+                    className={`h-8 text-[10px] px-3 font-bold rounded-full ${current.color} border-none`}
+                    onClick={() => { setShow(false); logAction('clicked'); current.action(); }}
+                  >
+                    {current.btnText || 'Ver agora'} <ArrowRight className="h-3 w-3 ml-1" />
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   variant="ghost"

@@ -1,8 +1,14 @@
+import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+
+// Garantir que React está disponível globalmente se alguma lib antiga precisar
+if (typeof window !== 'undefined') {
+  (window as any).React = React;
+}
 
 // Log para depuração na plataforma
 console.log("App inicializando...");

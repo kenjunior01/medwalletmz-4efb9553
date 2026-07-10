@@ -11,6 +11,15 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     hmr: { overlay: false },
   },
+  optimizeDeps: {
+    include: ["@number-flow/react", "react", "react-dom"],
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+    dedupe: ["react", "react-dom"],
+  },
   // Desativar esbuild para minificação e usar o padrão interno do Vite de forma conservadora
   build: {
     target: 'es2020',
@@ -18,16 +27,12 @@ export default defineConfig(({ mode }) => ({
     cssMinify: true,
     sourcemap: false,
     chunkSizeWarningLimit: 2000,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('lucide-react')) return 'ui-icons';
-            if (id.includes('@radix-ui')) return 'ui-core';
-            if (id.includes('react')) return 'vendor-react';
-            return 'vendor';
-          }
-        }
+        manualChunks: undefined
       }
     }
   },
@@ -44,9 +49,4 @@ export default defineConfig(({ mode }) => ({
       }
     }),
   ].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
 }));
