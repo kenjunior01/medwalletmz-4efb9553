@@ -30,7 +30,7 @@ export default function FacilityExplorer() {
 
         // Se o filtro for 'all' ou 'pharmacy', buscamos nas 'stores'
         if (filter === 'all' || filter === 'pharmacy') {
-          let sq = supabase.from('stores').select('*').eq('is_active', true);
+          let sq: any = (supabase as any).from('stores').select('*').eq('is_active', true);
           if (country?.id) sq = sq.eq('country_id', country.id);
           if (filter === 'pharmacy') sq = sq.eq('type', 'pharmacy');
           const { data: stores } = await sq;
@@ -39,7 +39,7 @@ export default function FacilityExplorer() {
 
         // Se o filtro for 'all' ou um dos tipos de clínicas
         if (filter !== 'pharmacy') {
-          let cq = supabase.from('clinics').select('*').eq('is_active', true);
+          let cq: any = (supabase as any).from('clinics').select('*').eq('is_active', true);
           if (country?.id) cq = cq.eq('country_id', country.id);
           if (filter !== 'all') cq = cq.eq('type', filter === 'lab' ? 'laboratory' : filter);
           const { data: clinics } = await cq;
