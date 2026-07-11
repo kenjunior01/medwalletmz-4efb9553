@@ -50,12 +50,12 @@ export default function CountryDashboard() {
     enabled: !!country?.id,
     queryFn: async () => {
       const countryId = country!.id;
-      const { data: stores } = await supabase.from('stores').select('id, name, city, type').eq('country_id', countryId).limit(50);
-      const { data: clinics } = await supabase.from('clinics').select('id, name, city, type').eq('country_id', countryId).limit(50);
+      const { data: stores } = await (supabase as any).from('stores').select('id, name, city, type').eq('country_id', countryId).limit(50);
+      const { data: clinics } = await (supabase as any).from('clinics').select('id, name, city, type').eq('country_id', countryId).limit(50);
 
       const all = [
-        ...(stores || []).map(s => ({ ...s, category: 'Pharmacy' })),
-        ...(clinics || []).map(c => ({ ...c, category: c.type === 'hospital' ? 'Hospital' : 'Clinic' }))
+        ...((stores || []) as any[]).map((s: any) => ({ ...s, category: 'Pharmacy' })),
+        ...((clinics || []) as any[]).map((c: any) => ({ ...c, category: c.type === 'hospital' ? 'Hospital' : 'Clinic' }))
       ];
 
       return all.filter(e =>
