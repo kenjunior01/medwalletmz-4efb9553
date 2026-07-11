@@ -17,15 +17,15 @@ export function useWallet() {
   const load = useCallback(async () => {
     if (!user) { setLoading(false); return; }
     // Using 'as any' because types might be outdated regarding renamed balance and added country_id
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('wallets')
-      .select('balance, total_deposited, total_spent, currency, country_id' as any)
+      .select('balance_mzn, total_deposited, total_spent, currency, country_id')
       .eq('user_id', user.id)
-      .maybeSingle() as any;
+      .maybeSingle();
 
     if (!data) {
       // Ensure wallet exists - now with country_id from profile
-      const { data: profile } = await supabase.from('profiles').select('country_id' as any).eq('user_id', user.id).single() as any;
+      const { data: profile } = await (supabase as any).from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
 
       const defaultCountry = profile?.country_id || 'MZ';
       const currencyMap: Record<string, string> = {
@@ -33,19 +33,19 @@ export function useWallet() {
       };
       const defaultCurrency = currencyMap[defaultCountry] || 'USD';
 
-      await supabase.from('wallets').insert({
+      await (supabase as any).from('wallets').insert({
         user_id: user.id,
         country_id: defaultCountry,
         currency: defaultCurrency,
-        balance: 0,
+        balance_mzn: 0,
         total_deposited: 0,
         total_spent: 0
-      } as any).select().maybeSingle();
+      });
 
       setWallet({ balance: 0, total_deposited: 0, total_spent: 0, currency: defaultCurrency });
     } else {
       setWallet({
-        balance: Number(data.balance || data.balance_mzn || 0),
+        balance: Number(data.balance_mzn || 0),
         total_deposited: Number(data.total_deposited || 0),
         total_spent: Number(data.total_spent || 0),
         currency: data.currency || 'MZN'
@@ -65,7 +65,7 @@ export function useWallet() {
         { event: 'UPDATE', schema: 'public', table: 'wallets', filter: `user_id=eq.${user.id}` },
         (p: any) => {
           setWallet({
-            balance: Number(p.new.balance || p.new.balance_mzn || 0),
+            balance: Number(p.new.balance_mzn || 0),
             total_deposited: Number(p.new.total_deposited || 0),
             total_spent: Number(p.new.total_spent || 0),
             currency: p.new.currency || 'MZN'
@@ -79,8 +79,8 @@ export function useWallet() {
     if (!user) throw new Error('Sem sessão');
 
     // Auto-select best method if none provided
-    const { data: profile } = await supabase.from('profiles').select('country_id' as any).eq('user_id', user.id).single() as any;
-    const { data: country } = await supabase.from('countries' as any).select('config').eq('id', profile?.country_id).single() as any;
+    const { data: profile } = await (supabase as any).from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
+    const { data: country } = await (supabase as any).from('countries').select('config').eq('id', profile?.country_id || 'MZ').maybeSingle();
 
     const preferredMethod = method || country?.config?.payments?.[0] || 'card';
 

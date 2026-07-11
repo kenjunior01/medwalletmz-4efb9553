@@ -108,7 +108,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   // Fetch country settings from DB
   useEffect(() => {
     const fetchConfig = async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('countries')
         .select('*')
         .eq('id', countryCode)
