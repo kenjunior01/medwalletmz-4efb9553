@@ -742,6 +742,92 @@ export type Database = {
         }
         Relationships: []
       }
+      countries: {
+        Row: {
+          branding_config: Json
+          config: Json
+          created_at: string
+          currency_code: string
+          currency_symbol: string
+          default_locale: string
+          flag_url: string | null
+          id: string
+          is_active: boolean
+          name: string
+          phone_code: string
+          supported_locales: string[]
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          branding_config?: Json
+          config?: Json
+          created_at?: string
+          currency_code: string
+          currency_symbol?: string
+          default_locale?: string
+          flag_url?: string | null
+          id: string
+          is_active?: boolean
+          name: string
+          phone_code?: string
+          supported_locales?: string[]
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          branding_config?: Json
+          config?: Json
+          created_at?: string
+          currency_code?: string
+          currency_symbol?: string
+          default_locale?: string
+          flag_url?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          phone_code?: string
+          supported_locales?: string[]
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      country_management: {
+        Row: {
+          country_id: string
+          created_at: string
+          id: string
+          permissions: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          country_id: string
+          created_at?: string
+          id?: string
+          permissions?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          country_id?: string
+          created_at?: string
+          id?: string
+          permissions?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "country_management_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coupon_batches: {
         Row: {
           created_at: string
@@ -2700,6 +2786,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          country_id: string | null
           created_at: string
           default_city: string | null
           emola_number: string | null
@@ -2723,6 +2810,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          country_id?: string | null
           created_at?: string
           default_city?: string | null
           emola_number?: string | null
@@ -2746,6 +2834,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          country_id?: string | null
           created_at?: string
           default_city?: string | null
           emola_number?: string | null
@@ -3465,6 +3554,7 @@ export type Database = {
       wallets: {
         Row: {
           balance_mzn: number
+          country_id: string | null
           created_at: string
           currency: string
           total_deposited: number
@@ -3474,6 +3564,7 @@ export type Database = {
         }
         Insert: {
           balance_mzn?: number
+          country_id?: string | null
           created_at?: string
           currency?: string
           total_deposited?: number
@@ -3483,6 +3574,7 @@ export type Database = {
         }
         Update: {
           balance_mzn?: number
+          country_id?: string | null
           created_at?: string
           currency?: string
           total_deposited?: number
@@ -3594,6 +3686,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: {
           balance_mzn: number
+          country_id: string | null
           created_at: string
           currency: string
           total_deposited: number
@@ -3612,6 +3705,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: {
           avatar_url: string | null
+          country_id: string | null
           created_at: string
           default_city: string | null
           emola_number: string | null
@@ -3655,6 +3749,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_country_manager: {
+        Args: { _country_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_professional: { Args: { _user_id: string }; Returns: boolean }
       lab_order_set_result: {
         Args: { _order_id: string; _result_url: string }
@@ -3680,6 +3778,7 @@ export type Database = {
         Args: never
         Returns: {
           avatar_url: string | null
+          country_id: string | null
           created_at: string
           default_city: string | null
           emola_number: string | null
@@ -3841,6 +3940,7 @@ export type Database = {
         | "doctor"
         | "clinic"
         | "insurance"
+        | "country_manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3976,6 +4076,7 @@ export const Constants = {
         "doctor",
         "clinic",
         "insurance",
+        "country_manager",
       ],
     },
   },
