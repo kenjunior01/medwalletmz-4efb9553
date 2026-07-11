@@ -2,7 +2,35 @@
 // To take ownership, delete this banner line; the plugin then leaves the file alone.
 // supabase function: mcp
 // Bundled from src/lib/mcp/index.ts by @lovable.dev/mcp-js.
+// src/lib/mcp/index.ts
+import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.20.0";
+
+// src/lib/mcp/tools/echo.ts
+import { defineTool } from "npm:@lovable.dev/mcp-js@0.20.0";
+import { z } from "npm:zod@^3.23.8";
+var echo_default = defineTool({
+  name: "echo",
+  title: "Echo",
+  description: "Echo the input text back. Useful to verify MCP connectivity to MedWallet.",
+  inputSchema: { text: z.string().min(1).describe("Text to echo back.") },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: ({ text }) => ({ content: [{ type: "text", text }] })
+});
+
+// src/lib/mcp/index.ts
+var projectRef = "pfqruzusjjxyidhqkiob";
+var mcp_default = defineMcp({
+  name: "medwallet-mcp",
+  title: "MedWallet MCP",
+  version: "0.1.0",
+  instructions: "Tools for MedWallet \u2014 a Mozambican health super-app (pharmacies, doctors, wallet). Use `echo` to verify connectivity. More tools will be added over time.",
+  auth: auth.oauth.issuer({
+    issuer: `https://${projectRef}.supabase.co/auth/v1`,
+    acceptedAudiences: "authenticated"
+  }),
+  tools: [echo_default]
+});
+
 // lovable-mcp-supabase-entry.ts
-import mcp from "npm:C:\\Users\\data entry 5\\Desktop\\medwalletmz\\src\\lib\\mcp\\index.ts";
 import { createSupabaseHandler } from "npm:@lovable.dev/mcp-js@0.20.0/stacks/supabase";
-Deno.serve(createSupabaseHandler(mcp, { functionName: "mcp" }));
+Deno.serve(createSupabaseHandler(mcp_default, { functionName: "mcp" }));

@@ -176,35 +176,6 @@ export type Database = {
         }
         Relationships: []
       }
-      article_views: {
-        Row: {
-          article_id: string
-          id: string
-          user_id: string | null
-          viewed_at: string
-        }
-        Insert: {
-          article_id: string
-          id?: string
-          user_id?: string | null
-          viewed_at?: string
-        }
-        Update: {
-          article_id?: string
-          id?: string
-          user_id?: string | null
-          viewed_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "article_views_article_id_fkey"
-            columns: ["article_id"]
-            isOneToOne: false
-            referencedRelation: "health_articles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       blood_donation_campaigns: {
         Row: {
           address: string | null
@@ -1271,69 +1242,6 @@ export type Database = {
         }
         Relationships: []
       }
-      health_articles: {
-        Row: {
-          author_credentials: string | null
-          author_name: string | null
-          body_md: string
-          category: string
-          cover_url: string | null
-          created_at: string
-          excerpt: string
-          id: string
-          is_featured: boolean
-          is_published: boolean
-          locale: string
-          published_at: string | null
-          read_minutes: number | null
-          slug: string
-          target_regions: string[] | null
-          title: string
-          updated_at: string
-          views_count: number | null
-        }
-        Insert: {
-          author_credentials?: string | null
-          author_name?: string | null
-          body_md: string
-          category: string
-          cover_url?: string | null
-          created_at?: string
-          excerpt: string
-          id?: string
-          is_featured?: boolean
-          is_published?: boolean
-          locale?: string
-          published_at?: string | null
-          read_minutes?: number | null
-          slug: string
-          target_regions?: string[] | null
-          title: string
-          updated_at?: string
-          views_count?: number | null
-        }
-        Update: {
-          author_credentials?: string | null
-          author_name?: string | null
-          body_md?: string
-          category?: string
-          cover_url?: string | null
-          created_at?: string
-          excerpt?: string
-          id?: string
-          is_featured?: boolean
-          is_published?: boolean
-          locale?: string
-          published_at?: string | null
-          read_minutes?: number | null
-          slug?: string
-          target_regions?: string[] | null
-          title?: string
-          updated_at?: string
-          views_count?: number | null
-        }
-        Relationships: []
-      }
       health_referral_rewards: {
         Row: {
           active: boolean
@@ -2201,42 +2109,6 @@ export type Database = {
           },
         ]
       }
-      partner_applications: {
-        Row: {
-          city: string | null
-          contact_name: string
-          created_at: string
-          email: string
-          id: string
-          kind: string
-          message: string | null
-          organization: string
-          status: string
-        }
-        Insert: {
-          city?: string | null
-          contact_name: string
-          created_at?: string
-          email: string
-          id?: string
-          kind: string
-          message?: string | null
-          organization: string
-          status?: string
-        }
-        Update: {
-          city?: string | null
-          contact_name?: string
-          created_at?: string
-          email?: string
-          id?: string
-          kind?: string
-          message?: string | null
-          organization?: string
-          status?: string
-        }
-        Relationships: []
-      }
       patient_profiles: {
         Row: {
           allergies: string[] | null
@@ -2896,53 +2768,6 @@ export type Database = {
           verified_at?: string | null
         }
         Relationships: []
-      }
-      provider_waitlist: {
-        Row: {
-          city: string
-          created_at: string
-          id: string
-          neighborhood: string | null
-          notified_at: string | null
-          notes: string | null
-          requested_kind: string
-          specialty_id: string | null
-          status: string
-          user_id: string
-        }
-        Insert: {
-          city: string
-          created_at?: string
-          id?: string
-          neighborhood?: string | null
-          notified_at?: string | null
-          notes?: string | null
-          requested_kind: string
-          specialty_id?: string | null
-          status?: string
-          user_id: string
-        }
-        Update: {
-          city?: string
-          created_at?: string
-          id?: string
-          neighborhood?: string | null
-          notified_at?: string | null
-          notes?: string | null
-          requested_kind?: string
-          specialty_id?: string | null
-          status?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "provider_waitlist_specialty_id_fkey"
-            columns: ["specialty_id"]
-            isOneToOne: false
-            referencedRelation: "medical_specialties"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       push_subscriptions: {
         Row: {
@@ -4016,9 +3841,6 @@ export type Database = {
         | "doctor"
         | "clinic"
         | "insurance"
-        | "country_manager"
-        | "hospital"
-        | "lab"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4154,9 +3976,6 @@ export const Constants = {
         "doctor",
         "clinic",
         "insurance",
-        "country_manager",
-        "hospital",
-        "lab",
       ],
     },
   },
