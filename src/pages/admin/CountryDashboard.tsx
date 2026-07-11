@@ -30,8 +30,8 @@ export default function CountryDashboard() {
     queryFn: async () => {
       const countryId = country!.id;
       const { count: usersCount } = await supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
-      const { count: storesCount } = await supabase.from('stores').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
-      const { count: clinicsCount } = await supabase.from('clinics').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
+      const { count: storesCount } = await (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
+      const { count: clinicsCount } = await (supabase as any).from('clinics').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
       const { count: pendingCount } = await (supabase as any).from('place_proposals').select('id', { count: 'exact', head: true }).eq('status', 'pending').eq('country_id', countryId);
       const { count: partnerApps } = await (supabase as any).from('partner_applications').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
 
