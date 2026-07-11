@@ -28,11 +28,12 @@ export function useUserRoles() {
       setLoading(false);
       return;
     }
-    supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .then(({ data, error }) => {
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id);
         if (cancelled) return;
         if (error) {
           console.error("Erro ao buscar papéis do utilizador:", error);
@@ -40,14 +41,14 @@ export function useUserRoles() {
         } else {
           setRoles((data || []).map((r: any) => r.role as AppRole));
         }
-        setLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         if (cancelled) return;
         console.error("Erro fatal ao buscar papéis:", err);
         setRoles([]);
-        setLoading(false);
-      });
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
     return () => { cancelled = true; };
   }, [authLoading, authRoles, user]);
 
