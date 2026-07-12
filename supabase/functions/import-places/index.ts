@@ -6,14 +6,57 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-type Entity = 'pharmacy' | 'clinic' | 'hospital' | 'laboratory';
+type Entity = 'pharmacy' | 'clinic' | 'hospital' | 'laboratory' | 'veterinary';
 
-const QUERIES: Record<Entity, string> = {
-  pharmacy: 'farmácia',
-  clinic: 'clínica médica',
-  hospital: 'hospital',
-  laboratory: 'laboratório de análises clínicas',
+// Localized search queries per country. Falls back to Portuguese-BR defaults.
+const QUERIES_BY_COUNTRY: Record<string, Record<Entity, string>> = {
+  MZ: {
+    pharmacy: 'farmácia',
+    clinic: 'clínica médica',
+    hospital: 'hospital',
+    laboratory: 'laboratório de análises clínicas',
+    veterinary: 'clínica veterinária',
+  },
+  BR: {
+    pharmacy: 'farmácia drogaria',
+    clinic: 'clínica médica',
+    hospital: 'hospital',
+    laboratory: 'laboratório de análises clínicas',
+    veterinary: 'clínica veterinária pet',
+  },
+  PT: {
+    pharmacy: 'farmácia',
+    clinic: 'clínica médica',
+    hospital: 'hospital',
+    laboratory: 'análises clínicas',
+    veterinary: 'clínica veterinária',
+  },
+  AO: {
+    pharmacy: 'farmácia',
+    clinic: 'clínica médica',
+    hospital: 'hospital',
+    laboratory: 'laboratório de análises',
+    veterinary: 'clínica veterinária',
+  },
+  ZA: {
+    pharmacy: 'pharmacy',
+    clinic: 'medical clinic',
+    hospital: 'hospital',
+    laboratory: 'medical laboratory',
+    veterinary: 'veterinary clinic',
+  },
+  IN: {
+    pharmacy: 'pharmacy',
+    clinic: 'medical clinic',
+    hospital: 'hospital',
+    laboratory: 'diagnostic laboratory',
+    veterinary: 'veterinary hospital',
+  },
 };
+
+function queriesFor(countryId: string): Record<Entity, string> {
+  return QUERIES_BY_COUNTRY[countryId?.toUpperCase()] ?? QUERIES_BY_COUNTRY.BR;
+}
 
 // Mapbox Search Box — devolve POIs. Normaliza para o mesmo shape usado abaixo.
 async function searchText(query: string, city: string, countryCode: string = 'mz') {
@@ -95,10 +138,12 @@ Deno.serve(async (req) => {
 
     const {
       cities = ['Maputo'],
-      entities = ['pharmacy', 'clinic', 'hospital', 'laboratory'],
+      entities = ['pharmacy', 'clinic', 'hospital', 'laboratory', 'veterinary'],
       mode = 'draft',
       country_id = 'MZ',
     } = await req.json();
+
+    const QUERIES = queriesFor(country_id);
 
     const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
@@ -171,21 +216,23 @@ Deno.serve(async (req) => {
             }
           } else {
             // DEFAULT: gravar como proposta pendente para curadoria
-            // Labs são armazenados como 'clinic' (mesma tabela final) mas com descrição "Laboratório"
-            const proposalEntity = entity === 'laboratory' ? 'clinic' : entity;
-            const descLabel = entity === 'laboratory'
-              ? `Laboratório${phone ? ' · Tel: ' + phone : ''}`
+            // Guardar o tipo real (laboratory / veterinary) — a função approve_proposal
+            // faz o routing para clinics.type = laboratory|veterinary|hospital|clinic.
+            const proposalEntity = entity;
+            const descLabel =
+              entity === 'laboratory' ? `Laboratório de análises clínicas${phone ? ' · Tel: ' + phone : ''}`
+              : entity === 'veterinary' ? `Clínica veterinária${phone ? ' · Tel: ' + phone : ''}`
               : (phone ? `Tel: ${phone}` : null);
             const { error } = await sb.from('place_proposals').insert({
               source: 'google_places',
               entity_type: proposalEntity,
               external_id: externalId,
-              name, address, city,
+              name, address, city, country_id,
               phone, website, image_url: image,
               latitude: lat, longitude: lng,
               description: descLabel,
               raw_payload: p,
-              search_meta: { city, query: QUERIES[entity], original_entity: entity, imported_at: new Date().toISOString() },
+              search_meta: { city, country_id, query: QUERIES[entity], original_entity: entity, imported_at: new Date().toISOString() },
               status: 'pending',
             });
             if (error) { errors.push(`proposal ${name}: ${error.message}`); skipped++; }
