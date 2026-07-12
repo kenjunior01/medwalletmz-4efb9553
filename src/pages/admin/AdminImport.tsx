@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Download, Upload, Sparkles, MapPin, Info, ArrowRight, History, Globe } from 'lucide-react';
+import { Download, Upload, Sparkles, MapPin, Info, ArrowRight, History, Globe, PawPrint, Hospital, Store as StoreIcon, FlaskConical, Stethoscope, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { normalizeImageUrl } from '@/lib/healthRoutes';
 import { useCountry } from '@/contexts/CountryContext';
@@ -56,6 +56,9 @@ export default function AdminImport() {
   const [busy, setBusy] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
   const [cities, setCities] = useState('');
+  const [selectedEntities, setSelectedEntities] = useState<string[]>(
+    ['pharmacy', 'clinic', 'hospital', 'laboratory', 'veterinary']
+  );
 
   // Carregar cidades padrão baseadas no país
   useEffect(() => {
@@ -65,6 +68,18 @@ export default function AdminImport() {
       setCities('');
     }
   }, [country]);
+
+  const ALL_ENTITIES: { id: string; label: string; icon: any; color: string }[] = [
+    { id: 'pharmacy',   label: 'Farmácias',      icon: StoreIcon,   color: 'text-emerald-600' },
+    { id: 'clinic',     label: 'Clínicas',       icon: Stethoscope, color: 'text-blue-600'    },
+    { id: 'hospital',   label: 'Hospitais',      icon: Hospital,    color: 'text-rose-600'    },
+    { id: 'laboratory', label: 'Laboratórios',   icon: FlaskConical, color: 'text-amber-600'  },
+    { id: 'veterinary', label: 'Veterinárias',   icon: PawPrint,    color: 'text-fuchsia-600' },
+  ];
+
+  const toggleEntity = (id: string) => {
+    setSelectedEntities(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]);
+  };
 
   const handleUpload = async (key: EntityKey, file: File) => {
     setBusy(key);
@@ -137,6 +152,7 @@ export default function AdminImport() {
 
   const handleAutoImport = async () => {
     if (!cities.trim()) return toast.error("Indique pelo menos uma cidade");
+    if (selectedEntities.length === 0) return toast.error("Selecione pelo menos uma categoria");
     setBusy('auto');
     setResult(null);
     try {
@@ -144,8 +160,8 @@ export default function AdminImport() {
       const { data, error } = await supabase.functions.invoke('import-places', {
         body: {
           cities: cityList,
-          country_id: country?.id, // Enviar país para filtrar busca API
-          entities: ['pharmacy', 'clinic', 'hospital', 'laboratory'],
+          country_id: country?.id,
+          entities: selectedEntities,
           mode: 'draft'
         },
       });
@@ -184,10 +200,51 @@ export default function AdminImport() {
             Esta ferramenta utiliza a Google Places API para encontrar estabelecimentos de saúde reais em <strong>{country?.name}</strong>.
             Tudo o que for encontrado será enviado para a tua fila de curadoria em <Link to="/admin/curation" className="text-primary underline font-bold">/admin/curation</Link>.
           </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+            {ALL_ENTITIES.map(ent => {
+              const active = selectedEntities.includes(ent.id);
+              const Icon = ent.icon;
+              return (
+                <button
+                  key={ent.id}
+                  type="button"
+                  onClick={() => toggleEntity(ent.id)}
+                  className={`flex items-center gap-2 rounded-xl border-2 p-3 text-left transition-all ${
+                    active
+                      ? 'border-primary bg-primary/5 shadow-sm'
+                      : 'border-slate-200 bg-white hover:border-primary/40'
+                  }`}
+                >
+                  <Icon className={`h-5 w-5 ${ent.color}`} />
+                  <span className="text-xs font-bold flex-1">{ent.label}</span>
+                  {active && <Check className="h-3.5 w-3.5 text-primary" />}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="flex gap-2 items-end">
             <div className="flex-1">
               <Label>Cidades em {country?.name} (separadas por vírgula)</Label>
               <Input value={cities} onChange={(e) => setCities(e.target.value)} placeholder="Ex: Maputo, Matola..." />
+              {country?.config?.cities && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {country.config.cities.slice(0, 10).map((c: string) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => {
+                        const list = cities.split(',').map(s => s.trim()).filter(Boolean);
+                        if (!list.includes(c)) setCities([...list, c].join(', '));
+                      }}
+                      className="text-[10px] px-2 py-1 rounded-full bg-white border hover:bg-primary/5 hover:border-primary/40 font-semibold"
+                    >
+                      + {c}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <Button onClick={handleAutoImport} disabled={busy === 'auto'} className="font-bold">
               <MapPin className="h-4 w-4 mr-2" />
