@@ -61,8 +61,20 @@ const STATIC_COUNTRIES: Country[] = [
   {
     id: 'BR', name: 'Brasil', currency_code: 'BRL', currency_symbol: 'R$', phone_code: '55',
     default_locale: 'pt-BR', supported_locales: ['pt-BR', 'en', 'es'], timezone: 'America/Sao_Paulo',
+    branding_config: {
+      primary_color: '#009C3B',   // Verde bandeira
+      secondary_color: '#FFDF00', // Amarelo bandeira
+      accent_color: '#002776',    // Azul bandeira
+    },
     config: {
-      cities: ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza", "Belo Horizonte", "Manaus", "Curitiba"],
+      cities: [
+        "São Paulo","Rio de Janeiro","Belo Horizonte","Brasília","Salvador",
+        "Fortaleza","Curitiba","Recife","Porto Alegre","Manaus","Belém",
+        "Goiânia","Campinas","Guarulhos","Florianópolis","Vitória","Natal",
+        "João Pessoa","Maceió","Cuiabá","Campo Grande","Teresina","Aracaju",
+        "São Luís","Palmas","Rio Branco","Boa Vista","Macapá","Porto Velho"
+      ],
+      health_categories: ['pharmacy','clinic','hospital','laboratory','veterinary'],
       phone_placeholder: "+55 (XX) 9XXXX-XXXX",
       registration_defaults: {
         consultation_fee: 150,
@@ -70,13 +82,14 @@ const STATIC_COUNTRIES: Country[] = [
         vehicle_plate: "ABC1D23"
       },
       payment_methods: [
-        { id: "pix", name: "PIX", type: "mobile_money", icon: "💎", description: "Pagamento Instantâneo", requires_phone: true },
-        { id: "stripe", name: "Cartão de Crédito", type: "card", icon: "💳", description: "Visa/Mastercard via Stripe" },
-        { id: "wallet", name: "Carteira MedWallet", type: "wallet", icon: "👛", description: "Saldo em Reais" }
+        { id: "pix", name: "PIX", type: "mobile_money", icon: "💎", description: "Pagamento instantâneo BCB", requires_phone: true, badge: "Instantâneo" },
+        { id: "stripe", name: "Cartão de Crédito", type: "card", icon: "💳", description: "Visa/Mastercard/Elo via Stripe" },
+        { id: "boleto", name: "Boleto Bancário", type: "bank", icon: "🏦", description: "Compensação em até 3 dias úteis" },
+        { id: "wallet", name: "Carteira MedWallet", type: "wallet", icon: "👛", description: "Saldo em Reais (BRL)" }
       ],
       support: {
         whatsapp: "5511999999999",
-        phone: "+55 11 9999-9999",
+        phone: "+55 11 99999-9999",
         email: "suporte.br@medwallet.com"
       }
     }
