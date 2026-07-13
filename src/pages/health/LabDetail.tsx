@@ -1,3 +1,4 @@
+import { useCountry } from "@/contexts/CountryContext";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +13,8 @@ import { toast } from "sonner";
 import { FlaskConical, MapPin, Phone, ArrowLeft, Plus, Minus, Check, CalendarClock } from "lucide-react";
 
 export default function LabDetail() {
+  const { country } = useCountry();
+  const currency = country?.currency_code || 'MZN';
   const { id } = useParams();
   const nav = useNavigate();
   const [lab, setLab] = useState<any>(null);
@@ -151,7 +154,7 @@ export default function LabDetail() {
                     <Badge variant="outline" className="text-[9px]">{e.category}</Badge>
                   </div>
                   {e.prep_instructions && <p className="text-[11px] text-muted-foreground mt-0.5">Preparação: {e.prep_instructions}</p>}
-                  <p className="text-sm font-bold text-primary mt-1">{Number(e.price_mzn).toLocaleString()} MZN</p>
+                  <p className="text-sm font-bold text-primary mt-1">{Number(e.price_mzn).toLocaleString()} {currency}</p>
                 </div>
                 {(cart[e.id] || 0) === 0 ? (
                   <Button size="sm" onClick={() => inc(e.id)}><Plus className="h-4 w-4" /></Button>
@@ -206,7 +209,7 @@ export default function LabDetail() {
         <div className="fixed bottom-16 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bento-card p-3 flex items-center gap-3 shadow-strong border border-primary/40 z-50">
           <div className="flex-1">
             <p className="text-xs text-muted-foreground">{itemsCount} exame{itemsCount > 1 ? "s" : ""}</p>
-            <p className="font-bold text-primary">{total.toLocaleString()} MZN</p>
+            <p className="font-bold text-primary">{total.toLocaleString()} {currency}</p>
           </div>
           <Button onClick={placeOrder} disabled={placing}>
             <Check className="h-4 w-4 mr-1" /> {placing ? "A criar..." : "Confirmar pedido"}

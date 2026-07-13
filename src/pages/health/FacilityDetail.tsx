@@ -13,6 +13,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useCountry } from '@/contexts/CountryContext';
 
 export default function FacilityDetail() {
+  const { country } = useCountry();
+  const currency = country?.currency_code || 'MZN';
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { country } = useCountry();

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Pill, Plus, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,7 @@ type Medication = { id: string; name: string; dosage: string; time: string; take
 export function PillTracker() {
   const { t } = useCountry();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [meds, setMeds] = useState<Medication[]>([]);
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export function PillTracker() {
         <h2 className="text-xl font-black flex items-center gap-2">
           <Pill className="h-5 w-5 text-emerald-500" /> {t('health.my_medications')}
         </h2>
-        <Button variant="ghost" size="sm" className="text-primary font-bold">
+        <Button variant="ghost" size="sm" className="text-primary font-bold" onClick={() => navigate('/health/profile')}>
           <Plus className="h-4 w-4 mr-1" /> {t('health.add')}
         </Button>
       </div>

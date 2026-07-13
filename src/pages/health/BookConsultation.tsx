@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Calendar, Loader2, Wallet, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCountry } from '@/contexts/CountryContext';
 import { CouponInput } from '@/components/checkout/CouponInput';
 
 interface Slot { id: string; starts_at: string }
@@ -18,6 +19,8 @@ export default function BookConsultation() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { wallet, reload } = useWallet();
+  const { country } = useCountry();
+  const currency = country?.currency_code || 'MZN';
   const [doctor, setDoctor] = useState<any>(null);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [selected, setSelected] = useState<Slot | null>(null);
@@ -55,7 +58,7 @@ export default function BookConsultation() {
     const discount = coupon?.discount ?? 0;
     const finalAmount = Math.max(gross - discount, 0);
     if ((wallet?.balance ?? 0) < finalAmount) {
-      toast.error(`Saldo insuficiente. Faltam ${(finalAmount - (wallet?.balance ?? 0)).toFixed(2)} MZN`);
+      toast.error(`Saldo insuficiente. Faltam ${(finalAmount - (wallet?.balance ?? 0)).toFixed(2)} ${currency}`);
       navigate('/wallet');
       return;
     }
@@ -98,7 +101,7 @@ export default function BookConsultation() {
       .from('doctor_availability_slots')
       .update({ is_booked: true, consultation_id: data.id })
       .eq('id', selected.id);
-    toast.success(`Consulta paga (${finalAmount} MZN) — aguarda confirmação.`);
+    toast.success(`Consulta paga (${finalAmount} ${currency}) — aguarda confirmação.`);
     navigate(`/health/consultation/${data.id}`);
   };
 
@@ -126,7 +129,7 @@ export default function BookConsultation() {
               <p className="font-bold">Dr(a). {doctor.full_name}</p>
               <p className="text-xs text-muted-foreground">{doctor.medical_specialties?.icon} {doctor.medical_specialties?.name}</p>
             </div>
-            <span className="font-bold text-pharmacy">{doctor.consultation_fee} MZN</span>
+            <span className="font-bold text-pharmacy">{doctor.consultation_fee} {currency}</span>
           </CardContent>
         </Card>
 
@@ -178,15 +181,15 @@ export default function BookConsultation() {
 
         <Card className="bg-muted/30">
           <CardContent className="p-4 text-sm space-y-1">
-            <div className="flex justify-between"><span>Subtotal</span><span>{gross.toFixed(2)} MZN</span></div>
+            <div className="flex justify-between"><span>Subtotal</span><span>{gross.toFixed(2)} {currency}</span></div>
             {discount > 0 && (
-              <div className="flex justify-between text-emerald"><span>Desconto cupão</span><span>-{discount.toFixed(2)} MZN</span></div>
+              <div className="flex justify-between text-emerald"><span>Desconto cupão</span><span>-{discount.toFixed(2)} {currency}</span></div>
             )}
             <div className="flex justify-between font-bold text-base pt-2 border-t mt-2">
-              <span>Total a debitar</span><span>{finalAmount.toFixed(2)} MZN</span>
+              <span>Total a debitar</span><span>{finalAmount.toFixed(2)} {currency}</span>
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground pt-1">
-              <Wallet className="h-3 w-3" /> Saldo: {(wallet?.balance ?? 0).toFixed(2)} MZN
+              <Wallet className="h-3 w-3" /> Saldo: {(wallet?.balance ?? 0).toFixed(2)} {currency}
             </div>
             {lowBalance && (
               <div className="flex items-center gap-1 text-xs text-destructive pt-1">
@@ -200,7 +203,7 @@ export default function BookConsultation() {
       <div className="fixed bottom-0 inset-x-0 p-4 bg-background border-t">
         <Button className="w-full" size="lg" disabled={!selected || saving || lowBalance} onClick={handleBook}>
           {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-          {lowBalance ? 'Depositar saldo' : `Confirmar e pagar (${finalAmount.toFixed(2)} MZN)`}
+          {lowBalance ? 'Depositar saldo' : `Confirmar e pagar (${finalAmount.toFixed(2)} ${currency})`}
         </Button>
       </div>
     </div>

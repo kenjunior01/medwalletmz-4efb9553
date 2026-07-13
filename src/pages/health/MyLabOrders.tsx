@@ -1,3 +1,4 @@
+import { useCountry } from "@/contexts/CountryContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +17,8 @@ const STATUS_META: Record<string, { label: string; icon: any; color: string }> =
 };
 
 export default function MyLabOrders() {
+  const { country } = useCountry();
+  const currency = country?.currency_code || 'MZN';
   const nav = useNavigate();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +82,7 @@ export default function MyLabOrders() {
                   {(o.items as any[]).map((it, i) => (
                     <div key={i} className="flex justify-between">
                       <span>{it.qty}× {it.name}</span>
-                      <span className="text-muted-foreground">{(it.price * it.qty).toLocaleString()} MZN</span>
+                      <span className="text-muted-foreground">{(it.price * it.qty).toLocaleString()} {currency}</span>
                     </div>
                   ))}
                 </div>
@@ -88,7 +91,7 @@ export default function MyLabOrders() {
                     {o.home_collection ? "Recolha ao domicílio" : "No laboratório"}
                     {o.scheduled_at && ` · ${new Date(o.scheduled_at).toLocaleString("pt-PT")}`}
                   </span>
-                  <span className="font-bold text-primary">{Number(o.total_mzn).toLocaleString()} MZN</span>
+                  <span className="font-bold text-primary">{Number(o.total_mzn).toLocaleString()} {currency}</span>
                 </div>
                 {o.status === "completed" && o.result_url ? (
                   <Button size="sm" variant="outline" className="w-full" onClick={() => downloadResult(o.result_url)}>

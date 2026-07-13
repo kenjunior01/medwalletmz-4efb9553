@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Check, Crown, Sparkles } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCountry } from '@/contexts/CountryContext';
 
 interface Plan {
   id: string;
@@ -28,6 +29,9 @@ const periodLabel: Record<string, string> = {
 export default function HealthPlans() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country } = useCountry();
+  const currency = country?.currency_code || 'MZN';
+  const paymentMethods = (country?.config?.payment_methods || []).map((m: any) => m.name).filter(Boolean).join(', ') || 'M-Pesa, e-Mola ou Mkesh';
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -83,10 +87,10 @@ export default function HealthPlans() {
               )}
               <div className="mt-3 flex items-baseline gap-1">
                 <span className="text-3xl font-bold text-primary">
-                  {plan.price_mzn.toLocaleString('pt-MZ')}
+                  {plan.price_mzn.toLocaleString()}
                 </span>
                 <span className="text-sm text-muted-foreground">
-                  MZN{periodLabel[plan.billing_period] ?? ''}
+                  {currency}{periodLabel[plan.billing_period] ?? ''}
                 </span>
               </div>
               {Array.isArray(plan.features) && (
@@ -111,7 +115,7 @@ export default function HealthPlans() {
       </section>
 
       <p className="text-center text-xs text-muted-foreground px-6 mt-6">
-        Pagamentos via M-Pesa, e-Mola ou Mkesh. Após enviar o comprovativo, a equipa valida em até 24h.
+        Pagamentos via {paymentMethods}. Após enviar o comprovativo, a equipa valida em até 24h.
       </p>
     </div>
   );
