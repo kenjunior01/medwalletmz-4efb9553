@@ -98,7 +98,7 @@ export default function BookConsultation() {
       .from('doctor_availability_slots')
       .update({ is_booked: true, consultation_id: data.id })
       .eq('id', selected.id);
-    toast.success(`Consulta paga (${finalAmount} MZN) — aguarda confirmação.`);
+    toast.success(`Consulta paga (${finalAmount} ${currency}) — aguarda confirmação.`);
     navigate(`/health/consultation/${data.id}`);
   };
 
