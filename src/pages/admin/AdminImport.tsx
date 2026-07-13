@@ -13,6 +13,7 @@ import { Download, Upload, Sparkles, MapPin, Info, ArrowRight, History, Globe, P
 import { toast } from 'sonner';
 import { normalizeImageUrl } from '@/lib/healthRoutes';
 import { useCountry } from '@/contexts/CountryContext';
+import { Progress } from '@/components/ui/progress';
 
 type EntityKey = 'pharmacies' | 'clinics' | 'hospitals' | 'doctors';
 
@@ -59,6 +60,8 @@ export default function AdminImport() {
   const [selectedEntities, setSelectedEntities] = useState<string[]>(
     ['pharmacy', 'clinic', 'hospital', 'laboratory', 'veterinary']
   );
+  const [progress, setProgress] = useState<{ done: number; total: number; label: string } | null>(null);
+  const [tally, setTally] = useState<{ proposed: number; skipped: number; errors: string[] }>({ proposed: 0, skipped: 0, errors: [] });
 
   // Carregar cidades padrão baseadas no país
   useEffect(() => {
@@ -155,23 +158,43 @@ export default function AdminImport() {
     if (selectedEntities.length === 0) return toast.error("Selecione pelo menos uma categoria");
     setBusy('auto');
     setResult(null);
+    setTally({ proposed: 0, skipped: 0, errors: [] });
+    const cityList = cities.split(',').map((s) => s.trim()).filter(Boolean);
+    const total = cityList.length * selectedEntities.length;
+    setProgress({ done: 0, total, label: 'A iniciar…' });
+    let done = 0;
+    const agg = { proposed: 0, skipped: 0, createdStores: 0, createdClinics: 0, errors: [] as string[] };
     try {
-      const cityList = cities.split(',').map((s) => s.trim()).filter(Boolean);
-      const { data, error } = await supabase.functions.invoke('import-places', {
-        body: {
-          cities: cityList,
-          country_id: country?.id,
-          entities: selectedEntities,
-          mode: 'draft'
-        },
-      });
-      if (error) throw error;
-      setResult(data);
-      toast.success(`Importação iniciada para ${country?.name}. Revê as propostas em /admin/curation.`);
+      // Paginamos por (cidade × categoria) para dar feedback ao vivo e evitar timeout.
+      for (const city of cityList) {
+        for (const entity of selectedEntities) {
+          setProgress({ done, total, label: `${city} · ${entity}` });
+          try {
+            const { data, error } = await supabase.functions.invoke('import-places', {
+              body: { cities: [city], country_id: country?.id, entities: [entity], mode: 'draft' },
+            });
+            if (error) throw error;
+            agg.proposed += data?.proposed ?? 0;
+            agg.skipped += data?.skipped ?? 0;
+            agg.createdStores += data?.createdStores ?? 0;
+            agg.createdClinics += data?.createdClinics ?? 0;
+            if (Array.isArray(data?.errors)) agg.errors.push(...data.errors);
+            setTally({ proposed: agg.proposed, skipped: agg.skipped, errors: agg.errors.slice(-10) });
+          } catch (chunkErr: any) {
+            agg.errors.push(`${city}/${entity}: ${chunkErr.message || 'erro'}`);
+            setTally({ proposed: agg.proposed, skipped: agg.skipped, errors: agg.errors.slice(-10) });
+          }
+          done++;
+          setProgress({ done, total, label: `${city} · ${entity}` });
+        }
+      }
+      setResult(agg);
+      toast.success(`Importação concluída: ${agg.proposed} novas, ${agg.skipped} duplicadas.`);
     } catch (e: any) {
       toast.error(e.message || 'Erro na importação');
     } finally {
       setBusy(null);
+      setProgress(null);
     }
   };
 
@@ -251,6 +274,21 @@ export default function AdminImport() {
               {busy === 'auto' ? 'A contactar Google API...' : 'Importar Estabelecimentos'}
             </Button>
           </div>
+
+          {progress && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs text-muted-foreground font-semibold">
+                <span>A processar: {progress.label}</span>
+                <span>{progress.done}/{progress.total}</span>
+              </div>
+              <Progress value={progress.total > 0 ? (progress.done / progress.total) * 100 : 0} />
+              <div className="text-xs text-muted-foreground">
+                Novas: <strong className="text-primary">{tally.proposed}</strong> ·
+                Duplicadas: <strong>{tally.skipped}</strong>
+                {tally.errors.length > 0 && <> · Erros: <strong className="text-destructive">{tally.errors.length}</strong></>}
+              </div>
+            </div>
+          )}
 
           {result && (
             <Alert className="bg-secondary/10 border-secondary/30 mt-2">
