@@ -189,7 +189,7 @@ export default function BookConsultation() {
               <span>Total a debitar</span><span>{finalAmount.toFixed(2)} {currency}</span>
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground pt-1">
-              <Wallet className="h-3 w-3" /> Saldo: {(wallet?.balance ?? 0).toFixed(2)} MZN
+              <Wallet className="h-3 w-3" /> Saldo: {(wallet?.balance ?? 0).toFixed(2)} {currency}
             </div>
             {lowBalance && (
               <div className="flex items-center gap-1 text-xs text-destructive pt-1">
