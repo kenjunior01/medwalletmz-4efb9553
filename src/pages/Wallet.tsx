@@ -30,7 +30,7 @@ const COLORS: Record<string, string> = {
 
 interface PayAccount {
   id: string;
-  method: 'mpesa' | 'emola' | 'mkesh' | 'bank';
+  method: string;
   account_name: string;
   account_number: string;
   instructions: string | null;
@@ -59,7 +59,7 @@ export default function Wallet() {
   const [tx, setTx] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState('');
-  const [method, setMethod] = useState('mpesa');
+  const [method, setMethod] = useState('');
   const [accounts, setAccounts] = useState<PayAccount[]>([]);
   const [reference, setReference] = useState('');
   const [phone, setPhone] = useState('');
@@ -89,7 +89,7 @@ export default function Wallet() {
 
   const handleDeposit = async () => {
     const amt = parseFloat(amount);
-    const currencySymbol = symbol || 'MZN';
+    const currencySymbol = symbol || currency;
     if (!amt || amt < 50) { toast.error(`${t('common.error')}: Min 50 ${currencySymbol}`); return; }
     if (!reference || !phone) { toast.error(t('doctor_register.required_fields_error')); return; }
 
@@ -126,7 +126,7 @@ export default function Wallet() {
 
   const bonusPreview = amount ? Math.round(parseFloat(amount) * bonusPct) / 100 : 0;
   const balance = Number(wallet?.balance ?? 0);
-  const currency = wallet?.currency || 'MZN';
+  const currency = wallet?.currency || country?.currency_code || 'MZN';
   const symbol = getCurrencySymbol(currency as any);
   const filteredAccounts = accounts.filter(a => a.method === method);
 
@@ -137,7 +137,7 @@ export default function Wallet() {
   ];
 
   useEffect(() => {
-    if (supportedMethods.length > 0 && !method) {
+    if (supportedMethods.length > 0 && (!method || !supportedMethods.some((m: any) => m.id === method))) {
       setMethod(supportedMethods[0].id);
     }
   }, [supportedMethods, method]);
@@ -288,11 +288,11 @@ export default function Wallet() {
               <label className="text-sm font-bold">{t('wallet.confirmation')}</label>
               <div>
                 <Label htmlFor="dep-amt" className="text-xs">{t('wallet.amount_sent', { currency })}</Label>
-                <Input id="dep-amt" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder={`Mínimo 50 ${currency}`} />
+                <Input id="dep-amt" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder={`Mínimo 50 ${symbol}`} />
               </div>
               <div>
                 <Label htmlFor="dep-ref" className="text-xs">{t('wallet.sms_reference')}</Label>
-                <Input id="dep-ref" value={reference} onChange={e => setReference(e.target.value)} placeholder="Ex: MP24..." />
+                <Input id="dep-ref" value={reference} onChange={e => setReference(e.target.value)} placeholder={country?.id === 'BR' ? 'Ex: PIX123...' : 'Ex: MP24...'} />
               </div>
               <div>
                 <Label htmlFor="dep-phone" className="text-xs">{t('wallet.sending_number')}</Label>

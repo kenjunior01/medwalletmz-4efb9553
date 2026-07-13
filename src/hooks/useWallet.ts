@@ -7,7 +7,12 @@ export interface WalletData {
   total_deposited: number;
   total_spent: number;
   currency: string;
+  country_id?: string | null;
 }
+
+const FALLBACK_CURRENCY_BY_COUNTRY: Record<string, string> = {
+  MZ: 'MZN', BR: 'BRL', AO: 'AOA', ZA: 'ZAR', PT: 'EUR', IN: 'INR'
+};
 
 export function useWallet() {
   const { user } = useAuth();
@@ -28,10 +33,12 @@ export function useWallet() {
       const { data: profile } = await (supabase as any).from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
 
       const defaultCountry = profile?.country_id || 'MZ';
-      const currencyMap: Record<string, string> = {
-        'MZ': 'MZN', 'BR': 'BRL', 'AO': 'AOA', 'ZA': 'ZAR', 'PT': 'EUR', 'IN': 'INR'
-      };
-      const defaultCurrency = currencyMap[defaultCountry] || 'USD';
+      const { data: country } = await (supabase as any)
+        .from('countries')
+        .select('currency_code')
+        .eq('id', defaultCountry)
+        .maybeSingle();
+      const defaultCurrency = country?.currency_code || FALLBACK_CURRENCY_BY_COUNTRY[defaultCountry] || 'USD';
 
       await (supabase as any).from('wallets').insert({
         user_id: user.id,
@@ -42,13 +49,15 @@ export function useWallet() {
         total_spent: 0
       });
 
-      setWallet({ balance: 0, total_deposited: 0, total_spent: 0, currency: defaultCurrency });
+      setWallet({ balance: 0, total_deposited: 0, total_spent: 0, currency: defaultCurrency, country_id: defaultCountry });
     } else {
+      const currency = data.currency || FALLBACK_CURRENCY_BY_COUNTRY[data.country_id || 'MZ'] || 'USD';
       setWallet({
         balance: Number(data.balance_mzn || 0),
         total_deposited: Number(data.total_deposited || 0),
         total_spent: Number(data.total_spent || 0),
-        currency: data.currency || 'MZN'
+        currency,
+        country_id: data.country_id
       });
     }
     setLoading(false);
@@ -64,11 +73,13 @@ export function useWallet() {
       .on('postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'wallets', filter: `user_id=eq.${user.id}` },
         (p: any) => {
+          const currency = p.new.currency || FALLBACK_CURRENCY_BY_COUNTRY[p.new.country_id || 'MZ'] || 'USD';
           setWallet({
             balance: Number(p.new.balance_mzn || 0),
             total_deposited: Number(p.new.total_deposited || 0),
             total_spent: Number(p.new.total_spent || 0),
-            currency: p.new.currency || 'MZN'
+            currency,
+            country_id: p.new.country_id
           });
         })
       .subscribe();
@@ -82,7 +93,7 @@ export function useWallet() {
     const { data: profile } = await (supabase as any).from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
     const { data: country } = await (supabase as any).from('countries').select('config').eq('id', profile?.country_id || 'MZ').maybeSingle();
 
-    const preferredMethod = method || country?.config?.payments?.[0] || 'card';
+    const preferredMethod = method || country?.config?.payment_methods?.[0]?.id || 'wallet';
 
     const { data, error } = await supabase.rpc('wallet_deposit', {
       _user_id: user.id, _amount: amount, _method: preferredMethod,

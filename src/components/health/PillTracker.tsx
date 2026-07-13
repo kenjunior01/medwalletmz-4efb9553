@@ -1,21 +1,45 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Pill, Plus, Clock, CheckCircle2, ChevronRight, AlertCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Pill, Plus, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+
+type Medication = { id: string; name: string; dosage: string; time: string; taken: boolean };
 
 export function PillTracker() {
   const { t } = useCountry();
-  const [meds, setMeds] = useState([
-    { id: 1, name: 'Paracetamol', dosage: '500mg', time: '08:00', taken: true },
-    { id: 2, name: 'Amoxicilina', dosage: '1g', time: '14:00', taken: false },
-    { id: 3, name: 'Vitamina C', dosage: '1g', time: '20:00', taken: false },
-  ]);
+  const { user } = useAuth();
+  const [meds, setMeds] = useState<Medication[]>([]);
 
-  const toggleTaken = (id: number) => {
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data } = await supabase
+        .from('prescriptions')
+        .select('id, prescription_items(id, medication_name, dosage, frequency)')
+        .eq('patient_id', user.id)
+        .in('status', ['active', 'pending', 'sent'])
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      const rows = (data || []).flatMap((rx: any) =>
+        (rx.prescription_items || []).map((item: any, index: number) => ({
+          id: item.id,
+          name: item.medication_name,
+          dosage: item.dosage || 'Dose indicada',
+          time: item.frequency || ['08:00', '14:00', '20:00'][index % 3],
+          taken: false,
+        }))
+      ).slice(0, 3);
+      setMeds(rows);
+    })();
+  }, [user]);
+
+  const toggleTaken = (id: string) => {
     setMeds(prev => prev.map(m => m.id === id ? { ...m, taken: !m.taken } : m));
   };
 
@@ -31,7 +55,11 @@ export function PillTracker() {
       </div>
 
       <div className="space-y-3">
-        {meds.map((med) => (
+        {meds.length === 0 ? (
+          <Card className="p-4 border-dashed bg-muted/20 text-sm text-muted-foreground">
+            Nenhum medicamento ativo encontrado. Adicione pelo botão ou consulte suas receitas digitais.
+          </Card>
+        ) : meds.map((med) => (
           <Card
             key={med.id}
             className={cn(

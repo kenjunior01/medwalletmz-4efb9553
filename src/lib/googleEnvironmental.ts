@@ -1,10 +1,8 @@
 /**
- * Google Environmental APIs helper.
- * Uses Google Air Quality API and weather patterns to provide health advice.
+ * Environmental health helper.
+ * Uses live Air Quality when available and Open-Meteo for real weather.
  */
 import { supabase } from "@/integrations/supabase/client";
-
-const GOOGLE_API_KEY = "AIzaSyCSmjlxj48ngrPinTo4gdVBzmBf9CPVrFU";
 
 export interface EnvironmentalData {
   aqi: number;
@@ -19,40 +17,34 @@ export interface EnvironmentalData {
 
 export async function fetchEnvironmentalHealth(lat: number, lng: number): Promise<EnvironmentalData> {
   try {
-    // 1. Fetch Air Quality
-    const aqiResponse = await fetch(`https://airquality.googleapis.com/v1/currentConditions:lookup?key=${GOOGLE_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        location: { latitude: lat, longitude: lng },
-        extraComputations: ["HEALTH_RECOMMENDATIONS", "POLLEN_LOOKUP"]
-      })
-    });
+    const [airRes, weatherRes] = await Promise.all([
+      fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lng}&current=european_aqi,pm10,pm2_5`).catch(() => null),
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code,relative_humidity_2m,apparent_temperature`)
+    ]);
 
-    const aqiJson = await aqiResponse.json();
-    const aqiValue = aqiJson?.indexes?.[0]?.aqi || 42;
-    const aqiCategory = aqiJson?.indexes?.[0]?.category || "Bom";
+    const airJson = airRes?.ok ? await airRes.json() : null;
+    const aqiValue = Math.round(airJson?.current?.european_aqi ?? 42);
+    const aqiCategory = aqiValue <= 20 ? "Muito bom" : aqiValue <= 40 ? "Bom" : aqiValue <= 60 ? "Moderado" : aqiValue <= 80 ? "Ruim" : "Muito ruim";
 
-    // 2. Fetch Weather (using a free tier or common weather API if Google doesn't provide a simple one without extra setup)
-    // For this implementation, we'll use a standard weather fetch or estimate based on region
-    // Mozambican weather is often hot/humid.
-    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
     const weatherJson = await weatherRes.json();
-    const temp = weatherJson?.current_weather?.temperature || 28;
+    const temp = weatherJson?.current?.temperature_2m ?? weatherJson?.current_weather?.temperature ?? 28;
+    const humidity = weatherJson?.current?.relative_humidity_2m;
 
-    // 3. Generate Mozambican-specific health advice
     const { data: profile } = await supabase.from('patient_profiles').select('chronic_conditions').maybeSingle();
     const isAsthmatic = profile?.chronic_conditions?.includes('asma');
     const isHypertensive = profile?.chronic_conditions?.includes('hipertensao');
 
-    let recommendation = "O ar está limpo. Aproveita para caminhar.";
+    let recommendation = "O tempo está favorável. Aproveita para uma caminhada leve.";
     const alerts: { type: string; message: string }[] = [];
 
     if (temp > 32) {
       recommendation = isHypertensive
         ? "Calor intenso! Atenção à tua tensão arterial. Bebe água e evita esforços."
         : "Está muito calor hoje. Evita exposição solar direta e bebe muita água.";
-      alerts.push({ type: 'heat', message: 'Risco de desidratação elevado em Maputo.' });
+      alerts.push({ type: 'heat', message: 'Risco de desidratação elevado para a sua localização.' });
+    } else if (temp < 12) {
+      recommendation = "Temperatura baixa. Agasalhe-se e proteja vias respiratórias.";
+      alerts.push({ type: 'cold', message: 'Frio pode agravar sintomas respiratórios em grupos sensíveis.' });
     }
 
     if (aqiValue > 80 && isAsthmatic) {
@@ -63,10 +55,8 @@ export async function fetchEnvironmentalHealth(lat: number, lng: number): Promis
       alerts.push({ type: 'air', message: 'Nível de poluição acima do recomendado para grupos sensíveis.' });
     }
 
-    // Season-specific (Mozambique Rainy Season: Nov-Mar)
-    const month = new Date().getMonth();
-    if (month >= 10 || month <= 2) {
-      alerts.push({ type: 'malaria', message: 'Época de chuvas: usa mosquiteiro e repelente contra a malária.' });
+    if (typeof humidity === 'number' && humidity > 80 && temp > 24) {
+      alerts.push({ type: 'humidity', message: 'Humidade elevada: hidrate-se e evite esforço prolongado.' });
     }
 
     return {
