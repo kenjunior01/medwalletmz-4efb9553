@@ -17,6 +17,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useCountry } from '@/contexts/CountryContext';
 import { 
   StatWidget, 
   QuickActionWidget, 
@@ -54,12 +55,15 @@ interface RecentOrder {
 
 export default function StoreHome() {
   const { selectedStore } = useOutletContext<StoreContext>();
+  const { country } = useCountry();
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [dailyData, setDailyData] = useState<{ name: string; value: number }[]>([]);
   const [orderStatusData, setOrderStatusData] = useState<{ status: string; count: number }[]>([]);
   const navigate = useNavigate();
+  const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
+  const locale = country?.default_locale || 'pt-MZ';
 
   useEffect(() => {
     if (selectedStore) {
@@ -122,7 +126,7 @@ export default function StoreHome() {
       // Group by day
       const dailyMap = new Map<string, number>();
       weeklyOrders?.forEach(order => {
-        const day = new Date(order.created_at).toLocaleDateString('pt-MZ', { weekday: 'short' });
+        const day = new Date(order.created_at).toLocaleDateString(locale, { weekday: 'short' });
         dailyMap.set(day, (dailyMap.get(day) || 0) + order.total);
       });
 
@@ -222,8 +226,8 @@ export default function StoreHome() {
   const activityItems = recentOrders.map(order => ({
     id: order.id,
     title: `Pedido #${order.id.slice(0, 8)}`,
-    description: `${order.total.toLocaleString()} MZN`,
-    time: new Date(order.created_at).toLocaleString('pt-MZ'),
+    description: `${order.total.toLocaleString(locale)} ${currencySymbol}`,
+    time: new Date(order.created_at).toLocaleString(locale),
     type: 'order' as const,
     status: getStatusBadge(order.status).label
   }));
@@ -298,8 +302,8 @@ export default function StoreHome() {
         />
         <StatWidget 
           title="Receita Hoje"
-          value={`${(stats?.totalRevenue || 0).toLocaleString()} MZN`}
-          subtitle={`Semana: ${(stats?.weeklyRevenue || 0).toLocaleString()} MZN`}
+          value={`${(stats?.totalRevenue || 0).toLocaleString(locale)} ${currencySymbol}`}
+          subtitle={`Semana: ${(stats?.weeklyRevenue || 0).toLocaleString(locale)} ${currencySymbol}`}
           icon={TrendingUp}
           trend={{ value: 12, isPositive: true }}
           colorClass="text-secondary"

@@ -3,11 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
+import { useCountry } from "@/contexts/CountryContext";
 
 export function DesktopRail() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { wallet } = useWallet();
+  const { country } = useCountry();
+  const currencyCode = wallet?.currency || country?.currency_code || 'MZN';
+  const locale = country?.default_locale || 'pt-MZ';
 
   if (!user) {
     return (
@@ -16,7 +20,7 @@ export function DesktopRail() {
           <Sparkles className="h-5 w-5 mb-2" />
           <h3 className="font-black text-lg leading-tight">Entra na MedWallet</h3>
           <p className="text-xs opacity-85 mt-1.5">
-            Carteira MZN, médicos verificados e farmácia 24h num só sítio.
+            Carteira local, médicos verificados e farmácia 24h num só sítio.
           </p>
           <Button
             size="sm"
@@ -41,8 +45,8 @@ export function DesktopRail() {
           <Wallet className="h-4 w-4 opacity-90" />
         </div>
         <p className="text-3xl font-black mt-2 leading-none">
-          {(wallet?.balance ?? 0).toLocaleString("pt-MZ")}
-          <span className="text-sm font-semibold ml-1.5 opacity-80">MZN</span>
+          {(wallet?.balance ?? 0).toLocaleString(locale)}
+          <span className="text-sm font-semibold ml-1.5 opacity-80">{currencyCode}</span>
         </p>
         <p className="text-[11px] opacity-70 mt-2">↘ Desconto auto em todas as compras</p>
       </button>
@@ -76,7 +80,7 @@ export function DesktopRail() {
         <Gift className="h-5 w-5 text-gold mb-2" />
         <p className="text-sm font-bold leading-tight">Convida amigos</p>
         <p className="text-[11px] text-muted-foreground mt-1">
-          Ganha MZN e Pulse por cada amigo que entra.
+          Ganha saldo local e Pulse por cada amigo que entra.
         </p>
         <Button
           size="sm"

@@ -7,13 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FlaskConical, Upload, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCountry } from '@/contexts/CountryContext';
 
 export default function LabDashboard() {
   const nav = useNavigate();
   const { user } = useAuth();
+  const { country } = useCountry();
   const [lab, setLab] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
+  const locale = country?.default_locale || 'pt-MZ';
 
   useEffect(() => {
     if (!user) { nav('/auth'); return; }
@@ -77,7 +81,7 @@ export default function LabDashboard() {
       >
         <p className="text-sm font-semibold">Subscrição do laboratório</p>
         <p className="text-xs text-muted-foreground mt-1">
-          Ative um plano profissional para aparecer com destaque e receber pedidos ilimitados. Pague por M-Pesa, e-Mola ou Mkesh.
+          Ative um plano profissional para aparecer com destaque e receber pedidos ilimitados. Pague pelos métodos locais disponíveis.
         </p>
       </Card>
 
@@ -94,7 +98,7 @@ export default function LabDashboard() {
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                {new Date(o.created_at).toLocaleString('pt-MZ')} · {o.total_amount} MZN
+                {new Date(o.created_at).toLocaleString(locale)} · {o.total_amount} {currencySymbol}
               </p>
             </div>
             {o.status !== 'completed' && (
