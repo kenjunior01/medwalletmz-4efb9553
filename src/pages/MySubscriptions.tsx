@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Crown } from 'lucide-react';
 import { format } from 'date-fns';
+import { useCountry } from '@/contexts/CountryContext';
 
 const statusColor: Record<string, string> = {
   pending: 'bg-warning text-warning-foreground',
@@ -26,8 +27,11 @@ const statusLabel: Record<string, string> = {
 export default function MySubscriptions() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country } = useCountry();
   const [subs, setSubs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
+  const locale = country?.default_locale || 'pt-MZ';
 
   useEffect(() => {
     if (!user) return;
@@ -72,7 +76,7 @@ export default function MySubscriptions() {
                 <div>
                   <p className="font-semibold">{s.plan?.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {s.amount_paid?.toLocaleString('pt-MZ')} MZN · {s.payment_method?.toUpperCase()}
+                    {s.amount_paid?.toLocaleString(locale)} {currencySymbol} · {s.payment_method?.toUpperCase()}
                   </p>
                 </div>
                 <Badge className={statusColor[s.status]}>{statusLabel[s.status]}</Badge>

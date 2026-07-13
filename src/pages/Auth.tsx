@@ -305,7 +305,7 @@ export default function Auth() {
                             <Input
                               id="email"
                               type="email"
-                              placeholder="exemplo@medwallet.co.mz"
+                              placeholder={country?.id === 'BR' ? 'exemplo@medwallet.com.br' : 'exemplo@medwallet.co.mz'}
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               className="pl-12 h-14 rounded-2xl border-2 border-slate-100 focus:border-primary/30 transition-all bg-white shadow-sm font-medium"
@@ -367,7 +367,7 @@ export default function Auth() {
                             <Input
                               id="registerEmail"
                               type="email"
-                              placeholder="exemplo@medwallet.co.mz"
+                              placeholder={country?.id === 'BR' ? 'exemplo@medwallet.com.br' : 'exemplo@medwallet.co.mz'}
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               className="pl-12 h-14 rounded-2xl border-2 border-slate-100 focus:border-primary/30 transition-all bg-white shadow-sm font-medium"

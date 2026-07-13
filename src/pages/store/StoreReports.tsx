@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { TrendingUp, ShoppingBag, DollarSign, Star } from 'lucide-react';
+import { useCountry } from '@/contexts/CountryContext';
 
 interface StoreContext {
   selectedStore: {
@@ -26,6 +27,7 @@ interface ProductStats {
 
 export default function StoreReports() {
   const { selectedStore } = useOutletContext<StoreContext>();
+  const { country } = useCountry();
   const [loading, setLoading] = useState(true);
   const [dailyStats, setDailyStats] = useState<DailyStats[]>([]);
   const [topProducts, setTopProducts] = useState<ProductStats[]>([]);
@@ -35,6 +37,8 @@ export default function StoreReports() {
     avgOrder: 0,
     avgRating: 0
   });
+  const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
+  const locale = country?.default_locale || 'pt-MZ';
 
   useEffect(() => {
     if (selectedStore) {
@@ -61,7 +65,7 @@ export default function StoreReports() {
       const dailyMap = new Map<string, { orders: number; revenue: number }>();
       
       orders?.forEach(order => {
-        const date = new Date(order.created_at).toLocaleDateString('pt-MZ', {
+        const date = new Date(order.created_at).toLocaleDateString(locale, {
           day: '2-digit',
           month: 'short'
         });
@@ -177,7 +181,7 @@ export default function StoreReports() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {totals.totalRevenue.toLocaleString()} MZN
+              {totals.totalRevenue.toLocaleString(locale)} {currencySymbol}
             </div>
           </CardContent>
         </Card>
@@ -189,7 +193,7 @@ export default function StoreReports() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {totals.avgOrder.toFixed(0)} MZN
+              {totals.avgOrder.toFixed(0)} {currencySymbol}
             </div>
           </CardContent>
         </Card>
@@ -235,7 +239,7 @@ export default function StoreReports() {
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px'
                   }}
-                  formatter={(value: number) => [`${value.toLocaleString()} MZN`, 'Receita']}
+                  formatter={(value: number) => [`${value.toLocaleString(locale)} ${currencySymbol}`, 'Receita']}
                 />
                 <Area 
                   type="monotone" 

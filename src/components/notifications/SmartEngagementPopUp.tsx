@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "@/contexts/LocationContext";
+import { useCountry } from "@/contexts/CountryContext";
 
 /**
  * SmartEngagementPopUp — Sistema de notificações "In-App" inteligentes.
@@ -20,6 +22,8 @@ type PopUpType = "referral" | "education" | "blood" | "profile" | "triage" | "su
 export function SmartEngagementPopUp() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { city } = useLocation();
+  const { country } = useCountry();
   const [show, setShow] = useState(false);
   const [type, setType] = useState<PopUpType>("referral");
   const [envContext, setEnvContext] = useState<{ title: string; desc: string; icon: any; color: string; action?: () => void; btnText?: string } | null>(null);
@@ -64,7 +68,7 @@ export function SmartEngagementPopUp() {
       if (isExtremeHeat && conditions.some(c => c.includes('hipertensão') || c.includes('coração') || c.includes('diabetes'))) {
         setEnvContext({
           title: "Alerta de Calor: Cuida do teu Coração",
-          desc: "Está muito calor em Maputo. Como tens uma condição crónica, evita sair entre as 11h e 16h.",
+          desc: `Está muito calor em ${city}. Como tens uma condição crónica, evita sair entre as 11h e 16h.`,
           icon: ThermometerSun,
           color: "bg-orange-500 text-white",
           btnText: "Dicas de Saúde",
@@ -109,7 +113,7 @@ export function SmartEngagementPopUp() {
   const config: any = {
     environmental: envContext,
     referral: {
-      title: "Ganha 25 MZN grátis!",
+      title: `Ganha 25 ${country?.currency_code || 'MZN'} grátis!`,
       desc: "Convida um amigo para a MedWallet e ambos recebem bónus na carteira.",
       icon: Gift,
       color: "bg-gold text-gold-foreground",
@@ -125,7 +129,7 @@ export function SmartEngagementPopUp() {
       btnText: "Ler artigo"
     },
     blood: {
-      title: "Herói em Maputo",
+      title: `Herói em ${city}`,
       desc: "Precisamos de doadores hoje. Vê onde podes ajudar.",
       icon: Heart,
       color: "bg-red-500 text-white",

@@ -36,7 +36,7 @@ export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCo
   const [couponCode, setCouponCode] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const currencySymbol = country?.currency_symbol || 'MZN';
+  const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
 
   const validateCoupon = async () => {
     if (!couponCode.trim()) {

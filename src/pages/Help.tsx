@@ -61,7 +61,7 @@ export default function Help() {
     },
   ];
 
-  const mainPaymentMethod = country?.config?.payment_methods?.find((m: any) => m.type === 'mobile_money') || { name: 'M-Pesa' };
+  const mainPaymentMethod = country?.config?.payment_methods?.find((m: any) => m.type === 'mobile_money') || country?.config?.payment_methods?.[0] || { name: 'M-Pesa' };
 
   const faqCategories = [
     {
@@ -110,7 +110,7 @@ export default function Help() {
         },
         {
           q: `Como deposito na minha carteira MedWallet via ${mainPaymentMethod.name}?`,
-          a: `Abre ${mainPaymentMethod.name} → "Enviar dinheiro" → insere o número MedWallet → mete o valor → confirma. O saldo é creditado em segundos. Vê o passo-a-passo ilustrado abaixo.`,
+          a: `Abre ${mainPaymentMethod.name} → confirma os dados MedWallet → mete o valor → confirma. O saldo é creditado após validação. Vê o passo-a-passo ilustrado abaixo.`,
         },
         {
           q: "É seguro pagar pelo app?",
@@ -264,7 +264,7 @@ export default function Help() {
             </div>
             <ol className="text-xs space-y-1.5 mt-2 list-decimal pl-5 text-foreground/90">
               <li>
-                Abre o <strong>{mainPaymentMethod.name}</strong> e escolhe <strong>Enviar dinheiro</strong>.
+                Abre o <strong>{mainPaymentMethod.name}</strong> e escolhe a opção de pagamento/transferência.
               </li>
               <li>
                 Insere o número MedWallet: <strong>{supportNumber}</strong>.
