@@ -8,10 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCountry } from '@/contexts/CountryContext';
 
 export default function PaymentSettings() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country } = useCountry();
   const [mpesa, setMpesa] = useState('');
   const [emola, setEmola] = useState('');
   const [mkesh, setMkesh] = useState('');
@@ -55,22 +57,22 @@ export default function PaymentSettings() {
         <Card className="p-4 bg-primary/5 border-primary/20">
           <Wallet className="h-6 w-6 text-primary mb-2" />
           <p className="text-sm">
-            Guarde os seus números M-Pesa, e-Mola e Mkesh. Serão usados para identificar os seus pagamentos e enviar recomendações de como transferir.
+            Guarde os seus dados de pagamento locais. Serão usados para identificar pagamentos e enviar recomendações de transferência.
           </p>
         </Card>
 
         <div className="space-y-3">
           <div>
-            <Label>Número M-Pesa</Label>
-            <Input value={mpesa} onChange={(e) => setMpesa(e.target.value)} placeholder="+258 84 000 0000" />
+            <Label>{country?.id === 'BR' ? 'Chave PIX principal' : 'Número M-Pesa'}</Label>
+            <Input value={mpesa} onChange={(e) => setMpesa(e.target.value)} placeholder={country?.id === 'BR' ? 'CPF, email, telefone ou chave aleatória' : '+258 84 000 0000'} />
           </div>
           <div>
-            <Label>Número e-Mola</Label>
-            <Input value={emola} onChange={(e) => setEmola(e.target.value)} placeholder="+258 86 000 0000" />
+            <Label>{country?.id === 'BR' ? 'Conta bancária / agência' : 'Número e-Mola'}</Label>
+            <Input value={emola} onChange={(e) => setEmola(e.target.value)} placeholder={country?.id === 'BR' ? 'Banco, agência e conta' : '+258 86 000 0000'} />
           </div>
           <div>
-            <Label>Número Mkesh</Label>
-            <Input value={mkesh} onChange={(e) => setMkesh(e.target.value)} placeholder="+258 82 000 0000" />
+            <Label>{country?.id === 'BR' ? 'Boleto / observações' : 'Número Mkesh'}</Label>
+            <Input value={mkesh} onChange={(e) => setMkesh(e.target.value)} placeholder={country?.id === 'BR' ? 'Dados adicionais para recebimento' : '+258 82 000 0000'} />
           </div>
         </div>
 

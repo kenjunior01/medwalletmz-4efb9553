@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, Sparkles, ArrowLeft } from "lucide-react";
+import { useCountry } from "@/contexts/CountryContext";
 
 interface Plan {
   id: string;
@@ -31,10 +32,14 @@ const audiences = [
 
 export default function SubscribePlans() {
   const nav = useNavigate();
+  const { country } = useCountry();
   const [sp] = useSearchParams();
   const [audience, setAudience] = useState(sp.get("audience") || "customer");
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
+  const currencyCode = country?.currency_code || 'MZN';
+  const currencySymbol = country?.currency_symbol || currencyCode;
+  const locale = country?.default_locale || 'pt-MZ';
 
   useEffect(() => {
     (async () => {
@@ -101,9 +106,9 @@ export default function SubscribePlans() {
                   )}
                   <div className="my-4">
                     <span className="text-3xl font-black text-primary">
-                      {p.price_mzn.toLocaleString("pt-MZ")}
+                      {p.price_mzn.toLocaleString(locale)}
                     </span>
-                    <span className="text-muted-foreground text-sm"> MZN / {p.billing_period === "monthly" ? "mês" : p.billing_period === "yearly" ? "ano" : p.billing_period}</span>
+                    <span className="text-muted-foreground text-sm"> {currencySymbol} / {p.billing_period === "monthly" ? "mês" : p.billing_period === "yearly" ? "ano" : p.billing_period}</span>
                   </div>
                   <ul className="space-y-1.5 mb-4 text-sm">
                     {feats.map((f, i) => (

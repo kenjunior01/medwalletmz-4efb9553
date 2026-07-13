@@ -15,7 +15,6 @@ import { CouponInput } from '@/components/checkout/CouponInput';
 import { useCountry } from '@/contexts/CountryContext';
 import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake, Globe, Copy, ExternalLink, CheckCircle2, Receipt, CreditCard } from 'lucide-react';
 import { calculateTaxes } from '@/lib/taxEngine';
-import { convertCurrency, formatCurrency } from '@/lib/currencyService';
 
 interface AppliedCoupon {
   id: string;
@@ -41,7 +40,7 @@ type PayMethod = {
 };
 
 const allPaymentMethods: PayMethod[] = [
-  { id: 'wallet', name: 'Carteira MedWallet', icon: '💳', description: 'Débito direto do saldo MZN', badge: 'Instantâneo' },
+  { id: 'wallet', name: 'Carteira MedWallet', icon: '💳', description: 'Débito direto do saldo local', badge: 'Instantâneo' },
   { id: 'mpesa', name: 'M-Pesa', icon: '📱', description: 'Vodacom M-Pesa', requiresPhone: true },
   { id: 'emola', name: 'e-Mola', icon: '💰', description: 'Movitel e-Mola', requiresPhone: true },
   { id: 'mkesh', name: 'Mkesh', icon: '🏦', description: 'BCI Mkesh', requiresPhone: true },
@@ -152,14 +151,9 @@ export default function Checkout() {
   const taxInfo = useMemo(() => calculateTaxes(subtotal, country?.id || 'MZ', 'pharmacy'), [subtotal, country]);
   const discount = calculateCouponDiscount(appliedCoupon, subtotal);
   const total = subtotal + deliveryFee + taxInfo.amount - discount;
-
-  const [convertedTotal, setConvertedTotal] = useState<{ amount: number; rate: number } | null>(null);
-
-  useEffect(() => {
-    if (country?.id !== 'MZ' && country?.currency_code) {
-      convertCurrency(total, 'MZN', country.currency_code).then(setConvertedTotal);
-    }
-  }, [total, country]);
+  const currencyCode = country?.currency_code || 'MZN';
+  const currencySymbol = country?.currency_symbol || currencyCode;
+  const countryCode = country?.id || 'MZ';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,9 +185,9 @@ export default function Checkout() {
       if ((paymentMethod === 'apple_pay' || paymentMethod === 'google_pay') && typeof (window as any).PaymentRequest !== 'undefined') {
         try {
           const methodData: any[] = paymentMethod === 'apple_pay'
-            ? [{ supportedMethods: 'https://apple.com/apple-pay', data: { version: 3, merchantIdentifier: 'merchant.mz.medwallet', merchantCapabilities: ['supports3DS'], supportedNetworks: ['visa','masterCard','amex'], countryCode: 'MZ' } }]
+            ? [{ supportedMethods: 'https://apple.com/apple-pay', data: { version: 3, merchantIdentifier: 'merchant.mz.medwallet', merchantCapabilities: ['supports3DS'], supportedNetworks: ['visa','masterCard','amex'], countryCode } }]
             : [{ supportedMethods: 'https://google.com/pay', data: { environment: 'TEST', apiVersion: 2, apiVersionMinor: 0, allowedPaymentMethods: [{ type: 'CARD', parameters: { allowedAuthMethods: ['PAN_ONLY','CRYPTOGRAM_3DS'], allowedCardNetworks: ['VISA','MASTERCARD'] } }] } }];
-          const details = { total: { label: 'MedWallet', amount: { currency: 'MZN', value: String(total) } } };
+          const details = { total: { label: 'MedWallet', amount: { currency: currencyCode, value: String(total) } } };
           const pr = new (window as any).PaymentRequest(methodData, details);
           const canPay = await pr.canMakePayment().catch(() => false);
           if (!canPay) throw new Error('unavailable');
@@ -208,7 +202,7 @@ export default function Checkout() {
       }
 
       const notesWithCoupon = appliedCoupon
-        ? `${notes ? notes + ' | ' : ''}Cupom: ${appliedCoupon.code} (-${discount} MZN)`
+        ? `${notes ? notes + ' | ' : ''}Cupom: ${appliedCoupon.code} (-${discount} ${currencyCode})`
         : notes;
 
       // Create order (select only id to reduce chances of SELECT/RLS issues)
@@ -380,37 +374,32 @@ export default function Checkout() {
             {items.map(item => (
               <div key={item.id} className="flex justify-between">
                 <span>{item.quantity}x {item.name}</span>
-                <span>{item.price * item.quantity} {country?.currency_symbol || 'MZN'}</span>
+                <span>{item.price * item.quantity} {currencySymbol}</span>
               </div>
             ))}
             <div className="border-t border-border pt-2 mt-2">
               <div className="flex justify-between">
                 <span>{t('checkout.subtotal')}</span>
-                <span>{subtotal} {country?.currency_symbol || 'MZN'}</span>
+                <span>{subtotal} {currencySymbol}</span>
               </div>
               <div className="flex justify-between">
                 <span>{t('checkout.delivery_fee')}</span>
-                <span>{deliveryFee} {country?.currency_symbol || 'MZN'}</span>
+                <span>{deliveryFee} {currencySymbol}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span className="flex items-center gap-1"><Receipt className="h-3 w-3" /> {taxInfo.name} ({Math.round(taxInfo.rate * 100)}%)</span>
-                <span>{taxInfo.amount} {country?.currency_symbol || 'MZN'}</span>
+                <span>{taxInfo.amount} {currencySymbol}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-primary">
                   <span>{t('checkout.discount')} ({appliedCoupon?.code})</span>
-                  <span>-{discount} {country?.currency_symbol || 'MZN'}</span>
+                  <span>-{discount} {currencySymbol}</span>
                 </div>
               )}
               <div className="flex justify-between font-bold text-lg pt-2">
                 <span>{t('checkout.total')}</span>
                 <div className="text-right">
-                  <span className="text-primary">{total} {country?.currency_symbol || 'MZN'}</span>
-                  {convertedTotal && (
-                    <p className="text-[10px] text-muted-foreground font-normal">
-                      ≈ {formatCurrency(convertedTotal.amount, country?.currency_code || 'USD')}
-                    </p>
-                  )}
+                  <span className="text-primary">{total} {currencySymbol}</span>
                 </div>
               </div>
             </div>
@@ -516,7 +505,7 @@ export default function Checkout() {
             <>
               {paymentMethod === 'apple_pay' && <Apple className="h-5 w-5 mr-2" />}
               {paymentMethod === 'wallet' && <Wallet className="h-5 w-5 mr-2" />}
-              {t('checkout.pay_button', { amount: String(total), currency: country?.currency_symbol || 'MZN' })}
+              {t('checkout.pay_button', { amount: String(total), currency: currencySymbol })}
             </>
           )}
         </Button>

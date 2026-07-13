@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Building2, Store, Hospital, MapPin, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { useCountry } from "@/contexts/CountryContext";
 
 interface Proposal {
   id: string;
@@ -42,6 +43,7 @@ const statusMeta: Record<string, { icon: any; label: string; color: string; bg: 
  * utilizador informado sobre recompensas e o que ainda está em análise.
  */
 export function UserProposalsWidget({ userId }: { userId: string }) {
+  const { country } = useCountry();
   const { data, isLoading } = useQuery<Proposal[]>({
     queryKey: ['my-proposals', userId],
     queryFn: async () => {
@@ -69,6 +71,7 @@ export function UserProposalsWidget({ userId }: { userId: string }) {
   const totalCoins = data
     .filter((p) => p.status === 'approved' && p.reward_paid)
     .reduce((a, p) => a + (p.reward_joy_coins ?? 0), 0);
+  const currencyCode = country?.currency_code || 'MZN';
 
   return (
     <div className="space-y-2">
@@ -79,7 +82,7 @@ export function UserProposalsWidget({ userId }: { userId: string }) {
         </h3>
         {totalMzn + totalCoins > 0 && (
           <span className="text-[10px] text-gold font-bold">
-            Já ganhaste +{totalMzn} MZN + {totalCoins} 🪙
+            Já ganhaste +{totalMzn} {currencyCode} + {totalCoins} 🪙
           </span>
         )}
       </div>
@@ -114,7 +117,7 @@ export function UserProposalsWidget({ userId }: { userId: string }) {
       </Card>
 
       <p className="text-[10px] text-muted-foreground text-center">
-        Cada sugestão aprovada recompensa o teu saldo MZN e Pulse automaticamente.
+        Cada sugestão aprovada recompensa o teu saldo {currencyCode} e Pulse automaticamente.
       </p>
     </div>
   );

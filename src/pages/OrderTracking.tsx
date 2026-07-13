@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { DeliveryTrackingMap } from '@/components/tracking/DeliveryTrackingMap';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocation } from '@/contexts/LocationContext';
+import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -99,6 +100,7 @@ export default function OrderTracking() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { coordinates, requestLocation } = useLocation();
+  const { country } = useCountry();
   
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [driver, setDriver] = useState<DriverInfo | null>(null);
@@ -276,6 +278,7 @@ export default function OrderTracking() {
   const CurrentIcon = currentStep.icon;
   const isDelivered = order.status === 'delivered';
   const isCancelled = order.status === 'cancelled';
+  const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
 
   return (
     <div className="flex flex-col pb-24 animate-fade-in">
@@ -480,21 +483,21 @@ export default function OrderTracking() {
               {order.order_items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between text-sm">
                   <span>{item.quantity}x {item.product?.name || 'Item'}</span>
-                  <span className="font-medium">{item.unit_price * item.quantity} MZN</span>
+                  <span className="font-medium">{item.unit_price * item.quantity} {currencySymbol}</span>
                 </div>
               ))}
               <div className="border-t border-border pt-2 mt-2 space-y-1">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>{order.subtotal} MZN</span>
+                  <span>{order.subtotal} {currencySymbol}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Taxa de Entrega</span>
-                  <span>{order.delivery_fee} MZN</span>
+                  <span>{order.delivery_fee} {currencySymbol}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg pt-1">
                   <span>Total</span>
-                  <span className="text-primary">{order.total} MZN</span>
+                  <span className="text-primary">{order.total} {currencySymbol}</span>
                 </div>
               </div>
             </div>

@@ -23,7 +23,7 @@ interface Plan {
 }
 interface PayAccount {
   id: string;
-  method: 'mpesa' | 'emola' | 'mkesh' | 'bank';
+  method: string;
   account_name: string;
   account_number: string;
   instructions: string | null;
@@ -46,7 +46,7 @@ export default function Subscribe() {
   const { country } = useCountry();
   const [plan, setPlan] = useState<Plan | null>(null);
   const [accounts, setAccounts] = useState<PayAccount[]>([]);
-  const [method, setMethod] = useState<string>('mpesa');
+  const [method, setMethod] = useState<string>('');
   const [reference, setReference] = useState('');
   const [phone, setPhone] = useState('');
   const [notes, setNotes] = useState('');
@@ -60,7 +60,7 @@ export default function Subscribe() {
   ];
 
   useEffect(() => {
-    if (supportedMethods.length > 0 && !method) {
+    if (supportedMethods.length > 0 && (!method || !supportedMethods.some((m: any) => m.id === method))) {
       setMethod(supportedMethods[0].id);
     }
   }, [supportedMethods, method]);
@@ -81,9 +81,9 @@ export default function Subscribe() {
       .then(({ data }) => {
         const list = (data as PayAccount[]) ?? [];
         setAccounts(list);
-        if (list.length) setMethod(list[0].method);
+        if (list.length && !method) setMethod(list[0].method);
       });
-  }, [planId]);
+  }, [planId, method]);
 
   const copy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -135,6 +135,9 @@ export default function Subscribe() {
   }
 
   const filtered = accounts.filter((a) => a.method === method);
+  const currencyCode = country?.currency_code || 'MZN';
+  const currencySymbol = country?.currency_symbol || currencyCode;
+  const locale = country?.default_locale || 'pt-MZ';
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -151,7 +154,7 @@ export default function Subscribe() {
             <div>
               <p className="text-xs text-muted-foreground uppercase">Total a pagar</p>
               <p className="text-2xl font-bold text-primary">
-                {plan.price_mzn.toLocaleString('pt-MZ')} MZN
+                {plan.price_mzn.toLocaleString(locale)} {currencySymbol}
               </p>
             </div>
             <Badge>{plan.billing_period === 'monthly' ? 'Mensal' : plan.billing_period}</Badge>
@@ -203,7 +206,7 @@ export default function Subscribe() {
             <Input
               value={reference}
               onChange={(e) => setReference(e.target.value)}
-              placeholder="Ex: MP240521.1234.A56789"
+              placeholder={country?.id === 'BR' ? 'Ex: PIX123456789' : 'Ex: MP240521.1234.A56789'}
             />
           </div>
           <div>
@@ -211,7 +214,7 @@ export default function Subscribe() {
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="+258 84 000 0000"
+              placeholder={country?.config?.phone_placeholder || '+258 84 000 0000'}
             />
           </div>
           <div>
