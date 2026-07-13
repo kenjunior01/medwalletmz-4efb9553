@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReviewModal } from "@/components/reviews/ReviewModal";
 import { StaticMapImage } from "@/components/maps/StaticMapImage";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCountry } from "@/contexts/CountryContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -53,6 +54,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 export default function Orders() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country } = useCountry();
   const [orders, setOrders] = useState<OrderWithStore[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("active");
@@ -62,6 +64,7 @@ export default function Orders() {
     storeId: string;
     storeName: string;
   }>({ open: false, orderId: '', storeId: '', storeName: '' });
+  const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
 
   useEffect(() => {
     if (user) {
@@ -231,7 +234,7 @@ export default function Orders() {
           <span className="text-xs text-muted-foreground flex items-center gap-1">
             <MapPin className="h-3 w-3" /> #{order.id.slice(0, 8).toUpperCase()}
           </span>
-          <span className="font-bold text-primary">{order.total} MZN</span>
+          <span className="font-bold text-primary">{order.total} {currencySymbol}</span>
         </div>
 
         {/* Map Preview for active orders */}

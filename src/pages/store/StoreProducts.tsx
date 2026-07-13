@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Plus, Search, Edit2, Trash2, Package, Loader2 } from 'lucide-react';
+import { useCountry } from '@/contexts/CountryContext';
 
 interface Product {
   id: string;
@@ -32,6 +33,7 @@ interface StoreContext {
 
 export default function StoreProducts() {
   const { selectedStore } = useOutletContext<StoreContext>();
+  const { country } = useCountry();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -186,6 +188,8 @@ export default function StoreProducts() {
   );
 
   const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+  const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
+  const locale = country?.default_locale || 'pt-MZ';
 
   if (loading) {
     return (
@@ -251,7 +255,7 @@ export default function StoreProducts() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Preço (MZN) *</Label>
+                  <Label htmlFor="price">Preço ({country?.currency_code || 'MZN'}) *</Label>
                   <Input
                     id="price"
                     type="number"
@@ -382,7 +386,7 @@ export default function StoreProducts() {
                     
                     <div className="flex items-center justify-between mt-2">
                       <span className="font-bold text-primary">
-                        {product.price.toLocaleString()} MZN
+                        {product.price.toLocaleString(locale)} {currencySymbol}
                       </span>
                       <div className="flex gap-1">
                         <Button 

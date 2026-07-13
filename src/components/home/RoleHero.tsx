@@ -49,7 +49,7 @@ const CONFIGS: Partial<Record<AppRole, Config>> = {
       { label: "Pacientes", icon: Users, to: "/doctor/patients", variant: "secondary" },
       { label: "Receitar", icon: ClipboardList, to: "/doctor/prescriptions/new", variant: "secondary" },
     ],
-    metrics: [{ label: "Recebes em MZN", icon: TrendingUp }],
+    metrics: [{ label: "Recebes em moeda local", icon: TrendingUp }],
   },
   clinic: {
     tag: "Clínica / Hospital",
@@ -97,7 +97,7 @@ const CONFIGS: Partial<Record<AppRole, Config>> = {
   customer: {
     tag: "Paciente",
     title: "Saúde e farmácia numa só carteira",
-    subtitle: "Meddy Consulta, médicos verificados e entregas 24/7 em Maputo.",
+    subtitle: "Meddy Consulta, médicos verificados e entregas 24/7 na tua cidade.",
     gradient: "from-primary to-secondary",
     ctas: [
       { label: "Meddy Consulta", icon: Activity, to: "/health/triage" },

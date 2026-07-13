@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Gift, Copy, Share2, Users, Coins, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCountry } from '@/contexts/CountryContext';
 
 function genCode(uid: string) {
   return ('MOZ' + uid.replace(/-/g, '').slice(0, 6)).toUpperCase();
@@ -15,6 +16,7 @@ function genCode(uid: string) {
 export default function Referrals() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { country } = useCountry();
   const [code, setCode] = useState('');
   const [referrals, setReferrals] = useState<any[]>([]);
   const [reward, setReward] = useState<any>(null);
@@ -60,6 +62,7 @@ export default function Referrals() {
   const completed = referrals.filter(r => r.status === 'completed').length;
   const totalCoins = referrals.reduce((a, r) => a + (Number(r.bonus_coins) || 0), 0);
   const totalMzn = referrals.reduce((a, r) => a + (Number(r.bonus_mzn) || 0), 0);
+  const currencyCode = country?.currency_code || 'MZN';
 
   const copy = () => { navigator.clipboard.writeText(link); toast.success('Link copiado!'); };
   const share = async () => {
@@ -85,7 +88,7 @@ export default function Referrals() {
           <div className="flex items-center justify-center gap-4 mt-2">
             <div>
               <p className="text-3xl font-bold">+{bonusMzn}</p>
-              <p className="text-xs opacity-90">MZN saldo</p>
+              <p className="text-xs opacity-90">{currencyCode} saldo</p>
             </div>
             <div className="text-2xl opacity-50">+</div>
             <div>
@@ -118,7 +121,7 @@ export default function Referrals() {
           <Card className="p-3 text-center">
             <Wallet className="h-5 w-5 mx-auto text-pharmacy mb-1" />
             <p className="text-xl font-bold">{totalMzn}</p>
-            <p className="text-[10px] text-muted-foreground">MZN ganhos</p>
+            <p className="text-[10px] text-muted-foreground">{currencyCode} ganhos</p>
           </Card>
           <Card className="p-3 text-center">
             <Coins className="h-5 w-5 mx-auto text-gold mb-1" />

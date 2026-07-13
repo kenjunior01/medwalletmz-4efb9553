@@ -18,6 +18,7 @@ import {
   MapPin,
   Phone
 } from 'lucide-react';
+import { useCountry } from '@/contexts/CountryContext';
 
 interface OrderItem {
   id: string;
@@ -52,9 +53,12 @@ const statusFlow = ['pending', 'accepted', 'preparing', 'ready', 'out_for_delive
 
 export default function StoreOrders() {
   const { selectedStore } = useOutletContext<StoreContext>();
+  const { country } = useCountry();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('pending');
+  const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
+  const locale = country?.default_locale || 'pt-MZ';
 
   useEffect(() => {
     if (selectedStore) {
@@ -259,7 +263,7 @@ export default function StoreOrders() {
                                 Pedido #{order.id.slice(0, 8)}
                               </CardTitle>
                               <p className="text-sm text-muted-foreground">
-                                {new Date(order.created_at).toLocaleString('pt-MZ')}
+                                {new Date(order.created_at).toLocaleString(locale)}
                               </p>
                             </div>
                           </div>
@@ -277,7 +281,7 @@ export default function StoreOrders() {
                               <div key={item.id} className="flex justify-between text-sm">
                                 <span>{item.quantity}x {item.product?.name}</span>
                                 <span className="text-muted-foreground">
-                                  {(item.quantity * item.unit_price).toLocaleString()} MZN
+                                  {(item.quantity * item.unit_price).toLocaleString(locale)} {currencySymbol}
                                 </span>
                               </div>
                             ))}
@@ -302,15 +306,15 @@ export default function StoreOrders() {
                         <div className="border-t border-border pt-3 space-y-1">
                           <div className="flex justify-between text-sm">
                             <span>Subtotal</span>
-                            <span>{order.subtotal.toLocaleString()} MZN</span>
+                            <span>{order.subtotal.toLocaleString(locale)} {currencySymbol}</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span>Taxa de entrega</span>
-                            <span>{order.delivery_fee.toLocaleString()} MZN</span>
+                            <span>{order.delivery_fee.toLocaleString(locale)} {currencySymbol}</span>
                           </div>
                           <div className="flex justify-between font-bold">
                             <span>Total</span>
-                            <span>{order.total.toLocaleString()} MZN</span>
+                            <span>{order.total.toLocaleString(locale)} {currencySymbol}</span>
                           </div>
                         </div>
 

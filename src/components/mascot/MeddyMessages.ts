@@ -28,7 +28,7 @@ const messages: Record<MeddyRole, Partial<Record<Context, MeddyMessage[]>>> = {
   patient: {
     home: [
       { text: "Olá, {{name}}! Sou a Meddy 🌿 Posso ajudar-te a encontrar médico, farmácia ou marcar teleconsulta em {{city}}.", emoji: "🌿" },
-      { text: "Sabias que podes sugerir farmácias que conheces? Cada aprovação dá-te +25 MZN 💰", emoji: "💰" },
+      { text: "Sabias que podes sugerir farmácias que conheces? Cada aprovação dá-te saldo local + Pulse 💰", emoji: "💰" },
       { text: "Tens XXXX pedido(s) ou acompanhamento(s) em aberto. Posso levar-te ao ponto certo.", emoji: "📅" },
       { text: "O teu Pulse está a subir! Continua assim para desbloqueares descontos em consultas.", emoji: "🔥" },
     ],
@@ -48,7 +48,7 @@ const messages: Record<MeddyRole, Partial<Record<Context, MeddyMessage[]>>> = {
       { text: "Lê artigos de saúde sobre o teu sintoma enquanto esperas.", emoji: "📚", actionLabel: "Saúde MZ", actionHref: "/health/education" },
     ],
     empty_pharmacies: [
-      { text: "Sem farmácias por perto? Sugere uma — recebes 25 MZN se for aprovada!", emoji: "💊", actionLabel: "Sugerir farmácia", actionHref: "/suggest-place" },
+      { text: "Sem farmácias por perto? Sugere uma — recebes saldo local se for aprovada!", emoji: "💊", actionLabel: "Sugerir farmácia", actionHref: "/suggest-place" },
     ],
     triage: [
       { text: "Descreve os teus sintomas com calma. Não te esqueças de mencionar a duração!", emoji: "🩺" },
@@ -56,15 +56,15 @@ const messages: Record<MeddyRole, Partial<Record<Context, MeddyMessage[]>>> = {
     ],
     orders: [
       { text: "Os teus pedidos estão a caminho! 🛵", emoji: "🛵" },
-      { text: "Precisas de uma farmácia 24h? Temos várias em Maputo.", emoji: "💊" },
+      { text: "Precisas de uma farmácia 24h? Veja as opções disponíveis na tua cidade.", emoji: "💊" },
     ],
     profile: [
       { text: "Já fizeste a tua primeira teleconsulta? É super-rápido.", emoji: "🎥" },
       { text: "Convida amigos e ganha saldo + Pulse!", emoji: "🎁", actionLabel: "Convidar", actionHref: "/referrals" },
     ],
     wallet: [
-      { text: "Sabias que podes carregar MZN directamente via M-Pesa?", emoji: "💸" },
-      { text: "Cada vez que sugeres uma farmácia aprovada, recebes +25 MZN.", emoji: "💰" },
+      { text: "Sabias que podes carregar a tua carteira pela forma de pagamento local?", emoji: "💸" },
+      { text: "Cada vez que sugeres uma farmácia aprovada, recebes saldo local.", emoji: "💰" },
     ],
     education: [
       { text: "Bem-vindo à biblioteca de saúde de Moçambique! 🇲🇿", emoji: "🇲🇿" },

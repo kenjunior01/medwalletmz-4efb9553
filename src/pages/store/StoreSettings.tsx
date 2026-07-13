@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import { useCountry } from '@/contexts/CountryContext';
 import { Save, Loader2, Trash2, AlertTriangle } from 'lucide-react';
 import {
   AlertDialog,
@@ -54,6 +55,7 @@ const cities = [
 
 export default function StoreSettings() {
   const navigate = useNavigate();
+  const { country } = useCountry();
   const { selectedStore, refreshStores } = useOutletContext<StoreContext>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -248,7 +250,7 @@ export default function StoreSettings() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {cities.map(city => (
+                {(country?.config?.cities || cities).map((city: string) => (
                   <SelectItem key={city} value={city}>
                     {city}
                   </SelectItem>
@@ -294,7 +296,7 @@ export default function StoreSettings() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="delivery_fee">Taxa de Entrega (MZN)</Label>
+            <Label htmlFor="delivery_fee">Taxa de Entrega ({country?.currency_code || 'MZN'})</Label>
             <Input
               id="delivery_fee"
               type="number"
