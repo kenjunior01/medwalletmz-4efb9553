@@ -3907,6 +3907,10 @@ export type Database = {
         }
         Returns: Json
       }
+      wallet_currency_for_country: {
+        Args: { _country_id: string }
+        Returns: string
+      }
       wallet_debit: {
         Args: {
           _amount: number
