@@ -2,9 +2,14 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, Shield, MapPin, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from '@/contexts/LocationContext';
+import { useCountry } from '@/contexts/CountryContext';
 
 export default function DispatchRadar({ onCancel, type = 'médico' }: any) {
   const [dots, setDots] = useState('');
+  const { city } = useLocation();
+  const { country } = useCountry();
+  const cityLabel = city || country?.name || 'sua região';
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,7 +34,7 @@ export default function DispatchRadar({ onCancel, type = 'médico' }: any) {
 
       <h2 className="text-2xl font-bold mb-2">Procurando {type} próximo{dots}</h2>
       <p className="text-muted-foreground mb-8 max-w-xs">
-        Estamos a notificar os profissionais disponíveis em Maputo para atender o seu pedido agora.
+        Estamos a notificar os profissionais disponíveis em {cityLabel} para atender o seu pedido agora.
       </p>
 
       <div className="w-full max-w-sm bg-muted/50 p-4 rounded-xl mb-8 flex items-center gap-3">
