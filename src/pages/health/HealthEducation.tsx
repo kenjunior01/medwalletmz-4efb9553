@@ -396,7 +396,7 @@ function ArticleDetail({ article, related, loading, onBack, user, navigate }: { 
         {/* CTA */}
         <Card className="mt-4 p-5 bg-gradient-to-br from-primary to-secondary text-primary-foreground border-0">
           <p className="font-bold">Precisas falar com um médico?</p>
-          <p className="text-sm opacity-90 mt-1">Médicos verificados disponíveis em Maputo — chat, vídeo e teleconsulta.</p>
+          <p className="text-sm opacity-90 mt-1">Médicos verificados disponíveis na sua região — chat, vídeo e teleconsulta.</p>
           <Button
             size="sm"
             variant="secondary"
