@@ -12,6 +12,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
 import { lovable } from '@/integrations/lovable';
+import { supabase } from '@/integrations/supabase/client';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
