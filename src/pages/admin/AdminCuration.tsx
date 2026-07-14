@@ -62,8 +62,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 
-type EntityType = 'pharmacy' | 'clinic' | 'hospital' | 'doctor' | 'lab' | 'other';
-type TypeFilter = 'all' | 'pharmacy' | 'clinic' | 'hospital' | 'lab';
+type EntityType = 'pharmacy' | 'clinic' | 'hospital' | 'doctor' | 'lab' | 'laboratory' | 'veterinary' | 'other';
+type TypeFilter = 'all' | 'pharmacy' | 'clinic' | 'hospital' | 'lab' | 'veterinary';
 
 type Proposal = {
   id: string;
@@ -187,8 +187,11 @@ export default function AdminCuration() {
       if (tab !== 'all') q = q.eq('status', tab);
       if (sourceFilter !== 'all') q = q.eq('source', sourceFilter);
       if (cityFilter !== 'all') q = q.eq('city', cityFilter);
-      if (typeFilter === 'pharmacy' || typeFilter === 'hospital') q = q.eq('entity_type', typeFilter);
-      if (typeFilter === 'clinic' || typeFilter === 'lab') q = q.eq('entity_type', 'clinic');
+      if (typeFilter === 'pharmacy' || typeFilter === 'hospital' || typeFilter === 'veterinary') {
+        q = q.eq('entity_type', typeFilter);
+      }
+      if (typeFilter === 'lab') q = q.in('entity_type', ['lab', 'laboratory']);
+      if (typeFilter === 'clinic') q = q.eq('entity_type', 'clinic');
       if (search.trim()) q = q.ilike('name', `%${search.trim()}%`);
 
       const { data, error } = await q;
@@ -274,8 +277,9 @@ export default function AdminCuration() {
         if (tab !== 'all' && item.status !== tab) return false;
         if (sourceFilter !== 'all' && item.source !== sourceFilter) return false;
         if (cityFilter !== 'all' && item.city !== cityFilter) return false;
-        if (typeFilter === 'pharmacy' || typeFilter === 'hospital') return item.entity_type === typeFilter;
-        if (typeFilter === 'clinic' || typeFilter === 'lab') return item.entity_type === 'clinic';
+        if (typeFilter === 'pharmacy' || typeFilter === 'hospital' || typeFilter === 'veterinary') return item.entity_type === typeFilter;
+        if (typeFilter === 'lab') return item.entity_type === 'lab' || item.entity_type === 'laboratory';
+        if (typeFilter === 'clinic') return item.entity_type === 'clinic';
         return true;
       });
 
@@ -553,6 +557,7 @@ export default function AdminCuration() {
                 <SelectItem value="clinic">Clínicas</SelectItem>
                 <SelectItem value="hospital">Hospitais</SelectItem>
                 <SelectItem value="lab">Laboratórios</SelectItem>
+                <SelectItem value="veterinary">Veterinárias</SelectItem>
               </SelectContent>
             </Select>
           </div>
