@@ -351,6 +351,28 @@ export default function AdminUsers() {
                   <Shield className="h-4 w-4" />
                   Roles do Utilizador
                 </p>
+                {selectedUser.roles.some(r => r.role === 'country_manager') && (
+                  <div className="mb-3">
+                    {selectedUser.roles
+                      .filter(r => r.role === 'country_manager' && r.country_id)
+                      .map((r, i) => (
+                        <Button
+                          key={`enter-${i}`}
+                          size="sm"
+                          className="w-full mb-1 justify-between font-semibold"
+                          onClick={() => {
+                            try { localStorage.setItem('selected_country', r.country_id!); } catch {}
+                            toast.success(`A entrar como gestor de ${r.country_id}`);
+                            navigate('/admin/country-dashboard');
+                            setIsDialogOpen(false);
+                          }}
+                        >
+                          <span className="flex items-center gap-2"><LogIn className="h-4 w-4" /> Entrar no painel de {r.country_id}</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      ))}
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {selectedUser.roles.map((r, idx) => (
                     <Badge 
