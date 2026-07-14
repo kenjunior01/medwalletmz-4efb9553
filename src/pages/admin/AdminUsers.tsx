@@ -361,7 +361,7 @@ export default function AdminUsers() {
                           size="sm"
                           className="w-full mb-1 justify-between font-semibold"
                           onClick={() => {
-                            try { localStorage.setItem('selected_country', r.country_id!); } catch {}
+                            try { localStorage.setItem('selectedCountryId', r.country_id!); } catch {}
                             toast.success(`A entrar como gestor de ${r.country_id}`);
                             navigate('/admin/country-dashboard');
                             setIsDialogOpen(false);
