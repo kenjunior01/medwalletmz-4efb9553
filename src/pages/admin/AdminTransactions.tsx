@@ -114,19 +114,19 @@ export default function AdminTransactions() {
       <div className="grid grid-cols-4 gap-3 mb-6">
         <Card><CardContent className="p-4">
           <p className="text-xs text-muted-foreground">Entradas</p>
-          <p className="text-2xl font-bold text-emerald">{(totals?.in || 0).toLocaleString()} MZN</p>
+          <p className="text-2xl font-bold text-emerald">{fmt(totals?.in || 0)}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4">
           <p className="text-xs text-muted-foreground">Saídas</p>
-          <p className="text-2xl font-bold text-primary">{(totals?.out || 0).toLocaleString()} MZN</p>
+          <p className="text-2xl font-bold text-primary">{fmt(totals?.out || 0)}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4">
           <p className="text-xs text-muted-foreground">Comissões</p>
-          <p className="text-2xl font-bold text-secondary">{(totals?.commission || 0).toLocaleString()} MZN</p>
+          <p className="text-2xl font-bold text-secondary">{fmt(totals?.commission || 0)}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4">
           <p className="text-xs text-muted-foreground">Reembolsos</p>
-          <p className="text-2xl font-bold text-destructive">{(totals?.refunds || 0).toLocaleString()} MZN</p>
+          <p className="text-2xl font-bold text-destructive">{fmt(totals?.refunds || 0)}</p>
         </CardContent></Card>
       </div>
 
@@ -184,7 +184,7 @@ export default function AdminTransactions() {
                   </div>
                   <div className="text-right">
                     <p className={`text-base font-bold ${isOut ? 'text-destructive' : 'text-emerald'}`}>
-                      {isOut ? '-' : '+'}{Number(t.amount).toFixed(2)} MZN
+                      {isOut ? '-' : '+'}{fmt(Number(t.amount))}
                     </p>
                     <p className="text-[10px] text-muted-foreground">Saldo: {Number(t.balance_after).toFixed(2)}</p>
                   </div>
@@ -213,7 +213,7 @@ export default function AdminTransactions() {
 
       <Dialog open={!!refundFor} onOpenChange={() => setRefundFor(null)}>
         <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Reembolsar {Number(refundFor?.amount || 0).toFixed(2)} MZN</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Reembolsar {fmt(Number(refundFor?.amount || 0))}</DialogTitle></DialogHeader>
           <p className="text-sm text-muted-foreground">{refundFor?.description}</p>
           <Input placeholder="Motivo (opcional)" value={reason} onChange={e => setReason(e.target.value)} />
           <Button onClick={doRefund} className="w-full"><RefreshCw className="h-4 w-4 mr-1" />Confirmar reembolso</Button>
@@ -231,7 +231,7 @@ export default function AdminTransactions() {
               <Minus className="h-4 w-4 mr-1" /> Debitar
             </Button>
           </div>
-          <Input type="number" placeholder="Valor MZN" value={adjAmt} onChange={e => setAdjAmt(e.target.value)} />
+          <Input type="number" placeholder="Valor" value={adjAmt} onChange={e => setAdjAmt(e.target.value)} />
           <Input placeholder="Motivo (obrigatório)" value={reason} onChange={e => setReason(e.target.value)} />
           <Button onClick={doAdjust} className="w-full" disabled={!adjAmt || !reason}>Aplicar ajuste</Button>
         </DialogContent>
