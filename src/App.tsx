@@ -38,6 +38,7 @@ import AdminReports from "./pages/admin/AdminReports";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminDrivers from "./pages/admin/AdminDrivers";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminChangePassword from "./pages/admin/AdminChangePassword";
 
 // Store Owner Pages
 import StoreOwnerDashboard from "./pages/store/StoreOwnerDashboard";
@@ -217,6 +218,7 @@ const App = () => (
                     <Route path="subscription-plans" element={<AdminSubscriptionPlans />} />
                     <Route path="payment-accounts" element={<AdminPaymentAccounts />} />
                     <Route path="settings" element={<AdminSettings />} />
+                    <Route path="change-password" element={<AdminChangePassword />} />
                     <Route path="wallets" element={<AdminWallets />} />
                     <Route path="commissions" element={<AdminCommissions />} />
                     <Route path="platform-settings" element={<AdminPlatformSettings />} />
