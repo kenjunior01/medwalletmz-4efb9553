@@ -161,7 +161,7 @@ export default function RegistrationWizard() {
       }).eq('user_id', user.id);
 
       // 2. Role specific logic
-      if (selectedRole === 'doctor') {
+      if (selectedRole === 'doctor' || selectedRole === 'veterinary') {
         const { error: dErr } = await supabase.from('doctor_profiles').upsert({
           user_id: user.id,
           license_number: formData.licenseNumber,
@@ -174,8 +174,8 @@ export default function RegistrationWizard() {
           license_url: formData.licenseUrl || null,
         });
         if (dErr) throw dErr;
-        await supabase.from('user_roles').upsert({ user_id: user.id, role: 'doctor', country_id: country?.id || 'MZ' });
-        navigate('/doctor/dashboard');
+        await supabase.from('user_roles').upsert({ user_id: user.id, role: selectedRole, country_id: country?.id || 'MZ' });
+        navigate(selectedRole === 'doctor' ? '/doctor/dashboard' : '/health/veterinary');
       }
       else if (selectedRole === 'store_owner') {
         const { data: store, error: sErr } = await supabase.from('stores').insert({

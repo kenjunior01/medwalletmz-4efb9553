@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2, Gift, PlusCircle, Award, ShieldCheck, Globe, FlaskConical } from "lucide-react";
+import { User, MapPin, Bell, HelpCircle, LogOut, ChevronRight, Settings, Camera, Edit2, Package, FileText, Ticket, Store, Truck, Crown, Wallet, Stethoscope, Building2, Gift, PlusCircle, Award, ShieldCheck, Globe, FlaskConical, PawPrint, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,7 +18,7 @@ type Profile = Tables<"profiles">;
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut, hasRole } = useAuth();
   const { country, t } = useCountry();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,10 +28,13 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [stats, setStats] = useState({ orders: 0, prescriptions: 0, coupons: 0 });
 
+  const isManager = hasRole('country_manager') || hasRole('admin');
+
   const menuItems = [
     { icon: Wallet, label: t('profile.menu.wallet'), href: "/wallet" },
     { icon: MapPin, label: t('profile.menu.addresses'), href: "/addresses" },
-    { icon: PlusCircle, label: t('profile.menu.suggest'), href: "/suggest-place", highlight: true, reward: true },
+    ...(isManager ? [{ icon: LayoutDashboard, label: 'Painel Regional', href: "/manager", highlight: true }] : []),
+    { icon: PlusCircle, label: t('profile.menu.suggest'), href: "/suggest-place", highlight: !isManager, reward: true },
     { icon: Gift, label: t('profile.menu.referrals'), href: "/referrals" },
     { icon: Crown, label: t('profile.menu.subscriptions'), href: "/subscriptions" },
     { icon: Settings, label: t('profile.menu.settings'), href: "/settings" },
@@ -264,7 +267,7 @@ export default function Profile() {
               <span className="font-medium text-sm block">{label}</span>
               {reward && (
                 <span className="text-[10px] text-gold font-bold inline-flex items-center gap-0.5">
-                  <Award className="h-3 w-3" /> +25 MZN por aprovação
+                  <Award className="h-3 w-3" /> +{country?.config?.registration_defaults?.reward_mzn || 25} {country?.currency_symbol || 'MT'} por aprovação
                 </span>
               )}
             </div>
@@ -299,6 +302,17 @@ export default function Profile() {
           <div className="flex-1 text-left">
             <span className="font-medium text-sm block">{t('profile.become_doctor')}</span>
             <span className="text-xs text-muted-foreground">{t('profile.treat_online')}</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+        <button
+          onClick={() => navigate("/registration-wizard?role=veterinary")}
+          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+        >
+          <PawPrint className="h-5 w-5 text-rose-500" />
+          <div className="flex-1 text-left">
+            <span className="font-medium text-sm block">Ser Veterinário</span>
+            <span className="text-xs text-muted-foreground">Atenda animais de estimação e agro</span>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>

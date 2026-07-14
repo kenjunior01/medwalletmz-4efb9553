@@ -68,9 +68,9 @@ export default function AdminDashboard() {
     if (!loading && (!user || (!isAdmin && !isCountryManager))) {
       navigate('/auth');
     }
-    // Se é country_manager puro e caiu no /admin root, mandar para o painel dele
-    if (!loading && user && !isAdmin && isCountryManager && location.pathname === '/admin') {
-      navigate('/admin/country-dashboard', { replace: true });
+    // Redirecionar gestores regionais para o seu painel dedicado
+    if (!loading && user && !isAdmin && isCountryManager) {
+      navigate('/manager', { replace: true });
     }
   }, [user, loading, isAdmin, isCountryManager, navigate]);
 

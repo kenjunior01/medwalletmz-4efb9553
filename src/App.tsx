@@ -26,6 +26,7 @@ import NotFound from "./pages/NotFound";
 import RegistrationWizard from "./pages/RegistrationWizard";
 import Rewards from "./pages/Rewards";
 import OrderTracking from "./pages/OrderTracking";
+import Settings from "./pages/Settings";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -150,6 +151,7 @@ const App = () => (
                     <Route path="/store/:id" element={<StoreDetail />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/addresses" element={<Addresses />} />
+                    <Route path="/settings" element={<Settings />} />
                     <Route path="/help" element={<Help />} />
                     <Route path="/rewards" element={<Rewards />} />
                     <Route path="/order/:id" element={<OrderTracking />} />
