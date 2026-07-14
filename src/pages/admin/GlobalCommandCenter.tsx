@@ -8,8 +8,10 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useGlobalAdminGuard } from '@/hooks/useAdminGuard';
 
 export default function GlobalCommandCenter() {
+  useGlobalAdminGuard();
   const [countries, setCountries] = useState<any[]>([]);
   const [managers, setManagers] = useState<any[]>([]);
   const [newManagerEmail, setNewManagerEmail] = useState('');
