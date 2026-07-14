@@ -294,72 +294,102 @@ export default function Profile() {
 
       {/* Business Options */}
       <div className="bg-card rounded-xl border border-border divide-y divide-border">
-        <button
-          onClick={() => navigate("/doctor/register")}
-          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
-        >
-          <Stethoscope className="h-5 w-5 text-pharmacy" />
-          <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">{t('profile.become_doctor')}</span>
-            <span className="text-xs text-muted-foreground">{t('profile.treat_online')}</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
-        <button
-          onClick={() => navigate("/registration-wizard?role=veterinary")}
-          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
-        >
-          <PawPrint className="h-5 w-5 text-rose-500" />
-          <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">Ser Veterinário</span>
-            <span className="text-xs text-muted-foreground">Atenda animais de estimação e agro</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
-        <button
-          onClick={() => navigate("/clinic/register")}
-          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
-        >
-          <Building2 className="h-5 w-5 text-gold" />
-          <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">{t('profile.register_clinic')}</span>
-            <span className="text-xs text-muted-foreground">{t('profile.manage_team')}</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
-        <button
-          onClick={() => navigate("/store/register")}
-          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
-        >
-          <Store className="h-5 w-5 text-green-500" />
-          <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">{t('profile.register_pharmacy')}</span>
-            <span className="text-xs text-muted-foreground">{t('profile.sell_online')}</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
-        <button
-          onClick={() => navigate("/lab/register")}
-          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
-        >
-          <FlaskConical className="h-5 w-5 text-cyan-500" />
-          <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">Registar Laboratório</span>
-            <span className="text-xs text-muted-foreground">Receba pedidos de exames e publique resultados</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
-        <button
-          onClick={() => navigate("/driver/register")}
-          className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
-        >
-          <Truck className="h-5 w-5 text-orange-500" />
-          <div className="flex-1 text-left">
-            <span className="font-medium text-sm block">{t('profile.become_driver')}</span>
-            <span className="text-xs text-muted-foreground">{t('profile.deliver_priority')}</span>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
+        {!hasRole('doctor') && (
+          <button
+            onClick={() => navigate("/doctor/register")}
+            className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+          >
+            <Stethoscope className="h-5 w-5 text-pharmacy" />
+            <div className="flex-1 text-left">
+              <span className="font-medium text-sm block">{t('profile.become_doctor')}</span>
+              <span className="text-xs text-muted-foreground">{t('profile.treat_online')}</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        )}
+        {!hasRole('veterinary') && (
+          <button
+            onClick={() => navigate("/register?role=veterinary")}
+            className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+          >
+            <PawPrint className="h-5 w-5 text-rose-500" />
+            <div className="flex-1 text-left">
+              <span className="font-medium text-sm block">Ser Veterinário</span>
+              <span className="text-xs text-muted-foreground">Atenda animais de estimação e agro</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        )}
+        {!hasRole('clinic') && (
+          <button
+            onClick={() => navigate("/clinic/register")}
+            className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+          >
+            <Building2 className="h-5 w-5 text-gold" />
+            <div className="flex-1 text-left">
+              <span className="font-medium text-sm block">{t('profile.register_clinic')}</span>
+              <span className="text-xs text-muted-foreground">{t('profile.manage_team')}</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        )}
+        {!hasRole('store_owner') && (
+          <button
+            onClick={() => navigate("/store/register")}
+            className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+          >
+            <Store className="h-5 w-5 text-green-500" />
+            <div className="flex-1 text-left">
+              <span className="font-medium text-sm block">{t('profile.register_pharmacy')}</span>
+              <span className="text-xs text-muted-foreground">{t('profile.sell_online')}</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        )}
+        {!hasRole('clinic') && ( // Lab maps to clinic role in Supabase usually
+          <button
+            onClick={() => navigate("/lab/register")}
+            className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+          >
+            <FlaskConical className="h-5 w-5 text-cyan-500" />
+            <div className="flex-1 text-left">
+              <span className="font-medium text-sm block">Registar Laboratório</span>
+              <span className="text-xs text-muted-foreground">Receba pedidos de exames e publique resultados</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        )}
+        {!hasRole('driver') && (
+          <button
+            onClick={() => navigate("/driver/register")}
+            className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
+          >
+            <Truck className="h-5 w-5 text-orange-500" />
+            <div className="flex-1 text-left">
+              <span className="font-medium text-sm block">{t('profile.become_driver')}</span>
+              <span className="text-xs text-muted-foreground">{t('profile.deliver_priority')}</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+        )}
+        {(hasRole('doctor') || hasRole('store_owner') || hasRole('clinic') || hasRole('driver')) && (
+           <button
+             onClick={() => {
+               if (hasRole('doctor')) navigate('/doctor/dashboard');
+               else if (hasRole('store_owner')) navigate('/store/dashboard');
+               else if (hasRole('clinic')) navigate('/clinic/dashboard');
+               else if (hasRole('driver')) navigate('/driver/dashboard');
+             }}
+             className="w-full flex items-center gap-3 p-4 bg-primary/5 hover:bg-primary/10 transition-colors"
+           >
+             <LayoutDashboard className="h-5 w-5 text-primary" />
+             <div className="flex-1 text-left">
+               <span className="font-bold text-sm block text-primary">Aceder ao meu Painel Profissional</span>
+               <span className="text-xs text-muted-foreground">Gestão de consultas, stock ou entregas</span>
+             </div>
+             <ChevronRight className="h-4 w-4 text-primary" />
+           </button>
+        )}
       </div>
 
       {/* Logout */}

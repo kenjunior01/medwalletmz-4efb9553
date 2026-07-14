@@ -117,13 +117,29 @@ export default function Auth() {
   const goAfterAuth = async (userId?: string | null) => {
     try {
       if (!userId) return navigate('/register');
-      const { data } = await supabase.from('profiles')
-        .select('onboarding_completed')
-        .eq('user_id', userId)
-        .maybeSingle();
-      if (data?.onboarding_completed) navigate('/');
+
+      // Busca perfil e roles simultaneamente para decisão mais inteligente
+      const [profileRes, rolesRes] = await Promise.all([
+        supabase.from('profiles').select('onboarding_completed').eq('user_id', userId).maybeSingle(),
+        supabase.from('user_roles').select('role').eq('user_id', userId)
+      ]);
+
+      const hasRoles = rolesRes.data && rolesRes.data.length > 0;
+      const onboardingDone = profileRes.data?.onboarding_completed;
+
+      // Se já tem papéis (médico, farmácia, etc), garantimos que o onboarding está OK
+      if (hasRoles) {
+        if (!onboardingDone) {
+          await supabase.from('profiles').update({ onboarding_completed: true }).eq('user_id', userId);
+        }
+        navigate('/');
+        return;
+      }
+
+      if (onboardingDone) navigate('/');
       else navigate('/register');
-    } catch {
+    } catch (error) {
+      console.error("Erro no redirecionamento pós-auth:", error);
       navigate('/register');
     }
   };

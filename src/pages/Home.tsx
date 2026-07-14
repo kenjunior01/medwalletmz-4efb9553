@@ -353,15 +353,25 @@ export default function Home() {
 
               <div className="grid grid-cols-2 gap-2 mt-5">
                 {[
-                  { label: t('common.doctor'), icon: Stethoscope, to: "/doctor/register" },
-                  { label: t('common.pharmacy'), icon: Pill, to: "/store/register" },
-                  { label: t('home.clinics'), icon: Building2, to: "/clinic/register" },
-                  { label: t('home.laboratories'), icon: FlaskConical, to: "/lab/register" },
-                ].map(b => (
+                  { label: t('common.doctor'), icon: Stethoscope, to: "/doctor/register", role: 'doctor' },
+                  { label: t('common.pharmacy'), icon: Pill, to: "/store/register", role: 'store_owner' },
+                  { label: t('home.clinics'), icon: Building2, to: "/clinic/register", role: 'clinic' },
+                  { label: t('home.laboratories'), icon: FlaskConical, to: "/lab/register", role: 'laboratory' },
+                ].filter(b => !roles.includes(b.role as any)).map(b => (
                   <Button key={b.label} variant="secondary" size="sm" className="bg-white/10 hover:bg-white/20 border-white/10 text-white font-bold h-10 rounded-xl" onClick={() => navigate(b.to)}>
                     <b.icon className="h-3.5 w-3.5 mr-1.5" /> {b.label}
                   </Button>
                 ))}
+                {roles.length > 0 && roles.some(r => ['doctor', 'store_owner', 'clinic', 'laboratory', 'driver'].includes(r)) && (
+                   <Button variant="secondary" size="sm" className="col-span-2 bg-secondary/20 hover:bg-secondary/30 border-secondary/20 text-white font-bold h-10 rounded-xl" onClick={() => {
+                     if (roles.includes('doctor')) navigate('/doctor/dashboard');
+                     else if (roles.includes('store_owner')) navigate('/store/dashboard');
+                     else if (roles.includes('clinic')) navigate('/clinic/dashboard');
+                     else if (roles.includes('driver')) navigate('/driver/dashboard');
+                   }}>
+                     Ir para o meu Painel Profissional <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                   </Button>
+                )}
               </div>
             </div>
             <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-secondary/10 rounded-full blur-[100px]" />

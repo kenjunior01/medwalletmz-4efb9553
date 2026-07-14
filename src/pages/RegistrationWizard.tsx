@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LicenseUpload } from '@/components/upload/LicenseUpload';
 import { LogoUpload } from '@/components/upload/LogoUpload';
 
-type Role = 'customer' | 'doctor' | 'store_owner' | 'clinic' | 'laboratory' | 'driver' | 'insurance';
+type Role = 'customer' | 'doctor' | 'store_owner' | 'clinic' | 'laboratory' | 'driver' | 'insurance' | 'veterinary';
 
 const roleOptions = [
   { id: 'customer', title: 'Paciente', description: 'Consultas e registos', icon: User, color: 'bg-blue-500', category: 'Pessoal' },
@@ -39,7 +39,7 @@ const roleOptions = [
 export default function RegistrationWizard() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { user, roles, refreshRoles } = useAuth();
   const { country, t } = useCountry();
 
   const [step, setStep] = useState(1);
@@ -47,10 +47,30 @@ export default function RegistrationWizard() {
   const [loading, setLoading] = useState(false);
   const [specialties, setSpecialties] = useState<any[]>([]);
 
+  // Verifica se o utilizador já tem o papel que está a tentar registar
+  useEffect(() => {
+    if (user && selectedRole && roles.includes(selectedRole as any)) {
+      toast.info(`Você já está registado como ${roleOptions.find(r => r.id === selectedRole)?.title}.`);
+
+      // Redireciona para o dashboard apropriado
+      const dashboardMap: Record<string, string> = {
+        doctor: '/doctor/dashboard',
+        store_owner: '/store/dashboard',
+        clinic: '/clinic/dashboard',
+        laboratory: '/lab/dashboard',
+        driver: '/driver/dashboard',
+        insurance: '/insurance/dashboard',
+        veterinary: '/health/veterinary'
+      };
+
+      navigate(dashboardMap[selectedRole] || '/');
+    }
+  }, [user, selectedRole, roles, navigate]);
+
   // Form States
   const [formData, setFormData] = useState({
     // Common
-    fullName: '',
+    fullName: user?.user_metadata?.full_name || '',
     phone: '',
     city: country?.config?.cities?.[0] || 'Maputo',
     address: '',
@@ -134,10 +154,12 @@ export default function RegistrationWizard() {
     if (selectedRole === 'customer' && step === 1) {
       if (user) {
         try {
-          await supabase.from('profiles').update({
+          await supabase.from('profiles').upsert({
+            user_id: user.id,
             onboarding_completed: true,
             country_id: country?.id || 'MZ',
-          }).eq('user_id', user.id);
+            full_name: formData.fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
+          });
         } catch (e) { /* non-blocking */ }
       }
       navigate('/');
@@ -152,13 +174,14 @@ export default function RegistrationWizard() {
     setLoading(true);
     try {
       // 1. Update Profile (common)
-      await supabase.from('profiles').update({
-        full_name: formData.fullName || user.email?.split('@')[0],
+      await supabase.from('profiles').upsert({
+        user_id: user.id,
+        full_name: formData.fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
         phone: formData.phone,
         country_id: country?.id || 'MZ',
         default_city: formData.city,
         onboarding_completed: true,
-      }).eq('user_id', user.id);
+      });
 
       // 2. Role specific logic
       if (selectedRole === 'doctor' || selectedRole === 'veterinary') {
@@ -175,6 +198,7 @@ export default function RegistrationWizard() {
         });
         if (dErr) throw dErr;
         await supabase.from('user_roles').upsert({ user_id: user.id, role: selectedRole, country_id: country?.id || 'MZ' });
+        await refreshRoles();
         navigate(selectedRole === 'doctor' ? '/doctor/dashboard' : '/health/veterinary');
       }
       else if (selectedRole === 'store_owner') {
@@ -193,6 +217,7 @@ export default function RegistrationWizard() {
         }).select().single();
         if (sErr) throw sErr;
         await supabase.from('user_roles').upsert({ user_id: user.id, role: 'store_owner', country_id: country?.id || 'MZ' });
+        await refreshRoles();
         navigate('/store/dashboard');
       }
       else if (selectedRole === 'clinic' || selectedRole === 'laboratory') {
@@ -212,6 +237,7 @@ export default function RegistrationWizard() {
         });
         if (cErr) throw cErr;
         await supabase.from('user_roles').upsert({ user_id: user.id, role: 'clinic', country_id: country?.id || 'MZ' });
+        await refreshRoles();
         navigate(selectedRole === 'laboratory' ? '/lab/dashboard' : '/clinic/dashboard');
       }
 
@@ -228,18 +254,24 @@ export default function RegistrationWizard() {
         });
         if (iErr) throw iErr;
         await supabase.from('user_roles').upsert({ user_id: user.id, role: 'insurance', country_id: country?.id || 'MZ' });
+        await refreshRoles();
         navigate('/insurance/dashboard');
       }
       else if (selectedRole === 'driver') {
-        const { error: pErr } = await supabase.from('profiles').update({
+        const { error: pErr } = await supabase.from('profiles').upsert({
+          user_id: user.id,
           vehicle_type: formData.vehicleType,
           license_plate: formData.licensePlate || null,
           is_available: true,
           license_carta_url: formData.licenseCartaUrl || null,
           license_viatura_url: formData.licenseViaturaUrl || null,
-        }).eq('user_id', user.id);
+          onboarding_completed: true,
+          country_id: country?.id || 'MZ',
+          full_name: formData.fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
+        });
         if (pErr) throw pErr;
         await supabase.from('user_roles').upsert({ user_id: user.id, role: 'driver', country_id: country?.id || 'MZ' });
+        await refreshRoles();
         navigate('/driver/dashboard');
       }
 
