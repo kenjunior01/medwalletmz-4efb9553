@@ -47,6 +47,7 @@ const STATIC_COUNTRIES: Country[] = [
       registration_defaults: {
         consultation_fee: 500,
         delivery_fee: 50,
+        reward_amount: 25,
         vehicle_plate: "ABC-123-MZ"
       },
       payment_methods: [

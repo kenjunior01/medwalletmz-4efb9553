@@ -3,7 +3,7 @@ import {
   Stethoscope, Sparkles, FileText, Pill, MessageCircle, ArrowRight, Gift, Wallet,
   Plus, Briefcase, Star, TrendingUp, Calendar, Activity, Zap, Heart, ShieldCheck,
   Truck, Building2, ChevronRight, BookOpen, MapPinPlus, Award, Crown, HandHeart,
-  Mic, Search, FlaskConical
+  Mic, Search, FlaskConical, PawPrint
 } from "lucide-react";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
@@ -103,22 +103,44 @@ export default function Home() {
   const [isListening, setIsListening] = useState(false);
 
   const startVoiceSearch = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("O seu navegador não suporta reconhecimento de voz.");
+      return;
+    }
+
     setIsListening(true);
     toast.info("A ouvir sintomas...", {
-      description: "Podes falar agora. A usar Cloud Speech-to-Text.",
+      description: "Podes falar agora. A usar Cloud Speech-to-Text via navegador.",
       icon: <Mic className="h-4 w-4 text-primary animate-pulse" />,
     });
-    setTimeout(() => {
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = country?.id === 'BR' ? 'pt-BR' : 'pt-PT';
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
       setIsListening(false);
-      navigate('/health/triage');
-    }, 3000);
+      navigate(`/health/triage?symptoms=${encodeURIComponent(transcript)}`);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+      toast.error("Erro ao ouvir. Tente novamente.");
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
   };
 
   return (
     <>
       <Seo
-        title={`MedWallet ${country?.id || 'MZ'} — Consultas, farmácia e carteira de saúde`}
-        description={`Consultas médicas online, farmácia 24h com entrega e carteira ${country?.currency_code || 'MZN'} em ${country?.name || 'Moçambique'}.`}
+        title={`MedWallet Global ${country?.id || ''} — Saúde, Farmácia e Veterinária`}
+        description={`Plataforma global de saúde. Consultas, farmácia 24h e veterinária com pagamentos em ${country?.currency_code || 'MZN'}.`}
         path="/"
       />
 
@@ -177,23 +199,24 @@ export default function Home() {
           </section>
         )}
 
-        {/* ============ QUICK PILLARS (The 4 Main Actions) ============ */}
+        {/* ============ QUICK PILLARS (The 5 Main Actions) ============ */}
         <section className="px-4">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-5 gap-3">
             {[
-              { icon: Pill, label: t('home.pharmacy'), color: 'emerald', to: '/pharmacy', desc: '24h' },
-              { icon: Building2, label: t('home.hospitals'), color: 'destructive', to: '/health/facilities?type=hospital', desc: 'Urgência' },
-              { icon: Stethoscope, label: t('home.clinics'), color: 'primary', to: '/health/facilities?type=clinic', desc: 'Consultas' },
-              { icon: FlaskConical, label: t('home.laboratories'), color: 'secondary', to: '/health/facilities?type=laboratory', desc: 'Exames' },
+              { icon: Pill, label: t('home.pharmacy'), color: 'emerald', to: '/pharmacy' },
+              { icon: Stethoscope, label: t('home.clinics'), color: 'primary', to: '/health/facilities?type=clinic' },
+              { icon: PawPrint, label: t('home.veterinary'), color: 'amber-600', to: '/health/veterinary' },
+              { icon: Building2, label: t('home.hospitals'), color: 'destructive', to: '/health/facilities?type=hospital' },
+              { icon: FlaskConical, label: t('home.laboratories'), color: 'secondary', to: '/health/facilities?type=laboratory' },
             ].map(c => (
               <button key={c.label} onClick={() => navigate(c.to)} className="group flex flex-col items-center gap-2">
                 <div className={cn(
-                  "h-16 w-full rounded-[1.5rem] flex flex-col items-center justify-center transition-all group-hover:scale-105 active:scale-95 shadow-sm border-2",
-                  `bg-${c.color}/5 border-${c.color}/10 hover:border-${c.color}/30`
+                  "h-14 w-full rounded-2xl flex flex-col items-center justify-center transition-all group-hover:scale-105 active:scale-95 shadow-sm border-2",
+                  c.color.includes('-') ? `bg-amber-500/5 border-amber-500/10 hover:border-amber-500/30` : `bg-${c.color}/5 border-${c.color}/10 hover:border-${c.color}/30`
                 )}>
-                  <c.icon className={cn("h-7 w-7 mb-1", `text-${c.color}`)} />
+                  <c.icon className={cn("h-6 w-6", c.color.includes('-') ? `text-${c.color}` : `text-${c.color}`)} />
                 </div>
-                <span className="text-[11px] font-black text-center leading-tight text-foreground/80">{c.label}</span>
+                <span className="text-[10px] font-black text-center leading-tight text-foreground/80">{c.label}</span>
               </button>
             ))}
           </div>
@@ -364,7 +387,7 @@ export default function Home() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <p className="font-black text-base">{t('health.suggest_place')}</p>
-                  <Badge className="bg-gold text-gold-foreground border-0 text-[10px] font-black">+25 {country?.currency_code || 'MZN'}</Badge>
+                  <Badge className="bg-gold text-gold-foreground border-0 text-[10px] font-black">+{country?.config?.registration_defaults?.reward_amount || 25} {country?.currency_code || 'MZN'}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground font-medium mt-0.5">{t('health.map_health_country', { country: country?.name || 'Moçambique' })}</p>
               </div>

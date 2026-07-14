@@ -70,14 +70,14 @@ export default function SuggestPlace() {
       const { data } = await (supabase as any)
         .from("place_proposal_settings")
         .select("key,value")
-        .in("key", ["reward_mzn_per_approval", "reward_joy_coins_per_approval", "max_pending_per_user"]);
+        .in("key", ["reward_amount_per_approval", "reward_joy_coins_per_approval", "max_pending_per_user"]);
       const out: Record<string, any> = {};
       (data ?? []).forEach((s: any) => { out[s.key] = s.value; });
       return out;
     },
   });
 
-  const rewardMzn = Number(rewardSettings?.reward_mzn_per_approval ?? 25);
+  const rewardVal = Number(rewardSettings?.reward_amount_per_approval ?? country?.config?.registration_defaults?.reward_amount ?? 25);
   const rewardJoy = Number(rewardSettings?.reward_joy_coins_per_approval ?? 50);
 
   const useCurrentLocation = () => {
@@ -174,7 +174,7 @@ export default function SuggestPlace() {
             </p>
             <div className="bg-primary/5 rounded-lg p-3 mt-3 flex items-center justify-center gap-4">
               <div className="text-center">
-                <p className="text-2xl font-black text-primary">+{rewardMzn}</p>
+                <p className="text-2xl font-black text-primary">+{rewardVal}</p>
                 <p className="text-[10px] text-muted-foreground">{country?.currency_code || 'MZN'}</p>
               </div>
               <div className="text-2xl text-muted-foreground">+</div>
@@ -218,7 +218,7 @@ export default function SuggestPlace() {
               <Award className="h-5 w-5 text-gold-foreground" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-bold">+{rewardMzn} {country?.currency_code || 'MZN'} + {rewardJoy} 🪙</p>
+              <p className="text-sm font-bold">+{rewardVal} {country?.currency_code || 'MZN'} + {rewardJoy} 🪙</p>
               <p className="text-[11px] text-muted-foreground">{t('health.suggest_place_hero_desc')}</p>
             </div>
             <Badge className="bg-primary/15 text-primary border-primary/30 text-[10px] uppercase font-black">BÓNUS</Badge>
@@ -449,7 +449,7 @@ export default function SuggestPlace() {
         <Button type="submit" disabled={submitting} className="w-full h-12 font-black">
           {submitting
             ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {t('common.loading')}</>
-            : <><Sparkles className="h-4 w-4 mr-2" /> {t('health.submit_and_earn')} +{rewardMzn} {country?.currency_code || 'MZN'}</>}
+            : <><Sparkles className="h-4 w-4 mr-2" /> {t('health.submit_and_earn')} +{rewardVal} {country?.currency_code || 'MZN'}</>}
         </Button>
 
         <p className="text-[10px] text-muted-foreground text-center">

@@ -4,10 +4,16 @@ import { supabase } from '@/integrations/supabase/client';
 
 type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager';
 
+interface UserRole {
+  role: AppRole;
+  country_id?: string;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   roles: AppRole[];
+  userRoles: UserRole[];
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, referralCode?: string, countryId?: string) => Promise<{ error: Error | null; user: User | null }>;
   signIn: (email: string, password: string, referralCode?: string) => Promise<{ error: Error | null; user: User | null }>;
@@ -23,17 +29,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchUserRoles = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from('user_roles')
-      .select('role')
+      .select('role, country_id')
       .eq('user_id', userId);
 
     if (!error && data) {
-      setRoles(data.map(r => r.role as AppRole));
+      const rolesList = data.map(r => ({ role: r.role as AppRole, country_id: r.country_id }));
+      setUserRoles(rolesList);
+      setRoles(rolesList.map(r => r.role));
     } else {
+      setUserRoles([]);
       setRoles([]);
     }
   }, []);
@@ -88,17 +98,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const loadRoles = async (nextUser: User | null) => {
       const requestId = ++roleRequest;
       if (!nextUser) {
-        if (mounted && requestId === roleRequest) setRoles([]);
+        if (mounted && requestId === roleRequest) {
+          setRoles([]);
+          setUserRoles([]);
+        }
         return;
       }
 
       const { data, error } = await supabase
         .from('user_roles')
-        .select('role')
+        .select('role, country_id')
         .eq('user_id', nextUser.id);
 
       if (!mounted || requestId !== roleRequest) return;
-      setRoles(!error && data ? data.map(r => r.role as AppRole) : []);
+      if (!error && data) {
+        const rolesList = data.map(r => ({ role: r.role as AppRole, country_id: r.country_id }));
+        setUserRoles(rolesList);
+        setRoles(rolesList.map(r => r.role));
+      } else {
+        setUserRoles([]);
+        setRoles([]);
+      }
     };
 
     // Set up auth state listener FIRST, without awaiting backend calls in the callback.
@@ -195,13 +215,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setSession(null);
     setRoles([]);
+    setUserRoles([]);
   };
 
   const hasRole = useCallback((role: AppRole) => roles.includes(role), [roles]);
 
   return (
     <AuthContext.Provider value={{
-      user, session, roles, loading,
+      user, session, roles, userRoles, loading,
       signUp, signIn, signInWithGoogle, signOut, hasRole,
       refreshRoles,
     }}>

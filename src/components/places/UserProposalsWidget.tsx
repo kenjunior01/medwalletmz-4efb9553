@@ -13,7 +13,8 @@ interface Proposal {
   city: string;
   status: 'pending' | 'in_review' | 'approved' | 'rejected' | 'duplicate' | 'merged';
   reward_paid: boolean | null;
-  reward_mzn: number | null;
+  reward_amount: number | null;
+  reward_currency: string | null;
   reward_joy_coins: number | null;
   created_at: string;
   image_url: string | null;
@@ -49,7 +50,7 @@ export function UserProposalsWidget({ userId }: { userId: string }) {
     queryFn: async () => {
       const { data } = await (supabase as any)
         .from('place_proposals')
-        .select('id,name,entity_type,city,status,reward_paid,reward_mzn,reward_joy_coins,created_at,image_url')
+        .select('id,name,entity_type,city,status,reward_paid,reward_amount,reward_currency,reward_joy_coins,created_at,image_url')
         .eq('proposed_by', userId)
         .eq('source', 'user_submit')
         .order('created_at', { ascending: false })
@@ -65,9 +66,9 @@ export function UserProposalsWidget({ userId }: { userId: string }) {
     return null; // não polui quando o user nunca sugeriu nada
   }
 
-  const totalMzn = data
+  const totalReward = data
     .filter((p) => p.status === 'approved' && p.reward_paid)
-    .reduce((a, p) => a + (p.reward_mzn ?? 0), 0);
+    .reduce((a, p) => a + (p.reward_amount ?? 0), 0);
   const totalCoins = data
     .filter((p) => p.status === 'approved' && p.reward_paid)
     .reduce((a, p) => a + (p.reward_joy_coins ?? 0), 0);
@@ -80,9 +81,9 @@ export function UserProposalsWidget({ userId }: { userId: string }) {
           <span className="w-1.5 h-5 bg-gold rounded-full" />
           As minhas sugestões
         </h3>
-        {totalMzn + totalCoins > 0 && (
+        {totalReward + totalCoins > 0 && (
           <span className="text-[10px] text-gold font-bold">
-            Já ganhaste +{totalMzn} {currencyCode} + {totalCoins} 🪙
+            Já ganhaste +{totalReward} {currencyCode} + {totalCoins} 🪙
           </span>
         )}
       </div>

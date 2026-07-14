@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Plus, FileText, Upload, Share2, Trash2, Download, Sparkles, Scan, Search, Globe2, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { detectText } from '@/lib/googleVision';
 
 const typeLabel: Record<string, string> = {
   exam: 'Exame', report: 'Relatório', imaging: 'Imagem', lab: 'Laboratório', other: 'Outro',
@@ -56,21 +57,25 @@ export default function MedicalRecords() {
     toast.success('Exportado no padrão global FHIR/HL7');
   };
 
-  const simulateOCR = async () => {
+  const runOCR = async () => {
     if (!file) return toast.error('Carrega um ficheiro primeiro');
     setScanning(true);
-    // Simulação da Cloud Vision API / Document AI
-    await new Promise(r => setTimeout(r, 2500));
 
-    setForm({
-      ...form,
-      title: 'Digitalização: ' + file.name.split('.')[0],
-      issued_by: 'Digitalizado via MedWallet AI',
-      description: 'Texto extraído via OCR: Paciente apresenta sintomas de fadiga. Recomendado repouso e hidratação.',
-      issued_at: new Date().toISOString().split('T')[0]
-    });
-    setScanning(false);
-    toast.success('Documento processado com sucesso!');
+    try {
+      const text = await detectText(file);
+      setForm({
+        ...form,
+        title: 'Digitalização: ' + file.name.split('.')[0],
+        issued_by: 'Extraído via Google Vision AI',
+        description: text,
+        issued_at: new Date().toISOString().split('T')[0]
+      });
+      toast.success('Documento processado com sucesso!');
+    } catch (e) {
+      toast.error('Erro ao processar documento');
+    } finally {
+      setScanning(false);
+    }
   };
 
   const load = async () => {
@@ -202,7 +207,7 @@ export default function MedicalRecords() {
                   {file && (
                     <Button
                       variant="secondary"
-                      onClick={simulateOCR}
+                      onClick={runOCR}
                       disabled={scanning}
                       className="bg-accent/10 text-secondary border-accent/20"
                     >

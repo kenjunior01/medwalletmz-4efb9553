@@ -48,6 +48,7 @@ const roleColors: Record<AppRole, string> = {
 
 export default function AdminUsers() {
   const queryClient = useQueryClient();
+  const { hasRole, roles: currentUserRoles } = useAuth();
   const { country, allCountries } = useCountry();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
@@ -57,15 +58,24 @@ export default function AdminUsers() {
   const [selectedCountryForRole, setSelectedCountryForRole] = useState<string | null>(null);
   const [pendingRole, setPendingRole] = useState<AppRole | null>(null);
 
+  const isAdmin = currentUserRoles.includes('admin');
+  const isManager = currentUserRoles.includes('country_manager');
+
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users', search, roleFilter, country?.id],
     queryFn: async () => {
-      // Fetch profiles via admin RPC (avoids exposing sensitive columns to signed-in users)
+      // Fetch profiles via admin RPC
       const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full', {
         p_country_id: country?.id
       });
       if (profilesError) throw profilesError;
       let profiles: any[] = profilesRaw || [];
+
+      // Managers should only see users in their country
+      if (isManager && !isAdmin && country?.id) {
+        profiles = profiles.filter((p: any) => p.country_id === country.id);
+      }
+
       if (search) {
         const q = search.toLowerCase();
         profiles = profiles.filter((p: any) =>
@@ -94,10 +104,15 @@ export default function AdminUsers() {
       });
 
       // Combine data
-      const usersWithRoles: UserWithRoles[] = (profiles || []).map(profile => ({
+      let usersWithRoles: UserWithRoles[] = (profiles || []).map(profile => ({
         ...profile,
         roles: rolesMap.get(profile.user_id) || [{ role: 'customer' as AppRole }]
       }));
+
+      // Managers shouldn't see global admins
+      if (isManager && !isAdmin) {
+        usersWithRoles = usersWithRoles.filter(u => !u.roles.some(r => r.role === 'admin'));
+      }
 
       // Filter by role if specified
       if (roleFilter !== 'all') {
@@ -409,7 +424,7 @@ export default function AdminUsers() {
                         <SelectValue placeholder="Escolha o role..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {(['customer', 'doctor', 'clinic', 'store_owner', 'driver', 'admin', 'country_manager'] as AppRole[])
+                        {(['customer', 'doctor', 'clinic', 'store_owner', 'driver', isAdmin && 'admin', isAdmin && 'country_manager'].filter(Boolean) as AppRole[])
                           .map(role => (
                             <SelectItem key={role} value={role}>
                               {roleLabels[role]}
@@ -419,15 +434,17 @@ export default function AdminUsers() {
                       </SelectContent>
                     </Select>
 
-                    <Select value={selectedCountryForRole || 'global'} onValueChange={(v) => setSelectedCountryForRole(v === 'global' ? null : v)}>
+                    <Select value={selectedCountryForRole || (isManager ? country?.id : 'global')} onValueChange={(v) => setSelectedCountryForRole(v === 'global' ? null : v)}>
                       <SelectTrigger className="w-[100px] h-9 text-xs">
-                        <SelectValue placeholder="Global" />
+                        <SelectValue placeholder={isManager ? country?.id : "Global"} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="global">Global</SelectItem>
-                        {allCountries.map(c => (
+                        {isAdmin && <SelectItem value="global">Global</SelectItem>}
+                        {isAdmin ? allCountries.map(c => (
                           <SelectItem key={c.id} value={c.id}>{c.id}</SelectItem>
-                        ))}
+                        )) : (
+                          country && <SelectItem value={country.id}>{country.id}</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>

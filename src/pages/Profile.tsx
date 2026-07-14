@@ -267,7 +267,7 @@ export default function Profile() {
               <span className="font-medium text-sm block">{label}</span>
               {reward && (
                 <span className="text-[10px] text-gold font-bold inline-flex items-center gap-0.5">
-                  <Award className="h-3 w-3" /> +{country?.config?.registration_defaults?.reward_mzn || 25} {country?.currency_symbol || 'MT'} por aprovação
+                  <Award className="h-3 w-3" /> +{country?.config?.registration_defaults?.reward_amount || 25} {country?.currency_symbol || 'MT'} por aprovação
                 </span>
               )}
             </div>

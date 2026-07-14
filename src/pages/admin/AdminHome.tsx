@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { 
+import { useCountry } from '@/contexts/CountryContext';
+import { useAuth } from '@/contexts/AuthContext';
+import {
   Store, 
   Package, 
   ShoppingBag, 
@@ -19,7 +21,8 @@ import {
   Wallet,
   Stethoscope,
   Pill,
-  Gift
+  Gift,
+  Globe
 } from 'lucide-react';
 import {
   StatWidget,
@@ -32,20 +35,42 @@ import {
 
 export default function AdminHome() {
   const navigate = useNavigate();
+  const { country } = useCountry();
+  const { hasRole } = useAuth();
+  const isAdmin = hasRole('admin');
+  const isManager = hasRole('country_manager');
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['admin-stats'],
+    queryKey: ['admin-stats', country?.id],
     queryFn: async () => {
-      const [stores, products, orders, drivers, consults, prescs, wallets, referrals] = await Promise.all([
-        supabase.from('stores').select('id', { count: 'exact', head: true }),
-        supabase.from('products').select('id', { count: 'exact', head: true }),
-        supabase.from('orders').select('id, status, total, created_at', { count: 'exact' }),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).not('vehicle_type', 'is', null),
-        supabase.from('consultations').select('id, status', { count: 'exact' }),
-        supabase.from('prescriptions').select('id', { count: 'exact', head: true }),
-        supabase.from('wallets').select('balance_mzn, total_deposited'),
-        supabase.from('user_referrals').select('id, status', { count: 'exact' }),
+      const countryId = country?.id;
+
+      const buildQuery = (table: string) => {
+        let q = supabase.from(table).select('id', { count: 'exact', head: true });
+        if (countryId) q = q.eq('country_id', countryId);
+        return q;
+      };
+
+      const [stores, products, drivers, consults, prescs, referrals] = await Promise.all([
+        buildQuery('stores'),
+        buildQuery('products'),
+        supabase.from('profiles').select('id', { count: 'exact', head: true })
+          .not('vehicle_type', 'is', null)
+          .eq(countryId ? 'country_id' : 'id', countryId || 'id'), // simplistic filter for profiles
+        supabase.from('consultations').select('id, status', { count: 'exact' })
+          .eq(countryId ? 'country_id' : 'id', countryId || 'id'),
+        buildQuery('prescriptions'),
+        supabase.from('user_referrals').select('id, status', { count: 'exact' })
       ]);
+
+      // Specialized queries for complex stats
+      let ordersQuery = supabase.from('orders').select('id, status, total, created_at');
+      if (countryId) ordersQuery = ordersQuery.eq('country_id', countryId);
+      const orders = await ordersQuery;
+
+      let walletsQuery = supabase.from('wallets').select('balance_mzn, total_deposited');
+      if (countryId) walletsQuery = walletsQuery.eq('country_id', countryId);
+      const wallets = await walletsQuery;
 
       const pendingOrders = orders.data?.filter(o => o.status === 'pending').length || 0;
       const completedOrders = orders.data?.filter(o => o.status === 'delivered').length || 0;
@@ -71,7 +96,7 @@ export default function AdminHome() {
       return {
         totalStores: stores.count || 0,
         totalProducts: products.count || 0,
-        totalOrders: orders.count || 0,
+        totalOrders: orders.data?.length || 0,
         totalDrivers: drivers.count || 0,
         totalConsults: consults.count || 0,
         activeConsults,
@@ -90,9 +115,9 @@ export default function AdminHome() {
   });
 
   const { data: recentOrders, isLoading: ordersLoading } = useQuery({
-    queryKey: ['admin-recent-orders'],
+    queryKey: ['admin-recent-orders', country?.id],
     queryFn: async () => {
-      const { data } = await supabase
+      let q = supabase
         .from('orders')
         .select(`
           *,
@@ -100,33 +125,45 @@ export default function AdminHome() {
         `)
         .order('created_at', { ascending: false })
         .limit(10);
+
+      if (country?.id) q = q.eq('country_id', country.id);
+
+      const { data } = await q;
       return data || [];
     }
   });
 
   const { data: topStores } = useQuery({
-    queryKey: ['admin-top-stores'],
+    queryKey: ['admin-top-stores', country?.id],
     queryFn: async () => {
-      const { data } = await supabase
+      let q = supabase
         .from('stores')
         .select('id, name, rating, type, image_url')
         .eq('is_active', true)
         .order('rating', { ascending: false })
         .limit(5);
+
+      if (country?.id) q = q.eq('country_id', country.id);
+
+      const { data } = await q;
       return data || [];
     }
   });
 
   const { data: weeklyData } = useQuery({
-    queryKey: ['admin-weekly-revenue'],
+    queryKey: ['admin-weekly-revenue', country?.id],
     queryFn: async () => {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
 
-      const { data } = await supabase
+      let q = supabase
         .from('orders')
         .select('total, created_at')
         .gte('created_at', weekAgo.toISOString());
+
+      if (country?.id) q = q.eq('country_id', country.id);
+
+      const { data } = await q;
 
       // Group by day
       const dailyMap = new Map<string, number>();
@@ -153,23 +190,15 @@ export default function AdminHome() {
       icon: Store, 
       label: "Farmácias", 
       description: "Gerenciar",
-      onClick: () => navigate('/admin/stores'),
+      onClick: () => navigate(isManager ? '/manager/stores' : '/admin/stores'),
       colorClass: "text-food",
       bgClass: "bg-food/10"
-    },
-    { 
-      icon: Package, 
-      label: "Produtos", 
-      description: "Ver todos",
-      onClick: () => navigate('/admin/products'),
-      colorClass: "text-grocery",
-      bgClass: "bg-grocery/10"
     },
     { 
       icon: ShoppingBag, 
       label: "Pedidos", 
       description: "Gerenciar",
-      onClick: () => navigate('/admin/orders'),
+      onClick: () => navigate(isManager ? '/manager/orders' : '/admin/orders'),
       colorClass: "text-pharmacy",
       bgClass: "bg-pharmacy/10"
     },
@@ -177,16 +206,36 @@ export default function AdminHome() {
       icon: TrendingUp, 
       label: "Relatórios", 
       description: "Estatísticas",
-      onClick: () => navigate('/admin/reports'),
+      onClick: () => navigate(isManager ? '/manager/reports' : '/admin/reports'),
       colorClass: "text-primary",
       bgClass: "bg-primary/10"
     },
   ];
 
+  if (!isAdmin) {
+    quickActions.push({
+      icon: Globe,
+      label: "Painel Regional",
+      description: "Ver resumo",
+      onClick: () => navigate('/manager'),
+      colorClass: "text-secondary",
+      bgClass: "bg-secondary/10"
+    });
+  } else {
+    quickActions.push({
+      icon: Package,
+      label: "Produtos",
+      description: "Ver todos",
+      onClick: () => navigate('/admin/products'),
+      colorClass: "text-grocery",
+      bgClass: "bg-grocery/10"
+    });
+  }
+
   const activityItems = (recentOrders || []).map((order: any) => ({
     id: order.id,
     title: `Pedido #${order.id.slice(0, 8)}`,
-    description: `${order.stores?.name || 'Farmácia'} - ${order.total.toLocaleString()} MZN`,
+    description: `${order.stores?.name || 'Farmácia'} - ${order.total.toLocaleString()} ${country?.currency_code || 'MZN'}`,
     time: new Date(order.created_at).toLocaleString('pt-MZ'),
     type: 'order' as const,
     status: statusLabels[order.status] || order.status
@@ -210,15 +259,21 @@ export default function AdminHome() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard Administrativo</h1>
-          <p className="text-muted-foreground">Visão geral da plataforma MedWallet</p>
+          <h1 className="text-2xl font-bold">
+            {isManager ? `Dashboard: ${country?.name}` : 'Dashboard Administrativo Global'}
+          </h1>
+          <p className="text-muted-foreground">
+            {isManager ? `Gestão da operação em ${country?.name}` : 'Visão geral consolidada de todas as regiões'}
+          </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate('/admin/stores')}>
-            <Plus className="h-4 w-4 mr-2" />
-            Nova Farmácia
-          </Button>
-          <Button onClick={() => navigate('/admin/reports')}>
+          {!isManager && (
+            <Button variant="outline" onClick={() => navigate('/admin/stores')}>
+              <Plus className="h-4 w-4 mr-2" />
+              Nova Farmácia
+            </Button>
+          )}
+          <Button onClick={() => navigate(isManager ? '/manager/reports' : '/admin/reports')}>
             <TrendingUp className="h-4 w-4 mr-2" />
             Relatórios
           </Button>
@@ -240,7 +295,7 @@ export default function AdminHome() {
                 </p>
               </div>
             </div>
-            <Button variant="outline" onClick={() => navigate('/admin/orders')}>
+            <Button variant="outline" onClick={() => navigate(isManager ? '/manager/orders' : '/admin/orders')}>
               Ver Pedidos
             </Button>
           </CardContent>
@@ -251,8 +306,8 @@ export default function AdminHome() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatWidget 
           title="Saldo em Carteira"
-          value={`${(stats?.walletTotal || 0).toLocaleString()} MZN`}
-          subtitle={`Depositado: ${(stats?.walletDeposited || 0).toLocaleString()} MZN`}
+          value={`${(stats?.walletTotal || 0).toLocaleString()} ${country?.currency_code || 'MZN'}`}
+          subtitle={`Depositado: ${(stats?.walletDeposited || 0).toLocaleString()} ${country?.currency_code || 'MZN'}`}
           icon={Wallet}
           colorClass="text-primary"
         />
@@ -272,8 +327,8 @@ export default function AdminHome() {
         />
         <StatWidget 
           title="Receita Total"
-          value={`${(stats?.totalRevenue || 0).toLocaleString()} MZN`}
-          subtitle={`Hoje: ${(stats?.todayRevenue || 0).toLocaleString()} MZN`}
+          value={`${(stats?.totalRevenue || 0).toLocaleString()} ${country?.currency_code || 'MZN'}`}
+          subtitle={`Hoje: ${(stats?.todayRevenue || 0).toLocaleString()} ${country?.currency_code || 'MZN'}`}
           icon={DollarSign}
           trend={{ value: 18, isPositive: true }}
           colorClass="text-gold"

@@ -28,33 +28,32 @@ import {
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
-type MenuItem = { icon: any; label: string; path: string; highlight?: boolean; managerAllowed?: boolean };
 const menuItems: MenuItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', managerAllowed: true },
-  { icon: Globe, label: 'Painel do País', path: '/admin/country-dashboard', highlight: true, managerAllowed: true },
-  { icon: Sparkles, label: 'Curadoria', path: '/admin/curation', highlight: true, managerAllowed: true },
-  { icon: Store, label: 'Farmácias', path: '/admin/stores', managerAllowed: true },
-  { icon: Package, label: 'Produtos', path: '/admin/products', managerAllowed: true },
-  { icon: ShoppingBag, label: 'Pedidos', path: '/admin/orders', managerAllowed: true },
-  { icon: Users, label: 'Usuários', path: '/admin/users', managerAllowed: true },
-  { icon: Truck, label: 'Entregadores', path: '/admin/drivers', managerAllowed: true },
-  { icon: Tag, label: 'Cupons', path: '/admin/coupons', managerAllowed: true },
+  { icon: LayoutDashboard, label: 'Dashboard Global', path: '/admin' },
+  { icon: Globe, label: 'Métricas Mundiais', path: '/admin/global-metrics', highlight: true },
+  { icon: Globe, label: 'Painel do País', path: '/admin/country-dashboard', highlight: true },
+  { icon: Sparkles, label: 'Curadoria', path: '/admin/curation', highlight: true },
+  { icon: Store, label: 'Farmácias', path: '/admin/stores' },
+  { icon: Package, label: 'Produtos', path: '/admin/products' },
+  { icon: ShoppingBag, label: 'Pedidos', path: '/admin/orders' },
+  { icon: Users, label: 'Usuários', path: '/admin/users' },
+  { icon: Truck, label: 'Entregadores', path: '/admin/drivers' },
+  { icon: Tag, label: 'Cupons', path: '/admin/coupons' },
   { icon: Gift, label: 'Convites', path: '/admin/referrals' },
   { icon: Wallet, label: 'Carteiras', path: '/admin/wallets' },
-  { icon: Receipt, label: 'Transações', path: '/admin/transactions', managerAllowed: true },
-  { icon: Shield, label: 'Seguradoras', path: '/admin/insurance', managerAllowed: true },
-  { icon: Megaphone, label: 'Anúncios', path: '/admin/ads', managerAllowed: true },
-  { icon: Sparkles, label: 'Laboratórios', path: '/admin/labs', managerAllowed: true },
+  { icon: Receipt, label: 'Transações', path: '/admin/transactions' },
+  { icon: Shield, label: 'Seguradoras', path: '/admin/insurance' },
+  { icon: Megaphone, label: 'Anúncios', path: '/admin/ads' },
+  { icon: Sparkles, label: 'Laboratórios', path: '/admin/labs' },
   { icon: Percent, label: 'Comissões', path: '/admin/commissions' },
   { icon: Sliders, label: 'Carteira & Bónus', path: '/admin/platform-settings' },
-  { icon: Crown, label: 'Inscritos (Subs)', path: '/admin/subscriptions', managerAllowed: true },
+  { icon: Crown, label: 'Inscritos (Subs)', path: '/admin/subscriptions' },
   { icon: Crown, label: 'Planos (Gestão)', path: '/admin/subscription-plans', highlight: true },
   { icon: Wallet, label: 'Contas Pagamento', path: '/admin/payment-accounts' },
-  { icon: BarChart3, label: 'Relatórios', path: '/admin/reports', managerAllowed: true },
-  { icon: Upload, label: 'Importar Dados', path: '/admin/import', highlight: true, managerAllowed: true },
-  { icon: Globe, label: 'Gestão do País', path: '/admin/country-settings', highlight: true, managerAllowed: true },
+  { icon: BarChart3, label: 'Relatórios', path: '/admin/reports' },
+  { icon: Upload, label: 'Importar Dados', path: '/admin/import', highlight: true },
+  { icon: Globe, label: 'Gestão do País', path: '/admin/country-settings', highlight: true },
   { icon: Settings, label: 'Configurações', path: '/admin/settings' },
-  { icon: Globe, label: 'Métricas Mundiais', path: '/admin/global-metrics', highlight: true },
 ];
 
 export default function AdminDashboard() {
@@ -67,12 +66,16 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!loading && (!user || (!isAdmin && !isCountryManager))) {
       navigate('/auth');
+      return;
     }
-    // Redirecionar gestores regionais para o seu painel dedicado
+
+    // Gestores regionais devem usar APENAS o /manager dashboard para isolamento total
     if (!loading && user && !isAdmin && isCountryManager) {
-      navigate('/manager', { replace: true });
+      if (!location.pathname.startsWith('/manager')) {
+        navigate('/manager', { replace: true });
+      }
     }
-  }, [user, loading, isAdmin, isCountryManager, navigate]);
+  }, [user, loading, isAdmin, isCountryManager, navigate, location.pathname]);
 
   if (loading) {
     return (
@@ -95,7 +98,8 @@ export default function AdminDashboard() {
     );
   }
 
-  if (!user || (!isAdmin && !isCountryManager)) {
+  // Apenas admins globais entram aqui. Gestores são redirecionados no useEffect.
+  if (!user || !isAdmin) {
     return null;
   }
 
@@ -108,16 +112,14 @@ export default function AdminDashboard() {
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
       <aside className="w-64 bg-card border-r border-border flex flex-col">
-        <div className="p-6 border-b border-border">
+        <div className="p-6 border-b border-border bg-primary/5">
           <h1 className="text-xl font-bold text-primary">MedWallet</h1>
-          <p className="text-xs text-muted-foreground">Painel Administrativo</p>
+          <Badge variant="outline" className="text-[10px] uppercase">Global Admin</Badge>
         </div>
 
         <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-1">
-            {menuItems
-              .filter((item) => isAdmin || item.managerAllowed)
-              .map(({ icon: Icon, label, path, highlight }) => {
+            {menuItems.map(({ icon: Icon, label, path, highlight }) => {
               const isActive = location.pathname === path ||
                 (path !== '/admin' && location.pathname.startsWith(path));
 
@@ -135,15 +137,13 @@ export default function AdminDashboard() {
                   >
                     <Icon className="h-4 w-4" />
                     {label}
-                    {highlight && !isActive && (
-                      <span className="ml-auto text-[9px] font-bold bg-secondary/20 text-secondary px-1.5 py-0.5 rounded">NEW</span>
-                    )}
                   </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
+
 
         <div className="p-4 border-t border-border">
           <Button 

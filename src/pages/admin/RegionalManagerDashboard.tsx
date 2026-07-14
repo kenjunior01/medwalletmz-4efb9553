@@ -44,15 +44,26 @@ const menuItems: MenuItem[] = [
 export default function RegionalManagerDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, hasRole, loading, signOut } = useAuth();
-  const { country } = useCountry();
-  const isManager = hasRole('country_manager') || hasRole('admin');
+  const { user, hasRole, userRoles, loading, signOut } = useAuth();
+  const { country, setCountryById } = useCountry();
+  const isAdmin = hasRole('admin');
+  const isManager = hasRole('country_manager') || isAdmin;
+
+  // Find the country managed by this user
+  const managedCountryId = userRoles.find(r => r.role === 'country_manager')?.country_id;
 
   useEffect(() => {
     if (!loading && (!user || !isManager)) {
       navigate('/auth');
+      return;
     }
-  }, [user, loading, isManager, navigate]);
+
+    // Force country context to match managed country for non-admins
+    if (!loading && user && !isAdmin && managedCountryId && country?.id !== managedCountryId) {
+      console.log(`Locking manager to country: ${managedCountryId}`);
+      setCountryById(managedCountryId);
+    }
+  }, [user, loading, isManager, isAdmin, managedCountryId, country?.id, setCountryById, navigate]);
 
   if (loading) return <div className="p-8">A carregar painel regional...</div>;
   if (!user || !isManager) return null;

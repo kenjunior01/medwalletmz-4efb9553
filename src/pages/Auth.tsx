@@ -135,12 +135,16 @@ export default function Auth() {
     try {
       const { error } = await signInWithGoogle(referralCode);
       if (error) {
-        toast.error(t('common.error'));
+        console.error("Google Auth Error:", error);
+        toast.error("Erro no Login Google", {
+          description: error.message.includes('configuration')
+            ? "O app não está configurado corretamente no Google Cloud. Verifique o Client ID."
+            : "Tente novamente ou use e-mail e senha.",
+        });
         setLoading(false);
       }
-      // O Supabase irá redirecionar, então não precisamos setar loading false se sucesso
     } catch (err) {
-      toast.error(t('common.error'));
+      toast.error("Erro inesperado no login");
       setLoading(false);
     }
   };

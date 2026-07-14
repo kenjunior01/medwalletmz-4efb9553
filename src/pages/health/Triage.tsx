@@ -17,6 +17,7 @@ import {
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { speakText } from '@/lib/googleTTS';
 
 interface TriageResult {
   severity: string;
@@ -47,6 +48,14 @@ export default function Triage() {
   const [recordingTime, setRecordingTime] = useState(0);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const symptomsParam = params.get('symptoms');
+    if (symptomsParam) {
+      setSymptoms(symptomsParam);
+    }
+  }, []);
+
+  useEffect(() => {
     let interval: any;
     if (isRecording) {
       interval = setInterval(() => setRecordingTime(t => t + 1), 1000);
@@ -58,15 +67,44 @@ export default function Triage() {
 
   const toggleRecording = () => {
     if (isRecording) {
-      // Simulate STT conversion
       setIsRecording(false);
-      toast.success("Áudio processado via Google Cloud Speech-to-Text");
-      if (!symptoms) {
-        setSymptoms("Sinto uma dor de cabeça latejante há 3 horas, acompanhada de sensibilidade à luz e náuseas. Não tomei nenhum medicamento ainda.");
+      if ((window as any).recognition) {
+        (window as any).recognition.stop();
       }
     } else {
       setIsRecording(true);
       toast.info("A ouvir...", { description: "Descreva os seus sintomas em voz alta." });
+
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        toast.error("O seu navegador não suporta reconhecimento de voz.");
+        setIsRecording(false);
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = countryCode === 'BR' ? 'pt-BR' : 'pt-PT';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setSymptoms(prev => prev ? prev + " " + transcript : transcript);
+        toast.success("Áudio transcrito com sucesso!");
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Erro no reconhecimento de voz:", event.error);
+        setIsRecording(false);
+        toast.error("Erro ao capturar áudio: " + event.error);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      (window as any).recognition = recognition;
+      recognition.start();
     }
   };
 
@@ -138,13 +176,10 @@ export default function Triage() {
     }
   };
 
-  const speakRecommendation = () => {
+  const speakRecommendation = async () => {
     if (!result) return;
     toast.info("A gerar áudio via Cloud Text-to-Speech...", { icon: <Volume2 className="h-4 w-4" /> });
-    // In a real app, use SpeechSynthesis or Cloud TTS
-    const msg = new SpeechSynthesisUtterance(result.recommendation);
-    msg.lang = 'pt-PT';
-    window.speechSynthesis.speak(msg);
+    await speakText(result.recommendation, countryCode === 'BR' ? 'pt-BR' : 'pt-PT');
   };
 
   return (

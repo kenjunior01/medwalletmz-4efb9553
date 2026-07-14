@@ -81,7 +81,8 @@ type Proposal = {
   latitude: number | null;
   longitude: number | null;
   status: 'pending' | 'in_review' | 'approved' | 'rejected' | 'duplicate' | 'merged';
-  reward_mzn: number | null;
+  reward_amount: number | null;
+  reward_currency: string | null;
   reward_joy_coins: number | null;
   reward_paid: boolean | null;
   review_notes: string | null;
@@ -127,6 +128,8 @@ export default function AdminCuration() {
   const queryClient = useQueryClient();
   const { hasRole, loading } = useAuth();
   const { country } = useCountry();
+  const isAdmin = hasRole('admin');
+  const isManager = hasRole('country_manager');
   const [tab, setTab] = useState<'pending' | 'in_review' | 'approved' | 'rejected' | 'all'>('pending');
   const [sourceFilter, setSourceFilter] = useState<'all' | 'google_places' | 'user_submit' | 'legacy'>('all');
   const [cityFilter, setCityFilter] = useState('all');
@@ -140,7 +143,7 @@ export default function AdminCuration() {
 
   const citiesQuery = useQuery<string[]>({
     queryKey: ['curation-cities', country?.id],
-    enabled: !loading && hasRole('admin'),
+    enabled: !loading && (isAdmin || isManager),
     queryFn: async () => {
       let q = (supabase as any)
         .from('place_proposals')
@@ -158,7 +161,7 @@ export default function AdminCuration() {
 
   const statsQuery = useQuery<Record<string, number>>({
     queryKey: ['curation-stats', country?.id],
-    enabled: !loading && hasRole('admin'),
+    enabled: !loading && (isAdmin || isManager),
     queryFn: async () => {
       let q = (supabase as any).from('place_proposals').select('status');
       if (country?.id) q = q.eq('country_id', country.id);
@@ -175,11 +178,11 @@ export default function AdminCuration() {
 
   const proposalsQuery = useQuery<Proposal[]>({
     queryKey: ['curation-proposals', country?.id, tab, sourceFilter, cityFilter, typeFilter, search.trim(), page],
-    enabled: !loading && hasRole('admin'),
+    enabled: !loading && (isAdmin || isManager),
     queryFn: async () => {
       let q = (supabase as any)
         .from('place_proposals')
-        .select('id, source, entity_type, name, address, city, neighborhood, reference_point, phone, website, description, image_url, latitude, longitude, status, reward_mzn, reward_joy_coins, reward_paid, review_notes, created_at, updated_at, raw_payload, search_meta, proposed_by, country_id')
+        .select('id, source, entity_type, name, address, city, neighborhood, reference_point, phone, website, description, image_url, latitude, longitude, status, reward_amount, reward_currency, reward_joy_coins, reward_paid, review_notes, created_at, updated_at, raw_payload, search_meta, proposed_by, country_id')
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
@@ -233,7 +236,8 @@ export default function AdminCuration() {
           latitude: row.latitude ?? null,
           longitude: row.longitude ?? null,
           status: 'approved' as const,
-          reward_mzn: null,
+          reward_amount: null,
+          reward_currency: null,
           reward_joy_coins: null,
           reward_paid: null,
           review_notes: null,
@@ -260,7 +264,8 @@ export default function AdminCuration() {
           latitude: row.latitude ?? null,
           longitude: row.longitude ?? null,
           status: 'approved' as const,
-          reward_mzn: null,
+          reward_amount: null,
+          reward_currency: null,
           reward_joy_coins: null,
           reward_paid: null,
           review_notes: null,
@@ -296,7 +301,7 @@ export default function AdminCuration() {
 
   const auditQuery = useQuery<AuditLog[]>({
     queryKey: ['curation-audit', reviewing?.id],
-    enabled: !!reviewing?.id && !loading && hasRole('admin'),
+    enabled: !!reviewing?.id && !loading && (isAdmin || isManager),
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from('place_proposal_audit_logs')
@@ -483,7 +488,7 @@ export default function AdminCuration() {
 
   if (loading) return <CurationSkeleton />;
 
-  if (!hasRole('admin')) {
+  if (!isAdmin && !isManager) {
     return (
       <div className="p-8 text-center">
         <p className="text-muted-foreground">Acesso restrito.</p>
@@ -502,11 +507,11 @@ export default function AdminCuration() {
             <Sparkles className="h-6 w-6 text-primary" /> Curadoria de Locais
           </h1>
           <p className="text-muted-foreground text-sm">
-            Revê, valida coordenadas e publica farmácias, clínicas, hospitais e laboratórios.
+            Revê, valida coordenadas e publica farmácias, clínicas, hospitais e laboratórios em {country?.name}.
           </p>
         </div>
-        <Link to="/admin/import" className="text-xs text-primary underline">
-          ← Voltar ao Import
+        <Link to={isManager ? "/manager" : "/admin/import"} className="text-xs text-primary underline">
+          ← Voltar ao Dashboard
         </Link>
       </header>
 
@@ -807,7 +812,7 @@ function ProposalCard({ proposal, selected, busy, onSelect, onReview, onApprove,
           {proposal.source === 'user_submit' && (proposal.status === 'pending' || proposal.status === 'approved' || proposal.status === 'in_review') && (
             <div className="bg-gold/10 border border-gold/30 rounded p-2 text-[11px] flex items-center gap-2">
               <Award className="h-3.5 w-3.5 text-gold" />
-              <span>Recompensa: <strong>+{proposal.reward_mzn ?? 25} MZN</strong> e <strong>+{proposal.reward_joy_coins ?? 50} 🪙</strong></span>
+              <span>Recompensa: <strong>+{proposal.reward_amount ?? 25} {proposal.reward_currency || 'MZN'}</strong> e <strong>+{proposal.reward_joy_coins ?? 50} 🪙</strong></span>
             </div>
           )}
         </div>
@@ -927,8 +932,14 @@ function validateProposal(proposal: Proposal) {
   if (!proposal.name?.trim()) blockers.push('Nome é obrigatório.');
   if (!proposal.city?.trim()) blockers.push('Cidade é obrigatória.');
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) blockers.push('Latitude e longitude válidas são obrigatórias antes de aprovar.');
-  if (Number.isFinite(lat) && (lat < MZ_BOUNDS.minLat || lat > MZ_BOUNDS.maxLat)) warnings.push('Latitude parece fora de Moçambique — confirma no mapa antes de aprovar.');
-  if (Number.isFinite(lng) && (lng < MZ_BOUNDS.minLng || lng > MZ_BOUNDS.maxLng)) warnings.push('Longitude parece fora de Moçambique — confirma no mapa antes de aprovar.');
+
+  // Only show Mozambique specific warnings if the country is MZ
+  const isMZ = proposal.raw_payload?.country_id === 'MZ' || (proposal as any).country_id === 'MZ';
+  if (isMZ) {
+    if (Number.isFinite(lat) && (lat < MZ_BOUNDS.minLat || lat > MZ_BOUNDS.maxLat)) warnings.push('Latitude parece fora de Moçambique — confirma no mapa antes de aprovar.');
+    if (Number.isFinite(lng) && (lng < MZ_BOUNDS.minLng || lng > MZ_BOUNDS.maxLng)) warnings.push('Longitude parece fora de Moçambique — confirma no mapa antes de aprovar.');
+  }
+
   if (!proposal.address?.trim()) warnings.push('Morada vazia: confirma visualmente no mapa antes de publicar.');
   if (!proposal.phone?.trim()) warnings.push('Telefone vazio: pode ser publicado, mas convém confirmar contacto depois.');
   if (proposal.image_url && !normalizeImageUrl(proposal.image_url)) blockers.push('Imagem deve ser uma URL pública ou um ficheiro válido no storage.');

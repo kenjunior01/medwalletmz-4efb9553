@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCountry } from "@/contexts/CountryContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -28,6 +29,7 @@ const COLORS = ["hsl(var(--primary))", "hsl(var(--secondary))", "hsl(var(--accen
 export default function AdminReports() {
   const navigate = useNavigate();
   const { user, roles } = useAuth();
+  const { country } = useCountry();
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState("7");
   const [stats, setStats] = useState({
@@ -42,14 +44,15 @@ export default function AdminReports() {
   const [statusData, setStatusData] = useState<{ name: string; value: number }[]>([]);
 
   const isAdmin = roles.includes("admin");
+  const isManager = roles.includes("country_manager");
 
   useEffect(() => {
-    if (!user || !isAdmin) {
+    if (!user || (!isAdmin && !isManager)) {
       navigate("/admin");
       return;
     }
     fetchStats();
-  }, [user, isAdmin, period]);
+  }, [user, isAdmin, isManager, period, country?.id]);
 
   const fetchStats = async () => {
     setLoading(true);
@@ -58,19 +61,36 @@ export default function AdminReports() {
       const startDate = startOfDay(subDays(new Date(), days)).toISOString();
       const endDate = endOfDay(new Date()).toISOString();
 
-      // Fetch orders within period
-      const { data: orders, error: ordersError } = await supabase
+      // Fetch orders within period, filtered by country if context exists
+      let query = supabase
         .from("orders")
         .select("id, total, status, created_at, store_id, stores(name)")
         .gte("created_at", startDate)
         .lte("created_at", endDate);
 
+      if (country?.id) {
+        query = query.eq('country_id', country.id);
+      }
+
+      const { data: orders, error: ordersError } = await query;
+
       if (ordersError) throw ordersError;
 
-      // Fetch total counts
-      const [storesRes, ordersCountRes] = await Promise.all([
-        supabase.from("stores").select("id", { count: "exact", head: true }),
-        supabase.from("orders").select("id", { count: "exact", head: true }),
+      // Fetch total counts filtered by country
+      const storesQuery = supabase.from("stores").select("id", { count: "exact", head: true });
+      const ordersCountQuery = supabase.from("orders").select("id", { count: "exact", head: true });
+      const usersQuery = supabase.from("profiles").select("id", { count: "exact", head: true });
+
+      if (country?.id) {
+        storesQuery.eq('country_id', country.id);
+        ordersCountQuery.eq('country_id', country.id);
+        usersQuery.eq('country_id', country.id);
+      }
+
+      const [storesRes, ordersCountRes, usersRes] = await Promise.all([
+        storesQuery,
+        ordersCountQuery,
+        usersQuery
       ]);
 
       // Calculate stats
@@ -81,7 +101,7 @@ export default function AdminReports() {
         totalOrders: ordersCountRes.count || 0,
         totalRevenue,
         totalStores: storesRes.count || 0,
-        totalUsers: 0,
+        totalUsers: usersRes.count || 0,
         avgOrderValue: totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0,
       });
 
@@ -216,6 +236,15 @@ export default function AdminReports() {
                     <span className="text-xs text-muted-foreground">Farmácias Ativas</span>
                   </div>
                   <p className="text-2xl font-bold">{stats.totalStores}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="h-4 w-4 text-orange-500" />
+                    <span className="text-xs text-muted-foreground">Utilizadores</span>
+                  </div>
+                  <p className="text-2xl font-bold">{stats.totalUsers}</p>
                 </CardContent>
               </Card>
               <Card>
