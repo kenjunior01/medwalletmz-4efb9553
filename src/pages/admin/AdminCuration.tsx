@@ -939,11 +939,14 @@ function validateProposal(proposal: Proposal) {
 function isLaboratoryProposal(proposal: Proposal) {
   const original = String(proposal.search_meta?.original_entity ?? '').toLowerCase();
   const text = `${proposal.name ?? ''} ${proposal.description ?? ''}`.toLowerCase();
-  return proposal.entity_type === 'lab' || original === 'laboratory' || text.includes('laborat');
+  return proposal.entity_type === 'lab' || proposal.entity_type === 'laboratory' || original === 'laboratory' || text.includes('laborat');
 }
 
 function displayEntityType(proposal: Proposal): TypeFilter | 'doctor' | 'other' {
-  return isLaboratoryProposal(proposal) ? 'lab' : proposal.entity_type;
+  if (isLaboratoryProposal(proposal)) return 'lab';
+  const t = proposal.entity_type;
+  if (t === 'pharmacy' || t === 'clinic' || t === 'hospital' || t === 'veterinary' || t === 'doctor') return t;
+  return 'other';
 }
 
 function parseCoordinate(value: unknown) {
