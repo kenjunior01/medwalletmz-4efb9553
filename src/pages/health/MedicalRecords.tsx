@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, FileText, Upload, Share2, Trash2, Download, Sparkles, Scan, Search, Globe2, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Plus, FileText, Upload, Share2, Trash2, Download, Sparkles, Scan, Globe2, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { detectText } from '@/lib/googleVision';

@@ -1,9 +1,8 @@
 import { Seo } from "@/components/Seo";
 import {
-  Stethoscope, Sparkles, FileText, Pill, MessageCircle, ArrowRight, Gift, Wallet,
-  Plus, Briefcase, Star, TrendingUp, Calendar, Activity, Zap, Heart, ShieldCheck,
-  Truck, Building2, ChevronRight, BookOpen, MapPinPlus, Award, Crown, HandHeart,
-  Mic, Search, FlaskConical, PawPrint
+  Stethoscope, Sparkles, Pill, MessageCircle, ArrowRight,
+  Plus, Calendar, ShieldCheck, Building2,
+  BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint
 } from "lucide-react";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
@@ -29,8 +28,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import NumberFlow from "@number-flow/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { usePulseIdentity } from "@/hooks/usePulseIdentity";
-import { useDataSaver } from "@/contexts/DataSaverContext";
 import { Fragment, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -41,8 +38,6 @@ export default function Home() {
   const { roles } = useUserRoles();
   const { wallet } = useWallet();
   const { country, t } = useCountry();
-  const pulse = usePulseIdentity();
-  const PulseIcon = pulse.icon;
 
   const greet = () => {
     const h = new Date().getHours();
@@ -99,7 +94,6 @@ export default function Home() {
   });
 
   const firstName = profile?.full_name?.split(' ')[0] || (user ? t('common.friend') : t('common.visitor'));
-  const { enabled: dataSaver } = useDataSaver();
   const [isListening, setIsListening] = useState(false);
 
   const startVoiceSearch = () => {

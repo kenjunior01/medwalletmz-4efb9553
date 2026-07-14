@@ -11,7 +11,6 @@ import { z } from 'zod';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
-import { lovable } from '@/integrations/lovable';
 import { supabase } from '@/integrations/supabase/client';
 
 const emailSchema = z.string().email('Email inválido');

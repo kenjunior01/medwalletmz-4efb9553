@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
-  ArrowLeft, Sparkles, AlertTriangle, Stethoscope, MapPin,
+  ArrowLeft, Sparkles, AlertTriangle, Stethoscope,
   CheckCircle2, Mic, MicOff, Loader2, Volume2, ShieldCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -36,7 +36,7 @@ const sevColor: Record<string, string> = {
 export default function Triage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { country, t } = useCountry();
+  const { t } = useCountry();
   const { coordinates, calculateDistance, countryCode } = useLocation();
   const [symptoms, setSymptoms] = useState('');
   const [age, setAge] = useState('');
