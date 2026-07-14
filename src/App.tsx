@@ -118,6 +118,7 @@ import LabDetail from "./pages/health/LabDetail";
 import MyLabOrders from "./pages/health/MyLabOrders";
 import AdminAds from "./pages/admin/AdminAds";
 import AdminLabs from "./pages/admin/AdminLabs";
+import AdminClinics from "./pages/admin/AdminClinics";
 import LabDashboard from "./pages/lab/LabDashboard";
 import BloodHub from "./pages/blood/BloodHub";
 import BloodDonorRegister from "./pages/blood/BloodDonorRegister";
@@ -213,6 +214,7 @@ const App = () => (
                   <Route path="/admin" element={<AdminDashboard />}>
                     <Route index element={<AdminHome />} />
                     <Route path="stores" element={<AdminStores />} />
+                    <Route path="clinics" element={<AdminClinics />} />
                     <Route path="orders" element={<AdminOrders />} />
                     <Route path="coupons" element={<AdminCoupons />} />
                     <Route path="products" element={<AdminProducts />} />
@@ -247,8 +249,8 @@ const App = () => (
                     <Route index element={<CountryDashboard />} />
                     <Route path="curation" element={<AdminCuration />} />
                     <Route path="stores" element={<AdminStores />} />
-                    <Route path="clinics" element={<AdminStores />} />
-                    <Route path="veterinary" element={<AdminStores />} />
+                    <Route path="clinics" element={<AdminClinics />} />
+                    <Route path="veterinary" element={<AdminClinics />} />
                     <Route path="labs" element={<AdminLabs />} />
                     <Route path="orders" element={<AdminOrders />} />
                     <Route path="users" element={<AdminUsers />} />
