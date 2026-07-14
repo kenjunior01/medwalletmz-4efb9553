@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ArrowDownCircle, ArrowUpCircle, RefreshCw, Gift, Wallet as WalletIcon, Search, Plus, Minus, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCountry } from '@/contexts/CountryContext';
+import { formatCurrency } from '@/lib/currency';
 
 const STATUS_COLOR: Record<string, string> = {
   confirmed: 'bg-emerald/15 text-emerald border-emerald/40',
@@ -23,6 +25,9 @@ const TYPE_ICONS: Record<string, any> = {
 };
 
 export default function AdminTransactions() {
+  const { country } = useCountry();
+  const currency = (country?.currency_code as any) || 'MZN';
+  const fmt = (v: number) => formatCurrency(Number(v || 0), currency);
   const [status, setStatus] = useState<string>('all');
   const [type, setType] = useState<string>('all');
   const [search, setSearch] = useState('');
