@@ -103,7 +103,7 @@ const DynamicBackground = () => {
 export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, signIn, signUp, loading: authLoading } = useAuth();
+  const { user, signIn, signUp, signInWithGoogle, loading: authLoading } = useAuth();
   const { t, country } = useCountry();
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<'login' | 'register'>('login');
@@ -129,10 +129,20 @@ export default function Auth() {
     }
   };
 
-  // Google sign-in temporariamente desativado enquanto configuramos o provider OAuth.
-  const GOOGLE_AUTH_ENABLED = false;
+  const GOOGLE_AUTH_ENABLED = true;
   const handleGoogle = async () => {
-    toast.info('Entrada com Google temporariamente indisponível. Use email e password.');
+    setLoading(true);
+    try {
+      const { error } = await signInWithGoogle(referralCode);
+      if (error) {
+        toast.error(t('common.error'));
+        setLoading(false);
+      }
+      // O Supabase irá redirecionar, então não precisamos setar loading false se sucesso
+    } catch (err) {
+      toast.error(t('common.error'));
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

@@ -11,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, referralCode?: string, countryId?: string) => Promise<{ error: Error | null; user: User | null }>;
   signIn: (email: string, password: string, referralCode?: string) => Promise<{ error: Error | null; user: User | null }>;
+  signInWithGoogle: (referralCode?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
   refreshRoles: () => Promise<void>;
@@ -106,8 +107,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!mounted) return;
         setSession(session);
         setUser(session?.user ?? null);
-        // Só faz sentido reiniciar loading em SIGN_IN / SIGN_OUT — não em token refresh
-        // (senão as páginas admin voltam ao skeleton a cada ~50min)
+
+        if (_event === 'SIGNED_IN' && session?.user) {
+          const pendingRef = localStorage.getItem('pending_referral_code');
+          if (pendingRef) {
+            void applyReferralCode(pendingRef, session.user.id);
+            localStorage.removeItem('pending_referral_code');
+          }
+        }
+
         if (_event === 'SIGNED_IN' || _event === 'SIGNED_OUT' || _event === 'USER_UPDATED') {
           void loadRoles(session?.user ?? null);
         }
@@ -169,6 +177,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error as Error | null, user: data.user as User | null };
   };
 
+  const signInWithGoogle = async (referralCode?: string) => {
+    if (referralCode) {
+      localStorage.setItem('pending_referral_code', referralCode);
+    }
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
+    });
+    return { error: error as Error | null };
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -181,7 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user, session, roles, loading,
-      signUp, signIn, signOut, hasRole,
+      signUp, signIn, signInWithGoogle, signOut, hasRole,
       refreshRoles,
     }}>
       {children}

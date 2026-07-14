@@ -98,8 +98,10 @@ import FinancialDashboard from "./pages/admin/FinancialDashboard";
 import CountrySettings from "./pages/admin/CountrySettings";
 import CountryDashboard from "./pages/admin/CountryDashboard";
 import RegionalOnboarding from "./pages/admin/RegionalOnboarding";
+import RegionalManagerDashboard from "./pages/admin/RegionalManagerDashboard";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
+import Veterinary from "./pages/health/Veterinary";
 import AdminInsurance from "./pages/admin/AdminInsurance";
 import Insurance from "./pages/insurance/Insurance";
 import InsuranceDetail from "./pages/insurance/InsuranceDetail";
@@ -171,6 +173,7 @@ const App = () => (
                     <Route path="/health/exams/my" element={<MyLabOrders />} />
                     <Route path="/health/education" element={<HealthEducation />} />
                     <Route path="/health/education/:slug" element={<HealthEducation />} />
+                    <Route path="/health/veterinary" element={<Veterinary />} />
                     <Route path="/partners" element={<Partners />} />
                     <Route path="/referrals" element={<Referrals />} />
                     <Route path="/wallet" element={<Wallet />} />
@@ -235,6 +238,23 @@ const App = () => (
                     <Route path="country-settings" element={<CountrySettings />} />
                     <Route path="country-dashboard" element={<CountryDashboard />} />
                     <Route path="regional-onboarding" element={<RegionalOnboarding />} />
+                  </Route>
+
+                  {/* Regional Manager Routes */}
+                  <Route path="/manager" element={<RegionalManagerDashboard />}>
+                    <Route index element={<CountryDashboard />} />
+                    <Route path="curation" element={<AdminCuration />} />
+                    <Route path="stores" element={<AdminStores />} />
+                    <Route path="clinics" element={<AdminStores />} />
+                    <Route path="veterinary" element={<AdminStores />} />
+                    <Route path="labs" element={<AdminLabs />} />
+                    <Route path="orders" element={<AdminOrders />} />
+                    <Route path="users" element={<AdminUsers />} />
+                    <Route path="drivers" element={<AdminDrivers />} />
+                    <Route path="insurance" element={<AdminInsurance />} />
+                    <Route path="ads" element={<AdminAds />} />
+                    <Route path="reports" element={<AdminReports />} />
+                    <Route path="import" element={<AdminImport />} />
                   </Route>
 
                   {/* Store Owner Routes */}

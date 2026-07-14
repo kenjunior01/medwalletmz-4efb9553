@@ -36,9 +36,13 @@ export interface Country {
 const STATIC_COUNTRIES: Country[] = [
   {
     id: 'MZ', name: 'Moçambique', currency_code: 'MZN', currency_symbol: 'MT', phone_code: '258',
-    default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Africa/Maputo',
+    branding_config: {
+      primary_color: '#009739',   // Verde Moçambique
+      secondary_color: '#FFD100', // Amarelo
+      accent_color: '#D40000',    // Vermelho
+    },
     config: {
-      cities: ["Maputo", "Beira", "Nampula", "Quelimane", "Tete", "Chimoio", "Pemba", "Inhambane"],
+      health_categories: ['pharmacy', 'clinic', 'hospital', 'laboratory', 'veterinary'],
       phone_placeholder: "+258 8X XXX XXXX",
       registration_defaults: {
         consultation_fee: 500,

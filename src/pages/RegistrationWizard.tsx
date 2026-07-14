@@ -13,7 +13,7 @@ import {
   User, Stethoscope, Store, Building2, FlaskConical, Truck,
   ChevronRight, CheckCircle2, ShieldCheck, Sparkles, Heart,
   Info, Loader2, MapPin, Phone, Mail, FileText, Camera, Database,
-  Bike, Car
+  Bike, Car, PawPrint
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -30,6 +30,7 @@ const roleOptions = [
   { id: 'doctor', title: 'Médico', description: 'Atendimento online', icon: Stethoscope, color: 'bg-pharmacy', category: 'Profissional' },
   { id: 'store_owner', title: 'Farmácia', description: 'Venda de medicamentos', icon: Store, color: 'bg-emerald-500', category: 'Parceiro' },
   { id: 'clinic', title: 'Clínica', description: 'Gestão de unidades', icon: Building2, color: 'bg-amber-500', category: 'Parceiro' },
+  { id: 'veterinary', title: 'Veterinário', description: 'Saúde animal & Pet', icon: PawPrint, color: 'bg-rose-500', category: 'Profissional' },
   { id: 'laboratory', title: 'Laboratório', description: 'Exames e resultados', icon: FlaskConical, color: 'bg-cyan-500', category: 'Parceiro' },
   { id: 'driver', title: 'Entregador', description: 'Entregas de saúde', icon: Truck, color: 'bg-orange-500', category: 'Profissional' },
   { id: 'insurance', title: 'Seguradora', description: 'Planos de saúde', icon: ShieldCheck, color: 'bg-indigo-500', category: 'Parceiro' }

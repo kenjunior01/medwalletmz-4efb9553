@@ -1,205 +1,95 @@
-# MedWallet MZ · Carteira Digital de Saúde
+# MedWallet Global · Ecossistema Digital de Saúde
 
-> **Saúde, farmácia numa só carteira** — triagem com IA, médicos verificados, teleconsulta, farmácia 24h e pagamentos M-Pesa em Moçambique.
+> **Saúde, Farmácia e Veterinária numa só carteira** — Uma plataforma multi-região (Moçambique, Brasil, Índia, etc.) com triagem IA, pagamentos localizados e segurança backend-first.
 
-Plataforma mobile-first (React + Vite + Supabase) que aproxima serviços de saúde das populações moçambicanas.
-
----
-
-## Visão geral
-
-A MedWallet é uma **carteira digital de saúde** construída em torno de três pilares:
-
-1. **Acesso** — Triagem com IA, teleconsultas (chat + vídeo), farmácia 24h com entrega em Maputo.
-2. **Confiança** — Médicos verificados, avaliações reais, partilha segura de registos médicos.
-3. **Pagamento local** — Carteira MZN integrada com M-Pesa, e-Mola e Mkesh.
-
-Construído com React 18, Vite 5, TypeScript, shadcn-ui, Tailwind, Supabase (Postgres + Auth + Storage + Edge Functions) e Leaflet para mapas.
+Plataforma mobile-first construída com **React 18 + Vite 5 + Supabase**, focada em acessibilidade, confiança e conformidade regional.
 
 ---
 
-## Novas funcionalidades (round estratégico)
+## Visão Geral
 
-Esta versão aplica as **recomendações do relatório estratégico "MedWallet e o Mercado Moçambicano de Saúde Digital"**.
+A MedWallet evoluiu de uma solução local para um ecossistema global estruturado em quatro pilares:
 
-### 1. Conteúdo Educacional Localizado · `rec 4.1` ✅
-- **Nova rota:** `/health/education` e `/health/education/:slug`
-- **8 artigos seed** focados em Moçambique: malária, cólera, hipertensão, pré-natal, HIV, diabetes, saúde mental, primeiros socorros infantis.
-- Pesquisa, categorias (Prevenção, Mãe&Bebé, Crónicas, Saúde Mental…), artigo em destaque, markdown leve para rendering rápido.
-- Tabela `health_articles` + `article_views` (métricas de leitura).
-- Banner de entrada na Home ligando a `/health/education`.
-
-### 2. Fluxo de Registo Unificado (Harmonização Premium) ✅
-Resolve a fragmentação do registo de profissionais e unidades:
-- **RegistrationWizard:** Um único fluxo multi-step para Médicos, Farmácias, Clínicas, Laboratórios e Seguradoras.
-- **OnboardingLayout:** Design premium (glassmorphism) e transições fluidas.
-- **Integração de Stock:** Opções de sincronização de inventário para farmácias logo no registo.
-- **Document AI Ready:** Badges de verificação automática via Google Document AI.
-- **Curation Gateway:** Encaminhamento direto para o Gestor Regional após submissão.
-
-### 3. Página de Parcerias (MISAU / Empresas / ONGs) · `rec 5.3` ✅
-- **Nova rota:** `/partners`
-- Mostra os tipos de parceria em curso (hospitais públicos, farmácias, ONGs, seguradoras).
-- Formulário único para candidatura (setor público, corporativo, ONG, seguradora).
-- Destaque para integração **M-Pesa + micro-seguros de saúde**.
-- Tabela `partner_applications` com RLS (anon insert + admin read).
-
-### 4. KlipyBanner localizado · `rec 1.2` ✅
-Substitui os GIFs genéricos "healthcare smile" por queries moçambicanas contextuais: `mozambique healthcare`, `maputo family`, `africa doctor`, `tropical health`.
-
-### 5. Página Help ampliada · `rec 5.3` ✅
-- **Guia M-Pesa em 4 passos** (depósito na carteira MedWallet).
-- **Nova categoria FAQ:** Consultas & Telemedicina.
-- Quick actions para Educação MZ, Parcerias e Convite.
-
-### 6. Personalização no Home · `rec 4.1` ✅
-Widget `PersonalizedForYou` recomenda, baseado no histórico do utilizador:
-- Retorno com mesmo médico (se consulta > 14 dias).
-- Continuar com médico da última consulta.
-- Confirmar triagem com clínico (se última triagem moderada/alta).
-- Artigo de hipertensão (condição mais comum em MZ).
-- Check-up geral (fallback).
-
-### 7. ReferralBanner MZ · `rec 5.2` ✅
-Componente `ReferralBanner` com copy adaptado ao contexto moçambicano:
-- Saudação personalizada com nome da cidade.
-- Partilha direta via **WhatsApp** (canal dominante em MZ).
-- Link de convite copy-paste.
-
-### 8. Integração Google Maps Máxima · `rec 1.2` ✅
-- **Google Routes API (v2):** Cálculo de rotas reais com consciência de tráfego para rastreamento de entregas e cálculo de proximidade de médicos/farmácias.
-- **Polylines Reais:** O mapa de rastreamento agora desenha o caminho exato da estrada em vez de uma linha reta, com ajuste automático de zoom.
-- **Google Places Autocomplete:** Implementado em `Addresses.tsx`, `Checkout.tsx` e `SuggestPlace.tsx` para garantir endereços precisos e geocodificados.
-- **Geocoding reverso:** Auto-detecção de bairro e cidade ao usar "Minha Localização".
-- **Botão de Navegação Externa:** Atalho "Abrir no Google Maps" adicionado ao rastreamento para navegação GPS assistida.
-- **Mapas Interativos Avançados:** Novo sistema em `SuggestPlace.tsx` permitindo arrastar pins e clicar no mapa para definir coordenadas exatas de novos estabelecimentos.
-- **Static Maps:** Previsão visual ultra-rápida de mapas no histórico de pedidos em `Orders.tsx`.
-- **Ordenação por Proximidade:** Filtro "Próximo" em farmácias e médicos usa cálculos geográficos em tempo real.
-
-### 9. Ecossistema Completo (Sangue, Seguros & Parcerias) · `rec 5.3` ✅
-- **Sangue (MedWallet Sangue):** Sistema completo de doação com mapa de campanhas, pedidos urgentes partilháveis via WhatsApp e incentivos (saldo + Pulse).
-- **Seguros Localizados:** Integração de seguradoras locais com destaque para micro-seguros via M-Pesa. Badges informativos sobre cobertura (Consultas/Farmácia/Exames).
-- **Classificados (Anúncios):** Marketplace de saúde e serviços com sistema de anúncios destacados (promovidos), contador de visualizações e integração direta WhatsApp.
-- **Corporate & Governo:** Página de parcerias expandida com proposta de valor clara para o setor público (MISAU) e benefícios corporativos (redução de absentismo).
-- **Gamificação Social:** Incentivos reais por doação de sangue e referências, convertíveis em serviços dentro da app.
-
-### 10. Inovação Google Cloud IA & Saúde · `rec 1.2` ✅
-- **Cloud Vision API (OCR):** Digitalização de receitas físicas e relatórios de exames via foto. A API extrai o texto automaticamente, preenchendo o histórico médico digital.
-- **Cloud Document AI:** Processamento estruturado de documentos de identidade (BI) e cartões de seguros locais.
-- **Cloud Speech-to-Text & Text-to-Speech:** Triagem por voz e leitura assistida de artigos de saúde para utilizadores com baixa literacia ou dificuldades visuais.
-- **Google Cloud Healthcare API:** Armazenamento de dados médicos em conformidade com padrões globais (FHIR/HL7).
-- **BigQuery API:** Análise agregada de dados de saúde para identificação de tendências epidemiológicas (parceria MISAU).
-
-### 11. Otimização de Logística e Meio Ambiente ✅
-- **Route Optimization API:** Sequenciamento inteligente de entregas para farmácias 24h, otimizando tempo e combustível para os estafetas.
-- **Address Validation API:** Normalização de moradas em contextos urbanos complexos de Maputo, garantindo que o medicamento chega ao destino correto.
-- **Air Quality & Weather API:** Alertas preventivos baseados na qualidade do ar e condições meteorológicas para pacientes com condições crónicas (asma, hipertensão).
-
-### 12. Design Centrado no Utilizador Moçambicano ✅
-- **Modo Data Saver:** Redução drástica do consumo de dados móveis (essencial para o mercado local).
-- **VUI (Voice User Interface):** Interface adaptada para comandos de voz em todas as áreas críticas (triagem, pesquisa).
-- **Notificações Adaptativas por Clima:** Sistema que correlaciona condições crónicas (asma, hipertensão) com dados de clima/ar em tempo real para avisos diários personalizados.
-- **Offline-First UI:** Indicadores claros de funcionalidades disponíveis sem conexão à internet.
-- **Foco em Emergência:** Reorganização da hierarquia visual para acesso imediato a "Triagem IA" e "Carteira M-Pesa".
-
-### 13. Base de Dados de Saúde Moçambicana (Seeding & Import) ✅
-- **Seed Inicial Massivo:** Inserção de +20 hospitais, clínicas e farmácias de referência em Maputo, Matola, Beira e Nampula com coordenadas reais e imagens de alta qualidade.
-- **Auto-Importador de Alcance Nacional:** Ferramenta administrativa expandida para localizar estabelecimentos até nas zonas rurais (mais de 150 distritos e vilas mapeados via Google Places/Mapbox).
-- **Curation Dashboard:** Painel `/admin/curation` para validar e aprovar submissões da comunidade e importações em massa.
-- **Sistema de Avaliação Universal:** Utilizadores agora podem deixar comentários e classificações (estrelas) em qualquer farmácia, clínica ou hospital, promovendo a transparência e qualidade do serviço.
-- **Renderização Segura de Imagens:** Componente `SafeImage` implementado em toda a app para garantir que nenhuma lista quebre por links de imagem offline (fallback automático).
-
-### 14. Escalabilidade Global & Conversão Real-Time ✅
-- **Expansão para a Índia:** Adição do suporte completo ao idioma **Hindi** e integração regional para o mercado indiano, incluindo suporte a pagamentos UPI.
-- **Google Finance (via SearchAPI):** Conversão de moeda em tempo real integrada em `currencyService.ts`. Permite visualizar preços em moedas globais (USD, EUR, ZAR, INR) baseados em taxas de mercado atualizadas.
-- **Motor Fiscal Dinâmico:** Cálculo de impostos (IVA, VAT, ISS) adaptativo por país e tipo de serviço em `taxEngine.ts`.
-- **Interoperabilidade FHIR:** Exportação de registos médicos seguindo o padrão internacional HL7 FHIR para aceitação em hospitais globais.
-- **Gestão Regional:** Nova role `country_manager` e dashboard administrativo dedicado para supervisão local por país.
-- **Gateways Globais:** Integração de Stripe e PayPal como alternativas seguras para mercados internacionais fora de Moçambique.
+1. **Acesso Total** — Teleconsultas (vídeo/chat), Triagem com IA, Farmácia 24h, Laboratórios e **Saúde Veterinária**.
+2. **Confiança & Verificação** — Profissionais verificados, avaliações reais e partilha segura de registos médicos (FHIR/HL7).
+3. **Identidade Regional** — Branding dinâmico e interface adaptada automaticamente ao país (Cores, Moeda, Métodos de Pagamento).
+4. **Segurança "Backend-First"** — Lógica de carteira e permissões processada no servidor (PostgreSQL RLS + Stored Procedures) para prevenir fraudes.
 
 ---
 
-## Schema (Supabase)
+## Estrutura Multi-Região e Segurança
 
-As alterações de schema estão na migration `supabase/migrations/20260630120000_strategic_recommendations_v1.sql`:
+### 1. Gestão Regional Isolada ✅
+- **Regional Manager Dashboard:** Painel exclusivo para gestores locais. Filtra métricas, usuários e estabelecimentos apenas da sua jurisdição.
+- **Isolamento de Dados:** As políticas de **Row Level Security (RLS)** garantem que um gestor de Moçambique nunca aceda a dados do Brasil.
+
+### 2. Branding & Identidade Dinâmica ✅
+- O sistema detecta a localização (ou escolha) do utilizador e altera instantaneamente:
+    - **Cores:** Verde/Vermelho para MZ, Verde/Amarelo para BR.
+    - **Moeda:** MZN, BRL, INR, ZAR, EUR, etc.
+    - **Pagamentos:** M-Pesa/e-Mola (MZ), PIX (BR), UPI (IN), MB Way (PT).
+
+### 3. Saúde Veterinária (MedWallet Pet & Agro) ✅
+- Expansão para clínicas veterinárias e médicos de animais de grande porte (essencial para zonas rurais).
+- Rota dedicada: `/health/veterinary`.
+
+### 4. Segurança Anti-Hacker (Server-Side) ✅
+- **Wallet Protection:** O saldo não pode ser alterado via frontend. Toda a transação é validada por funções PL/pgSQL com `FOR UPDATE` para evitar Race Conditions.
+- **Audit Logs:** Cada movimentação financeira e aprovação de parceiro gera um rastro imutável no banco de dados.
+
+---
+
+## Funcionalidades Premium
+
+### Social Auth & Login Rápido
+- **Google Login:** Integração completa para registo e autenticação num clique.
+- **VUI (Voice User Interface):** Triagem e navegação por voz para acessibilidade.
+
+### Inteligência Artificial & OCR
+- **Cloud Vision API:** Digitalização automática de receitas físicas.
+- **Document AI:** Validação automática de identidades e cédulas profissionais.
+- **AI Triage:** Algoritmo de gravidade baseado em sintomas com encaminhamento para especialidades.
+
+### Logística e Proximidade
+- **Google Routes v2:** Cálculo de rotas reais e polylines para entregas de medicamentos.
+- **Offline-First:** Funcionalidades críticas (como histórico médico) funcionam sem conexão.
+
+---
+
+## Schema & Tabelas (Resumo)
 
 | Tabela | Finalidade |
 |---|---|
-| `health_articles` | Artigos educacionais publicados (admin write, public read de publicados). |
-| `article_views`   | Tracking anónimo de leituras. |
-| `provider_waitlist` | Lista de espera dos pacientes (auto insert + admin all). |
-| `partner_applications` | Candidaturas de parceria (anon insert + admin read). |
-
-RLS policies e seed inicial estão incluídos.
+| `countries` | Configurações globais, branding e gateways por região. |
+| `wallets` | Saldos protegidos com RLS por `country_id`. |
+| `medical_records` | Registos encriptados com partilha controlada via `medical_record_shares`. |
+| `place_proposals` | Sistema de curadoria para novos estabelecimentos (Farmácia/Vet/Clinic). |
 
 ---
 
-## Como correr
+## Como Correr
 
 ```bash
-# Pré-requisitos: Node.js 18+ e npm ou bun
-npm install                # ou: bun install
+# Instalar dependências
+npm install
 
-npm run dev                # dev server (Vite, HMR)
-npm run build              # build de produção
-npm run test               # vitest
-npm run lint               # eslint
+# Iniciar servidor de desenvolvimento
+npm run dev
 ```
 
-A app fala com Supabase via as variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` no `.env`.
-
-Para aplicar a nova migration:
-
-```bash
-supabase db push
-# ou, no painel Supabase: SQL Editor → colar o conteúdo do ficheiro
-```
+### Variáveis de Ambiente (.env)
+- `VITE_SUPABASE_URL`: Endpoint do projeto.
+- `VITE_SUPABASE_PUBLISHABLE_KEY`: Chave anónima.
+- `VITE_GOOGLE_CLIENT_ID`: Para autenticação social.
 
 ---
 
-## Estrutura (resumo)
-
-```
-src/
-├── components/
-│   ├── health/        # FollowUpReminders, PostConsultationReview, PersonalizedForYou
-│   ├── home/          # NearbyProvidersWidget
-│   ├── klipy/         # KlipyBanner (queries MZ)
-│   ├── providers/     # WaitlistDialog
-│   ├── referrals/     # ReferralBanner
-│   └── reviews/       # ReviewModal, StoreReviews
-├── contexts/          # Auth, Cart, Location, DataSaver
-├── pages/
-│   ├── health/        # Doctors, Triage, MedicalRecords, Exams,
-│   │                  # VideoConsultation, ConsultationChat, **HealthEducation**
-│   ├── admin/         # Painel admin
-│   ├── doctor/        # Painel médico
-│   ├── driver/        # Painel entregador
-│   ├── clinic/        # Painel clínica
-│   ├── store/         # Painel farmácia
-│   ├── Home.tsx
-│   ├── **Partners.tsx**
-│   ├── Wallet.tsx
-│   ├── Referrals.tsx
-│   ├── Help.tsx       # Atualizado com M-Pesa
-│   └── ...
-├── hooks/             # useWallet, useFavorites, useNotifications, etc.
-├── integrations/supabase/   # cliente + types
-└── lib/
-```
-
----
-
-## Roadmap de expansão (próximas iterações)
-
-Recomendação 5.3 do relatório:
-- Expansão geográfica para **Beira** e **Nampula**.
-- Micro-seguros de saúde com seguradoras locais.
-- Telemetria de leitura + personalização por ML.
-- Programa de **micro-influenciadores** MZ com dashboard para creators.
+## Roadmap
+- Expansão para Micro-seguros de saúde integrados com M-Pesa.
+- Telemetria de saúde preventiva via Wearables.
+- Dashboard para Micro-influenciadores de saúde.
 
 ---
 
 ## Licença
-
-Proprietário · © MedWallet MZ.
+Proprietário · © MedWallet Global Group.

@@ -1,0 +1,123 @@
+import { useEffect } from 'react';
+import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCountry } from '@/contexts/CountryContext';
+import {
+  LayoutDashboard,
+  Store,
+  Package,
+  ShoppingBag,
+  Users,
+  Truck,
+  Shield,
+  Megaphone,
+  Sparkles,
+  BarChart3,
+  Upload,
+  LogOut,
+  Globe,
+  Stethoscope,
+  HeartPulse,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+
+type MenuItem = { icon: any; label: string; path: string; highlight?: boolean };
+
+const menuItems: MenuItem[] = [
+  { icon: LayoutDashboard, label: 'Resumo Regional', path: '/manager' },
+  { icon: Sparkles, label: 'Curadoria Local', path: '/manager/curation', highlight: true },
+  { icon: Store, label: 'Farmácias', path: '/manager/stores' },
+  { icon: HeartPulse, label: 'Clínicas & Hospitais', path: '/manager/clinics' },
+  { icon: Stethoscope, label: 'Veterinária', path: '/manager/veterinary' },
+  { icon: Sparkles, label: 'Laboratórios', path: '/manager/labs' },
+  { icon: ShoppingBag, label: 'Pedidos da Região', path: '/manager/orders' },
+  { icon: Users, label: 'Usuários Locais', path: '/manager/users' },
+  { icon: Truck, label: 'Estafetas', path: '/manager/drivers' },
+  { icon: Shield, label: 'Seguros Regionais', path: '/manager/insurance' },
+  { icon: Megaphone, label: 'Anúncios', path: '/manager/ads' },
+  { icon: BarChart3, label: 'Relatórios', path: '/manager/reports' },
+  { icon: Upload, label: 'Importação Local', path: '/manager/import' },
+];
+
+export default function RegionalManagerDashboard() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, hasRole, loading, signOut } = useAuth();
+  const { country } = useCountry();
+  const isManager = hasRole('country_manager') || hasRole('admin');
+
+  useEffect(() => {
+    if (!loading && (!user || !isManager)) {
+      navigate('/auth');
+    }
+  }, [user, loading, isManager, navigate]);
+
+  if (loading) return <div className="p-8">A carregar painel regional...</div>;
+  if (!user || !isManager) return null;
+
+  return (
+    <div className="flex min-h-screen bg-background">
+      <aside className="w-64 bg-card border-r border-border flex flex-col shadow-sm">
+        <div className="p-6 border-b border-border bg-primary/5">
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-xl font-bold text-primary">MedWallet</h1>
+            <Badge variant="outline" className="text-[10px] uppercase">{country?.id}</Badge>
+          </div>
+          <p className="text-xs text-muted-foreground font-medium">Gestor Regional: {country?.name}</p>
+        </div>
+
+        <nav className="flex-1 p-4 overflow-y-auto">
+          <ul className="space-y-1">
+            {menuItems.map(({ icon: Icon, label, path, highlight }) => {
+              const isActive = location.pathname === path;
+              return (
+                <li key={path}>
+                  <Link
+                    to={path}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : highlight
+                          ? 'text-secondary hover:bg-secondary/10 bg-secondary/5'
+                          : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span className="font-medium">{label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        <div className="p-4 border-t border-border mt-auto">
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10"
+            onClick={() => signOut().then(() => navigate('/'))}
+          >
+            <LogOut className="h-4 w-4" />
+            Sair do Painel
+          </Button>
+        </div>
+      </aside>
+
+      <main className="flex-1 overflow-auto bg-muted/20">
+        <header className="h-16 border-b bg-card px-8 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+          <h2 className="font-semibold text-lg">
+            {menuItems.find(m => m.path === location.pathname)?.label || 'Painel Regional'}
+          </h2>
+          <div className="flex items-center gap-4">
+             <span className="text-xs text-muted-foreground italic">Operação 100% Protegida por Backend RLS</span>
+          </div>
+        </header>
+        <div className="p-8">
+          <Outlet />
+        </div>
+      </main>
+    </div>
+  );
+}
