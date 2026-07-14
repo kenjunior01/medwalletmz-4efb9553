@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe } from 'lucide-react';
+import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe, LogIn } from 'lucide-react';
 import { useCountry } from '@/contexts/CountryContext';
+import { useNavigate } from 'react-router-dom';
 
 type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager';
 
@@ -48,6 +49,7 @@ const roleColors: Record<AppRole, string> = {
 export default function AdminUsers() {
   const queryClient = useQueryClient();
   const { country, allCountries } = useCountry();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
