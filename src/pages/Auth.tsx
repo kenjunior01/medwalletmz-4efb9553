@@ -12,6 +12,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
 import { lovable } from '@/integrations/lovable';
+import { supabase } from '@/integrations/supabase/client';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
@@ -114,6 +115,20 @@ export default function Auth() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const referralCode = useMemo(() => new URLSearchParams(location.search).get('ref')?.trim() || '', [location.search]);
 
+  const goAfterAuth = async (userId?: string | null) => {
+    try {
+      if (!userId) return navigate('/register');
+      const { data } = await supabase.from('profiles')
+        .select('onboarding_completed')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (data?.onboarding_completed) navigate('/');
+      else navigate('/register');
+    } catch {
+      navigate('/register');
+    }
+  };
+
   const handleGoogle = async () => {
     setLoading(true);
     try {
@@ -122,7 +137,7 @@ export default function Auth() {
         toast.error(result.error.message || 'Erro ao entrar com Google');
       }
       if (result.redirected) return;
-      navigate('/register');
+      await goAfterAuth(user?.id);
     } catch (err: any) {
       toast.error(err?.message || t('common.error'));
     } finally {
@@ -132,11 +147,10 @@ export default function Auth() {
 
   useEffect(() => {
     if (user && !authLoading) {
-      // Redireciona para /register em vez de / para permitir que o utilizador
-      // escolha o seu papel (Médico, Farmácia, etc.) ou continue como Paciente.
-      navigate('/register');
+      void goAfterAuth(user.id);
     }
-  }, [user, authLoading, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, authLoading]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -162,17 +176,16 @@ export default function Auth() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const { error } = await signIn(email, password, referralCode);
+      const { error, user: signedIn } = await signIn(email, password, referralCode);
       if (error) {
         toast.error(error.message.includes('Invalid login credentials') ? t('auth.invalid_credentials') : t('common.error'));
       } else {
         toast.success(t('auth.welcome_back'));
         const searchParams = new URLSearchParams(location.search);
-        // Se já vier com modo profissional, mantém. Caso contrário, deixa o usuário escolher.
         if (searchParams.get('mode') === 'professional') {
           navigate('/register');
         } else {
-          navigate('/register');
+          await goAfterAuth(signedIn?.id);
         }
       }
     } catch (err) {

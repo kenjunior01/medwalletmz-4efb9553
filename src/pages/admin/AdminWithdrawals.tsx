@@ -6,12 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, ArrowDownToLine } from "lucide-react";
+import { useCountry } from "@/contexts/CountryContext";
+import { formatCurrency } from "@/lib/currency";
 
 const STATUS_LABEL: Record<string, string> = {
   pending: "Pendente", paid: "Pago", rejected: "Rejeitado", all: "Todos",
 };
 
 export default function AdminWithdrawals() {
+  const { country } = useCountry();
+  const currency = (country?.currency_code as any) || 'MZN';
+  const fmt = (v: number) => formatCurrency(Number(v || 0), currency);
   const [rows, setRows] = useState<any[]>([]);
   const [filter, setFilter] = useState<string>("pending");
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -62,7 +67,7 @@ export default function AdminWithdrawals() {
           <Card key={s}>
             <CardContent className="p-4">
               <div className="text-xs text-muted-foreground">{STATUS_LABEL[s]}</div>
-              <div className="text-xl font-bold">{(totals[s] ?? 0).toLocaleString("pt-PT")} <span className="text-xs font-normal text-muted-foreground">MZN</span></div>
+              <div className="text-xl font-bold">{fmt(totals[s] ?? 0)}</div>
             </CardContent>
           </Card>
         ))}
@@ -73,7 +78,7 @@ export default function AdminWithdrawals() {
         <Card key={r.id}>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center justify-between text-base">
-              <span>{Number(r.amount).toLocaleString("pt-PT")} MZN · {r.method}</span>
+              <span>{fmt(Number(r.amount))} · {r.method}</span>
               <Badge variant={r.status === "paid" ? "default" : r.status === "rejected" ? "destructive" : "secondary"}>{r.status}</Badge>
             </CardTitle>
           </CardHeader>

@@ -7,6 +7,7 @@ import { ArrowLeft, TrendingUp, Users, Wallet, Globe, ArrowUpRight, ArrowDownRig
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useCountry } from '@/contexts/CountryContext';
 import { formatCurrency } from '@/lib/currency';
+import { useGlobalAdminGuard } from '@/hooks/useAdminGuard';
 
 interface CurrencyTotal {
   currency: string;
@@ -17,6 +18,7 @@ interface CurrencyTotal {
 }
 
 export default function FinancialDashboard() {
+  useGlobalAdminGuard();
   const navigate = useNavigate();
   const { t } = useCountry();
   const [totals, setTotals] = useState<CurrencyTotal[]>([]);

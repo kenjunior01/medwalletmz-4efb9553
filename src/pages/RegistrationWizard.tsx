@@ -126,11 +126,19 @@ export default function RegistrationWizard() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (step === 1 && !selectedRole) return toast.error('Selecione um perfil');
     if (step === 2 && selectedRole !== 'customer' && !formData.fullName) return toast.error('Nome é obrigatório');
 
     if (selectedRole === 'customer' && step === 1) {
+      if (user) {
+        try {
+          await supabase.from('profiles').update({
+            onboarding_completed: true,
+            country_id: country?.id || 'MZ',
+          }).eq('user_id', user.id);
+        } catch (e) { /* non-blocking */ }
+      }
       navigate('/');
       return;
     }
@@ -147,7 +155,8 @@ export default function RegistrationWizard() {
         full_name: formData.fullName || user.email?.split('@')[0],
         phone: formData.phone,
         country_id: country?.id || 'MZ',
-        default_city: formData.city
+        default_city: formData.city,
+        onboarding_completed: true,
       }).eq('user_id', user.id);
 
       // 2. Role specific logic

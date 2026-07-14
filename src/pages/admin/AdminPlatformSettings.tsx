@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Save, Loader2 } from 'lucide-react';
+import { useGlobalAdminGuard } from '@/hooks/useAdminGuard';
 
 const FIELDS = [
   { key: 'default_commission_percent', label: 'Comissão padrão da plataforma (%)', type: 'number' },
@@ -19,6 +20,7 @@ const FIELDS = [
 ];
 
 export default function AdminPlatformSettings() {
+  useGlobalAdminGuard();
   const [values, setValues] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

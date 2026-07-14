@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Globe, Users, ShoppingBag, TrendingUp, Stethoscope } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCountry } from '@/contexts/CountryContext';
+import { useGlobalAdminGuard } from '@/hooks/useAdminGuard';
 
 export default function GlobalMetrics() {
+  useGlobalAdminGuard();
   const { allCountries } = useCountry();
 
   const { data: metrics, isLoading } = useQuery({

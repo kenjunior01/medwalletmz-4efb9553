@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe } from 'lucide-react';
+import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe, LogIn } from 'lucide-react';
 import { useCountry } from '@/contexts/CountryContext';
+import { useNavigate } from 'react-router-dom';
 
 type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager';
 
@@ -48,6 +49,7 @@ const roleColors: Record<AppRole, string> = {
 export default function AdminUsers() {
   const queryClient = useQueryClient();
   const { country, allCountries } = useCountry();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
@@ -349,6 +351,28 @@ export default function AdminUsers() {
                   <Shield className="h-4 w-4" />
                   Roles do Utilizador
                 </p>
+                {selectedUser.roles.some(r => r.role === 'country_manager') && (
+                  <div className="mb-3">
+                    {selectedUser.roles
+                      .filter(r => r.role === 'country_manager' && r.country_id)
+                      .map((r, i) => (
+                        <Button
+                          key={`enter-${i}`}
+                          size="sm"
+                          className="w-full mb-1 justify-between font-semibold"
+                          onClick={() => {
+                            try { localStorage.setItem('selectedCountryId', r.country_id!); } catch {}
+                            toast.success(`A entrar como gestor de ${r.country_id}`);
+                            navigate('/admin/country-dashboard');
+                            setIsDialogOpen(false);
+                          }}
+                        >
+                          <span className="flex items-center gap-2"><LogIn className="h-4 w-4" /> Entrar no painel de {r.country_id}</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      ))}
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {selectedUser.roles.map((r, idx) => (
                     <Badge 

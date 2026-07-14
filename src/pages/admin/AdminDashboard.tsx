@@ -28,29 +28,31 @@ import {
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-  { icon: Sparkles, label: 'Curadoria', path: '/admin/curation', highlight: true },
-  { icon: Store, label: 'Farmácias', path: '/admin/stores' },
-  { icon: Package, label: 'Produtos', path: '/admin/products' },
-  { icon: ShoppingBag, label: 'Pedidos', path: '/admin/orders' },
-  { icon: Users, label: 'Usuários', path: '/admin/users' },
-  { icon: Truck, label: 'Entregadores', path: '/admin/drivers' },
-  { icon: Tag, label: 'Cupons', path: '/admin/coupons' },
+type MenuItem = { icon: any; label: string; path: string; highlight?: boolean; managerAllowed?: boolean };
+const menuItems: MenuItem[] = [
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', managerAllowed: true },
+  { icon: Globe, label: 'Painel do País', path: '/admin/country-dashboard', highlight: true, managerAllowed: true },
+  { icon: Sparkles, label: 'Curadoria', path: '/admin/curation', highlight: true, managerAllowed: true },
+  { icon: Store, label: 'Farmácias', path: '/admin/stores', managerAllowed: true },
+  { icon: Package, label: 'Produtos', path: '/admin/products', managerAllowed: true },
+  { icon: ShoppingBag, label: 'Pedidos', path: '/admin/orders', managerAllowed: true },
+  { icon: Users, label: 'Usuários', path: '/admin/users', managerAllowed: true },
+  { icon: Truck, label: 'Entregadores', path: '/admin/drivers', managerAllowed: true },
+  { icon: Tag, label: 'Cupons', path: '/admin/coupons', managerAllowed: true },
   { icon: Gift, label: 'Convites', path: '/admin/referrals' },
   { icon: Wallet, label: 'Carteiras', path: '/admin/wallets' },
-  { icon: Receipt, label: 'Transações', path: '/admin/transactions' },
-  { icon: Shield, label: 'Seguradoras', path: '/admin/insurance' },
-  { icon: Megaphone, label: 'Anúncios', path: '/admin/ads' },
-  { icon: Sparkles, label: 'Laboratórios', path: '/admin/labs' },
+  { icon: Receipt, label: 'Transações', path: '/admin/transactions', managerAllowed: true },
+  { icon: Shield, label: 'Seguradoras', path: '/admin/insurance', managerAllowed: true },
+  { icon: Megaphone, label: 'Anúncios', path: '/admin/ads', managerAllowed: true },
+  { icon: Sparkles, label: 'Laboratórios', path: '/admin/labs', managerAllowed: true },
   { icon: Percent, label: 'Comissões', path: '/admin/commissions' },
   { icon: Sliders, label: 'Carteira & Bónus', path: '/admin/platform-settings' },
-  { icon: Crown, label: 'Inscritos (Subs)', path: '/admin/subscriptions' },
+  { icon: Crown, label: 'Inscritos (Subs)', path: '/admin/subscriptions', managerAllowed: true },
   { icon: Crown, label: 'Planos (Gestão)', path: '/admin/subscription-plans', highlight: true },
   { icon: Wallet, label: 'Contas Pagamento', path: '/admin/payment-accounts' },
-  { icon: BarChart3, label: 'Relatórios', path: '/admin/reports' },
-  { icon: Upload, label: 'Importar Dados', path: '/admin/import' },
-  { icon: Globe, label: 'Gestão do País', path: '/admin/country-settings', highlight: true },
+  { icon: BarChart3, label: 'Relatórios', path: '/admin/reports', managerAllowed: true },
+  { icon: Upload, label: 'Importar Dados', path: '/admin/import', highlight: true, managerAllowed: true },
+  { icon: Globe, label: 'Gestão do País', path: '/admin/country-settings', highlight: true, managerAllowed: true },
   { icon: Settings, label: 'Configurações', path: '/admin/settings' },
   { icon: Globe, label: 'Métricas Mundiais', path: '/admin/global-metrics', highlight: true },
 ];
@@ -65,6 +67,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!loading && (!user || (!isAdmin && !isCountryManager))) {
       navigate('/auth');
+    }
+    // Se é country_manager puro e caiu no /admin root, mandar para o painel dele
+    if (!loading && user && !isAdmin && isCountryManager && location.pathname === '/admin') {
+      navigate('/admin/country-dashboard', { replace: true });
     }
   }, [user, loading, isAdmin, isCountryManager, navigate]);
 
@@ -107,9 +113,11 @@ export default function AdminDashboard() {
           <p className="text-xs text-muted-foreground">Painel Administrativo</p>
         </div>
 
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-1">
-            {menuItems.map(({ icon: Icon, label, path, highlight }) => {
+            {menuItems
+              .filter((item) => isAdmin || item.managerAllowed)
+              .map(({ icon: Icon, label, path, highlight }) => {
               const isActive = location.pathname === path ||
                 (path !== '/admin' && location.pathname.startsWith(path));
 

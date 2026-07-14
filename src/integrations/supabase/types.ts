@@ -2803,6 +2803,7 @@ export type Database = {
           license_viatura_url: string | null
           mkesh_number: string | null
           mpesa_number: string | null
+          onboarding_completed: boolean
           phone: string | null
           referral_code: string | null
           referred_by: string | null
@@ -2827,6 +2828,7 @@ export type Database = {
           license_viatura_url?: string | null
           mkesh_number?: string | null
           mpesa_number?: string | null
+          onboarding_completed?: boolean
           phone?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -2851,6 +2853,7 @@ export type Database = {
           license_viatura_url?: string | null
           mkesh_number?: string | null
           mpesa_number?: string | null
+          onboarding_completed?: boolean
           phone?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -3722,6 +3725,7 @@ export type Database = {
           license_viatura_url: string | null
           mkesh_number: string | null
           mpesa_number: string | null
+          onboarding_completed: boolean
           phone: string | null
           referral_code: string | null
           referred_by: string | null
@@ -3795,6 +3799,7 @@ export type Database = {
           license_viatura_url: string | null
           mkesh_number: string | null
           mpesa_number: string | null
+          onboarding_completed: boolean
           phone: string | null
           referral_code: string | null
           referred_by: string | null
