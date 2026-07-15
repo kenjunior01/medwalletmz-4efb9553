@@ -57,7 +57,7 @@ export default function AdminHome() {
         supabase.from('profiles').select('id', { count: 'exact', head: true })
           .not('vehicle_type', 'is', null)
           .eq(countryId ? 'country_id' : 'id', countryId || 'id'), // simplistic filter for profiles
-        supabase.from('consultations').select('id, status', { count: 'exact' })
+        (supabase as any).from('consultations').select('id, status', { count: 'exact' })
           .eq(countryId ? 'country_id' : 'id', countryId || 'id'),
         buildQuery('prescriptions'),
         supabase.from('user_referrals').select('id, status', { count: 'exact' })
@@ -117,7 +117,7 @@ export default function AdminHome() {
   const { data: recentOrders, isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-recent-orders', country?.id],
     queryFn: async () => {
-      let q = supabase
+      let q: any = supabase
         .from('orders')
         .select(`
           *,
@@ -136,7 +136,7 @@ export default function AdminHome() {
   const { data: topStores } = useQuery({
     queryKey: ['admin-top-stores', country?.id],
     queryFn: async () => {
-      let q = supabase
+      let q: any = supabase
         .from('stores')
         .select('id, name, rating, type, image_url')
         .eq('is_active', true)
@@ -421,7 +421,7 @@ export default function AdminHome() {
           {stats?.statusCounts && stats.statusCounts.length > 0 && (
             <OrderStatusWidget 
               title="Status dos Pedidos"
-              statuses={stats.statusCounts}
+              statuses={stats.statusCounts as any}
               total={stats.totalOrders || 0}
             />
           )}

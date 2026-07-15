@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe, LogIn } from 'lucide-react';
 import { useCountry } from '@/contexts/CountryContext';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager';
 
