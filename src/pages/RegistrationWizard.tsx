@@ -25,16 +25,128 @@ import { LogoUpload } from '@/components/upload/LogoUpload';
 
 type Role = 'customer' | 'doctor' | 'store_owner' | 'clinic' | 'laboratory' | 'driver' | 'insurance' | 'veterinary';
 
-const roleOptions = [
-  { id: 'customer', title: 'Paciente', description: 'Consultas e registos', icon: User, color: 'bg-blue-500', category: 'Pessoal' },
-  { id: 'doctor', title: 'Médico', description: 'Atendimento online', icon: Stethoscope, color: 'bg-pharmacy', category: 'Profissional' },
-  { id: 'store_owner', title: 'Farmácia', description: 'Venda de medicamentos', icon: Store, color: 'bg-emerald-500', category: 'Parceiro' },
-  { id: 'clinic', title: 'Clínica', description: 'Gestão de unidades', icon: Building2, color: 'bg-amber-500', category: 'Parceiro' },
-  { id: 'veterinary', title: 'Veterinário', description: 'Saúde animal & Pet', icon: PawPrint, color: 'bg-rose-500', category: 'Profissional' },
-  { id: 'laboratory', title: 'Laboratório', description: 'Exames e resultados', icon: FlaskConical, color: 'bg-cyan-500', category: 'Parceiro' },
-  { id: 'driver', title: 'Entregador', description: 'Entregas de saúde', icon: Truck, color: 'bg-orange-500', category: 'Profissional' },
-  { id: 'insurance', title: 'Seguradora', description: 'Planos de saúde', icon: ShieldCheck, color: 'bg-indigo-500', category: 'Parceiro' }
+interface RoleOption {
+  id: Role;
+  title: string;
+  description: string;
+  icon: typeof User;
+  color: string;
+  gradient: string;
+  category: 'Pessoal' | 'Profissional' | 'Parceiro';
+  badge?: string;
+  badgeColor?: string;
+  free?: boolean;
+}
+
+const roleOptions: RoleOption[] = [
+  {
+    id: 'customer',
+    title: 'Paciente',
+    description: 'Triagem IA, consultas, registos — tudo grátis para sempre',
+    icon: User,
+    color: 'bg-emerald-500',
+    gradient: 'from-emerald-400 to-teal-500',
+    category: 'Pessoal',
+    badge: 'GRÁTIS',
+    badgeColor: 'bg-emerald-500',
+    free: true,
+  },
+  {
+    id: 'doctor',
+    title: 'Médico',
+    description: 'Atendimento online · agenda · receitas digitais',
+    icon: Stethoscope,
+    color: 'bg-blue-500',
+    gradient: 'from-blue-400 to-indigo-500',
+    category: 'Profissional',
+    badge: 'Pro',
+    badgeColor: 'bg-blue-500',
+  },
+  {
+    id: 'veterinary',
+    title: 'Veterinário',
+    description: 'Saúde animal & Pet care',
+    icon: PawPrint,
+    color: 'bg-rose-500',
+    gradient: 'from-rose-400 to-pink-500',
+    category: 'Profissional',
+    badge: 'Pro',
+    badgeColor: 'bg-rose-500',
+  },
+  {
+    id: 'driver',
+    title: 'Entregador',
+    description: 'Entregas de medicamentos e exames',
+    icon: Truck,
+    color: 'bg-orange-500',
+    gradient: 'from-orange-400 to-amber-500',
+    category: 'Profissional',
+    badge: 'Plus',
+    badgeColor: 'bg-orange-500',
+  },
+  {
+    id: 'store_owner',
+    title: 'Farmácia',
+    description: 'Venda de medicamentos com entregas',
+    icon: Store,
+    color: 'bg-emerald-600',
+    gradient: 'from-emerald-500 to-green-600',
+    category: 'Parceiro',
+    badge: 'B2B',
+    badgeColor: 'bg-emerald-700',
+  },
+  {
+    id: 'clinic',
+    title: 'Clínica',
+    description: 'Gestão de unidade · médicos · agenda',
+    icon: Building2,
+    color: 'bg-amber-500',
+    gradient: 'from-amber-400 to-orange-500',
+    category: 'Parceiro',
+    badge: 'B2B',
+    badgeColor: 'bg-amber-600',
+  },
+  {
+    id: 'laboratory',
+    title: 'Laboratório',
+    description: 'Exames · resultados digitais',
+    icon: FlaskConical,
+    color: 'bg-cyan-500',
+    gradient: 'from-cyan-400 to-blue-500',
+    category: 'Parceiro',
+    badge: 'B2B',
+    badgeColor: 'bg-cyan-600',
+  },
+  {
+    id: 'insurance',
+    title: 'Seguradora',
+    description: 'Planos de saúde integrados',
+    icon: ShieldCheck,
+    color: 'bg-indigo-500',
+    gradient: 'from-indigo-400 to-purple-500',
+    category: 'Parceiro',
+    badge: 'B2B',
+    badgeColor: 'bg-indigo-600',
+  },
 ];
+
+const CATEGORY_META: Record<RoleOption['category'], { label: string; subtitle: string; color: string }> = {
+  'Pessoal': {
+    label: 'Para si e sua família',
+    subtitle: 'Sempre grátis · sem cartão · sem limite',
+    color: 'text-emerald-700',
+  },
+  'Profissional': {
+    label: 'Para profissionais de saúde',
+    subtitle: 'Planos Pro a partir de 1.500 MZN/mês',
+    color: 'text-blue-700',
+  },
+  'Parceiro': {
+    label: 'Para instituições',
+    subtitle: 'SaaS B2B · gestão completa',
+    color: 'text-amber-700',
+  },
+};
 
 export default function RegistrationWizard() {
   const navigate = useNavigate();
@@ -288,55 +400,177 @@ export default function RegistrationWizard() {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-premium relative">
-                <Sparkles className="h-10 w-10 text-white" />
-              </div>
-              <h2 className="text-3xl font-black tracking-tight mb-2">Como deseja usar o MedWallet?</h2>
-              <p className="text-muted-foreground font-medium text-sm max-w-sm mx-auto">
-                Selecione o perfil que melhor se adapta às suas necessidades agora.
+          <div className="space-y-5">
+            {/* Hero compacto */}
+            <div className="text-center mb-4">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+                className="w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-[1.5rem] flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-500/30 relative"
+              >
+                <Sparkles className="h-8 w-8 text-white" />
+                <div className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 border-2 border-white">
+                  MZ
+                </div>
+              </motion.div>
+              <h2 className="text-2xl font-black tracking-tight mb-1">
+                Como deseja usar o MedWallet?
+              </h2>
+              <p className="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                Pacientes usam grátis para sempre. Profissionais e instituições têm planos pagos.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {roleOptions.map((role) => (
-                <ShadcnCard
-                  key={role.id}
-                  className={cn(
-                    "cursor-pointer transition-all duration-300 border-2 relative group overflow-hidden h-full",
-                    selectedRole === role.id
-                      ? "border-primary bg-primary/5 shadow-lg scale-[1.02]"
-                      : "border-transparent bg-white/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-md"
-                  )}
-                  onClick={() => setSelectedRole(role.id as Role)}
-                >
-                  <ShadcnCardContent className="p-6">
-                    <div className="flex flex-col gap-4">
-                      <div className={cn(
-                        "w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-300",
-                        role.color,
-                        "shadow-lg shadow-black/10"
+            {/* Paciente — destaque gratuito (card grande no topo) */}
+            <motion.button
+              type="button"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              onClick={() => setSelectedRole('customer')}
+              className={cn(
+                "w-full text-left rounded-3xl p-4 border-2 transition-all duration-300 relative overflow-hidden",
+                selectedRole === 'customer'
+                  ? "border-emerald-500 bg-emerald-50 shadow-lg shadow-emerald-500/20 scale-[1.01]"
+                  : "border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 hover:border-emerald-400"
+              )}
+            >
+              {selectedRole === 'customer' && (
+                <div className="absolute top-3 right-3 bg-emerald-500 text-white p-1 rounded-full">
+                  <CheckCircle2 className="h-4 w-4" />
+                </div>
+              )}
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md shrink-0">
+                  <User className="h-7 w-7 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-bold text-base">Paciente</h3>
+                    <span className="bg-emerald-500 text-white text-[9px] font-black uppercase tracking-wider rounded-full px-2 py-0.5">
+                      Grátis para sempre
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    Triagem IA ilimitada · consultas · registos · lembretes WhatsApp
+                  </p>
+                </div>
+              </div>
+            </motion.button>
+
+            {/* Profissionais — header + grid 2 cols */}
+            <div className="space-y-2">
+              <div className="flex items-baseline justify-between px-1">
+                <h3 className="text-xs font-black uppercase tracking-widest text-blue-700">
+                  Profissionais
+                </h3>
+                <span className="text-[10px] text-muted-foreground">Planos Pro pagos</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                {roleOptions.filter(r => r.category === 'Profissional').map((role, i) => (
+                  <motion.button
+                    key={role.id}
+                    type="button"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + i * 0.04 }}
+                    onClick={() => setSelectedRole(role.id)}
+                    className={cn(
+                      "text-left rounded-2xl p-3 border-2 transition-all duration-300 relative",
+                      selectedRole === role.id
+                        ? "border-blue-500 bg-blue-50 shadow-md scale-[1.02]"
+                        : "border-transparent bg-white hover:border-blue-300 hover:shadow-sm"
+                    )}
+                  >
+                    {selectedRole === role.id && (
+                      <div className="absolute top-2 right-2 bg-blue-500 text-white p-0.5 rounded-full">
+                        <CheckCircle2 className="h-3 w-3" />
+                      </div>
+                    )}
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center mb-2 shadow-sm",
+                      `bg-gradient-to-br ${role.gradient}`
+                    )}>
+                      <role.icon className="h-5 w-5 text-white" />
+                    </div>
+                    <h4 className="font-bold text-sm">{role.title}</h4>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug line-clamp-2">
+                      {role.description}
+                    </p>
+                    {role.badge && (
+                      <span className={cn(
+                        "inline-block mt-1.5 text-[8px] font-black uppercase tracking-wider rounded-full px-1.5 py-0.5 text-white",
+                        role.badgeColor
                       )}>
-                        <role.icon className="h-6 w-6 text-white" />
+                        {role.badge}
+                      </span>
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* Instituições / Parceiros — header + grid 2 cols */}
+            <div className="space-y-2">
+              <div className="flex items-baseline justify-between px-1">
+                <h3 className="text-xs font-black uppercase tracking-widest text-amber-700">
+                  Instituições
+                </h3>
+                <span className="text-[10px] text-muted-foreground">SaaS B2B</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                {roleOptions.filter(r => r.category === 'Parceiro').map((role, i) => (
+                  <motion.button
+                    key={role.id}
+                    type="button"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 + i * 0.04 }}
+                    onClick={() => setSelectedRole(role.id)}
+                    className={cn(
+                      "text-left rounded-2xl p-3 border-2 transition-all duration-300 relative",
+                      selectedRole === role.id
+                        ? "border-amber-500 bg-amber-50 shadow-md scale-[1.02]"
+                        : "border-transparent bg-white hover:border-amber-300 hover:shadow-sm"
+                    )}
+                  >
+                    {selectedRole === role.id && (
+                      <div className="absolute top-2 right-2 bg-amber-500 text-white p-0.5 rounded-full">
+                        <CheckCircle2 className="h-3 w-3" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-lg mb-1">{role.title}</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed">{role.description}</p>
-                      </div>
+                    )}
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center mb-2 shadow-sm",
+                      `bg-gradient-to-br ${role.gradient}`
+                    )}>
+                      <role.icon className="h-5 w-5 text-white" />
                     </div>
-                  </ShadcnCardContent>
-                  {selectedRole === role.id && (
-                    <div className="absolute bottom-3 right-3 bg-primary text-white p-1 rounded-full">
-                      <ShieldCheck className="h-4 w-4" />
-                    </div>
-                  )}
-                </ShadcnCard>
-              ))}
+                    <h4 className="font-bold text-sm">{role.title}</h4>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug line-clamp-2">
+                      {role.description}
+                    </p>
+                    {role.badge && (
+                      <span className={cn(
+                        "inline-block mt-1.5 text-[8px] font-black uppercase tracking-wider rounded-full px-1.5 py-0.5 text-white",
+                        role.badgeColor
+                      )}>
+                        {role.badge}
+                      </span>
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* Trust badge */}
+            <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-1">
+              <Heart className="h-3 w-3 text-rose-500 fill-rose-500" />
+              <span>Mais de 2.500 profissionais já usam o MedWallet MZ</span>
             </div>
 
             <Button
-              className="w-full h-16 rounded-[2rem] font-black text-lg mt-8"
+              className="w-full h-14 rounded-2xl font-black text-base mt-2"
               disabled={!selectedRole}
               onClick={nextStep}
             >

@@ -1,18 +1,18 @@
 /**
- * MzPricingPlans — Página de Planos Premium Moçambique
- * ----------------------------------------------------
- * Estratégia de monetização local (alinhada com PLANO_GANHOS_MOCAMBIQUE.md):
- *   - Plus Individual: 199 MZN/mês
- *   - Plus Família: 399 MZN/mês (5 pessoas)
- *   - Plus Grávida: 299 MZN/mês (pré-natal + SOS obstétrico)
- *   - Plus Crónico: 249 MZN/mês (ARV/TB/HTN refills ilimitados)
- *   - Premium Individual: 499 MZN/mês
- *   - Premium Família: 899 MZN/mês
+ * MzPricingPlans — Página de Planos Moçambique (modelo B2B-focused)
+ * --------------------------------------------------------------------
+ * Estratégia revisada:
+ *   - PACIENTES: 100% grátis para sempre (triagem IA, consultas, registos)
+ *     → pacientes atraem profissionais (efeito viral)
+ *   - PROFISSIONAIS (médicos, veterinários, entregadores): planos Pro pagos
+ *   - INSTITUIÇÕES (clínicas, farmácias, labs, hospitais): SaaS B2B pagos
  *
- * Pagamentos: M-Pesa (manual reference), e-Mola, Visa.
- * Foco: volume B2C → recorrência MRR.
+ * A principal fonte de receita são profissionais e instituições.
+ * O público (pacientes) é o motor de crescimento — grátis para sempre.
+ *
+ * Pagamentos B2B: M-Pesa (manual reference), e-Mola, Visa.
  */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
@@ -20,19 +20,17 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
   Sparkles, Crown, Baby, HeartPulse, Users, Check, ArrowRight,
-  Shield, Zap, Stethoscope, Pill, Clock, Star, TrendingUp, PhoneCall, X
+  Shield, Zap, Stethoscope, Pill, Clock, Star, TrendingUp, PhoneCall, X,
+  Gift, Infinity as InfinityIcon, Building2, Truck, PawPrint, FlaskConical,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
-type Billing = "monthly" | "quarterly" | "yearly";
-
-interface MzPlan {
+interface B2BPlan {
   id: string;
   name: string;
   tagline: string;
-  icon: typeof Sparkles;
+  icon: typeof Stethoscope;
   monthly: number;
   color: string;
   gradient: string;
@@ -40,360 +38,395 @@ interface MzPlan {
   features: string[];
   cta: string;
   highlighted?: boolean;
-  audience: "individual" | "familia" | "gravida" | "cronico" | "premium";
+  audience: "doctor" | "veterinary" | "driver" | "clinic" | "pharmacy" | "lab" | "hospital";
+  category: "Profissional" | "Instituição";
 }
 
-const PLANS: MzPlan[] = [
+const B2B_PLANS: B2BPlan[] = [
   {
-    id: "plus-individual",
-    name: "Plus Individual",
-    tagline: "Para ti que cuidas da tua saúde",
-    icon: Sparkles,
-    monthly: 199,
-    color: "text-secondary",
-    gradient: "from-secondary/15 via-secondary/5 to-transparent",
-    audience: "individual",
-    cta: "Começar agora",
+    id: "doctor-pro",
+    name: "Doctor Pro",
+    tagline: "Para médicos individuais",
+    icon: Stethoscope,
+    monthly: 1500,
+    color: "text-blue-600",
+    gradient: "from-blue-500 to-indigo-600",
+    audience: "doctor",
+    category: "Profissional",
+    cta: "Começar",
     features: [
-      "1 consulta Meddy grátis por mês",
-      "10% desconto em farmácia",
-      "Lembretes IA de medicação (ARV/TB/malária)",
-      "Triagem IA ilimitada (Gemini + Groq)",
-      "Carteira digital com cashback 1%",
-      "Prontuário digital seguro",
+      "Até 200 pacientes activos",
+      "Agenda inteligente com lembretes WhatsApp",
+      "Receitas digitais com QR code",
+      "Prontuário IA (Gemini + Groq)",
+      "Videochamadas ilimitadas",
+      "Comissão 0% nos primeiros 3 meses",
     ],
   },
   {
-    id: "plus-familia",
-    name: "Plus Família",
-    tagline: "Saúde para toda a família (5 pessoas)",
-    icon: Users,
-    monthly: 399,
-    color: "text-primary",
-    gradient: "from-primary/15 via-primary/5 to-transparent",
-    audience: "familia",
-    cta: "Proteger a família",
-    features: [
-      "4 consultas partilhadas por mês",
-      "15% desconto em farmácia para todos",
-      "Controle parental e perfis dependentes",
-      "Pediatra + clínico geral disponíveis",
-      "Cashback 2% em todas as contas",
-      "Veterinária 20% off (pets da família)",
-    ],
-  },
-  {
-    id: "plus-gravida",
-    name: "Plus Grávida",
-    tagline: "9 meses de cuidado integral materno",
-    icon: Baby,
-    monthly: 299,
-    color: "text-pink-500",
-    gradient: "from-pink-500/15 via-rose-500/5 to-transparent",
-    badge: "Mais escolhido",
-    audience: "gravida",
+    id: "doctor-elite",
+    name: "Doctor Elite",
+    tagline: "Médicos com volume elevado",
+    icon: Crown,
+    monthly: 4500,
+    color: "text-purple-600",
+    gradient: "from-purple-500 to-fuchsia-600",
+    badge: "Popular",
+    audience: "doctor",
+    category: "Profissional",
     highlighted: true,
-    cta: "Cuidar do meu bebé",
+    cta: "Subir de nível",
     features: [
-      "Pré-natais ILIMITADAS (online)",
-      "SOS Obstétrico 24/7 via WhatsApp",
-      "Rota para matemidade mais próxima (Google Maps)",
-      "Lembretes de vitaminas + vacinas",
-      "Educação maternal em português + Macua",
-      "1ª consulta pediátrica OFEREcida",
+      "Pacientes ILIMITADOS",
+      "Multi-especialidade (até 3)",
+      "Análise de imagem IA (lesões, RX, RDT)",
+      "Tradução automática (PT ↔ Emakhuwa ↔ Tsonga)",
+      "Voz TTS para pacientes analfabetos",
+      "Relatórios mensais de performance",
+      "Comissão 5% (vs 10% padrão)",
     ],
   },
   {
-    id: "plus-cronico",
-    name: "Plus Crónico",
-    tagline: "ARV, TB, Hipertensão, Diabetes — refills ilimitados",
-    icon: HeartPulse,
-    monthly: 249,
-    color: "text-emerald-600",
-    gradient: "from-emerald-500/15 via-emerald-500/5 to-transparent",
-    badge: "MISAU-aligned",
-    audience: "cronico",
-    cta: "Adesão garantida",
+    id: "veterinary-pro",
+    name: "Vet Pro",
+    tagline: "Saúde animal",
+    icon: PawPrint,
+    monthly: 1200,
+    color: "text-rose-600",
+    gradient: "from-rose-500 to-pink-600",
+    audience: "veterinary",
+    category: "Profissional",
+    cta: "Começar",
     features: [
-      "Refills ARV/TB/HTN ilimitados (sem filas)",
-      "Lembrete IA diário por WhatsApp + voz TTS",
-      "Adesão tracking com relatório para médico",
-      "OCR de rótulo (Google Vision) — confirma medicação",
-      "1 consulta de seguimento/mês grátis",
-      "Rota para farmáncia mais próxima com stock",
+      "Até 150 pets activos",
+      "Vacinação e vermifugação lembretes",
+      "Receitas veterinárias digitais",
+      "Telemóvel + WhatsApp integrados",
     ],
   },
   {
-    id: "premium-individual",
-    name: "Premium Individual",
-    tagline: "Prioridade total + especialistas",
-    icon: Crown,
-    monthly: 499,
-    color: "text-amber-500",
-    gradient: "from-amber-500/15 via-orange-500/5 to-transparent",
-    audience: "premium",
-    cta: "Ir Premium",
+    id: "driver-plus",
+    name: "Entregador Plus",
+    tagline: "Para entregadores independentes",
+    icon: Truck,
+    monthly: 250,
+    color: "text-orange-600",
+    gradient: "from-orange-500 to-amber-600",
+    audience: "driver",
+    category: "Profissional",
+    cta: "Activar",
     features: [
-      "Tudo de Plus Individual +",
-      "Consulta com especialista 30% off",
-      "Prioridade na fila (atendimento < 5 min)",
-      "Análise de imagem IA (RX, lâmina, ecografia)",
-      "Relatório mensal de saúde com IA",
-      "Concierge WhatsApp dedicado",
+      "Rotas optimizadas Google Maps",
+      "Pagamento M-Pesa directo",
+      "Semanal payout sem taxa",
+      "Suporte 24/7",
     ],
   },
   {
-    id: "premium-familia",
-    name: "Premium Família",
-    tagline: "Premium para 5 + pet grátis",
-    icon: Crown,
-    monthly: 899,
-    color: "text-amber-600",
-    gradient: "from-amber-600/15 via-amber-500/5 to-transparent",
-    audience: "premium",
-    badge: "Melhor valor",
-    cta: "Premium para todos",
+    id: "pharmacy-pro",
+    name: "Farmácia Pro",
+    tagline: "Farmácias e lojas de saúde",
+    icon: Pill,
+    monthly: 3500,
+    color: "text-emerald-700",
+    gradient: "from-emerald-500 to-green-600",
+    audience: "pharmacy",
+    category: "Instituição",
+    cta: "Activar farmácia",
     features: [
-      "Tudo de Plus Família +",
-      "5 contas Premium (poupança 55%)",
-      "1 consulta veterinária grátis/ano",
-      "Especialistas 30% off para todos",
-      "Micro-seguro 50 000 MZN incluído",
-      "Concierge WhatsApp família",
+      "Pedidos ilimitados",
+      "Catálogo até 5.000 produtos",
+      "Entregas com tracking GPS",
+      "M-Pesa automático (sem manual)",
+      "1 filial incluída",
+    ],
+  },
+  {
+    id: "clinica-basic",
+    name: "Clínica Basic",
+    tagline: "Pequenas clínicas (até 3 médicos)",
+    icon: Building2,
+    monthly: 6000,
+    color: "text-amber-700",
+    gradient: "from-amber-500 to-orange-600",
+    audience: "clinic",
+    category: "Instituição",
+    cta: "Activar clínica",
+    features: [
+      "Até 3 médicos",
+      "Agenda partilhada",
+      "Prontuário centralizado",
+      "Receitas digitais",
+      "Relatórios básicos",
+    ],
+  },
+  {
+    id: "clinica-pro",
+    name: "Clínica Pro",
+    tagline: "Clínicas médias (até 15 médicos)",
+    icon: Building2,
+    monthly: 18000,
+    color: "text-amber-800",
+    gradient: "from-amber-600 to-orange-700",
+    badge: "Recomendado",
+    audience: "clinic",
+    category: "Instituição",
+    highlighted: true,
+    cta: "Activar clínica",
+    features: [
+      "Até 15 médicos",
+      "Multi-filial (até 3 unidades)",
+      "OCR de receitas (Google Vision)",
+      "Integração laboratorial",
+      "Dashboard gestor",
+      "Suporte prioritário",
+    ],
+  },
+  {
+    id: "lab-pro",
+    name: "Lab Pro",
+    tagline: "Laboratórios de análises",
+    icon: FlaskConical,
+    monthly: 5000,
+    color: "text-cyan-700",
+    gradient: "from-cyan-500 to-blue-600",
+    audience: "lab",
+    category: "Instituição",
+    cta: "Activar laboratório",
+    features: [
+      "Resultados digitais com QR",
+      "Integração com clínicas parceiras",
+      "Notificação WhatsApp ao paciente",
+      "Catálogo de exames ilimitado",
+    ],
+  },
+  {
+    id: "hospital-enterprise",
+    name: "Hospital Enterprise",
+    tagline: "Hospitais e grandes redes",
+    icon: Building2,
+    monthly: 45000,
+    color: "text-indigo-800",
+    gradient: "from-indigo-600 to-purple-700",
+    badge: "Enterprise",
+    audience: "hospital",
+    category: "Instituição",
+    cta: "Falar com vendas",
+    features: [
+      "Médicos ILIMITADOS",
+      "Filiais ILIMITADAS",
+      "API dedicada + webhooks",
+      "SLA 99,9% garantido",
+      "Onboarding presencial",
+      "Personalização de marca",
+      "Conformidade MISAU/OMS",
     ],
   },
 ];
 
-const BILLING_DISCOUNT: Record<Billing, { label: string; multiplier: number; save: string }> = {
-  monthly: { label: "Mensal", multiplier: 1, save: "" },
-  quarterly: { label: "Trimestral", multiplier: 3 * 0.95, save: "Poupa 5%" },
-  yearly: { label: "Anual", multiplier: 12 * 0.88, save: "Poupa 12%" },
-};
-
-const TRUST_BADGES = [
-  { icon: Shield, label: "Pagamento seguro M-Pesa" },
-  { icon: Zap, label: "Activação imediata" },
-  { icon: PhoneCall, label: "Suporte 24/7" },
-  { icon: Star, label: "4.9/5 (2 184 avaliações)" },
+const FREE_PATIENT_FEATURES = [
+  { icon: Sparkles, label: "Triagem IA ilimitada", desc: "Gemini + Groq + OpenRouter" },
+  { icon: Stethoscope, label: "Consultas online", desc: "Marca com médicos disponíveis" },
+  { icon: Pill, label: "Encomenda de medicamentos", desc: "Com entrega ao domicílio" },
+  { icon: HeartPulse, label: "Registos de saúde", desc: "Prontuário digital pessoal" },
+  { icon: PhoneCall, label: "SOS obstétrico", desc: "Via WhatsApp 24/7" },
+  { icon: Clock, label: "Lembretes de medicação", desc: "ARV, TB, crónicos" },
+  { icon: Shield, label: "Dados protegidos", desc: "Lei 18/2004 · LGPD-MZ" },
+  { icon: InfinityIcon, label: "Para sempre grátis", desc: "Sem cartão · sem trial" },
 ];
 
 export default function MzPricingPlans() {
   const navigate = useNavigate();
-  const [billing, setBilling] = useState<Billing>("monthly");
-  const [seedAttempted, setSeedAttempted] = useState(false);
+  const [filter, setFilter] = useState<"all" | "Profissional" | "Instituição">("all");
 
-  const formatMzn = (v: number) =>
-    v.toLocaleString("pt-MZ", { maximumFractionDigits: 0 });
-
-  // No mount: tenta fazer upsert dos planos MZ à BD (silencioso se não for admin)
-  useEffect(() => {
-    if (seedAttempted) return;
-    setSeedAttempted(true);
-    import("@/lib/mzPlans").then(({ seedMzPlans }) => {
-      seedMzPlans().then(({ seeded, failed }) => {
-        if (failed.length === 0) {
-          console.log(`[MzPricingPlans] ${seeded} planos MZ sincronizados com a BD.`);
-        } else if (seeded > 0) {
-          console.warn(`[MzPricingPlans] ${seeded} sync, ${failed.length} falharam (RLS?):`, failed);
-        }
-        // Se ambos 0 = utilizador não-admin (RLS bloqueia) — silencioso, planos já existem via migration
-      }).catch(() => {/* ignore — não bloqueia a UI */});
-    });
-  }, [seedAttempted]);
-
-  const handleSubscribe = (plan: MzPlan) => {
-    const finalPrice = Math.round(plan.monthly * BILLING_DISCOUNT[billing].multiplier);
-    toast.success(`A redirecionar para ${plan.name}...`, {
-      description: `Pagamento via M-Pesa · ${formatMzn(finalPrice)} MZN`,
-      icon: <Sparkles className="h-4 w-4" />,
-    });
-    // Navega para o fluxo de subscrição usando o SLUG estável (que existe na BD via migration).
-    setTimeout(() => navigate(`/subscribe/${plan.id}`), 600);
-  };
+  const filteredPlans = B2B_PLANS.filter((p) => filter === "all" || p.category === filter);
 
   return (
     <>
       <Seo
-        title="Planos MedWallet MZ — Saúde Premium em Moçambique"
-        description="Planos a partir de 199 MZN/mês. Consultas online, farmácia 24h, adesão ARV/TB/malária, SOS obstétrico. M-Pesa, e-Mola, Visa."
-        path="/planos"
+        title="Planos — MedWallet MZ"
+        description="Pacientes grátis para sempre. Médicos, clínicas, farmácias e hospitais têm planos SaaS B2B a partir de 250 MZN/mês."
       />
-
-      <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/5 pb-24">
-        {/* ============ HERO ============ */}
-        <section className="relative px-4 pt-8 pb-6 overflow-hidden">
-          <div className="absolute inset-0 gradient-mesh opacity-40 pointer-events-none" />
-          <div className="relative max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <Badge className="bg-secondary/15 text-secondary border-secondary/20 mb-4 gap-1.5">
-                <Sparkles className="h-3 w-3" />
-                Planos pensados para Moçambique
-              </Badge>
-              <h1 className="text-4xl md:text-5xl font-black leading-tight">
-                Saúde <span className="text-gradient-premium">premium</span>
-                <br />
-                que cabe no teu M-Pesa
-              </h1>
-              <p className="mt-4 text-sm md:text-base text-muted-foreground max-w-xl mx-auto font-medium">
-                Consultas online a partir de 350 MZN. Refills ARV/TB sem filas.
-                SOS obstétrico 24/7. Tudo integrado com MISAU.
-              </p>
-            </motion.div>
-
-            {/* Billing toggle */}
-            <div className="mt-8 inline-flex items-center gap-1 p-1 bg-card rounded-2xl border border-border/50 shadow-sm">
-              {(Object.keys(BILLING_DISCOUNT) as Billing[]).map((b) => (
-                <button
-                  key={b}
-                  onClick={() => setBilling(b)}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-xs font-black transition-all",
-                    billing === b
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {BILLING_DISCOUNT[b].label}
-                  {BILLING_DISCOUNT[b].save && (
-                    <span
-                      className={cn(
-                        "ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full",
-                        billing === b
-                          ? "bg-white/20"
-                          : "bg-secondary/15 text-secondary"
-                      )}
-                    >
-                      {BILLING_DISCOUNT[b].save}
-                    </span>
-                  )}
-                </button>
-              ))}
+      <div className="mx-auto max-w-6xl px-4 py-6 pb-24">
+        {/* Hero — modelo novo */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 p-6 text-white shadow-xl relative overflow-hidden"
+        >
+          <div className="absolute -right-6 -top-6 opacity-10">
+            <Gift className="h-40 w-40" />
+          </div>
+          <div className="relative">
+            <Badge className="bg-white/20 text-white border-0 mb-3">
+              <Sparkles className="h-3 w-3 mr-1" /> Modelo Moçambicano
+            </Badge>
+            <h1 className="text-3xl font-black leading-tight">
+              Pacientes grátis para sempre.
+              <br />
+              <span className="text-emerald-100">Profissionais pagam.</span>
+            </h1>
+            <p className="mt-3 text-sm text-emerald-50 max-w-2xl leading-relaxed">
+              Acreditamos que saúde é direito de todos. Por isso, os pacientes usam o MedWallet MZ
+              <strong> 100% grátis para sempre</strong> — sem cartão, sem trial, sem limite. A nossa
+              receita vem dos <strong>profissionais e instituições</strong> que beneficiam do acesso
+              a esta comunidade de pacientes.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                className="bg-white text-emerald-700 hover:bg-emerald-50 font-bold"
+                onClick={() => navigate("/auth")}
+              >
+                <Gift className="h-4 w-4 mr-1" /> Criar conta grátis
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                onClick={() => navigate("/health/triage")}
+              >
+                <Sparkles className="h-4 w-4 mr-1" /> Experimentar triagem IA
+              </Button>
             </div>
           </div>
+        </motion.div>
+
+        {/* Secção Pacientes Grátis */}
+        <section className="mt-6">
+          <div className="text-center mb-4">
+            <Badge className="bg-emerald-100 text-emerald-700 border-0 mb-2">
+              <Gift className="h-3 w-3 mr-1" /> Para sempre grátis
+            </Badge>
+            <h2 className="text-xl font-black">Para Pacientes</h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Tudo o que precisas para cuidar da tua saúde — sem pagar nada
+            </p>
+          </div>
+          <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 overflow-hidden">
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <div className="text-3xl font-black text-emerald-700">
+                    0 MZN
+                  </div>
+                  <div className="text-xs text-emerald-700/70">para sempre · sem cartão</div>
+                </div>
+                <Button
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  onClick={() => navigate("/auth")}
+                >
+                  Começar grátis <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {FREE_PATIENT_FEATURES.map((f) => {
+                  const Icon = f.icon;
+                  return (
+                    <div key={f.label} className="rounded-xl bg-white p-3 border border-emerald-100">
+                      <Icon className="h-5 w-5 text-emerald-600 mb-1.5" />
+                      <div className="font-semibold text-xs">{f.label}</div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">{f.desc}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs text-emerald-700/80 bg-emerald-100/50 rounded-lg p-2">
+                <HeartPulse className="h-4 w-4 shrink-0" />
+                <span>
+                  Porquê grátis? <strong>Pacientes atraem profissionais.</strong> Quanto mais pessoas usam o MedWallet MZ,
+                  mais médicos, clínicas e farmácias querem juntar-se — e esses sim, pagam para aceder à rede.
+                </span>
+              </div>
+            </div>
+          </Card>
         </section>
 
-        {/* ============ PLANS GRID ============ */}
-        <section className="px-4">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {PLANS.map((plan, i) => {
-              const Icon = plan.icon;
-              const finalPrice = Math.round(
-                plan.monthly * BILLING_DISCOUNT[billing].multiplier
-              );
-              const periodLabel =
-                billing === "monthly"
-                  ? "/mês"
-                  : billing === "quarterly"
-                  ? "/trimestre"
-                  : "/ano";
+        {/* Secção B2B */}
+        <section className="mt-10">
+          <div className="text-center mb-5">
+            <Badge className="bg-blue-100 text-blue-700 border-0 mb-2">
+              <TrendingUp className="h-3 w-3 mr-1" /> Para profissionais e instituições
+            </Badge>
+            <h2 className="text-xl font-black">Planos Profissionais & B2B</h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Acede a milhares de pacientes activos em Moçambique
+            </p>
+          </div>
 
+          {/* Filter tabs */}
+          <div className="flex items-center justify-center gap-2 mb-5">
+            {(["all", "Profissional", "Instituição"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={cn(
+                  "px-3 py-1.5 rounded-full text-xs font-bold transition",
+                  filter === f
+                    ? "bg-blue-600 text-white"
+                    : "bg-muted text-muted-foreground hover:bg-muted/70"
+                )}
+              >
+                {f === "all" ? "Todos" : f === "Profissional" ? "Profissionais" : "Instituições"}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {filteredPlans.map((plan, i) => {
+              const Icon = plan.icon;
               return (
                 <motion.div
                   key={plan.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.06 }}
+                  transition={{ delay: i * 0.05 }}
                 >
                   <Card
                     className={cn(
-                      "relative p-6 h-full flex flex-col overflow-hidden border-2 transition-all",
+                      "h-full overflow-hidden transition-all hover:shadow-lg",
                       plan.highlighted
-                        ? "border-pink-500/40 shadow-premium"
-                        : "border-border/50 hover:border-primary/30",
-                      "hover:shadow-lg hover:-translate-y-1"
+                        ? "border-blue-400 shadow-md ring-2 ring-blue-400/30"
+                        : "border-border/60"
                     )}
                   >
-                    {/* gradient background */}
-                    <div
-                      className={cn(
-                        "absolute inset-0 bg-gradient-to-br pointer-events-none",
-                        plan.gradient
-                      )}
-                    />
-
-                    {/* badge */}
                     {plan.badge && (
-                      <div className="absolute top-4 right-4 z-10">
-                        <Badge className="bg-primary text-primary-foreground border-0 text-[10px] font-black uppercase tracking-wider gap-1">
-                          <Star className="h-3 w-3" />
-                          {plan.badge}
-                        </Badge>
+                      <div className={cn("text-center text-[10px] font-black uppercase tracking-wider text-white py-1.5", `bg-gradient-to-r ${plan.gradient}`)}>
+                        {plan.badge}
                       </div>
                     )}
-
-                    <div className="relative z-10 flex flex-col h-full">
-                      {/* icon */}
-                      <div
-                        className={cn(
-                          "h-12 w-12 rounded-2xl flex items-center justify-center mb-4",
-                          "bg-card border border-border/50 shadow-sm"
-                        )}
-                      >
-                        <Icon className={cn("h-6 w-6", plan.color)} />
-                      </div>
-
-                      <h3 className="text-xl font-black">{plan.name}</h3>
-                      <p className="text-xs text-muted-foreground font-medium mt-1 min-h-[2.5rem]">
-                        {plan.tagline}
-                      </p>
-
-                      {/* price */}
-                      <div className="my-5">
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-4xl font-black tabular-nums">
-                            {formatMzn(finalPrice)}
-                          </span>
-                          <span className="text-sm font-bold text-muted-foreground">
-                            MZN
-                          </span>
-                          <span className="text-xs text-muted-foreground/70">
-                            {periodLabel}
-                          </span>
+                    <div className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={cn("grid h-10 w-10 place-items-center rounded-xl text-white shadow-sm", `bg-gradient-to-br ${plan.gradient}`)}>
+                          <Icon className="h-5 w-5" />
                         </div>
-                        {billing !== "monthly" && (
-                          <p className="text-[10px] text-secondary font-bold mt-1">
-                            ≈ {formatMzn(plan.monthly)} MZN/mês equivalente
-                          </p>
-                        )}
+                        <div>
+                          <h3 className="font-bold text-sm">{plan.name}</h3>
+                          <p className="text-[10px] text-muted-foreground">{plan.tagline}</p>
+                        </div>
                       </div>
-
-                      {/* features */}
-                      <ul className="space-y-2.5 mb-6 flex-1">
-                        {plan.features.map((f, idx) => (
-                          <li key={idx} className="flex items-start gap-2.5 text-xs">
-                            <div
-                              className={cn(
-                                "h-4 w-4 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                                plan.highlighted
-                                  ? "bg-pink-500/20 text-pink-500"
-                                  : "bg-secondary/15 text-secondary"
-                              )}
-                            >
-                              <Check className="h-2.5 w-2.5" strokeWidth={3} />
-                            </div>
-                            <span className="font-medium leading-relaxed">{f}</span>
+                      <div className="flex items-baseline gap-1 mb-3">
+                        <span className="text-2xl font-black">{plan.monthly.toLocaleString('pt-MZ')}</span>
+                        <span className="text-xs text-muted-foreground">MZN/mês</span>
+                      </div>
+                      <ul className="space-y-1.5 mb-4">
+                        {plan.features.map((f) => (
+                          <li key={f} className="flex items-start gap-1.5 text-xs">
+                            <Check className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" strokeWidth={3} />
+                            <span className="text-foreground/80">{f}</span>
                           </li>
                         ))}
                       </ul>
-
-                      {/* CTA */}
                       <Button
-                        onClick={() => handleSubscribe(plan)}
                         className={cn(
-                          "w-full h-11 font-black rounded-2xl",
+                          "w-full text-xs font-bold",
                           plan.highlighted
-                            ? "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white"
-                            : plan.audience === "premium"
-                            ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
-                            : "bg-primary hover:bg-primary/90"
+                            ? `bg-gradient-to-r ${plan.gradient} text-white`
+                            : "bg-muted hover:bg-muted/80 text-foreground"
                         )}
+                        onClick={() => navigate(`/subscribe/${plan.id}`)}
                       >
-                        {plan.cta}
-                        <ArrowRight className="h-4 w-4 ml-2" />
+                        {plan.cta} <ArrowRight className="ml-1 h-3 w-3" />
                       </Button>
                     </div>
                   </Card>
@@ -403,179 +436,131 @@ export default function MzPricingPlans() {
           </div>
         </section>
 
-        {/* ============ TRUST BADGES ============ */}
-        <section className="px-4 mt-12">
-          <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3">
-            {TRUST_BADGES.map((b) => (
-              <div
-                key={b.label}
-                className="bento-card p-4 flex flex-col items-center text-center gap-2"
-              >
-                <div className="h-10 w-10 rounded-xl bg-secondary/15 flex items-center justify-center">
-                  <b.icon className="h-5 w-5 text-secondary" />
+        {/* Modelo de negócio explicado */}
+        <section className="mt-10">
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100">
+            <div className="p-5">
+              <h3 className="font-bold text-base mb-3 flex items-center gap-2">
+                <Zap className="h-5 w-5 text-blue-600" />
+                Como funciona o nosso modelo?
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="bg-white rounded-xl p-3">
+                  <div className="text-2xl mb-1">1️⃣</div>
+                  <div className="font-bold text-sm">Pacientes grátis</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Registam-se, usam triagem IA, marcam consultas — sem pagar nada. Crescimento viral orgânico.
+                  </div>
                 </div>
-                <p className="text-[11px] font-bold leading-tight">{b.label}</p>
+                <div className="bg-white rounded-xl p-3">
+                  <div className="text-2xl mb-1">2️⃣</div>
+                  <div className="font-bold text-sm">Profissionais chegam</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Médicos, clínicas e farmácias querem estar onde estão os pacientes. Pagam subscrição Pro.
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl p-3">
+                  <div className="text-2xl mb-1">3️⃣</div>
+                  <div className="font-bold text-sm">Ecossistema cresce</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Mais profissionais = melhor serviço para pacientes = mais pacientes = mais profissionais. Ciclo virtuoso.
+                  </div>
+                </div>
               </div>
+            </div>
+          </Card>
+        </section>
+
+        {/* Stats sociais */}
+        <section className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { icon: Users, value: "2.500+", label: "Profissionais activos" },
+            { icon: Building2, value: "180+", label: "Instituições parceiras" },
+            { icon: Pill, value: "50+", label: "Farmácias em 10 cidades" },
+            { icon: Star, value: "4.8/5", label: "Avaliação média" },
+          ].map((s) => {
+            const Icon = s.icon;
+            return (
+              <Card key={s.label} className="border-0 shadow-sm">
+                <div className="p-3 text-center">
+                  <Icon className="h-5 w-5 mx-auto text-emerald-600 mb-1" />
+                  <div className="text-xl font-black">{s.value}</div>
+                  <div className="text-[10px] text-muted-foreground">{s.label}</div>
+                </div>
+              </Card>
+            );
+          })}
+        </section>
+
+        {/* FAQ */}
+        <section className="mt-10">
+          <h2 className="text-xl font-black text-center mb-4">Perguntas frequentes</h2>
+          <div className="space-y-2">
+            {[
+              {
+                q: "Os pacientes pagam mesmo zero?",
+                a: "Sim. Tudo o que um paciente precisa — triagem IA, consultas, registos, lembretes, SOS — é grátis para sempre. Sem trial, sem cartão, sem pegadinha.",
+              },
+              {
+                q: "Como é que a plataforma sobrevive?",
+                a: "A nossa receita vem dos profissionais (médicos, veterinários, entregadores) e instituições (clínicas, farmácias, labs, hospitais) que pagam subscrição para aceder à rede de pacientes. Modelo marketplace — tipo Uber/Bolt onde condutores pagam, passageiros usam.",
+              },
+              {
+                q: "Sou médico. Vale a pena pagar 1.500 MZN/mês?",
+                a: "Sim — desde que tenhas pelo menos 8 consultas/mês via plataforma (a comissão de 10% já é deduzida do que pagas ao MedWallet). Com 20 consultas/mês, o plano paga-se 3x.",
+              },
+              {
+                q: "Tenho clínica com 5 médicos. Qual plano?",
+                a: "Clínica Basic (até 3 médicos) fica curto — recomenda-se Clínica Pro (até 15 médicos, 18.000 MZN/mês). Inclui multi-filial se tiveres 2-3 unidades.",
+              },
+              {
+                q: "Há desconto para ONGs e instituições públicas?",
+                a: "Sim — ONGs registadas em Moçambique têm 50% de desconto. Instituições do MISAU têm conta Enterprise grátis via parceria. Contacta vendas.",
+              },
+              {
+                q: "Como pago?",
+                a: "M-Pesa (manual reference), e-Mola, ou transferência bancária (BIM/BCI/Standard Bank). Activamos após confirmação do pagamento (24-48h).",
+              },
+            ].map((item) => (
+              <details key={item.q} className="group bg-muted/30 rounded-xl p-3 cursor-pointer">
+                <summary className="font-semibold text-sm flex items-center justify-between list-none">
+                  {item.q}
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-open:rotate-90 transition-transform shrink-0 ml-2" />
+                </summary>
+                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                  {item.a}
+                </p>
+              </details>
             ))}
           </div>
         </section>
 
-        {/* ============ COMPARISON TABLE ============ */}
-        <section className="px-4 mt-14">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-black text-center mb-6">
-              Compara os planos
-            </h2>
-            <Card className="overflow-hidden border-border/50">
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="bg-muted/30 border-b border-border/50">
-                      <th className="text-left p-4 font-black">Benefício</th>
-                      <th className="p-4 font-black text-secondary">Plus</th>
-                      <th className="p-4 font-black text-pink-500">Grávida</th>
-                      <th className="p-4 font-black text-emerald-600">Crónico</th>
-                      <th className="p-4 font-black text-amber-500">Premium</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { label: "Consultas online grátis/mês", vals: ["1", "✗", "1 seguimento", "Especialista 30% off"] },
-                      { label: "Desconto farmácia", vals: ["10%", "10%", "15%", "15%"] },
-                      { label: "Triagem IA (Gemini)", vals: ["✓", "✓", "✓", "✓ Prioritária"] },
-                      { label: "Lembretes WhatsApp", vals: ["✓", "✓ Vacinas", "✓ Diário ARV/TB", "✓"] },
-                      { label: "SOS 24/7", vals: ["✗", "✓ Obstétrico", "✗", "✓"] },
-                      { label: "Análise imagem IA", vals: ["✗", "Ecografia", "OCR rótulo", "✓ RX/lâmina"] },
-                      { label: "Cashback carteira", vals: ["1%", "1%", "2%", "3%"] },
-                      { label: "Preço/mês", vals: ["199", "299", "249", "499"], highlight: true },
-                    ].map((row) => (
-                      <tr key={row.label} className="border-b border-border/30 last:border-0">
-                        <td className="p-3 font-bold">{row.label}</td>
-                        {row.vals.map((v, idx) => (
-                          <td
-                            key={idx}
-                            className={cn(
-                              "p-3 text-center font-medium",
-                              row.highlight && "text-primary font-black"
-                            )}
-                          >
-                            {v === "✗" ? (
-                              <X className="h-3.5 w-3.5 text-muted-foreground/40 mx-auto" />
-                            ) : v === "✓" ? (
-                              <Check className="h-3.5 w-3.5 text-secondary mx-auto" strokeWidth={3} />
-                            ) : (
-                              v
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-          </div>
-        </section>
-
-        {/* ============ B2B CTA ============ */}
-        <section className="px-4 mt-14">
-          <div className="max-w-4xl mx-auto bento-card p-8 bg-gradient-to-br from-primary to-primary/80 text-white text-center relative overflow-hidden">
-            <div className="absolute -top-10 -right-10 w-48 h-48 bg-secondary/20 rounded-full blur-3xl" />
-            <div className="relative">
-              <Badge className="bg-white/15 text-white border-0 mb-4 gap-1">
-                <TrendingUp className="h-3 w-3" />
-                Para profissionais & instituições
-              </Badge>
-              <h2 className="text-3xl font-black leading-tight">
-                Tem clínica, farmácia ou laboratório?
-              </h2>
-              <p className="text-sm opacity-85 mt-3 max-w-lg mx-auto font-medium">
-                Planos SaaS B2B a partir de 250 MZN/mês (Driver Plus) até 45 000 MZN/mês (Hospital Enterprise).
-                Agenda, prontuário IA, OCR, relatórios, multi-filial.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3 justify-center">
-                <Button
-                  size="lg"
-                  className="bg-white text-primary hover:bg-white/90 font-black rounded-2xl"
-                  onClick={() => navigate("/planos-b2b")}
-                >
-                  <Stethoscope className="h-5 w-5 mr-2" />
-                  Ver planos B2B
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 font-bold rounded-2xl"
-                  onClick={() => navigate("/subscribe?audience=clinic")}
-                >
-                  <Pill className="h-5 w-5 mr-2" />
-                  Para farmácias
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============ FAQ ============ */}
-        <section className="px-4 mt-14">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl font-black text-center mb-6">
-              Perguntas frequentes
-            </h2>
-            <div className="space-y-3">
-              {[
-                {
-                  q: "Como pago o plano?",
-                  a: "Via M-Pesa (manual reference), e-Mola ou Visa. Activamos o plano imediatamente após confirmação do pagamento.",
-                },
-                {
-                  q: "Posso cancelar quando quiser?",
-                  a: "Sim, sem multas. Manténs acesso até ao fim do período já pago. O cancelamento é 1 clique no perfil.",
-                },
-                {
-                  q: "As consultas são com médicos moçambicanos?",
-                  a: "Sim, todos os médicos são registados na Ordem dos Médicos de Moçambique. Atendimento em português, Macua, Changana ou Sena conforme disponibilidade.",
-                },
-                {
-                  q: "Funciona fora de Maputo?",
-                  a: "Sim. Cobertura nacional com farmácias parceiras em 10 cidades. Acesse de qualquer província com internet 3G+.",
-                },
-                {
-                  q: "O Plus Crónico cobre insulina?",
-                  a: "Sim — ARV, TB, insulina, anti-hipertensivos e medicamentos essenciais MISAU têm refill ilimitado no plano Crónico.",
-                },
-              ].map((item) => (
-                <details key={item.q} className="group bento-card p-4 cursor-pointer">
-                  <summary className="font-bold text-sm flex items-center justify-between list-none">
-                    {item.q}
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-open:rotate-90 transition-transform" />
-                  </summary>
-                  <p className="text-xs text-muted-foreground mt-3 leading-relaxed font-medium">
-                    {item.a}
-                  </p>
-                </details>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ============ FINAL CTA ============ */}
-        <section className="px-4 mt-14">
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-xs text-muted-foreground font-medium mb-4">
-              Ainda em dúvida?
+        {/* CTA final */}
+        <section className="mt-10">
+          <div className="rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-6 text-center">
+            <h2 className="text-2xl font-black mb-2">Pronto para começar?</h2>
+            <p className="text-sm text-emerald-50 mb-4">
+              Cria a tua conta gratuita em 30 segundos — sem cartão.
             </p>
-            <Button
-              size="lg"
-              variant="outline"
-              className="rounded-2xl font-bold"
-              onClick={() => navigate("/health/triage")}
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              Experimenta a triagem IA grátis primeiro
-            </Button>
-            <p className="text-[10px] text-muted-foreground/60 mt-4">
-              Ao subscrever aceitas os Termos de Uso e a Política de Privacidade (LGPD-MZ).
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Button
+                size="lg"
+                className="bg-white text-emerald-700 hover:bg-emerald-50 font-black"
+                onClick={() => navigate("/auth")}
+              >
+                <Gift className="h-4 w-4 mr-1" /> Criar conta grátis
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                onClick={() => navigate("/planos-b2b")}
+              >
+                <Building2 className="h-4 w-4 mr-1" /> Ver planos B2B detalhados
+              </Button>
+            </div>
+            <p className="text-[10px] text-emerald-100/70 mt-4">
+              Ao registar-se aceita os Termos de Uso e a Política de Privacidade (Lei 18/2004).
             </p>
           </div>
         </section>

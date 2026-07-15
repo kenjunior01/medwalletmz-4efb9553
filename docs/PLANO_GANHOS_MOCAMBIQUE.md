@@ -4,6 +4,52 @@
 
 ---
 
+## ⚡ PIVOT ESTRATÉGICO (Versão 2.0 — Julho 2026)
+
+> **Novo modelo**: **Pacientes 100% grátis para sempre** · **Profissionais e instituições pagam**
+
+### Porquê o pivot?
+1. **Moçambique tem ARPU B2C baixo** — 199 MZN/mês é inacessível para >60% da população
+2. **Crescimento viral exige zero fricção** — free trial de 30 dias ainda tem barreira psicológica
+3. **Profissionais têm capacidade de pagamento real** — clínicas pagam 18.000 MZN/mês sem hesitar se houver pacientes
+4. **Modelo marketplace provado** — Uber, Bolt, iFood: passageiro/cliente grátis, motorista/restaurante paga
+5. **Pacientes são o motor de aquisição** — sem pacientes, profissionais não vêm; sem profissionais, pacientes saem. **Free patient = network effect**
+
+### Resumo do novo modelo
+| Segmento | Preço | Racional |
+|---|---|---|
+| **Pacientes (B2C)** | **0 MZN para sempre** | Motor de crescimento viral |
+| Médico Pro (B2B) | 1.500 MZN/mês | Acesso a 200+ pacientes activos |
+| Médico Elite (B2B) | 4.500 MZN/mês | Pacientes ilimitados + IA avançada |
+| Farmácia Pro (B2B) | 3.500 MZN/mês | Pedidos ilimitados + M-Pesa auto |
+| Clínica Basic (B2B) | 6.000 MZN/mês | Até 3 médicos |
+| Clínica Pro (B2B) | 18.000 MZN/mês | Até 15 médicos + multi-filial |
+| Laboratório Pro (B2B) | 5.000 MZN/mês | Resultados digitais |
+| Hospital Enterprise | 45.000 MZN/mês | Médicos ilimitados + SLA |
+| Entregador Plus (B2B) | 250 MZN/mês | Volume alto, baixo ticket |
+| Veterinário Pro (B2B) | 1.200 MZN/mês | Niche |
+
+### Comparativo com modelo anterior (B2C-focused)
+| Métrica | Modelo antigo | Modelo novo |
+|---|---|---|
+| % Receita B2C | 70% | 0% |
+| % Receita B2B | 30% | 100% |
+| Barrier to entry (paciente) | 199 MZN/mês | 0 MZN |
+| Crescimento viral | K=0,4 | K=0,9 (alvo) |
+| Meta 24 meses | 2M users, 500K pagantes | 5M users, 50K instituições |
+
+### O que muda na prática
+- ❌ Removidos: Plus Individual (199), Plus Família (399), Plus Grávida (299), Plus Crónico (249), Premium Individual (499), Premium Família (899)
+- ✅ Mantidos: Doctor Pro (1.500), Doctor Elite (4.500), Clínica Basic (6.000), Clínica Pro (18.000), Hospital Enterprise (45.000), Pharmacy Pro (3.500), Lab Pro (5.000), Driver Plus (250), Vet Pro (1.200)
+- ✅ Pacientes: todas as funcionalidades anteriormente pagas são agora grátis (triagem IA, consultas, lembretes, SOS, registos)
+- ✅ Nova página /planos foca em B2B, pacientes têm card único "Grátis para sempre"
+- ✅ FreeTrialBanner substituído por "Pacientes grátis para sempre"
+- ✅ Onboarding pós-registo redesenhado: Paciente em destaque no topo (grátis), Profissionais/Instituições em grids separados abaixo
+
+> **Documentação abaixo mantida como referência histórica do modelo v1.0. A versão 2.0 é a vigente.**
+
+---
+
 ## 1. Diagnóstico do Mercado Moçambicano
 
 ### 1.1 Demografia & Saúde (fontes: INE, MISAU, OMS 2024-2025)
