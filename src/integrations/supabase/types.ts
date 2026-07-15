@@ -3431,24 +3431,35 @@ export type Database = {
       }
       user_roles: {
         Row: {
+          country_id: string | null
           created_at: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
+          country_id?: string | null
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
+          country_id?: string | null
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       video_sessions: {
         Row: {
@@ -3953,6 +3964,9 @@ export type Database = {
         | "clinic"
         | "insurance"
         | "country_manager"
+        | "veterinary"
+        | "hospital"
+        | "lab"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4089,6 +4103,9 @@ export const Constants = {
         "clinic",
         "insurance",
         "country_manager",
+        "veterinary",
+        "hospital",
+        "lab",
       ],
     },
   },
