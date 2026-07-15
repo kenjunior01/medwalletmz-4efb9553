@@ -62,7 +62,7 @@ export default function AdminReports() {
       const endDate = endOfDay(new Date()).toISOString();
 
       // Fetch orders within period, filtered by country if context exists
-      let query = supabase
+      let query: any = supabase
         .from("orders")
         .select("id, total, status, created_at, store_id, stores(name)")
         .gte("created_at", startDate)
@@ -77,9 +77,9 @@ export default function AdminReports() {
       if (ordersError) throw ordersError;
 
       // Fetch total counts filtered by country
-      const storesQuery = supabase.from("stores").select("id", { count: "exact", head: true });
-      const ordersCountQuery = supabase.from("orders").select("id", { count: "exact", head: true });
-      const usersQuery = supabase.from("profiles").select("id", { count: "exact", head: true });
+      const storesQuery: any = supabase.from("stores").select("id", { count: "exact", head: true });
+      const ordersCountQuery: any = supabase.from("orders").select("id", { count: "exact", head: true });
+      const usersQuery: any = supabase.from("profiles").select("id", { count: "exact", head: true });
 
       if (country?.id) {
         storesQuery.eq('country_id', country.id);

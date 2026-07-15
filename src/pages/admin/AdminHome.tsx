@@ -46,7 +46,7 @@ export default function AdminHome() {
       const countryId = country?.id;
 
       const buildQuery = (table: string) => {
-        let q = supabase.from(table).select('id', { count: 'exact', head: true });
+        let q: any = (supabase as any).from(table).select('id', { count: 'exact', head: true });
         if (countryId) q = q.eq('country_id', countryId);
         return q;
       };
@@ -64,11 +64,11 @@ export default function AdminHome() {
       ]);
 
       // Specialized queries for complex stats
-      let ordersQuery = supabase.from('orders').select('id, status, total, created_at');
+      let ordersQuery: any = supabase.from('orders').select('id, status, total, created_at');
       if (countryId) ordersQuery = ordersQuery.eq('country_id', countryId);
       const orders = await ordersQuery;
 
-      let walletsQuery = supabase.from('wallets').select('balance_mzn, total_deposited');
+      let walletsQuery: any = supabase.from('wallets').select('balance_mzn, total_deposited');
       if (countryId) walletsQuery = walletsQuery.eq('country_id', countryId);
       const wallets = await walletsQuery;
 

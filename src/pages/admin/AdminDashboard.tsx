@@ -27,6 +27,14 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+
+type MenuItem = {
+  icon: any;
+  label: string;
+  path: string;
+  highlight?: boolean;
+};
 
 const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard Global', path: '/admin' },
