@@ -33,7 +33,7 @@ import { Badge } from '@/components/ui/badge';
 type MenuItem = { icon: any; label: string; path: string; highlight?: boolean };
 
 const menuItems: MenuItem[] = [
-  { icon: LayoutDashboard, label: 'Resumo Regional', path: '/manager' },
+  { icon: LayoutDashboard, label: 'Resumo Nacional', path: '/manager' },
   { icon: Globe2, label: '🇮🇳 India Command Center', path: '/manager/india', highlight: true },
   { icon: Users, label: '🇲🇿 APE Digital', path: '/manager/mz-verticals/ape', highlight: true },
   { icon: Activity, label: 'TB DOT Digital', path: '/manager/mz-verticals/tb-dot', highlight: true },
@@ -43,17 +43,18 @@ const menuItems: MenuItem[] = [
   { icon: ShieldCheck, label: 'Compliance Center', path: '/manager/compliance', highlight: true },
   { icon: Bot, label: 'Meddy IA Copilot', path: '/manager/compliance/copilot', highlight: true },
   { icon: Sparkles, label: 'Curadoria Local', path: '/manager/curation', highlight: true },
+  { icon: Globe2, label: '☁️ Google Cloud Hub', path: '/manager/google-cloud', highlight: true },
   { icon: Store, label: 'Farmácias', path: '/manager/stores' },
   { icon: HeartPulse, label: 'Clínicas & Hospitais', path: '/manager/clinics' },
   { icon: Stethoscope, label: 'Veterinária', path: '/manager/veterinary' },
   { icon: Sparkles, label: 'Laboratórios', path: '/manager/labs' },
-  { icon: ShoppingBag, label: 'Pedidos da Região', path: '/manager/orders' },
-  { icon: Users, label: 'Usuários Locais', path: '/manager/users' },
+  { icon: ShoppingBag, label: 'Pedidos Nacionais', path: '/manager/orders' },
+  { icon: Users, label: 'Usuários Nacionais', path: '/manager/users' },
   { icon: Truck, label: 'Estafetas', path: '/manager/drivers' },
-  { icon: Shield, label: 'Seguros Regionais', path: '/manager/insurance' },
+  { icon: Shield, label: 'Seguros Nacionais', path: '/manager/insurance' },
   { icon: Megaphone, label: 'Anúncios', path: '/manager/ads' },
   { icon: BarChart3, label: 'Relatórios', path: '/manager/reports' },
-  { icon: Upload, label: 'Importação Local', path: '/manager/import' },
+  { icon: Upload, label: 'Importação Nacional', path: '/manager/import' },
 ];
 
 export default function RegionalManagerDashboard() {
@@ -80,7 +81,7 @@ export default function RegionalManagerDashboard() {
     }
   }, [user, loading, isManager, isAdmin, managedCountryId, country?.id, setCountryById, navigate]);
 
-  if (loading) return <div className="p-8">A carregar painel regional...</div>;
+  if (loading) return <div className="p-8">A carregar painel nacional...</div>;
   if (!user || !isManager) return null;
 
   return (
@@ -91,7 +92,7 @@ export default function RegionalManagerDashboard() {
             <h1 className="text-xl font-bold text-primary">MedWallet</h1>
             <Badge variant="outline" className="text-[10px] uppercase">{country?.id}</Badge>
           </div>
-          <p className="text-xs text-muted-foreground font-medium">Gestor Regional: {country?.name}</p>
+          <p className="text-xs text-muted-foreground font-medium">Gestor Nacional: {country?.name}</p>
         </div>
 
         <nav className="flex-1 p-4 overflow-y-auto">
@@ -134,7 +135,7 @@ export default function RegionalManagerDashboard() {
       <main className="flex-1 overflow-auto bg-muted/20">
         <header className="h-16 border-b bg-card px-8 flex items-center justify-between sticky top-0 z-10 shadow-sm">
           <h2 className="font-semibold text-lg">
-            {menuItems.find(m => m.path === location.pathname)?.label || 'Painel Regional'}
+            {menuItems.find(m => m.path === location.pathname)?.label || 'Painel Nacional'}
           </h2>
           <div className="flex items-center gap-4">
              <span className="text-xs text-muted-foreground italic">Operação 100% Protegida por Backend RLS</span>

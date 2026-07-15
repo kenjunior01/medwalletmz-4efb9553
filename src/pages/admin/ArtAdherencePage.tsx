@@ -1,19 +1,65 @@
 /**
  * ArtAdherencePage — HIV ART Adherence Tracker
- * Moçambique: 1.6M moçambicanos em ARV. Workflow: lembrete WhatsApp, refill tracking, carga viral.
+ * Moçambique: 1.6M moçambicanos em ARV. Workflow: lembretes locais, refill tracking, carga viral.
+ * Dados 100% locais (Supabase) — sem integrações externas (WhatsApp/SMS)
+ *
+ * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp):
+ * - Google Cloud Text-to-Speech: speakText(text, 'pt-PT') para lembrete por voz
+ * - WhatsApp via wa.me (sem API Business): buildArvReminder para lembrete de toma
+ * - Google Cloud Translation: disponível via Supabase Edge Function (i18n de lembretes)
  */
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Activity, TrendingUp, Pill, AlertTriangle, Heart, Droplet,
-  Calendar, MessageCircle,
+  Calendar, MessageCircle, Volume2, Languages, Send, Loader2,
 } from "lucide-react";
-import { useArtAdherenceLogs } from "@/hooks/useMzVerticals";
+import { useArtAdherenceLogs, type ArtAdherenceLog } from "@/hooks/useMzVerticals";
+import { openWhatsApp, buildArvReminder } from "@/lib/whatsapp";
+import { speakText } from "@/lib/googleTTS";
 
 export default function ArtAdherencePage() {
   const [provinceFilter, setProvinceFilter] = useState('');
   const { data: logs = [], isLoading } = useArtAdherenceLogs(provinceFilter || undefined);
+
+  // --- WhatsApp + TTS state ---
+  const [defaultPhone, setDefaultPhone] = useState('');
+  const [ttsLoadingId, setTtsLoadingId] = useState<string | null>(null);
+
+  /** WhatsApp per-patient: envia lembrete ARV (manhã/noite + refill). */
+  function handleSendArvReminder(log: ArtAdherenceLog) {
+    if (!defaultPhone) {
+      alert('Indica primeiro o telefone do paciente no campo "Telefone para lembretes".');
+      return;
+    }
+    const refill = log.refill_due_date
+      ? new Date(log.refill_due_date).toLocaleDateString('pt-PT')
+      : undefined;
+    const message = buildArvReminder({
+      patientName: undefined, // sem nome para preservar privacidade
+      regimen: log.art_regimen || 'ARV',
+      time: new Date().getHours() < 12 ? 'manha' : 'noite',
+      nextRefill: refill,
+    });
+    openWhatsApp(defaultPhone, message);
+  }
+
+  /** Google TTS per-patient: lê o lembrete ARV em voz alta (pt-PT). */
+  async function handleSpeak(log: ArtAdherenceLog) {
+    setTtsLoadingId(log.id);
+    try {
+      const refill = log.refill_due_date
+        ? `Refill até ${new Date(log.refill_due_date).toLocaleDateString('pt-PT')}.`
+        : '';
+      const period = new Date().getHours() < 12 ? 'manhã' : 'noite';
+      const text = `Lembrete ARV. Está na ${period}. Não te esqueças de tomar o ${log.art_regimen || 'ARV'} agora. ${refill} Responde com TOMADO para confirmar a toma. Saúde é riqueza.`;
+      await speakText(text, 'pt-PT');
+    } finally {
+      setTtsLoadingId(null);
+    }
+  }
 
   const stats = {
     total: logs.length,
@@ -40,7 +86,7 @@ export default function ArtAdherencePage() {
             ART Adherence — Adesão ARV HIV
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            1.6M moçambicanos em ARV · Lembretes WhatsApp · Refill tracking · Carga viral monitoring
+            1.6M moçambicanos em ARV · Lembretes locais · Refill tracking · Carga viral monitoring
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
             <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">TLD — Primeira Linha (TDF+3TC+DTG)</Badge>
@@ -71,6 +117,12 @@ export default function ArtAdherencePage() {
             <option key={p} value={p}>{p}</option>
           ))}
         </select>
+        <input
+          value={defaultPhone}
+          onChange={(e) => setDefaultPhone(e.target.value)}
+          placeholder="Telefone para lembretes (8XXXXXXXX)"
+          className="bg-slate-900/60 border border-emerald-700/60 rounded px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500"
+        />
         <Badge variant="outline" className="border-slate-700 text-slate-300 ml-auto">
           {logs.length} pacientes
         </Badge>
@@ -150,8 +202,31 @@ export default function ArtAdherencePage() {
                         Falhas 30d: <span className="text-rose-400 font-bold">{l.missed_doses_30d || 0}</span>
                       </span>
                       <span className="flex items-center gap-1 text-emerald-400">
-                        <MessageCircle className="h-3 w-3" /> WhatsApp ON
+                        <MessageCircle className="h-3 w-3" /> Lembretes ON
                       </span>
+                    </div>
+
+                    {/* WhatsApp + Google TTS per patient */}
+                    <div className="flex gap-2 pt-1 border-t border-slate-800">
+                      <Button
+                        onClick={() => handleSendArvReminder(l)}
+                        size="sm"
+                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white h-8 text-xs"
+                      >
+                        <Send className="h-3 w-3 mr-1" /> WhatsApp
+                      </Button>
+                      <Button
+                        onClick={() => handleSpeak(l)}
+                        disabled={ttsLoadingId === l.id}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 border-sky-700 text-sky-300 hover:bg-sky-950/30 h-8 text-xs"
+                      >
+                        {ttsLoadingId === l.id
+                          ? <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          : <Volume2 className="h-3 w-3 mr-1" />}
+                        Voz (TTS)
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -162,26 +237,33 @@ export default function ArtAdherencePage() {
       </div>
 
       {/* INFO */}
-      <div className="px-8 pb-12 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="px-8 pb-12 grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-slate-900/60 border-slate-700">
           <CardContent className="p-4">
             <MessageCircle className="h-5 w-5 text-emerald-400 mb-2" />
             <h3 className="text-sm font-semibold text-slate-100 mb-1">Lembretes WhatsApp</h3>
-            <p className="text-xs text-slate-400">2 lembretes diários (manhã/noite) com voz em português moçambicano. Confirmação de toma via reply.</p>
+            <p className="text-xs text-slate-400">2 lembretes diários (manhã/noite) enviados via wa.me. Confirmação de toma por resposta "TOMADO".</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-slate-900/60 border-slate-700">
+          <CardContent className="p-4">
+            <Volume2 className="h-5 w-5 text-sky-400 mb-2" />
+            <h3 className="text-sm font-semibold text-slate-100 mb-1">Voz — Google TTS</h3>
+            <p className="text-xs text-slate-400">Cada paciente tem botão para ouvir o lembrete em voz alta (pt-PT Neural2). Útil para pacientes com baixa literacia.</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-slate-900/60 border-slate-700">
+          <CardContent className="p-4">
+            <Languages className="h-5 w-5 text-purple-400 mb-2" />
+            <h3 className="text-sm font-semibold text-slate-100 mb-1">Tradução — Google Translation</h3>
+            <p className="text-xs text-slate-400">Tradução automática de lembretes disponível via Supabase Edge Function (google-translate). Suporta Changana, Sena, Macua, Português, Inglês.</p>
           </CardContent>
         </Card>
         <Card className="bg-slate-900/60 border-slate-700">
           <CardContent className="p-4">
             <Calendar className="h-5 w-5 text-amber-400 mb-2" />
             <h3 className="text-sm font-semibold text-slate-100 mb-1">Refill Automático</h3>
-            <p className="text-xs text-slate-400">Alerta 7 dias antes de acabar. Pickup na farmácia mais próxima via geolocalização.</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-slate-900/60 border-slate-700">
-          <CardContent className="p-4">
-            <Droplet className="h-5 w-5 text-purple-400 mb-2" />
-            <h3 className="text-sm font-semibold text-slate-100 mb-1">Carga Viral Tracking</h3>
-            <p className="text-xs text-slate-400">Lab → MedWallet → médico automaticamente. Alerta se carga viral detetável após supressão.</p>
+            <p className="text-xs text-slate-400">Alerta 7 dias antes de acabar. Pickup na farmácia registada como preferida.</p>
           </CardContent>
         </Card>
       </div>

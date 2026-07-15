@@ -43,6 +43,7 @@ const menuItems: MenuItem[] = [
   { icon: Globe, label: 'Métricas Mundiais', path: '/admin/global-metrics', highlight: true },
   { icon: Globe, label: 'Painel do País', path: '/admin/country-dashboard', highlight: true },
   { icon: Sparkles, label: 'Curadoria', path: '/admin/curation', highlight: true },
+  { icon: Globe, label: '☁️ Google Cloud Hub', path: '/admin/google-cloud', highlight: true },
   { icon: Store, label: 'Farmácias', path: '/admin/stores' },
   { icon: Package, label: 'Produtos', path: '/admin/products' },
   { icon: ShoppingBag, label: 'Pedidos', path: '/admin/orders' },

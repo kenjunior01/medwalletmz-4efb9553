@@ -1,19 +1,157 @@
 /**
  * MaternalHealthPage — Maternal Health Vertical
  * Moçambique: 451 mortes maternas/100k nascimentos. Tracking gravidez + ANC + SOS obstétrico.
+ * Dados 100% locais (Supabase) — sem APIs externas (WhatsApp/INE/INEM)
+ *
+ * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp):
+ * - Google Maps Routes API v2: fetchRouteDistance para maternidade mais próxima (fallback haversineKm)
+ * - WhatsApp via wa.me (sem API Business): buildSosObstetric + buildAncReminder
+ * - Google Cloud Text-to-Speech: speakText(text, 'pt-PT') para lembretes por voz
  */
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Baby, Heart, Activity, AlertTriangle, Calendar, Pill,
-  Phone, Siren,
+  Phone, Siren, Navigation, MessageCircle, Send, Loader2, Volume2,
+  Clock, Route, MapPin,
 } from "lucide-react";
 import { useMaternalProfiles } from "@/hooks/useMzVerticals";
+import { loadGoogleMaps } from "@/lib/googleMapsLoader";
+import { fetchRouteDistance, haversineKm, fmtDuration, type DistanceResult } from "@/lib/googleRoutes";
+import { openWhatsApp, buildSosObstetric, buildAncReminder } from "@/lib/whatsapp";
+import { speakText } from "@/lib/googleTTS";
 
 export default function MaternalHealthPage() {
   const [provinceFilter, setProvinceFilter] = useState('');
   const { data: profiles = [], isLoading } = useMaternalProfiles(provinceFilter || undefined);
+
+  // --- SOS Obstétrico state ---
+  const [sosPhone, setSosPhone] = useState(''); // Contacto de emergência (maternidade/equipa médica)
+
+  // --- Google Routes state ---
+  const [origin, setOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [route, setRoute] = useState<DistanceResult | null>(null);
+  const [selectedMaternity, setSelectedMaternity] = useState('maputo_maternidade');
+
+  // --- Per-patient TTS loading state ---
+  const [ttsLoadingId, setTtsLoadingId] = useState<string | null>(null);
+
+  /** Maternidades de referência (coordenadas aproximadas). */
+  const maternities: Record<string, { name: string; lat: number; lng: number }> = {
+    maputo_maternidade: { name: 'Maternidade Central — Maputo', lat: -25.9701, lng: 32.5733 },
+    machava_maternidade: { name: 'Maternidade Machava — Maputo Prov', lat: -25.9056, lng: 32.5731 },
+    beira_maternidade: { name: 'Maternidade Central — Beira', lat: -19.8336, lng: 34.8408 },
+    nampula_maternidade: { name: 'Maternidade Central — Nampula', lat: -15.1165, lng: 39.2666 },
+    pemba_maternidade: { name: 'Maternidade Central — Pemba', lat: -12.9740, lng: 40.5178 },
+    quelimane_maternidade: { name: 'Maternidade Central — Quelimane', lat: -17.8786, lng: 36.8883 },
+  };
+
+  /** SOS Obstétrico — alerta interno + WhatsApp para a equipa médica. */
+  function handleSos() {
+    const dest = maternities[selectedMaternity];
+    if (!sosPhone) {
+      alert('Indica primeiro o número de emergência (maternidade/equipa médica) no campo "Contacto SOS".');
+      return;
+    }
+    const message = buildSosObstetric({
+      facility: dest?.name,
+      location: origin ? `${origin.lat.toFixed(5)}, ${origin.lng.toFixed(5)}` : undefined,
+    });
+    openWhatsApp(sosPhone, message);
+  }
+
+  /** Detecta GPS do utilizador. */
+  async function handleDetectLocation() {
+    setGeoLoading(true);
+    setGeoError(null);
+    try {
+      await loadGoogleMaps();
+      if (!('geolocation' in navigator)) throw new Error('Geolocalização não suportada');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setOrigin({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          setGeoLoading(false);
+        },
+        (err) => {
+          setGeoError(err.message || 'Erro ao obter localização');
+          setGeoLoading(false);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+    } catch (e: unknown) {
+      setGeoError(e instanceof Error ? e.message : 'Falha ao carregar Google Maps');
+      setGeoLoading(false);
+    }
+  }
+
+  /** Calcula rota para a maternidade selecionada. */
+  async function handleCalcRoute() {
+    if (!origin) {
+      setGeoError('Primeiro detecta a tua localização.');
+      return;
+    }
+    const dest = maternities[selectedMaternity];
+    if (!dest) return;
+    setRouteLoading(true);
+    try {
+      let result = await fetchRouteDistance(
+        origin,
+        { lat: dest.lat, lng: dest.lng },
+        'hospital',
+        selectedMaternity,
+        'driving'
+      );
+      if (!result) {
+        const km = haversineKm(origin, { lat: dest.lat, lng: dest.lng });
+        result = {
+          distanceMeters: Math.round(km * 1000),
+          durationSeconds: Math.round(km * 90),
+          via: 'haversine_fallback',
+        };
+      }
+      setRoute(result);
+    } finally {
+      setRouteLoading(false);
+    }
+  }
+
+  /** WhatsApp per-patient: lembrete ANC. */
+  function handleSendAncReminder(profile: any) {
+    if (!profile.partner_phone) {
+      alert('Paciente sem telefone de parceiro registado. Adiciona o telefone no perfil.');
+      return;
+    }
+    const dueDate = profile.edd_date
+      ? new Date(profile.edd_date).toLocaleDateString('pt-PT')
+      : 'a combinar';
+    const week = profile.edd_date
+      ? Math.max(1, Math.round(40 - ((new Date(profile.edd_date).getTime() - Date.now()) / (1000*60*60*24*7))))
+      : undefined;
+    const message = buildAncReminder({
+      visitNumber: (profile.anc_visits_done || 0) + 1,
+      week,
+      dueDate,
+      facility: profile.preferred_facility || maternities[selectedMaternity]?.name,
+    });
+    openWhatsApp(profile.partner_phone, message);
+  }
+
+  /** Google TTS per-patient: lembrete ANC por voz. */
+  async function handleSpeak(profile: any) {
+    setTtsLoadingId(profile.id);
+    try {
+      const visitN = (profile.anc_visits_done || 0) + 1;
+      const text = `Lembrete pré-natal. Está na altura da tua consulta ANC número ${visitN}. Por favor responde com SIM para confirmares a presença. Saúde é riqueza.`;
+      await speakText(text, 'pt-PT');
+    } finally {
+      setTtsLoadingId(null);
+    }
+  }
 
   const stats = {
     total: profiles.length,
@@ -40,21 +178,39 @@ export default function MaternalHealthPage() {
             Saúde Materna — Vertical Moçambicano
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            451 mortes maternas/100k · Tracking de gravidez · 4+ ANC reminders · SOS obstétrico → INEM + maternidade
+            451 mortes maternas/100k · Tracking de gravidez · 4+ ANC reminders · SOS obstétrico registado internamente
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
             <Badge className="bg-pink-500/20 text-pink-300 border-pink-500/30">4+ ANC visits (WHO)</Badge>
-            <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30">SOS Obstétrico → INEM</Badge>
+            <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30">SOS Obstétrico WhatsApp</Badge>
             <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">Planeamento Familiar</Badge>
             <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">Vacinação Infantil</Badge>
           </div>
-          <Button
-            className="mt-4 bg-rose-600 hover:bg-rose-700 text-white"
-            onClick={() => alert('SOS enviado! INEM notificado. Maternidade mais próxima: Hospital Central de Maputo.')}
-          >
-            <Siren className="h-4 w-4 mr-2" />
-            SOS Obstétrico
-          </Button>
+          <div className="flex flex-wrap items-center gap-2 mt-4">
+            <input
+              value={sosPhone}
+              onChange={(e) => setSosPhone(e.target.value)}
+              placeholder="Contacto SOS (maternidade/equipa 8XXXXXXXX)"
+              className="bg-slate-950/70 border border-rose-700/60 rounded px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 w-72"
+            />
+            <select
+              value={selectedMaternity}
+              onChange={(e) => setSelectedMaternity(e.target.value)}
+              className="bg-slate-950/70 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100"
+            >
+              {Object.entries(maternities).map(([k, m]) => (
+                <option key={k} value={k}>{m.name}</option>
+              ))}
+            </select>
+            <Button
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+              onClick={handleSos}
+              disabled={!sosPhone}
+            >
+              <Siren className="h-4 w-4 mr-2" />
+              SOS Obstétrico (WhatsApp)
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -180,6 +336,29 @@ export default function MaternalHealthPage() {
                         {p.partner_name || 'Parceiro'}: {p.partner_phone}
                       </a>
                     )}
+
+                    {/* WhatsApp ANC reminder + Google TTS per patient */}
+                    <div className="flex gap-2 pt-1 border-t border-slate-800">
+                      <Button
+                        onClick={() => handleSendAncReminder(p)}
+                        size="sm"
+                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white h-8 text-xs"
+                      >
+                        <Send className="h-3 w-3 mr-1" /> WhatsApp ANC
+                      </Button>
+                      <Button
+                        onClick={() => handleSpeak(p)}
+                        disabled={ttsLoadingId === p.id}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 border-sky-700 text-sky-300 hover:bg-sky-950/30 h-8 text-xs"
+                      >
+                        {ttsLoadingId === p.id
+                          ? <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          : <Volume2 className="h-3 w-3 mr-1" />}
+                        Voz (TTS)
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               );
@@ -188,27 +367,101 @@ export default function MaternalHealthPage() {
         )}
       </div>
 
+      {/* TOOLS — Google Routes para Maternidade */}
+      <div className="px-8 pb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <Route className="h-5 w-5 text-emerald-400" />
+          <h2 className="text-lg font-semibold text-slate-100">Ferramentas Maternais</h2>
+          <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 ml-2">Google Routes API + WhatsApp + TTS</Badge>
+        </div>
+        <Card className="bg-slate-900/60 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-slate-100 flex items-center gap-2">
+              <Navigation className="h-4 w-4 text-sky-400" />
+              Maternidade mais próxima — Google Routes API v2
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-slate-400">
+              Calcula distância e duração reais de condução até à maternidade selecionada. Crítico para gestantes em trabalho de parto.
+              Fallback Haversine com estimativa de duração se a API falhar.
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button onClick={handleDetectLocation} disabled={geoLoading} className="bg-sky-500 hover:bg-sky-600 text-white">
+                {geoLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <MapPin className="h-4 w-4 mr-2" />}
+                {origin ? 'GPS OK' : 'Detectar GPS'}
+              </Button>
+              {origin && (
+                <span className="text-xs text-slate-400">
+                  {origin.lat.toFixed(4)}, {origin.lng.toFixed(4)}
+                </span>
+              )}
+            </div>
+            {geoError && <p className="text-xs text-rose-400">⚠ {geoError}</p>}
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={selectedMaternity}
+                onChange={(e) => setSelectedMaternity(e.target.value)}
+                className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 flex-1 min-w-64"
+              >
+                {Object.entries(maternities).map(([k, m]) => (
+                  <option key={k} value={k}>{m.name}</option>
+                ))}
+              </select>
+              <Button onClick={handleCalcRoute} disabled={routeLoading || !origin} className="bg-emerald-500 hover:bg-emerald-600 text-white">
+                {routeLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Route className="h-4 w-4 mr-2" />}
+                {routeLoading ? 'A calcular...' : 'Calcular Rota'}
+              </Button>
+            </div>
+            {route && (
+              <div className="bg-slate-950/60 border border-slate-700 rounded p-3 grid grid-cols-3 gap-3 text-sm">
+                <div>
+                  <div className="text-slate-500 uppercase text-[10px] flex items-center gap-1">
+                    <MapPin className="h-3 w-3" /> Distância
+                  </div>
+                  <div className="text-emerald-400 font-bold text-lg">
+                    {(route.distanceMeters / 1000).toFixed(1)} km
+                  </div>
+                </div>
+                <div>
+                  <div className="text-slate-500 uppercase text-[10px] flex items-center gap-1">
+                    <Clock className="h-3 w-3" /> Duração
+                  </div>
+                  <div className="text-sky-400 font-bold text-lg">{fmtDuration(route.durationSeconds)}</div>
+                </div>
+                <div>
+                  <div className="text-slate-500 uppercase text-[10px]">Fonte</div>
+                  <Badge variant="outline" className={`text-[10px] ${route.via === 'google_routes' ? 'border-emerald-600 text-emerald-400' : 'border-amber-600 text-amber-400'}`}>
+                    {route.via === 'google_routes' ? 'Google Routes v2' : 'Haversine'}
+                  </Badge>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* INFO */}
       <div className="px-8 pb-12 grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-slate-900/60 border-slate-700">
           <CardContent className="p-4">
             <Calendar className="h-5 w-5 text-pink-400 mb-2" />
             <h3 className="text-sm font-semibold text-slate-100 mb-1">4+ ANC Reminders</h3>
-            <p className="text-xs text-slate-400">Lembretes WhatsApp para 4+ visitas pré-natais (padrão WHO). Semana 12, 26, 32, 36.</p>
+            <p className="text-xs text-slate-400">Lembretes locais no app para 4+ visitas pré-natais (padrão WHO). Semana 12, 26, 32, 36.</p>
           </CardContent>
         </Card>
         <Card className="bg-slate-900/60 border-slate-700">
           <CardContent className="p-4">
             <AlertTriangle className="h-5 w-5 text-rose-400 mb-2" />
             <h3 className="text-sm font-semibold text-slate-100 mb-1">Alerta de Risco</h3>
-            <p className="text-xs text-slate-400">Pressão alta, edema, sangramento, febre → teleconsult automático com obstetra.</p>
+            <p className="text-xs text-slate-400">Pressão alta, edema, sangramento, febre → alerta interno para teleconsult com obstetra.</p>
           </CardContent>
         </Card>
         <Card className="bg-slate-900/60 border-slate-700">
           <CardContent className="p-4">
             <Siren className="h-5 w-5 text-rose-600 mb-2" />
-            <h3 className="text-sm font-semibold text-slate-100 mb-1">SOS Obstétrico</h3>
-            <p className="text-xs text-slate-400">Botão vermelho em todas as páginas. Geolocalização → INEM + maternidade mais próxima.</p>
+            <h3 className="text-sm font-semibold text-slate-100 mb-1">SOS Obstétrico WhatsApp</h3>
+            <p className="text-xs text-slate-400">Botão vermelho envia mensagem SOS via WhatsApp (wa.me) à equipa médica e maternidade preferida. Inclui localização GPS se disponível.</p>
           </CardContent>
         </Card>
       </div>

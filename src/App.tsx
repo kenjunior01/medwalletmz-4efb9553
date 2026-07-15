@@ -113,6 +113,7 @@ import TbDotPage from "./pages/admin/TbDotPage";
 import ArtAdherencePage from "./pages/admin/ArtAdherencePage";
 import MalariaWorkflowPage from "./pages/admin/MalariaWorkflowPage";
 import MaternalHealthPage from "./pages/admin/MaternalHealthPage";
+import GoogleCloudHub from "./pages/admin/GoogleCloudHub";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import Veterinary from "./pages/health/Veterinary";
@@ -268,6 +269,7 @@ const App = () => (
                     <Route path="mz-verticals/art" element={<ArtAdherencePage />} />
                     <Route path="mz-verticals/malaria" element={<MalariaWorkflowPage />} />
                     <Route path="mz-verticals/maternal" element={<MaternalHealthPage />} />
+                    <Route path="google-cloud" element={<GoogleCloudHub />} />
                   </Route>
 
                   {/* Regional Manager Routes */}
@@ -298,6 +300,7 @@ const App = () => (
                     <Route path="mz-verticals/art" element={<ArtAdherencePage />} />
                     <Route path="mz-verticals/malaria" element={<MalariaWorkflowPage />} />
                     <Route path="mz-verticals/maternal" element={<MaternalHealthPage />} />
+                    <Route path="google-cloud" element={<GoogleCloudHub />} />
                   </Route>
 
                   {/* Store Owner Routes */}

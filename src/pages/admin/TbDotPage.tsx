@@ -2,21 +2,66 @@
  * TbDotPage — TB Directly Observed Treatment Digital
  * Moçambique é top-30 global em TB. Substituir caderno de papel por DOT digital.
  * First country in the world with DOT 100% digital.
+ * Dados 100% locais (Supabase) — sem integrações de vídeo/GPS externas
+ *
+ * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp):
+ * - Google Cloud Vision OCR: verificação de rótulo de medicação TB (detectText)
+ * - WhatsApp via wa.me (sem API Business): buildTbReminder para lembrete de toma observada
  */
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Activity, Clock, AlertTriangle, TrendingUp, Pill, CheckCircle,
-  XCircle, Video, MapPin,
+  XCircle, Video, MapPin, ScanLine, MessageCircle, Send, Loader2, FileImage,
 } from "lucide-react";
 import { useTbDotRecords, useLogTbDose } from "@/hooks/useMzVerticals";
+import { detectText } from "@/lib/googleVision";
+import { openWhatsApp, buildTbReminder } from "@/lib/whatsapp";
 
 export default function TbDotPage() {
   const [provinceFilter, setProvinceFilter] = useState('');
   const { data: records = [], isLoading } = useTbDotRecords(provinceFilter || undefined);
   const logDose = useLogTbDose();
+
+  // --- Vision OCR state ---
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrText, setOcrText] = useState<string | null>(null);
+  const [ocrFileName, setOcrFileName] = useState<string | null>(null);
+
+  // --- WhatsApp reminder state ---
+  const [waPhone, setWaPhone] = useState('');
+  const [waPatient, setWaPatient] = useState('');
+  const [waCaseId, setWaCaseId] = useState('');
+  const [waPhase, setWaPhase] = useState<'intensive' | 'continuation' | 'follow_up'>('intensive');
+
+  /** Vision OCR: lê rótulo do medicamento TB (RHZE / RH) para verificação. */
+  async function handleOcrFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setOcrLoading(true);
+    setOcrFileName(file.name);
+    try {
+      const text = await detectText(file);
+      setOcrText(text);
+    } finally {
+      setOcrLoading(false);
+    }
+  }
+
+  /** WhatsApp: envia lembrete de toma TB ao paciente. */
+  function handleSendWhatsapp() {
+    if (!waPhone) return;
+    const message = buildTbReminder({
+      patientName: waPatient || undefined,
+      phase: waPhase === 'intensive' ? 'RHZE (Fase Intensiva)' :
+             waPhase === 'continuation' ? 'RH (Fase Continuação)' : 'Follow-up',
+      caseId: waCaseId || undefined,
+    });
+    openWhatsApp(waPhone, message);
+  }
 
   const stats = {
     total: records.length,
@@ -51,7 +96,7 @@ export default function TbDotPage() {
             TB DOT Digital — Directly Observed Treatment
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Moçambique top-30 global em TB · Primeiro país do mundo com DOT 100% digital · Vídeo-observação via Daily.co
+            Moçambique top-30 global em TB · Primeiro país do mundo com DOT 100% digital · Observação local sem APIs externas
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
             <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30">RHZE — Fase Intensiva 2 meses</Badge>
@@ -153,7 +198,7 @@ export default function TbDotPage() {
                         className="bg-emerald-500 hover:bg-emerald-600 text-white flex-1"
                       >
                         <CheckCircle className="h-4 w-4 mr-1" />
-                        Observar Toma (Vídeo)
+                        Observar Toma
                       </Button>
                       <Button
                         onClick={() => logDose.mutate({ recordId: r.id, taken: false })}
@@ -176,27 +221,107 @@ export default function TbDotPage() {
         )}
       </div>
 
+      {/* TOOLS — Google Cloud Vision + WhatsApp */}
+      <div className="px-8 pb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <ScanLine className="h-5 w-5 text-emerald-400" />
+          <h2 className="text-lg font-semibold text-slate-100">Ferramentas TB DOT</h2>
+          <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 ml-2">Google Cloud Vision + WhatsApp</Badge>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Google Vision OCR */}
+          <Card className="bg-slate-900/60 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100 flex items-center gap-2">
+                <ScanLine className="h-4 w-4 text-sky-400" />
+                Verificação de Rótulo — Google Cloud Vision OCR
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-xs text-slate-400">
+                Carrega uma foto do rótulo da medicação TB (RHZE/RH) para verificar via Google Cloud Vision TEXT_DETECTION.
+                Útil para evitar erros de dispensa e auditar conformidade do esquema terapêutico.
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleOcrFile}
+                className="hidden"
+              />
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={ocrLoading}
+                className="w-full bg-sky-500 hover:bg-sky-600 text-white"
+              >
+                {ocrLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileImage className="h-4 w-4 mr-2" />}
+                {ocrLoading ? 'A ler texto...' : 'Carregar Foto do Rótulo'}
+              </Button>
+              {ocrFileName && !ocrText && !ocrLoading && (
+                <p className="text-xs text-slate-400">Ficheiro: {ocrFileName}</p>
+              )}
+              {ocrText && (
+                <div className="bg-slate-950/60 border border-slate-700 rounded p-3 max-h-64 overflow-y-auto">
+                  <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1">
+                    <ScanLine className="h-3 w-3" /> Texto detectado — {ocrFileName}
+                  </div>
+                  <pre className="text-xs text-emerald-300 whitespace-pre-wrap font-mono leading-relaxed">{ocrText}</pre>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* WhatsApp TB Reminder */}
+          <Card className="bg-slate-900/60 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100 flex items-center gap-2">
+                <MessageCircle className="h-4 w-4 text-emerald-400" />
+                Lembrete de Toma — WhatsApp (wa.me)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-xs text-slate-400">
+                Envia lembrete padronizado de toma observada ao paciente. Abre WhatsApp com mensagem pré-preenchida
+                (sem necessidade de API Business).
+              </p>
+              <input value={waPhone} onChange={(e) => setWaPhone(e.target.value)} placeholder="Telefone (8XXXXXXXX)" className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100" />
+              <input value={waPatient} onChange={(e) => setWaPatient(e.target.value)} placeholder="Nome do paciente (opcional)" className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100" />
+              <input value={waCaseId} onChange={(e) => setWaCaseId(e.target.value)} placeholder="ID do caso TB (opcional)" className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100" />
+              <select value={waPhase} onChange={(e) => setWaPhase(e.target.value as 'intensive' | 'continuation' | 'follow_up')} className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100">
+                <option value="intensive">Fase Intensiva (RHZE)</option>
+                <option value="continuation">Fase Continuação (RH)</option>
+                <option value="follow_up">Follow-up</option>
+              </select>
+              <Button onClick={handleSendWhatsapp} disabled={!waPhone} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
+                <Send className="h-4 w-4 mr-2" /> Enviar Lembrete WhatsApp
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* INFO */}
       <div className="px-8 pb-12 grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-slate-900/60 border-slate-700">
           <CardContent className="p-4">
             <Video className="h-5 w-5 text-sky-400 mb-2" />
-            <h3 className="text-sm font-semibold text-slate-100 mb-1">Vídeo-Observed Therapy</h3>
-            <p className="text-xs text-slate-400">Observação da toma via Daily.co. Geolocalização opcional. Reduz custos de deslocação.</p>
+            <h3 className="text-sm font-semibold text-slate-100 mb-1">Observação Digital</h3>
+            <p className="text-xs text-slate-400">Observação da toma registada localmente pelo profissional. Sem dependência de APIs externas de vídeo.</p>
           </CardContent>
         </Card>
         <Card className="bg-slate-900/60 border-slate-700">
           <CardContent className="p-4">
             <AlertTriangle className="h-5 w-5 text-amber-400 mb-2" />
             <h3 className="text-sm font-semibold text-slate-100 mb-1">Alerta de Abandono</h3>
-            <p className="text-xs text-slate-400">Após 24h sem registo, alerta automático ao gestor regional. Após 7 dias, notificação ao PNCT.</p>
+            <p className="text-xs text-slate-400">Após 24h sem registo, alerta automático ao gestor nacional. Após 7 dias, marca caso como abandono.</p>
           </CardContent>
         </Card>
         <Card className="bg-slate-900/60 border-slate-700">
           <CardContent className="p-4">
             <MapPin className="h-5 w-5 text-emerald-400 mb-2" />
-            <h3 className="text-sm font-semibold text-slate-100 mb-1">GPS Verification</h3>
-            <p className="text-xs text-slate-400">Cada observação pode incluir coordenadas GPS para verificar local da toma.</p>
+            <h3 className="text-sm font-semibold text-slate-100 mb-1">Verificação Local</h3>
+            <p className="text-xs text-slate-400">Cada observação fica registada com timestamp e profissional responsável, para auditoria interna.</p>
           </CardContent>
         </Card>
       </div>

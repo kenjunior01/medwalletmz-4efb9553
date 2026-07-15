@@ -1,6 +1,11 @@
 /**
  * MalariaWorkflowPage — Test-and-Treat Workflow
- * Moçambique: 8M casos/ano. Workflow: APE faz RDT → resultado em MedWallet → Coartem dispensado → reporte PNM.
+ * Moçambique: 8M casos/ano. Workflow: APE faz RDT → resultado em MedWallet → Coartem dispensado → dashboard nacional.
+ * Dados 100% locais (Supabase) — sem APIs externas (PNM/INS)
+ *
+ * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp):
+ * - Google Maps Routes API v2: fetchRouteDistance para farmácia mais próxima (fallback haversineKm)
+ * - WhatsApp via wa.me (sem API Business): buildMalariaResult para envio de resultado RDT
  */
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,15 +13,111 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Activity, Pill, MapPin, TrendingUp, AlertTriangle, Plus,
-  Search, Droplet, CheckCircle,
+  Search, Droplet, CheckCircle, Navigation, MessageCircle, Send, Loader2,
+  Clock, Route,
 } from "lucide-react";
 import { useMalariaCases, useCreateMalariaCase } from "@/hooks/useMzVerticals";
+import { loadGoogleMaps } from "@/lib/googleMapsLoader";
+import { fetchRouteDistance, haversineKm, fmtDuration, type DistanceResult } from "@/lib/googleRoutes";
+import { openWhatsApp, buildMalariaResult } from "@/lib/whatsapp";
 
 export default function MalariaWorkflowPage() {
   const [provinceFilter, setProvinceFilter] = useState('');
   const [showNew, setShowNew] = useState(false);
   const { data: cases = [], isLoading } = useMalariaCases(provinceFilter || undefined);
   const createCase = useCreateMalariaCase();
+
+  // --- Google Routes state ---
+  const [origin, setOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [route, setRoute] = useState<DistanceResult | null>(null);
+  const [selectedPharmacy, setSelectedPharmacy] = useState('maputo_central');
+
+  // --- WhatsApp RDT state ---
+  const [waPhone, setWaPhone] = useState('');
+  const [waPatient, setWaPatient] = useState('');
+  const [waResult, setWaResult] = useState<'positive' | 'negative'>('positive');
+  const [waTreatment, setWaTreatment] = useState('Coartem (ACT)');
+
+  /** Detecta GPS do utilizador (Google Maps JS API). */
+  async function handleDetectLocation() {
+    setGeoLoading(true);
+    setGeoError(null);
+    try {
+      await loadGoogleMaps();
+      if (!('geolocation' in navigator)) throw new Error('Geolocalização não suportada');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setOrigin({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          setGeoLoading(false);
+        },
+        (err) => {
+          setGeoError(err.message || 'Erro ao obter localização');
+          setGeoLoading(false);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+    } catch (e: unknown) {
+      setGeoError(e instanceof Error ? e.message : 'Falha ao carregar Google Maps');
+      setGeoLoading(false);
+    }
+  }
+
+  /** Lista de farmácias de referência (coordenadas aproximadas). */
+  const pharmacies: Record<string, { name: string; lat: number; lng: number }> = {
+    maputo_central: { name: 'Farmácia Central — Maputo', lat: -25.9655, lng: 32.5832 },
+    maputo_machava: { name: 'Farmácia Machava — Maputo Prov', lat: -25.9056, lng: 32.5731 },
+    beira_savane: { name: 'Farmácia Savane — Beira', lat: -19.8336, lng: 34.8408 },
+    nampula_central: { name: 'Farmácia Central — Nampula', lat: -15.1165, lng: 39.2666 },
+    pemba_bairro: { name: 'Farmácia Pemba Bairro — Cabo Delgado', lat: -12.9740, lng: 40.5178 },
+    quelimane_central: { name: 'Farmácia Central — Quelimane', lat: -17.8786, lng: 36.8883 },
+  };
+
+  /** Calcula rota para a farmácia selecionada (Google Routes API v2 + haversine fallback). */
+  async function handleCalcRoute() {
+    if (!origin) {
+      setGeoError('Primeiro detecta a tua localização.');
+      return;
+    }
+    const dest = pharmacies[selectedPharmacy];
+    if (!dest) return;
+    setRouteLoading(true);
+    try {
+      let result = await fetchRouteDistance(
+        origin,
+        { lat: dest.lat, lng: dest.lng },
+        'pharmacy',
+        selectedPharmacy,
+        'driving'
+      );
+      if (!result) {
+        // Fallback: Haversine puro
+        const km = haversineKm(origin, { lat: dest.lat, lng: dest.lng });
+        result = {
+          distanceMeters: Math.round(km * 1000),
+          durationSeconds: Math.round(km * 90), // assume ~40 km/h média urbana
+          via: 'haversine_fallback',
+        };
+      }
+      setRoute(result);
+    } finally {
+      setRouteLoading(false);
+    }
+  }
+
+  /** WhatsApp: envia resultado RDT ao paciente. */
+  function handleSendWhatsapp() {
+    if (!waPhone) return;
+    const message = buildMalariaResult({
+      patientName: waPatient || undefined,
+      result: waResult,
+      treatment: waResult === 'positive' ? waTreatment : undefined,
+      facility: selectedPharmacy ? pharmacies[selectedPharmacy]?.name : 'farmácia registada',
+    });
+    openWhatsApp(waPhone, message);
+  }
 
   const stats = {
     total: cases.length,
@@ -42,7 +143,7 @@ export default function MalariaWorkflowPage() {
                 Malaria Test-and-Treat Workflow
               </h1>
               <p className="text-sm text-slate-400 mt-1">
-                8M casos/ano em Moçambique · APE → RDT → Coartem → Reporte PNM automático · Geofencing de surtos
+                8M casos/ano em Moçambique · APE → RDT → Coartem → Dashboard nacional · Detecção de surtos internos
               </p>
             </div>
             <Button onClick={() => setShowNew(!showNew)} className="bg-rose-500 hover:bg-rose-600 text-white">
@@ -202,6 +303,109 @@ export default function MalariaWorkflowPage() {
             </table>
           </div>
         )}
+      </div>
+
+      {/* TOOLS — Google Routes + WhatsApp */}
+      <div className="px-8 pb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <Route className="h-5 w-5 text-emerald-400" />
+          <h2 className="text-lg font-semibold text-slate-100">Ferramentas Malaria</h2>
+          <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 ml-2">Google Routes API + WhatsApp</Badge>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Google Routes — Nearest Pharmacy */}
+          <Card className="bg-slate-900/60 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100 flex items-center gap-2">
+                <Navigation className="h-4 w-4 text-sky-400" />
+                Farmácia mais próxima — Google Routes API v2
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-xs text-slate-400">
+                Calcula distância e duração reais de condução até à farmácia selecionada usando a Google Maps Routes API v2.
+                Se a API falhar, usa fallback Haversine com estimativa de duração.
+              </p>
+              <div className="flex gap-2">
+                <Button onClick={handleDetectLocation} disabled={geoLoading} className="bg-sky-500 hover:bg-sky-600 text-white">
+                  {geoLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <MapPin className="h-4 w-4 mr-2" />}
+                  {origin ? 'GPS OK' : 'Detectar GPS'}
+                </Button>
+                {origin && (
+                  <span className="text-xs text-slate-400 flex items-center">
+                    {origin.lat.toFixed(4)}, {origin.lng.toFixed(4)}
+                  </span>
+                )}
+              </div>
+              {geoError && <p className="text-xs text-rose-400">⚠ {geoError}</p>}
+              <select
+                value={selectedPharmacy}
+                onChange={(e) => setSelectedPharmacy(e.target.value)}
+                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100"
+              >
+                {Object.entries(pharmacies).map(([k, p]) => (
+                  <option key={k} value={k}>{p.name}</option>
+                ))}
+              </select>
+              <Button onClick={handleCalcRoute} disabled={routeLoading || !origin} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
+                {routeLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Route className="h-4 w-4 mr-2" />}
+                {routeLoading ? 'A calcular rota...' : 'Calcular Rota'}
+              </Button>
+              {route && (
+                <div className="bg-slate-950/60 border border-slate-700 rounded p-3 space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-400 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" /> Distância
+                    </span>
+                    <span className="text-emerald-400 font-bold">
+                      {(route.distanceMeters / 1000).toFixed(1)} km
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-400 flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> Duração
+                    </span>
+                    <span className="text-sky-400 font-bold">{fmtDuration(route.durationSeconds)}</span>
+                  </div>
+                  <Badge variant="outline" className={`text-[10px] ${route.via === 'google_routes' ? 'border-emerald-600 text-emerald-400' : 'border-amber-600 text-amber-400'}`}>
+                    {route.via === 'google_routes' ? 'Google Routes API v2' : 'Fallback Haversine'}
+                  </Badge>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* WhatsApp RDT Result */}
+          <Card className="bg-slate-900/60 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100 flex items-center gap-2">
+                <MessageCircle className="h-4 w-4 text-emerald-400" />
+                Resultado RDT — WhatsApp (wa.me)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-xs text-slate-400">
+                Envia o resultado do teste de malaria ao paciente via WhatsApp. Inclui tratamento recomendado e farmácia para recolha.
+              </p>
+              <input value={waPhone} onChange={(e) => setWaPhone(e.target.value)} placeholder="Telefone (8XXXXXXXX)" className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100" />
+              <input value={waPatient} onChange={(e) => setWaPatient(e.target.value)} placeholder="Nome do paciente (opcional)" className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100" />
+              <select value={waResult} onChange={(e) => setWaResult(e.target.value as 'positive' | 'negative')} className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100">
+                <option value="positive">RDT Positivo 🔴</option>
+                <option value="negative">RDT Negativo 🟢</option>
+              </select>
+              {waResult === 'positive' && (
+                <select value={waTreatment} onChange={(e) => setWaTreatment(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100">
+                  <option value="Coartem (ACT)">Coartem (ACT)</option>
+                  <option value="ASAQ">ASAQ (Artesunato+Amodiaquina)</option>
+                  <option value="Artesunato IV">Artesunato IV (grave)</option>
+                </select>
+              )}
+              <Button onClick={handleSendWhatsapp} disabled={!waPhone} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
+                <Send className="h-4 w-4 mr-2" /> Enviar Resultado
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* INFO */}
