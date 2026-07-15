@@ -17,6 +17,7 @@
  */
 
 import { geminiChat } from "@/lib/gemini";
+import { groqChat, isGroqConfigured } from "@/lib/groq";
 
 export interface TriageResult {
   severity: "baixa" | "moderada" | "alta" | "emergência" | string;
@@ -271,6 +272,48 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
 // HANDLER PRINCIPAL — chaamdo quando Edge Function falha
 // =====================================================================
 
+export async function triageWithGroqLocal(
+  symptoms: string,
+  age: number | null,
+  duration: string | null,
+  config: CountryConfig,
+): Promise<TriageResult | null> {
+  if (!isGroqConfigured()) return null;
+
+  const system = `És um assistente de triagem médica em ${config.name}. Responde sempre em ${config.dialect}.
+Avalia sintomas e devolve APENAS JSON válido com: severity ("baixa"|"moderada"|"alta"|"emergência"), recommendation (texto curto e claro), suggested_specialty (ex: "Clínica Geral", "Pediatria", "Cardiologia"), red_flags (array de strings).
+Adapta a tua recomendação ao contexto local: ${config.health_system}.
+NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar para ${config.emergency_phone} ou ir ao hospital mais próximo.`;
+
+  const userMsg = `Sintomas: ${symptoms}\nIdade: ${age ?? "n/d"}\nDuração: ${duration ?? "n/d"}\nPaís: ${config.name}\n\nDevolve APENAS o JSON, sem markdown.`;
+
+  try {
+    const text = await groqChat(userMsg, {
+      systemPrompt: system,
+      temperature: 0.3,
+      maxOutputTokens: 600,
+      jsonMode: true,
+    });
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return null;
+
+    const parsed = JSON.parse(jsonMatch[0]) as Partial<TriageResult>;
+    if (!parsed.severity || !parsed.recommendation) return null;
+
+    return {
+      severity: parsed.severity,
+      recommendation: parsed.recommendation,
+      suggested_specialty: parsed.suggested_specialty ?? "Clínica Geral",
+      red_flags: parsed.red_flags,
+      _provider: "groq-browser",
+    };
+  } catch (e) {
+    console.warn("Triage local Groq falhou:", e);
+    return null;
+  }
+}
+
 export async function triageLocalFallback(
   symptoms: string,
   age: number | null,
@@ -283,11 +326,15 @@ export async function triageLocalFallback(
   const geminiResult = await triageWithGeminiLocal(symptoms, age, duration, config);
   if (geminiResult) return geminiResult;
 
-  // Camada 2: Local rules (sempre funciona)
+  // Camada 2: Groq browser (ultra-rápido, fallback de região/quota)
+  const groqResult = await triageWithGroqLocal(symptoms, age, duration, config);
+  if (groqResult) return groqResult;
+
+  // Camada 3: Local rules (sempre funciona)
   const localResult = localTriage(symptoms, age, duration, config);
   return {
     ...localResult,
     _provider: "local_rules",
-    _note: "Edge Function indisponível — triagem local aplicada (regras clínicas).",
+    _note: "Edge Function + IA cloud indisponíveis — triagem local aplicada (regras clínicas).",
   };
 }

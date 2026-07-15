@@ -1,10 +1,11 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 // =====================================================================
-// AI TRIAGE — 3 CAMADAS DE FALLBACK
+// AI TRIAGE — 4 CAMADAS DE FALLBACK
 // 1. Google Gemini API (FREE 1500 req/dia) — primária
-// 2. Lovable AI Gateway — fallback 1 (se LOVABLE_API_KEY configurada)
-// 3. Motor local de regras clínicas — último recurso (sempre funciona)
+// 2. Groq API (ultra-rápido LPU, free tier generoso) — fallback 1
+// 3. Lovable AI Gateway — fallback 2 (se LOVABLE_API_KEY configurada)
+// 4. Motor local de regras clínicas — último recurso (sempre funciona)
 // =====================================================================
 
 interface CountryConfig {
@@ -236,7 +237,73 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
 }
 
 // =====================================================================
-// CAMADA 2: LOVABLE AI GATEWAY (fallback)
+// CAMADA 2: GROQ API (ultra-rápido, free tier generoso)
+// Requer: GROQ_API_KEY env var
+// Endpoint: https://api.groq.com/openai/v1/chat/completions (compatível OpenAI)
+// Modelos: llama-3.3-70b-versatile, llama-3.1-8b-instant
+// =====================================================================
+async function triageWithGroq(
+  symptoms: string, age: number | null, duration: string | null, config: CountryConfig
+): Promise<TriageResult | null> {
+  const KEY = Deno.env.get('GROQ_API_KEY');
+  if (!KEY) return null;
+
+  try {
+    const system = `És um assistente de triagem médica em ${config.name}. Responde sempre em ${config.dialect}.
+Avalia sintomas e devolve APENAS JSON válido com: severity ("baixa"|"moderada"|"alta"|"emergência"), recommendation (texto curto e claro), suggested_specialty (ex: "Clínica Geral", "Pediatria", "Cardiologia"), red_flags (array de strings).
+Adapta a tua recomendação ao contexto local: ${config.health_system}.
+NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar para ${config.emergency_phone} ou ir ao hospital mais próximo.`;
+
+    const userMsg = `Sintomas: ${symptoms}\nIdade: ${age ?? 'n/d'}\nDuração: ${duration ?? 'n/d'}\nPaís: ${config.name}\n\nDevolve APENAS o JSON, sem markdown.`;
+
+    // Tentar llama-3.3-70b-versatile primeiro, fallback para 8b-instant
+    const models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+    for (const model of models) {
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: 'system', content: system },
+              { role: 'user', content: userMsg },
+            ],
+            temperature: 0.3,
+            max_tokens: 600,
+            response_format: { type: 'json_object' },
+          }),
+        });
+
+        if (!res.ok) {
+          console.warn(`Groq ${model} error`, res.status, await res.text());
+          continue;
+        }
+
+        const data = await res.json();
+        const text = data?.choices?.[0]?.message?.content;
+        if (!text) continue;
+
+        const parsed = JSON.parse(text);
+        if (!parsed.severity || !parsed.recommendation) continue;
+        return { ...parsed, _provider: 'groq' };
+      } catch (e) {
+        console.warn(`Groq ${model} exception:`, e);
+        continue;
+      }
+    }
+    return null;
+  } catch (e) {
+    console.warn('Groq exception:', e);
+    return null;
+  }
+}
+
+// =====================================================================
+// CAMADA 3: LOVABLE AI GATEWAY (fallback)
 // Requer: LOVABLE_API_KEY env var
 // =====================================================================
 async function triageWithLovable(
@@ -324,7 +391,15 @@ Deno.serve(async (req) => {
       });
     }
 
-    // CAMADA 2: Lovable AI
+    // CAMADA 2: Groq (ultra-rápido, fallback de quota/região)
+    const groqResult = await triageWithGroq(symptoms, age, duration, config);
+    if (groqResult) {
+      return new Response(JSON.stringify(groqResult), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // CAMADA 3: Lovable AI
     const lovableResult = await triageWithLovable(symptoms, age, duration, config);
     if (lovableResult) {
       return new Response(JSON.stringify(lovableResult), {
@@ -332,12 +407,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // CAMADA 3: Local rules (sempre funciona)
+    // CAMADA 4: Local rules (sempre funciona)
     const localResult = localTriage(symptoms, age, duration, config);
     return new Response(JSON.stringify({
       ...localResult,
       _provider: 'local_rules',
-      _note: 'IA indisponível — usando triagem local baseada em regras clínicas. Configure GEMINI_API_KEY para IA avançada.',
+      _note: 'IA indisponível — usando triagem local baseada em regras clínicas. Configure GEMINI_API_KEY ou GROQ_API_KEY para IA avançada.',
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
   } catch (e) {

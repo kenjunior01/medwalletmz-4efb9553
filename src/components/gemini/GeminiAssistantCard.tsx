@@ -20,6 +20,7 @@ import {
   geminiChat, isGeminiConfigured, simulateGeminiResponse,
   GEMINI_SYSTEM_PROMPTS, type GeminiMessage,
 } from "@/lib/gemini";
+import { groqChat, isGroqConfigured } from "@/lib/groq";
 
 type SystemPromptKey = keyof typeof GEMINI_SYSTEM_PROMPTS;
 
@@ -67,13 +68,14 @@ export function GeminiAssistantCard({
   placeholder,
   showQuotaNotice = true,
 }: GeminiAssistantCardProps) {
-  const configured = isGeminiConfigured();
+  const configured = isGeminiConfigured() || isGroqConfigured();
   const labels = DEFAULT_LABELS[systemPromptKey];
   const [input, setInput] = useState("");
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [usedFallback, setUsedFallback] = useState(false);
+  const [activeProvider, setActiveProvider] = useState<"gemini" | "groq" | "local" | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll para a última mensagem
@@ -100,19 +102,58 @@ export function GeminiAssistantCard({
     }));
 
     try {
-      const reply = await geminiChat(prompt, {
-        systemPrompt: GEMINI_SYSTEM_PROMPTS[systemPromptKey],
-        history,
-        temperature: 0.4,
-        maxOutputTokens: 600,
-      });
+      let reply: string | null = null;
+      let provider: "gemini" | "groq" | "local" | null = null;
+
+      // CAMADA 1: Gemini (Google AI Studio)
+      try {
+        reply = await geminiChat(prompt, {
+          systemPrompt: GEMINI_SYSTEM_PROMPTS[systemPromptKey],
+          history,
+          temperature: 0.4,
+          maxOutputTokens: 600,
+        });
+        provider = "gemini";
+      } catch (geminiErr) {
+        console.warn("Gemini falhou, tentando Groq:", geminiErr);
+      }
+
+      // CAMADA 2: Groq (ultra-rápido, fallback de região/quota)
+      if (!reply && isGroqConfigured()) {
+        try {
+          reply = await groqChat(prompt, {
+            systemPrompt: GEMINI_SYSTEM_PROMPTS[systemPromptKey],
+            history: history.map((m) => ({
+              role: m.role === "model" ? "assistant" : "user",
+              content: m.text,
+            })),
+            temperature: 0.4,
+            maxOutputTokens: 600,
+          });
+          provider = "groq";
+        } catch (groqErr) {
+          console.warn("Groq falhou:", groqErr);
+        }
+      }
+
+      // CAMADA 3: Fallback local (sempre funciona)
+      if (!reply) {
+        reply = simulateGeminiResponse(prompt);
+        provider = "local";
+        setUsedFallback(true);
+      } else {
+        setUsedFallback(false);
+      }
+
+      setActiveProvider(provider);
       setTurns((prev) => [...prev, { role: "model", text: reply }]);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      // Fallback: simulação local
+      // Fallback final: simulação local
       const fallback = simulateGeminiResponse(prompt);
       setTurns((prev) => [...prev, { role: "model", text: fallback }]);
       setUsedFallback(true);
+      setActiveProvider("local");
       setError(msg);
     } finally {
       setLoading(false);
@@ -149,7 +190,15 @@ export function GeminiAssistantCard({
                 : "bg-slate-700 text-slate-300 border-slate-600"
             }
           >
-            {configured ? "Gemini 2.0 Flash" : "Modo Offline"}
+            {activeProvider === "gemini"
+              ? "Gemini 2.0 Flash"
+              : activeProvider === "groq"
+                ? "Groq Llama 3.3"
+                : activeProvider === "local"
+                  ? "Modo Offline"
+                  : configured
+                    ? "Multi-IA"
+                    : "Modo Offline"}
           </Badge>
         </div>
 

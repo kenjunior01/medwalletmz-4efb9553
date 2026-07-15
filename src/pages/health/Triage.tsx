@@ -396,9 +396,11 @@ export default function Triage() {
                     <span>
                       Fonte: {(result as TriageResult)._provider === 'gemini-browser'
                         ? 'Gemini AI (browser)'
-                        : (result as TriageResult)._provider === 'local_rules'
-                          ? 'Regras clínicas locais'
-                          : (result as TriageResult)._provider}
+                        : (result as TriageResult)._provider === 'groq-browser'
+                          ? 'Groq AI (browser)'
+                          : (result as TriageResult)._provider === 'local_rules'
+                            ? 'Regras clínicas locais'
+                            : (result as TriageResult)._provider}
                     </span>
                     {(result as TriageResult)._note && (
                       <span className="italic">— {(result as TriageResult)._note}</span>
