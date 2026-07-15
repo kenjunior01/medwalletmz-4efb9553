@@ -7,7 +7,8 @@ import {
   Globe2, Users, Building2, TrendingUp, AlertTriangle,
   Search, Filter, Store, Hospital, FlaskConical,
   ShieldCheck, MapPin, ArrowRight, Download, BarChart3,
-  ChevronRight, Zap
+  ChevronRight, Zap, Activity, Droplet, HeartPulse, Baby,
+  Wallet, Pill, CheckCircle, Clock
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,6 +46,33 @@ export default function CountryDashboard() {
     }
   });
 
+  // Vertical statistics (MZ-only: APE, TB DOT, ART, Malaria, Maternal)
+  const { data: verticalStats } = useQuery({
+    queryKey: ['mz-vertical-stats', country?.id],
+    enabled: country?.id === 'MZ',
+    queryFn: async () => {
+      const [ape, tb, art, mal, mat, mpesa] = await Promise.all([
+        (supabase as any).from('ape_visits').select('id', { count: 'exact', head: true }),
+        (supabase as any).from('tb_dot_records').select('id', { count: 'exact', head: true }),
+        (supabase as any).from('art_adherence_logs').select('id', { count: 'exact', head: true }),
+        (supabase as any).from('malaria_cases').select('id', { count: 'exact', head: true }),
+        (supabase as any).from('maternal_profiles').select('id', { count: 'exact', head: true }),
+        (supabase as any).from('mpesa_manual_payments').select('id, amount_mzn', { count: 'exact' }).eq('status', 'pending'),
+      ]);
+      const mpesaData = (mpesa as any).data || [];
+      const mpesaPending = mpesaData.reduce((s: number, p: any) => s + Number(p.amount_mzn || 0), 0);
+      return {
+        apeVisits: ape.count || 0,
+        tbCases: tb.count || 0,
+        artPatients: art.count || 0,
+        malariaCases: mal.count || 0,
+        maternalProfiles: mat.count || 0,
+        mpesaPendingCount: mpesa.count || 0,
+        mpesaPendingAmount: mpesaPending,
+      };
+    }
+  });
+
   const { data: entities } = useQuery({
     queryKey: ['country-entities', country?.id, cityFilter, typeFilter],
     enabled: !!country?.id,
@@ -71,10 +99,10 @@ export default function CountryDashboard() {
         <div>
           <h1 className="text-3xl font-black flex items-center gap-3">
             <Globe2 className="text-primary h-8 w-8" />
-            Gestão Regional: {country?.name || 'Carregando...'}
+            Gestão Nacional: {country?.name || 'Carregando...'}
           </h1>
           <p className="text-muted-foreground font-medium">
-            Painel do Gestor Regional · Monitorização de rede e parcerias estratégicas.
+            Painel do Gestor Nacional · Monitorização de rede nacional e parcerias estratégicas.
           </p>
         </div>
         <div className="flex gap-2">
@@ -82,7 +110,7 @@ export default function CountryDashboard() {
             <Download className="h-4 w-4 mr-2" /> Exportar Dados (FHIR)
           </Button>
           <Badge variant="outline" className="bg-primary text-white border-0 text-sm px-4 py-1.5 font-black uppercase tracking-widest">
-            {country?.id} MANAGER
+            {country?.id} GESTOR NACIONAL
           </Badge>
         </div>
       </header>
@@ -92,7 +120,7 @@ export default function CountryDashboard() {
         <Card className="p-6 border-none bg-gradient-to-br from-blue-500/10 to-transparent shadow-sm">
           <Users className="h-6 w-6 text-blue-600 mb-3" />
           <p className="text-3xl font-black">{stats?.activeUsers.toLocaleString()}</p>
-          <p className="text-[10px] uppercase font-black text-blue-600/70 tracking-widest">Utilizadores na Região</p>
+          <p className="text-[10px] uppercase font-black text-blue-600/70 tracking-widest">Utilizadores Nacionais</p>
         </Card>
 
         <Card className="p-6 border-none bg-gradient-to-br from-emerald-500/10 to-transparent shadow-sm">
@@ -116,6 +144,80 @@ export default function CountryDashboard() {
           <p className="text-[10px] uppercase font-black text-primary/70 tracking-widest">Volume Mensal (GTV)</p>
         </Card>
       </div>
+
+      {/* MZ VERTICAL HEALTH STATS — APE, TB DOT, ART, Malaria, Maternal */}
+      {country?.id === 'MZ' && (
+        <Card className="shadow-premium border-emerald-500/30">
+          <CardHeader className="border-b pb-4 bg-gradient-to-r from-emerald-500/10 via-amber-500/5 to-rose-500/10">
+            <CardTitle className="text-lg font-black flex items-center gap-2">
+              <Activity className="h-5 w-5 text-emerald-600" />
+              Verticais de Saúde Moçambicanas
+              <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-600 ml-2">5 verticais ativas</Badge>
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">
+              Programas nacionais de saúde pública: APEs comunitários, TB DOT digital, adesão ARV HIV, test-and-treat malaria, saúde materna.
+            </p>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {/* APE */}
+              <button onClick={() => navigate('/manager/mz-verticals/ape')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600"><Users className="h-3.5 w-3.5" /></div>
+                  <span className="text-[10px] uppercase font-black tracking-wider text-emerald-700">APE</span>
+                </div>
+                <div className="text-2xl font-black text-emerald-700">{verticalStats?.apeVisits ?? '—'}</div>
+                <div className="text-[10px] text-muted-foreground">Visitas APE digitais</div>
+              </button>
+              {/* TB DOT */}
+              <button onClick={() => navigate('/manager/mz-verticals/tb-dot')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/30 transition-all">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600"><Activity className="h-3.5 w-3.5" /></div>
+                  <span className="text-[10px] uppercase font-black tracking-wider text-amber-700">TB DOT</span>
+                </div>
+                <div className="text-2xl font-black text-amber-700">{verticalStats?.tbCases ?? '—'}</div>
+                <div className="text-[10px] text-muted-foreground">Casos TB observados</div>
+              </button>
+              {/* ART */}
+              <button onClick={() => navigate('/manager/mz-verticals/art')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-purple-500 hover:bg-purple-50/30 transition-all">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600"><HeartPulse className="h-3.5 w-3.5" /></div>
+                  <span className="text-[10px] uppercase font-black tracking-wider text-purple-700">ART HIV</span>
+                </div>
+                <div className="text-2xl font-black text-purple-700">{verticalStats?.artPatients ?? '—'}</div>
+                <div className="text-[10px] text-muted-foreground">Pacientes ARV ativos</div>
+              </button>
+              {/* Malaria */}
+              <button onClick={() => navigate('/manager/mz-verticals/malaria')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-rose-500 hover:bg-rose-50/30 transition-all">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600"><Droplet className="h-3.5 w-3.5" /></div>
+                  <span className="text-[10px] uppercase font-black tracking-wider text-rose-700">Malaria</span>
+                </div>
+                <div className="text-2xl font-black text-rose-700">{verticalStats?.malariaCases ?? '—'}</div>
+                <div className="text-[10px] text-muted-foreground">Casos test-and-treat</div>
+              </button>
+              {/* Maternal */}
+              <button onClick={() => navigate('/manager/mz-verticals/maternal')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-pink-500 hover:bg-pink-50/30 transition-all">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg bg-pink-500/10 text-pink-600"><Baby className="h-3.5 w-3.5" /></div>
+                  <span className="text-[10px] uppercase font-black tracking-wider text-pink-700">Materna</span>
+                </div>
+                <div className="text-2xl font-black text-pink-700">{verticalStats?.maternalProfiles ?? '—'}</div>
+                <div className="text-[10px] text-muted-foreground">Gestantes em seguimento</div>
+              </button>
+              {/* M-Pesa Pending */}
+              <button onClick={() => navigate('/manager/insurance')} className="text-left p-3 rounded-xl border-2 border-amber-400/50 bg-amber-50/30 hover:bg-amber-100/50 transition-all">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600"><Wallet className="h-3.5 w-3.5" /></div>
+                  <span className="text-[10px] uppercase font-black tracking-wider text-amber-700">M-Pesa</span>
+                </div>
+                <div className="text-2xl font-black text-amber-700">{verticalStats?.mpesaPendingCount ?? 0}</div>
+                <div className="text-[10px] text-muted-foreground">{verticalStats?.mpesaPendingAmount?.toLocaleString() ?? 0} MZN pendentes</div>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main Management Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -183,7 +285,7 @@ export default function CountryDashboard() {
             </div>
             <div className="p-4 border-t bg-muted/20 text-center">
               <Button variant="link" size="sm" className="font-bold text-primary" onClick={() => navigate('/admin/curation?status=approved')}>
-                Ver todas as {entities?.length} entidades regionalmente
+                Ver todas as {entities?.length} entidades nacionalmente
               </Button>
             </div>
           </CardContent>
