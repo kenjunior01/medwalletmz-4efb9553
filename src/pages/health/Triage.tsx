@@ -398,9 +398,11 @@ export default function Triage() {
                         ? 'Gemini AI (browser)'
                         : (result as TriageResult)._provider === 'groq-browser'
                           ? 'Groq AI (browser)'
-                          : (result as TriageResult)._provider === 'local_rules'
-                            ? 'Regras clínicas locais'
-                            : (result as TriageResult)._provider}
+                          : (result as TriageResult)._provider === 'openrouter-browser'
+                            ? 'OpenRouter (Llama 3.3 70B)'
+                            : (result as TriageResult)._provider === 'local_rules'
+                              ? 'Regras clínicas locais'
+                              : (result as TriageResult)._provider}
                     </span>
                     {(result as TriageResult)._note && (
                       <span className="italic">— {(result as TriageResult)._note}</span>

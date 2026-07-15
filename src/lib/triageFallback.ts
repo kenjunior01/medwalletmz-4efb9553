@@ -2,22 +2,36 @@
  * Triage Local Fallback — mirror do Edge Function `ai-triage`
  * -----------------------------------------------------------
  * Quando o Edge Function `ai-triage` falha (non-2xx), usamos este
- * módulo no client como fallback. Lógica idêntica à do Deno:
+ * módulo no client como fallback multicamada de IA:
  *
  *   1. Google Gemini direto (VITE_GEMINI_API_KEY no browser)
- *   2. Motor local de regras clínicas (sempre funciona)
+ *   2. Groq AI (Llama 3.3 70B — ultra-rápido, free tier)
+ *   3. OpenRouter (gateway multi-modelo — Llama/Mistral/Gemma free)
+ *   4. Motor local de regras clínicas (sempre funciona)
+ *
+ * NOTA sobre "Lovable AI":
+ *   Lovable (lovable.dev) é um construtor de sites no-code; não oferece
+ *   API pública de inferência. Por isso, OpenRouter foi usado como 3ª
+ *   camada de IA — cumpre o mesmo papel (provedor de inferência
+ *   alternativo com free tier generoso e API compatível com OpenAI).
  *
  * Isto garante que a triagem continua a funcionar mesmo se:
  *   - O Edge Function não estiver deployed
  *   - O Edge Function estiver crashando
  *   - O Supabase estiver em manutenção
+ *   - Gemini estiver em quota excedida
+ *   - Groq estiver bloqueado por região
  *
- * NOTA: A chave VITE_GEMINI_API_KEY é do Google AI Studio e é segura
- * para uso client-side (tem quotas por IP / por utilizador).
+ * NOTA: As chaves VITE_*_API_KEY são seguras para uso client-side
+ * (têm quotas por IP / por utilizador).
  */
 
 import { geminiChat } from "@/lib/gemini";
 import { groqChat, isGroqConfigured } from "@/lib/groq";
+import {
+  openRouterChat,
+  isOpenRouterConfigured,
+} from "@/lib/openrouter";
 
 export interface TriageResult {
   severity: "baixa" | "moderada" | "alta" | "emergência" | string;
@@ -314,6 +328,57 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
   }
 }
 
+// =====================================================================
+// CAMADA 3: OPENROUTER (gateway multi-modelo — substituto "Lovable AI")
+// =====================================================================
+
+export async function triageWithOpenRouterLocal(
+  symptoms: string,
+  age: number | null,
+  duration: string | null,
+  config: CountryConfig,
+): Promise<TriageResult | null> {
+  if (!isOpenRouterConfigured()) return null;
+
+  const system = `És um assistente de triagem médica em ${config.name}. Responde sempre em ${config.dialect}.
+Avalia sintomas e devolve APENAS JSON válido com: severity ("baixa"|"moderada"|"alta"|"emergência"), recommendation (texto curto e claro), suggested_specialty (ex: "Clínica Geral", "Pediatria", "Cardiologia"), red_flags (array de strings).
+Adapta a tua recomendação ao contexto local: ${config.health_system}.
+NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar para ${config.emergency_phone} ou ir ao hospital mais próximo.`;
+
+  const userMsg = `Sintomas: ${symptoms}\nIdade: ${age ?? "n/d"}\nDuração: ${duration ?? "n/d"}\nPaís: ${config.name}\n\nDevolve APENAS o JSON, sem markdown.`;
+
+  try {
+    const text = await openRouterChat(userMsg, {
+      systemPrompt: system,
+      temperature: 0.3,
+      maxOutputTokens: 600,
+      jsonMode: true,
+    });
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return null;
+
+    const parsed = JSON.parse(jsonMatch[0]) as Partial<TriageResult>;
+    if (!parsed.severity || !parsed.recommendation) return null;
+
+    return {
+      severity: parsed.severity,
+      recommendation: parsed.recommendation,
+      suggested_specialty: parsed.suggested_specialty ?? "Clínica Geral",
+      red_flags: parsed.red_flags,
+      _provider: "openrouter-browser",
+    };
+  } catch (e) {
+    console.warn("Triage local OpenRouter falhou:", e);
+    return null;
+  }
+}
+
+// =====================================================================
+// HANDLER PRINCIPAL — chamado quando Edge Function falha
+// Cadeia: Gemini → Groq → OpenRouter → Regras locais
+// =====================================================================
+
 export async function triageLocalFallback(
   symptoms: string,
   age: number | null,
@@ -330,11 +395,21 @@ export async function triageLocalFallback(
   const groqResult = await triageWithGroqLocal(symptoms, age, duration, config);
   if (groqResult) return groqResult;
 
-  // Camada 3: Local rules (sempre funciona)
+  // Camada 3: OpenRouter (substituto "Lovable AI" — gateway multi-modelo)
+  const openRouterResult = await triageWithOpenRouterLocal(
+    symptoms,
+    age,
+    duration,
+    config,
+  );
+  if (openRouterResult) return openRouterResult;
+
+  // Camada 4: Local rules (sempre funciona)
   const localResult = localTriage(symptoms, age, duration, config);
   return {
     ...localResult,
     _provider: "local_rules",
-    _note: "Edge Function + IA cloud indisponíveis — triagem local aplicada (regras clínicas).",
+    _note:
+      "Edge Function + IA cloud indisponíveis — triagem local aplicada (regras clínicas).",
   };
 }
