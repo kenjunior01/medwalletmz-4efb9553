@@ -156,7 +156,7 @@ export default function AdminHome() {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
 
-      let q = supabase
+      let q: any = supabase
         .from('orders')
         .select('total, created_at')
         .gte('created_at', weekAgo.toISOString());
