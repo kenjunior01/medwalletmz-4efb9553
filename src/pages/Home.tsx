@@ -5,6 +5,7 @@ import {
   BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse
 } from "lucide-react";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
+import { FreeTrialBanner } from "@/components/monetization/FreeTrialBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
 import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
 import { KlipyBanner } from "@/components/klipy/KlipyBanner";
@@ -195,6 +196,11 @@ export default function Home() {
 
         {/* ============ ENABLE NOTIFICATIONS BANNER (apenas se ainda não ativou) ============ */}
         <EnableNotificationsBanner />
+
+        {/* ============ FREE TRIAL BANNER (alavanca de adopção) ============ */}
+        <section className="px-4">
+          <FreeTrialBanner />
+        </section>
 
         {/* ============ QUICK PILLARS (The 5 Main Actions) ============ */}
         <section className="px-4">

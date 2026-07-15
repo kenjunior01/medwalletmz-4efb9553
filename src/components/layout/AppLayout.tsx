@@ -7,6 +7,7 @@ import { DesktopRail } from "./DesktopRail";
 import { AppSidebar } from "./AppSidebar";
 import { MeddyFloating } from "@/components/mascot/MeddyFloating";
 import { SmartEngagementPopUp } from "@/components/notifications/SmartEngagementPopUp";
+import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useDeviceType } from "@/hooks/useDeviceType";
 import { useCapacitor } from "@/hooks/useCapacitor";
@@ -59,6 +60,7 @@ export function AppLayout() {
         {isMobile && <BottomNav />}
       </div>
       <SmartEngagementPopUp />
+      <PWAInstallPrompt />
       <MeddyFloating context={context} />
     </div>
   );

@@ -146,6 +146,9 @@ import NotificationCenter from "./pages/NotificationCenter";
 import MzB2BPlans from "./pages/MzB2BPlans";
 import MonetizationHub from "./pages/MonetizationHub";
 import AdminMonetization from "./pages/admin/AdminMonetization";
+import HealthEducationHub from "./pages/health/edu/HealthEducationHub";
+import PublicImpactDashboard from "./pages/PublicImpactDashboard";
+import ApeNetwork from "./pages/ApeNetwork";
 
 const queryClient = new QueryClient();
 
@@ -223,6 +226,9 @@ const App = () => (
                     <Route path="/planos-b2b" element={<MzB2BPlans />} />
                     <Route path="/notifications-center" element={<NotificationCenter />} />
                     <Route path="/monetizacao" element={<MonetizationHub />} />
+                    <Route path="/educacao" element={<HealthEducationHub />} />
+                    <Route path="/impacto" element={<PublicImpactDashboard />} />
+                    <Route path="/rede-ape" element={<ApeNetwork />} />
                   </Route>
 
                   {/* Rota protegida: destrava o primeiro admin (bootstrap) */}

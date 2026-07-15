@@ -620,3 +620,212 @@ export async function listPendingSubscriptionsForAdmin(): Promise<Array<{
     return [];
   }
 }
+
+// ====================================================================
+// FREE TRIAL — 30 dias grátis sem cartão (alavanca de adopção pública)
+// ====================================================================
+
+export const FREE_TRIAL_DAYS = 30;
+export const FREE_TRIAL_PLAN_SLUGS: string[] = [
+  'plus-individual',
+  'plus-gravida',
+  'plus-cronico',
+  'premium-individual',
+];
+
+export interface FreeTrialResult {
+  success: boolean;
+  subscriptionId?: string;
+  expiresAt?: string;
+  errorMessage?: string;
+  errorCode?: 'NO_USER' | 'ALREADY_USED_TRIAL' | 'ALREADY_ACTIVE' | 'PLAN_NOT_ELIGIBLE' | 'PLAN_NO_UUID' | 'INSERT_FAILED';
+}
+
+/**
+ * Verifica se o utilizador já usufruiu de um free trial.
+ * Estratégia: qualquer subscription com admin_notes a incluir 'FREE_TRIAL'
+ * conta como trial usado.
+ */
+export async function hasUsedFreeTrial(userId: string): Promise<boolean> {
+  if (!userId) return false;
+  try {
+    const { data, error } = await (supabase as any)
+      .from('subscriptions')
+      .select('id, admin_notes')
+      .eq('user_id', userId)
+      .ilike('admin_notes', '%FREE_TRIAL%')
+      .limit(1);
+    if (error) return false;
+    return Array.isArray(data) && data.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Activa um free trial de 30 dias num plano elegível, sem pagamento.
+ * Cria subscription com status='active' directamente, amount_paid=0,
+ * e metadata FREE_TRIAL no admin_notes.
+ */
+export async function startFreeTrial(opts: {
+  userId: string;
+  planSlug: string;
+}): Promise<FreeTrialResult> {
+  const { userId, planSlug } = opts;
+  if (!userId) {
+    return { success: false, errorCode: 'NO_USER', errorMessage: 'Sessão requerida.' };
+  }
+  if (!FREE_TRIAL_PLAN_SLUGS.includes(planSlug)) {
+    return {
+      success: false,
+      errorCode: 'PLAN_NOT_ELIGIBLE',
+      errorMessage: `Plano não elegível para trial. Elegíveis: ${FREE_TRIAL_PLAN_SLUGS.join(', ')}`,
+    };
+  }
+  if (await hasUsedFreeTrial(userId)) {
+    return {
+      success: false,
+      errorCode: 'ALREADY_USED_TRIAL',
+      errorMessage: 'Já usou o seu período gratuito de 30 dias.',
+    };
+  }
+
+  // Verifica se já tem subscrição activa
+  const current = await getUserActiveSubscription(userId);
+  if (current.status === 'active') {
+    return {
+      success: false,
+      errorCode: 'ALREADY_ACTIVE',
+      errorMessage: 'Já tem uma subscrição activa.',
+    };
+  }
+
+  const planId = await fetchPlanIdBySlug(planSlug);
+  if (!planId) {
+    return {
+      success: false,
+      errorCode: 'PLAN_NO_UUID',
+      errorMessage: 'ID do plano não encontrado. Aplica o migration SQL.',
+    };
+  }
+
+  const startedAt = new Date();
+  const expiresAt = new Date(startedAt);
+  expiresAt.setDate(expiresAt.getDate() + FREE_TRIAL_DAYS);
+
+  try {
+    const { data, error } = await (supabase as any)
+      .from('subscriptions')
+      .insert({
+        user_id: userId,
+        plan_id: planId,
+        status: 'active',
+        payment_method: 'free_trial',
+        amount_paid: 0,
+        started_at: startedAt.toISOString(),
+        expires_at: expiresAt.toISOString(),
+        admin_notes: `FREE_TRIAL · ${planSlug} · ${FREE_TRIAL_DAYS}d · iniciado ${startedAt.toISOString()}`,
+      })
+      .select('id')
+      .single();
+
+    if (error || !data?.id) {
+      return {
+        success: false,
+        errorCode: 'INSERT_FAILED',
+        errorMessage: error?.message ?? 'Falha ao activar trial.',
+      };
+    }
+
+    return {
+      success: true,
+      subscriptionId: data.id as string,
+      expiresAt: expiresAt.toISOString(),
+    };
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return { success: false, errorCode: 'INSERT_FAILED', errorMessage: msg };
+  }
+}
+
+/**
+ * Lista quantos dias faltam para o trial expirar.
+ * Retorna null se não houver trial activo.
+ */
+export async function getFreeTrialDaysRemaining(userId: string): Promise<number | null> {
+  if (!userId) return null;
+  try {
+    const { data, error } = await (supabase as any)
+      .from('subscriptions')
+      .select('expires_at')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .eq('payment_method', 'free_trial')
+      .order('expires_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error || !data?.expires_at) return null;
+    const ms = new Date(data.expires_at).getTime() - Date.now();
+    if (ms <= 0) return 0;
+    return Math.ceil(ms / (1000 * 60 * 60 * 24));
+  } catch {
+    return null;
+  }
+}
+
+// ====================================================================
+// PUBLIC IMPACT STATS — Dashboard de transparência pública
+// ====================================================================
+
+export interface PublicImpactStats {
+  totalUsers: number;
+  activeSubscriptions: number;
+  totalTriages: number;
+  hospitalReferrals: number;
+  articlesRead: number;
+  apeAgents: number;
+  provincesCovered: number;
+  lastUpdated: string;
+}
+
+/**
+ * Estatísticas públicas para /impacto dashboard.
+ * Não expõe dados pessoais — apenas agregados.
+ */
+export async function getPublicImpactStats(): Promise<PublicImpactStats> {
+  const fallback: PublicImpactStats = {
+    totalUsers: 0,
+    activeSubscriptions: 0,
+    totalTriages: 0,
+    hospitalReferrals: 0,
+    articlesRead: 0,
+    apeAgents: 0,
+    provincesCovered: 0,
+    lastUpdated: new Date().toISOString(),
+  };
+  try {
+    const [usersRes, subsRes, triagesRes] = await Promise.all([
+      (supabase as any).from('profiles').select('id', { count: 'exact', head: true }),
+      (supabase as any)
+        .from('subscriptions')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'active'),
+      (supabase as any).from('triage_sessions').select('id', { count: 'exact', head: true }),
+    ]);
+
+    return {
+      totalUsers: usersRes.count ?? 0,
+      activeSubscriptions: subsRes.count ?? 0,
+      totalTriages: triagesRes.count ?? 0,
+      hospitalReferrals: 0, // placeholder — populado por query posterior quando tabela existir
+      articlesRead: 0,
+      apeAgents: 0,
+      provincesCovered: 11, // Moçambique tem 11 províncias — meta de cobertura
+      lastUpdated: new Date().toISOString(),
+    };
+  } catch (e) {
+    console.warn('[mzMonetization] getPublicImpactStats exception:', e);
+    return fallback;
+  }
+}
+

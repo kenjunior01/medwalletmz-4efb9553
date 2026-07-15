@@ -1,6 +1,6 @@
 import {
   Home, Stethoscope, FileText, ClipboardList, User, Droplet, Pill, Building2, FlaskConical,
-  Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video, Crown, TrendingUp,
+  Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video, Crown, TrendingUp, BookOpen, Globe, HeartHandshake,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -98,6 +98,9 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/", icon: Home, label: "nav.home", group: "Principal" },
     { path: "/planos", icon: Crown, label: "Planos Premium", group: "Principal" },
     { path: "/monetizacao", icon: Wallet, label: "O meu MedWallet", group: "Principal" },
+    { path: "/impacto", icon: Globe, label: "Impacto Público", group: "Principal" },
+    { path: "/educacao", icon: BookOpen, label: "Educação em Saúde", group: "Saúde" },
+    { path: "/rede-ape", icon: HeartHandshake, label: "Rede APE", group: "Saúde" },
     { path: "/health/doctors", icon: Stethoscope, label: "nav.doctors", group: "Saúde" },
     { path: "/health/triage", icon: MessageSquare, label: "nav.triage", group: "Saúde" },
     { path: "/health/consultations", icon: Calendar, label: "nav.consultations", group: "Saúde" },
