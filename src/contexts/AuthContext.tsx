@@ -166,7 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, referralCode?: string, countryId?: string) => {
+  const signUp = async (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string) => {
     const redirectUrl = `${window.location.origin}/`;
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -175,13 +175,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         emailRedirectTo: redirectUrl,
         data: {
           full_name: fullName,
-          country_id: countryId || 'MZ'
+          country_id: countryId || 'MZ',
+          phone: phone || null
         }
       },
     });
 
-    if (!error && data.user && referralCode) {
-      await applyReferralCode(referralCode, data.user.id);
+    // Atualizar perfil com telefone imediatamente após signup
+    if (!error && data.user) {
+      try {
+        await supabase.from('profiles').update({
+          phone: phone || null,
+          full_name: fullName,
+        }).eq('user_id', data.user.id);
+      } catch (e) {
+        console.warn('Profile update after signup failed (will retry later):', e);
+      }
+      if (referralCode) {
+        await applyReferralCode(referralCode, data.user.id);
+      }
     }
 
     return { error: error as Error | null, user: data.user as User | null };

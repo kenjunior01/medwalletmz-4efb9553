@@ -93,6 +93,7 @@ import AdminReferrals from "./pages/admin/AdminReferrals";
 import AdminTransactions from "./pages/admin/AdminTransactions";
 import AdminImport from "./pages/admin/AdminImport";
 import AdminCuration from "./pages/admin/AdminCuration";
+import AdminInstitutions from "./pages/admin/AdminInstitutions";
 import GlobalMetrics from "./pages/admin/GlobalMetrics";
 import GlobalCommandCenter from "./pages/admin/GlobalCommandCenter";
 import FinancialDashboard from "./pages/admin/FinancialDashboard";
@@ -247,6 +248,7 @@ const App = () => (
                     <Route path="transactions" element={<AdminTransactions />} />
                     <Route path="import" element={<AdminImport />} />
                     <Route path="curation" element={<AdminCuration />} />
+                    <Route path="institutions" element={<AdminInstitutions />} />
                     <Route path="insurance" element={<AdminInsurance />} />
                     <Route path="ads" element={<AdminAds />} />
                     <Route path="labs" element={<AdminLabs />} />
@@ -276,6 +278,7 @@ const App = () => (
                   <Route path="/manager" element={<RegionalManagerDashboard />}>
                     <Route index element={<CountryDashboard />} />
                     <Route path="curation" element={<AdminCuration />} />
+                    <Route path="institutions" element={<AdminInstitutions />} />
                     <Route path="stores" element={<AdminStores />} />
                     <Route path="clinics" element={<AdminClinics />} />
                     <Route path="veterinary" element={<AdminClinics />} />

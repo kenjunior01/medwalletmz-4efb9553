@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, ArrowLeft, Sparkles, Heart, Pill, Stethoscope, Activity, ShieldCheck, ChevronRight, Zap, Globe, Star } from 'lucide-react';
+import { Loader2, Mail, Lock, User, Phone, ArrowLeft, Sparkles, Heart, Pill, Stethoscope, Activity, ShieldCheck, ChevronRight, Zap, Globe, Star } from 'lucide-react';
 import { z } from 'zod';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,31 @@ import { supabase } from '@/integrations/supabase/client';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
+
+// Phone validation — aceita formatos MZ (+258 84/85/86/87 XXX XXXX) e BR (+55)
+const phoneSchema = z.string()
+  .min(9, 'Telefone deve ter pelo menos 9 dígitos')
+  .refine((v) => {
+    const digits = v.replace(/\D/g, '');
+    // MZ: 258 + 9 dígitos (84/85/86/87) ou 9 dígitos diretos
+    // BR: 55 + DDD + 9 dígitos
+    // Outros: pelo menos 9 dígitos
+    if (digits.length === 9) return /^(84|85|86|87)\d{7}$/.test(digits);
+    if (digits.length === 12 && digits.startsWith('258')) return /^258(84|85|86|87)\d{7}$/.test(digits);
+    if (digits.length >= 10) return true; // permissivo para outros países
+    return false;
+  }, 'Número de celular inválido (ex: 84 XXX XXXX para MZ)');
+
+const normalizePhone = (v: string) => {
+  const digits = v.replace(/\D/g, '');
+  if (digits.length === 9 && /^(84|85|86|87)/.test(digits)) {
+    return `+258${digits}`;
+  }
+  if (digits.length === 12 && digits.startsWith('258')) {
+    return `+${digits}`;
+  }
+  return v.trim();
+};
 
 // Componente para Stickers flutuantes com efeito de paralaxe
 const FloatingSticker = ({ icon: Icon, delay = 0, className = "", color = "bg-white" }: { icon: any, delay?: number, className?: string, color?: string }) => {
@@ -111,6 +136,7 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const referralCode = useMemo(() => new URLSearchParams(location.search).get('ref')?.trim() || '', [location.search]);
 
@@ -186,6 +212,13 @@ export default function Auth() {
     if (tab === 'register' && !fullName.trim()) {
       newErrors.fullName = 'Nome é obrigatório';
     }
+    if (tab === 'register') {
+      try {
+        phoneSchema.parse(phone);
+      } catch (e) {
+        if (e instanceof z.ZodError) newErrors.phone = e.issues[0].message;
+      }
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -219,7 +252,7 @@ export default function Auth() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const { error } = await signUp(email, password, fullName, referralCode, country?.id);
+      const { error } = await signUp(email, password, fullName, referralCode, country?.id, normalizePhone(phone));
       if (error) {
         toast.error(error.message.includes('already registered') ? t('auth.email_registered') : t('common.error'));
       } else {
@@ -421,6 +454,30 @@ export default function Auth() {
                             />
                           </div>
                           {errors.fullName && <p className="text-[10px] text-destructive font-black ml-2 uppercase animate-bounce-in">{errors.fullName}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="phone" className="font-black text-[10px] uppercase tracking-widest text-primary/60 ml-2">
+                            Celular (WhatsApp)
+                          </Label>
+                          <div className="relative group">
+                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                            <Input
+                              id="phone"
+                              type="tel"
+                              inputMode="tel"
+                              placeholder={country?.id === 'BR' ? '(11) 99999-9999' : '+258 84 XXX XXXX'}
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              className="pl-12 h-14 rounded-2xl border-2 border-slate-100 focus:border-primary/30 transition-all bg-white shadow-sm font-medium"
+                            />
+                          </div>
+                          {errors.phone && <p className="text-[10px] text-destructive font-black ml-2 uppercase animate-bounce-in">{errors.phone}</p>}
+                          {!errors.phone && (
+                            <p className="text-[10px] text-muted-foreground ml-2">
+                              Usamos para confirmações por WhatsApp e recuperação de conta
+                            </p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
