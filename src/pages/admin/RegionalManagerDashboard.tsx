@@ -18,6 +18,8 @@ import {
   Globe,
   Stethoscope,
   HeartPulse,
+  ShieldCheck,
+  Bot,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,6 +29,8 @@ type MenuItem = { icon: any; label: string; path: string; highlight?: boolean };
 
 const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Resumo Regional', path: '/manager' },
+  { icon: ShieldCheck, label: 'Compliance Center', path: '/manager/compliance', highlight: true },
+  { icon: Bot, label: 'Meddy IA Copilot', path: '/manager/compliance/copilot', highlight: true },
   { icon: Sparkles, label: 'Curadoria Local', path: '/manager/curation', highlight: true },
   { icon: Store, label: 'Farmácias', path: '/manager/stores' },
   { icon: HeartPulse, label: 'Clínicas & Hospitais', path: '/manager/clinics' },

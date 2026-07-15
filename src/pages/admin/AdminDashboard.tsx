@@ -24,6 +24,8 @@ import {
   Shield,
   Megaphone,
   Globe,
+  ShieldCheck,
+  Bot,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -61,6 +63,8 @@ const menuItems: MenuItem[] = [
   { icon: BarChart3, label: 'Relatórios', path: '/admin/reports' },
   { icon: Upload, label: 'Importar Dados', path: '/admin/import', highlight: true },
   { icon: Globe, label: 'Gestão do País', path: '/admin/country-settings', highlight: true },
+  { icon: ShieldCheck, label: 'Compliance Command Center', path: '/admin/compliance', highlight: true },
+  { icon: Bot, label: 'Meddy IA Copilot', path: '/admin/compliance/copilot', highlight: true },
   { icon: Settings, label: 'Configurações', path: '/admin/settings' },
 ];
 

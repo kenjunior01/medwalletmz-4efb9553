@@ -100,6 +100,13 @@ import CountrySettings from "./pages/admin/CountrySettings";
 import CountryDashboard from "./pages/admin/CountryDashboard";
 import RegionalOnboarding from "./pages/admin/RegionalOnboarding";
 import RegionalManagerDashboard from "./pages/admin/RegionalManagerDashboard";
+import ComplianceCommandCenter from "./pages/admin/ComplianceCommandCenter";
+import PartnerVerification from "./pages/admin/PartnerVerification";
+import DocumentVault from "./pages/admin/DocumentVault";
+import AuditTrail from "./pages/admin/AuditTrail";
+import MicroInsurance from "./pages/admin/MicroInsurance";
+import RegulatoryFrameworks from "./pages/admin/RegulatoryFrameworks";
+import MeddyCopilot from "./pages/admin/MeddyCopilot";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import Veterinary from "./pages/health/Veterinary";
@@ -242,6 +249,13 @@ const App = () => (
                     <Route path="country-settings" element={<CountrySettings />} />
                     <Route path="country-dashboard" element={<CountryDashboard />} />
                     <Route path="regional-onboarding" element={<RegionalOnboarding />} />
+                    <Route path="compliance" element={<ComplianceCommandCenter />} />
+                    <Route path="compliance/partners" element={<PartnerVerification />} />
+                    <Route path="compliance/documents" element={<DocumentVault />} />
+                    <Route path="compliance/audit" element={<AuditTrail />} />
+                    <Route path="compliance/insurance" element={<MicroInsurance />} />
+                    <Route path="compliance/frameworks" element={<RegulatoryFrameworks />} />
+                    <Route path="compliance/copilot" element={<MeddyCopilot />} />
                   </Route>
 
                   {/* Regional Manager Routes */}
@@ -259,6 +273,13 @@ const App = () => (
                     <Route path="ads" element={<AdminAds />} />
                     <Route path="reports" element={<AdminReports />} />
                     <Route path="import" element={<AdminImport />} />
+                    <Route path="compliance" element={<ComplianceCommandCenter />} />
+                    <Route path="compliance/partners" element={<PartnerVerification />} />
+                    <Route path="compliance/documents" element={<DocumentVault />} />
+                    <Route path="compliance/audit" element={<AuditTrail />} />
+                    <Route path="compliance/insurance" element={<MicroInsurance />} />
+                    <Route path="compliance/frameworks" element={<RegulatoryFrameworks />} />
+                    <Route path="compliance/copilot" element={<MeddyCopilot />} />
                   </Route>
 
                   {/* Store Owner Routes */}
