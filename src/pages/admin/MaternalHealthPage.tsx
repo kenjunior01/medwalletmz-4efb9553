@@ -3,10 +3,11 @@
  * Moçambique: 451 mortes maternas/100k nascimentos. Tracking gravidez + ANC + SOS obstétrico.
  * Dados 100% locais (Supabase) — sem APIs externas (WhatsApp/INE/INEM)
  *
- * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp):
+ * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp + Gemini AI):
  * - Google Maps Routes API v2: fetchRouteDistance para maternidade mais próxima (fallback haversineKm)
  * - WhatsApp via wa.me (sem API Business): buildSosObstetric + buildAncReminder
  * - Google Cloud Text-to-Speech: speakText(text, 'pt-PT') para lembretes por voz
+ * - Google Gemini 2.0 Flash: conselheira pré-natal + identificação de sinais de perigo em fotos
  */
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,13 +16,14 @@ import { Button } from "@/components/ui/button";
 import {
   Baby, Heart, Activity, AlertTriangle, Calendar, Pill,
   Phone, Siren, Navigation, MessageCircle, Send, Loader2, Volume2,
-  Clock, Route, MapPin,
+  Clock, Route, MapPin, Sparkles,
 } from "lucide-react";
 import { useMaternalProfiles } from "@/hooks/useMzVerticals";
 import { loadGoogleMaps } from "@/lib/googleMapsLoader";
 import { fetchRouteDistance, haversineKm, fmtDuration, type DistanceResult } from "@/lib/googleRoutes";
 import { openWhatsApp, buildSosObstetric, buildAncReminder } from "@/lib/whatsapp";
 import { speakText } from "@/lib/googleTTS";
+import { GeminiAssistantCard, GeminiImageAnalyzer } from "@/components/gemini";
 
 export default function MaternalHealthPage() {
   const [provinceFilter, setProvinceFilter] = useState('');
@@ -464,6 +466,28 @@ export default function MaternalHealthPage() {
             <p className="text-xs text-slate-400">Botão vermelho envia mensagem SOS via WhatsApp (wa.me) à equipa médica e maternidade preferida. Inclui localização GPS se disponível.</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* IA — Google Gemini 2.0 Flash */}
+      <div className="px-8 pb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="h-5 w-5 text-fuchsia-400" />
+          <h2 className="text-lg font-semibold text-slate-100">Assistente IA — Gemini</h2>
+          <Badge className="bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30 ml-2">Google Gemini 2.0 Flash</Badge>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <GeminiAssistantCard
+            systemPromptKey="maternal"
+            subtitle="Conselheira pré-natal, sinais de perigo obstétrico, planeamento familiar"
+          />
+          <GeminiImageAnalyzer
+            title="Analisar Ecografia / Edema / Lesão"
+            prompt="És uma assistente de saúde materna em Moçambique. Analisa esta imagem (ecografia obstétrica, foto de edema/pé inchado, ou lesão cutânea). Descreve o que observas: para ecografia, indica se vês batimento cardíaco fetal e idade gestacional aproximada; para edema, descreve localização e severidade aparente; para lesão, descreve cor, tamanho, características. Sinais de perigo obstétrico (sangramento, edema grave, cefaleia intensa) = REFER urgente à maternidade. Não diagnostiques. Responde em português de Moçambique."
+            fallback={(name) =>
+              `[Simulado] Imagem ${name} recebida. Gemini API indisponível (quota/região). Sinais de perigo obstétrico (REFER urgente): sangramento, cefaleia intensa, visão turva, convulsões, edema facial/mãos, febre alta, perda de líquido amniótico.`
+            }
+          />
+        </div>
       </div>
     </div>
   );

@@ -3,9 +3,10 @@
  * Moçambique: 8M casos/ano. Workflow: APE faz RDT → resultado em MedWallet → Coartem dispensado → dashboard nacional.
  * Dados 100% locais (Supabase) — sem APIs externas (PNM/INS)
  *
- * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp):
+ * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp + Gemini AI):
  * - Google Maps Routes API v2: fetchRouteDistance para farmácia mais próxima (fallback haversineKm)
  * - WhatsApp via wa.me (sem API Business): buildMalariaResult para envio de resultado RDT
+ * - Google Gemini 2.0 Flash: interpretação de TDR por foto + conselheiro de conduta clínica
  */
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,12 +15,13 @@ import { Button } from "@/components/ui/button";
 import {
   Activity, Pill, MapPin, TrendingUp, AlertTriangle, Plus,
   Search, Droplet, CheckCircle, Navigation, MessageCircle, Send, Loader2,
-  Clock, Route,
+  Clock, Route, Sparkles,
 } from "lucide-react";
 import { useMalariaCases, useCreateMalariaCase } from "@/hooks/useMzVerticals";
 import { loadGoogleMaps } from "@/lib/googleMapsLoader";
 import { fetchRouteDistance, haversineKm, fmtDuration, type DistanceResult } from "@/lib/googleRoutes";
 import { openWhatsApp, buildMalariaResult } from "@/lib/whatsapp";
+import { GeminiAssistantCard, GeminiImageAnalyzer } from "@/components/gemini";
 
 export default function MalariaWorkflowPage() {
   const [provinceFilter, setProvinceFilter] = useState('');
@@ -431,6 +433,28 @@ export default function MalariaWorkflowPage() {
             <p className="text-xs text-slate-400">Push diário ao Programa Nacional de Malária. Inclui caso, tratamento, desfecho, GPS.</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* IA — Google Gemini 2.0 Flash */}
+      <div className="px-8 pb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="h-5 w-5 text-fuchsia-400" />
+          <h2 className="text-lg font-semibold text-slate-100">Assistente IA — Gemini</h2>
+          <Badge className="bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30 ml-2">Google Gemini 2.0 Flash</Badge>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <GeminiAssistantCard
+            systemPromptKey="malaria"
+            subtitle="Interpretação de TDR, conduta clínica, malária grave"
+          />
+          <GeminiImageAnalyzer
+            title="Interpretar TDR de Malária"
+            prompt="És um assistente de saúde em Moçambique. Analisa a foto de um Teste Diagnóstico Rápido (TDR) de malária. Indica: (1) se a linha de controlo (C) está visível = teste válido; (2) se a linha de teste (T) está visível = positivo para P. falciparum; (3) se houver uma terceira linha = positivo para Pv. Responde no formato: TDR: [Válido/Inválido] | Resultado: [Positivo Pf / Positivo Pf+Pv / Negativo]. Em caso de inválido, recomenda repetir o teste. Não prescrevas — apenas interpreta. Responde em português de Moçambique."
+            fallback={(name) =>
+              `[Simulado] Foto ${name} recebida. Gemini API indisponível (quota/região). Verificação manual: linha C visível = teste válido; linha C + T = positivo Pf; apenas C = negativo. Malária grave = REFER urgente.`
+            }
+          />
+        </div>
       </div>
     </div>
   );

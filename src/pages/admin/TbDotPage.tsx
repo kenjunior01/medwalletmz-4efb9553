@@ -4,9 +4,10 @@
  * First country in the world with DOT 100% digital.
  * Dados 100% locais (Supabase) — sem integrações de vídeo/GPS externas
  *
- * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp):
+ * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp + Gemini AI):
  * - Google Cloud Vision OCR: verificação de rótulo de medicação TB (detectText)
  * - WhatsApp via wa.me (sem API Business): buildTbReminder para lembrete de toma observada
+ * - Google Gemini 2.0 Flash: assistente de adesão + efeitos adversos + interpretação de sputum
  */
 import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,10 +16,12 @@ import { Button } from "@/components/ui/button";
 import {
   Activity, Clock, AlertTriangle, TrendingUp, Pill, CheckCircle,
   XCircle, Video, MapPin, ScanLine, MessageCircle, Send, Loader2, FileImage,
+  Sparkles,
 } from "lucide-react";
 import { useTbDotRecords, useLogTbDose } from "@/hooks/useMzVerticals";
 import { detectText } from "@/lib/googleVision";
 import { openWhatsApp, buildTbReminder } from "@/lib/whatsapp";
+import { GeminiAssistantCard, GeminiImageAnalyzer } from "@/components/gemini";
 
 export default function TbDotPage() {
   const [provinceFilter, setProvinceFilter] = useState('');
@@ -324,6 +327,28 @@ export default function TbDotPage() {
             <p className="text-xs text-slate-400">Cada observação fica registada com timestamp e profissional responsável, para auditoria interna.</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* IA — Google Gemini 2.0 Flash */}
+      <div className="px-8 pb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="h-5 w-5 text-fuchsia-400" />
+          <h2 className="text-lg font-semibold text-slate-100">Assistente IA — Gemini</h2>
+          <Badge className="bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30 ml-2">Google Gemini 2.0 Flash</Badge>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <GeminiAssistantCard
+            systemPromptKey="tb"
+            subtitle="Dúvidas de adesão, efeitos adversos da RHZE, sinal de alerta"
+          />
+          <GeminiImageAnalyzer
+            title="Interpretar Lâmina de Sputum / RX"
+            prompt="És um assistente de saúde em Moçambique. Analisa esta imagem (lâmina de sputum com coloração Ziehl-Neelsen, radiografia de tórax, ou rótulo de medicação TB). Descreve de forma curta o que observas. Para sputum: indica se observas bacilos vermelhos (BAAR positivo) fundo azul. Para RX: descreve opacidades, cavernas, derrame. Para rótulo: lê medicação e dosagem. Não diagnostiques — apenas descreve. Em caso de dúvida, REFER. Responde em português de Moçambique."
+            fallback={(name) =>
+              `[Simulado] Imagem ${name} recebida. Gemini API indisponível (quota/região). Para BAAR: observar 100 campos antes de reportar negativo. Suspeita de TB-MDR ou falência terapêutica = REFER ao médico.`
+            }
+          />
+        </div>
       </div>
     </div>
   );

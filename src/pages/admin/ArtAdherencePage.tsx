@@ -3,10 +3,11 @@
  * Moçambique: 1.6M moçambicanos em ARV. Workflow: lembretes locais, refill tracking, carga viral.
  * Dados 100% locais (Supabase) — sem integrações externas (WhatsApp/SMS)
  *
- * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp):
+ * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp + Gemini AI):
  * - Google Cloud Text-to-Speech: speakText(text, 'pt-PT') para lembrete por voz
  * - WhatsApp via wa.me (sem API Business): buildArvReminder para lembrete de toma
  * - Google Cloud Translation: disponível via Supabase Edge Function (i18n de lembretes)
+ * - Google Gemini 2.0 Flash: conselheiro de adesão ARV + identificação de comprimidos
  */
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,10 +16,12 @@ import { Button } from "@/components/ui/button";
 import {
   Activity, TrendingUp, Pill, AlertTriangle, Heart, Droplet,
   Calendar, MessageCircle, Volume2, Languages, Send, Loader2,
+  Sparkles,
 } from "lucide-react";
 import { useArtAdherenceLogs, type ArtAdherenceLog } from "@/hooks/useMzVerticals";
 import { openWhatsApp, buildArvReminder } from "@/lib/whatsapp";
 import { speakText } from "@/lib/googleTTS";
+import { GeminiAssistantCard, GeminiImageAnalyzer } from "@/components/gemini";
 
 export default function ArtAdherencePage() {
   const [provinceFilter, setProvinceFilter] = useState('');
@@ -266,6 +269,28 @@ export default function ArtAdherencePage() {
             <p className="text-xs text-slate-400">Alerta 7 dias antes de acabar. Pickup na farmácia registada como preferida.</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* IA — Google Gemini 2.0 Flash */}
+      <div className="px-8 pb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="h-5 w-5 text-fuchsia-400" />
+          <h2 className="text-lg font-semibold text-slate-100">Assistente IA — Gemini</h2>
+          <Badge className="bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30 ml-2">Google Gemini 2.0 Flash</Badge>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <GeminiAssistantCard
+            systemPromptKey="art"
+            subtitle="Dúvidas de adesão, efeitos adversos, interações medicamentosas"
+          />
+          <GeminiImageAnalyzer
+            title="Identificar Comprimido ARV"
+            prompt="És um assistente farmacêutico em Moçambique. Identifica este comprimido ARV a partir da foto (cor, forma, gravação). Lista os componentes prováveis (TDF, 3TC, DTG, EFV, etc.) e a posologia padrão para adultos. Não prescrevas — apenas identifica e reforça a prescrição médica. Em caso de dúvida, REFER ao farmacêutico. Responde em português de Moçambique."
+            fallback={(name) =>
+              `[Simulado] Imagem ${name} recebida. Gemini API indisponível (quota/região). Comprimidos ARV comuns em Moçambique: TDF/3TC/DTG (TLD — amarelo), TDF/3TC/EFV (branco), ABC/3TC (amarelo). Confirma sempre com o farmacêutico.`
+            }
+          />
+        </div>
       </div>
     </div>
   );

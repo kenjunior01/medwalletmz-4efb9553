@@ -4,11 +4,12 @@
  * Triagem offline-first: malaria, TB, HIV, ANC, vacinação
  * Dados 100% locais (Supabase) — sem integrações externas
  *
- * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp + M-Pesa):
+ * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp + M-Pesa + Gemini AI):
  * - Google Maps JS API: Geolocation do APE no campo (loadGoogleMaps + navigator.geolocation)
  * - Google Air Quality + Weather (Open-Meteo fallback): fetchEnvironmentalHealth(lat,lng)
  * - WhatsApp via wa.me (sem API Business): openWhatsApp + buildMalariaResult
  * - M-Pesa Manual Payment (sem API Vodacom): createManualPayment + buildMpesaInstructions
+ * - Google Gemini 2.0 Flash: triagem clínica conversacional + análise visual de TDR/lesões
  */
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -20,13 +21,14 @@ import {
   Activity, MapPin, Users, Heart, Pill, Microscope, Baby,
   ClipboardList, TrendingUp, AlertTriangle, Plus, Search, Wifi,
   WifiOff, Crosshair, Wind, MessageCircle, Wallet, Loader2, Send,
-  Thermometer, Navigation,
+  Thermometer, Navigation, Sparkles,
 } from "lucide-react";
 import { useApeVisits, useCreateApeVisit } from "@/hooks/useMzVerticals";
 import { loadGoogleMaps } from "@/lib/googleMapsLoader";
 import { fetchEnvironmentalHealth, type EnvironmentalData } from "@/lib/googleEnvironmental";
 import { openWhatsApp, buildMalariaResult } from "@/lib/whatsapp";
 import { createManualPayment, buildMpesaInstructions, type ManualPayment } from "@/lib/mpesa";
+import { GeminiAssistantCard, GeminiImageAnalyzer } from "@/components/gemini";
 
 export default function ApeDashboard() {
   const [provinceFilter, setProvinceFilter] = useState<string>('');
@@ -483,6 +485,28 @@ export default function ApeDashboard() {
             </p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* IA — Google Gemini 2.0 Flash */}
+      <div className="px-8 pb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="h-5 w-5 text-fuchsia-400" />
+          <h2 className="text-lg font-semibold text-slate-100">Assistente IA — Gemini</h2>
+          <Badge className="bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30 ml-2">Google Gemini 2.0 Flash</Badge>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <GeminiAssistantCard
+            systemPromptKey="ape"
+            subtitle="Triagem clínica por linguagem natural (protocolos MISAU/OMS)"
+          />
+          <GeminiImageAnalyzer
+            title="Interpretar TDR / Lesão / Rótulo"
+            prompt="És um assistente de saúde em Moçambique. Analisa esta imagem (TDR de malária, lesão cutânea, ou rótulo de medicamento) e descreve de forma curta o que observas. Para TDR: indica se a linha de controlo aparece e se a linha de teste aparece (positivo/negativo). Para lesão: descreve cor, tamanho aparente, e características. Para rótulo: lê o nome do medicamento, dosagem e validade. Não diagnostiques — apenas descreve e sugere REFER ao técnico em caso de dúvida. Responde em português de Moçambique."
+            fallback={(name) =>
+              `[Simulado] Imagem ${name} recebida. Não foi possível contactar a Gemini API (quota/região). Verifica manualmente o TDR conforme guia MISAU: linha C visível = teste válido; linha C+T = positivo; apenas C = negativo. Em caso de dúvida, REFER.`
+            }
+          />
+        </div>
       </div>
     </div>
   );
