@@ -107,6 +107,7 @@ import AuditTrail from "./pages/admin/AuditTrail";
 import MicroInsurance from "./pages/admin/MicroInsurance";
 import RegulatoryFrameworks from "./pages/admin/RegulatoryFrameworks";
 import MeddyCopilot from "./pages/admin/MeddyCopilot";
+import IndiaInstitutionsPage from "./pages/admin/IndiaInstitutionsPage";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import Veterinary from "./pages/health/Veterinary";
@@ -256,6 +257,7 @@ const App = () => (
                     <Route path="compliance/insurance" element={<MicroInsurance />} />
                     <Route path="compliance/frameworks" element={<RegulatoryFrameworks />} />
                     <Route path="compliance/copilot" element={<MeddyCopilot />} />
+                    <Route path="india" element={<IndiaInstitutionsPage />} />
                   </Route>
 
                   {/* Regional Manager Routes */}
@@ -280,6 +282,7 @@ const App = () => (
                     <Route path="compliance/insurance" element={<MicroInsurance />} />
                     <Route path="compliance/frameworks" element={<RegulatoryFrameworks />} />
                     <Route path="compliance/copilot" element={<MeddyCopilot />} />
+                    <Route path="india" element={<IndiaInstitutionsPage />} />
                   </Route>
 
                   {/* Store Owner Routes */}
