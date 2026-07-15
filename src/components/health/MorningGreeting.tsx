@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useCountry } from '@/contexts/CountryContext';
+import { useLocation as useAppLocation } from '@/contexts/LocationContext';
 
 export function MorningGreeting() {
   const { user } = useAuth();
-  const { t } = useCountry();
+  const { t, country } = useCountry();
+  const { city } = useAppLocation();
   const [show, setShow] = useState(false);
   const [profile, setProfile] = useState<any>(null);
 
@@ -62,9 +64,11 @@ export function MorningGreeting() {
             </div>
 
             <div className="flex-1">
-              <h3 className="font-black text-lg leading-tight">{t('greeting.good_morning', { name: firstName })} 🇲🇿</h3>
+              <h3 className="font-black text-lg leading-tight">
+                {t('greeting.good_morning', { name: firstName })} {country?.flag_url ? '' : ''}
+              </h3>
               <p className="text-sm text-muted-foreground mt-1 font-medium">
-                {t('greeting.day_maputo')}
+                {t('greeting.day_region', { city: city || country?.name || '' })}
               </p>
 
               <div className="mt-4 space-y-2">

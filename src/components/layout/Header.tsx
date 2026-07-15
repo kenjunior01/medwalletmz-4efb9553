@@ -164,8 +164,8 @@ export function Header() {
           </DropdownMenu>
         </div>
 
-        {/* Logo with Greeting */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+        {/* Logo with Greeting - hidden on very narrow screens to avoid overlap */}
+        <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 flex-col items-center pointer-events-none">
           <span className="text-xs text-muted-foreground flex items-center gap-1">
             {greeting.emoji} {t(`header.greetings.${greeting.text.toLowerCase().replace(' ', '_')}`)}
           </span>

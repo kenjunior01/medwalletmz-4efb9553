@@ -46,7 +46,7 @@ export default function AdminHome() {
       const countryId = country?.id;
 
       const buildQuery = (table: string) => {
-        let q = supabase.from(table).select('id', { count: 'exact', head: true });
+        let q: any = (supabase as any).from(table).select('id', { count: 'exact', head: true });
         if (countryId) q = q.eq('country_id', countryId);
         return q;
       };
@@ -57,18 +57,18 @@ export default function AdminHome() {
         supabase.from('profiles').select('id', { count: 'exact', head: true })
           .not('vehicle_type', 'is', null)
           .eq(countryId ? 'country_id' : 'id', countryId || 'id'), // simplistic filter for profiles
-        supabase.from('consultations').select('id, status', { count: 'exact' })
+        (supabase as any).from('consultations').select('id, status', { count: 'exact' })
           .eq(countryId ? 'country_id' : 'id', countryId || 'id'),
         buildQuery('prescriptions'),
         supabase.from('user_referrals').select('id, status', { count: 'exact' })
       ]);
 
       // Specialized queries for complex stats
-      let ordersQuery = supabase.from('orders').select('id, status, total, created_at');
+      let ordersQuery: any = supabase.from('orders').select('id, status, total, created_at');
       if (countryId) ordersQuery = ordersQuery.eq('country_id', countryId);
       const orders = await ordersQuery;
 
-      let walletsQuery = supabase.from('wallets').select('balance_mzn, total_deposited');
+      let walletsQuery: any = supabase.from('wallets').select('balance_mzn, total_deposited');
       if (countryId) walletsQuery = walletsQuery.eq('country_id', countryId);
       const wallets = await walletsQuery;
 
@@ -117,7 +117,7 @@ export default function AdminHome() {
   const { data: recentOrders, isLoading: ordersLoading } = useQuery({
     queryKey: ['admin-recent-orders', country?.id],
     queryFn: async () => {
-      let q = supabase
+      let q: any = supabase
         .from('orders')
         .select(`
           *,
@@ -136,7 +136,7 @@ export default function AdminHome() {
   const { data: topStores } = useQuery({
     queryKey: ['admin-top-stores', country?.id],
     queryFn: async () => {
-      let q = supabase
+      let q: any = supabase
         .from('stores')
         .select('id, name, rating, type, image_url')
         .eq('is_active', true)
@@ -156,7 +156,7 @@ export default function AdminHome() {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
 
-      let q = supabase
+      let q: any = supabase
         .from('orders')
         .select('total, created_at')
         .gte('created_at', weekAgo.toISOString());
@@ -421,7 +421,7 @@ export default function AdminHome() {
           {stats?.statusCounts && stats.statusCounts.length > 0 && (
             <OrderStatusWidget 
               title="Status dos Pedidos"
-              statuses={stats.statusCounts}
+              statuses={stats.statusCounts as any}
               total={stats.totalOrders || 0}
             />
           )}

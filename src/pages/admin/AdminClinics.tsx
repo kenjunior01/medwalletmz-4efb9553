@@ -14,12 +14,8 @@ export default function AdminClinics() {
 
   const load = async () => {
     setLoading(true);
-    let query = supabase.from("clinics").select("*").neq("type", "laboratory").order("created_at", { ascending: false });
-
-    if (country?.id) {
-        query = query.eq('country_id', country.id);
-    }
-
+    let query: any = supabase.from("clinics").select("*").neq("type", "laboratory").order("created_at", { ascending: false });
+    if (country?.id) query = query.eq('country_id', country.id);
     const { data } = await query;
     setClinics(data || []);
     setLoading(false);
