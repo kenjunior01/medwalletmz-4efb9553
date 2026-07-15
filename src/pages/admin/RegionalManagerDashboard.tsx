@@ -21,6 +21,10 @@ import {
   ShieldCheck,
   Bot,
   Globe2,
+  Users,
+  Activity,
+  Droplet,
+  Baby,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -31,6 +35,11 @@ type MenuItem = { icon: any; label: string; path: string; highlight?: boolean };
 const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Resumo Regional', path: '/manager' },
   { icon: Globe2, label: '🇮🇳 India Command Center', path: '/manager/india', highlight: true },
+  { icon: Users, label: '🇲🇿 APE Digital', path: '/manager/mz-verticals/ape', highlight: true },
+  { icon: Activity, label: 'TB DOT Digital', path: '/manager/mz-verticals/tb-dot', highlight: true },
+  { icon: Droplet, label: 'Malaria Test-Treat', path: '/manager/mz-verticals/malaria', highlight: true },
+  { icon: HeartPulse, label: 'ART Adherence HIV', path: '/manager/mz-verticals/art', highlight: true },
+  { icon: Baby, label: 'Saúde Materna', path: '/manager/mz-verticals/maternal', highlight: true },
   { icon: ShieldCheck, label: 'Compliance Center', path: '/manager/compliance', highlight: true },
   { icon: Bot, label: 'Meddy IA Copilot', path: '/manager/compliance/copilot', highlight: true },
   { icon: Sparkles, label: 'Curadoria Local', path: '/manager/curation', highlight: true },

@@ -108,6 +108,11 @@ import MicroInsurance from "./pages/admin/MicroInsurance";
 import RegulatoryFrameworks from "./pages/admin/RegulatoryFrameworks";
 import MeddyCopilot from "./pages/admin/MeddyCopilot";
 import IndiaInstitutionsPage from "./pages/admin/IndiaInstitutionsPage";
+import ApeDashboard from "./pages/admin/ApeDashboard";
+import TbDotPage from "./pages/admin/TbDotPage";
+import ArtAdherencePage from "./pages/admin/ArtAdherencePage";
+import MalariaWorkflowPage from "./pages/admin/MalariaWorkflowPage";
+import MaternalHealthPage from "./pages/admin/MaternalHealthPage";
 import AdminBootstrap from "./pages/AdminBootstrap";
 import SuggestPlace from "./pages/SuggestPlace";
 import Veterinary from "./pages/health/Veterinary";
@@ -258,6 +263,11 @@ const App = () => (
                     <Route path="compliance/frameworks" element={<RegulatoryFrameworks />} />
                     <Route path="compliance/copilot" element={<MeddyCopilot />} />
                     <Route path="india" element={<IndiaInstitutionsPage />} />
+                    <Route path="mz-verticals/ape" element={<ApeDashboard />} />
+                    <Route path="mz-verticals/tb-dot" element={<TbDotPage />} />
+                    <Route path="mz-verticals/art" element={<ArtAdherencePage />} />
+                    <Route path="mz-verticals/malaria" element={<MalariaWorkflowPage />} />
+                    <Route path="mz-verticals/maternal" element={<MaternalHealthPage />} />
                   </Route>
 
                   {/* Regional Manager Routes */}
@@ -283,6 +293,11 @@ const App = () => (
                     <Route path="compliance/frameworks" element={<RegulatoryFrameworks />} />
                     <Route path="compliance/copilot" element={<MeddyCopilot />} />
                     <Route path="india" element={<IndiaInstitutionsPage />} />
+                    <Route path="mz-verticals/ape" element={<ApeDashboard />} />
+                    <Route path="mz-verticals/tb-dot" element={<TbDotPage />} />
+                    <Route path="mz-verticals/art" element={<ArtAdherencePage />} />
+                    <Route path="mz-verticals/malaria" element={<MalariaWorkflowPage />} />
+                    <Route path="mz-verticals/maternal" element={<MaternalHealthPage />} />
                   </Route>
 
                   {/* Store Owner Routes */}
