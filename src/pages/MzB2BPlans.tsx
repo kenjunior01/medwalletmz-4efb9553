@@ -6,7 +6,7 @@
  *
  * Alinhado com PLANO_GANHOS_MOCAMBIQUE.md secção 2.2.
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
@@ -224,15 +224,25 @@ const formatMzn = (v: number) => v.toLocaleString("pt-MZ");
 export default function MzB2BPlans() {
   const navigate = useNavigate();
   const [audience, setAudience] = useState<Audience>("doctor");
+  const [seedAttempted, setSeedAttempted] = useState(false);
 
   const filtered = PLANS.filter((p) => p.audience === audience);
+
+  // No mount: sincroniza planos MZ com a BD (silencioso se RLS bloquear)
+  useEffect(() => {
+    if (seedAttempted) return;
+    setSeedAttempted(true);
+    import("@/lib/mzPlans").then(({ seedMzPlans }) => {
+      seedMzPlans().catch(() => {/* ignore */});
+    });
+  }, [seedAttempted]);
 
   const handleSubscribe = (plan: B2BPlan) => {
     toast.success(`A redirecionar para ${plan.name}...`, {
       description: `${formatMzn(plan.price)} MZN/${plan.period} · M-Pesa business`,
       icon: <Sparkles className="h-4 w-4" />,
     });
-    setTimeout(() => navigate(`/subscribe/${plan.id}`), 800);
+    setTimeout(() => navigate(`/subscribe/${plan.id}`), 600);
   };
 
   return (

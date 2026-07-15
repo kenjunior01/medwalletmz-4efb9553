@@ -144,6 +144,8 @@ import { SmartEngagementPopUp } from "@/components/notifications/SmartEngagement
 import MzPricingPlans from "./pages/MzPricingPlans";
 import NotificationCenter from "./pages/NotificationCenter";
 import MzB2BPlans from "./pages/MzB2BPlans";
+import MonetizationHub from "./pages/MonetizationHub";
+import AdminMonetization from "./pages/admin/AdminMonetization";
 
 const queryClient = new QueryClient();
 
@@ -220,6 +222,7 @@ const App = () => (
                     <Route path="/planos" element={<MzPricingPlans />} />
                     <Route path="/planos-b2b" element={<MzB2BPlans />} />
                     <Route path="/notifications-center" element={<NotificationCenter />} />
+                    <Route path="/monetizacao" element={<MonetizationHub />} />
                   </Route>
 
                   {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
@@ -251,6 +254,7 @@ const App = () => (
                     <Route path="change-password" element={<AdminChangePassword />} />
                     <Route path="wallets" element={<AdminWallets />} />
                     <Route path="commissions" element={<AdminCommissions />} />
+                    <Route path="monetization" element={<AdminMonetization />} />
                     <Route path="platform-settings" element={<AdminPlatformSettings />} />
                     <Route path="referrals" element={<AdminReferrals />} />
                     <Route path="transactions" element={<AdminTransactions />} />

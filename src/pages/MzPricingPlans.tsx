@@ -12,7 +12,7 @@
  * Pagamentos: M-Pesa (manual reference), e-Mola, Visa.
  * Foco: volume B2C → recorrência MRR.
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
@@ -180,19 +180,35 @@ const TRUST_BADGES = [
 export default function MzPricingPlans() {
   const navigate = useNavigate();
   const [billing, setBilling] = useState<Billing>("monthly");
+  const [seedAttempted, setSeedAttempted] = useState(false);
 
   const formatMzn = (v: number) =>
     v.toLocaleString("pt-MZ", { maximumFractionDigits: 0 });
 
+  // No mount: tenta fazer upsert dos planos MZ à BD (silencioso se não for admin)
+  useEffect(() => {
+    if (seedAttempted) return;
+    setSeedAttempted(true);
+    import("@/lib/mzPlans").then(({ seedMzPlans }) => {
+      seedMzPlans().then(({ seeded, failed }) => {
+        if (failed.length === 0) {
+          console.log(`[MzPricingPlans] ${seeded} planos MZ sincronizados com a BD.`);
+        } else if (seeded > 0) {
+          console.warn(`[MzPricingPlans] ${seeded} sync, ${failed.length} falharam (RLS?):`, failed);
+        }
+        // Se ambos 0 = utilizador não-admin (RLS bloqueia) — silencioso, planos já existem via migration
+      }).catch(() => {/* ignore — não bloqueia a UI */});
+    });
+  }, [seedAttempted]);
+
   const handleSubscribe = (plan: MzPlan) => {
+    const finalPrice = Math.round(plan.monthly * BILLING_DISCOUNT[billing].multiplier);
     toast.success(`A redirecionar para ${plan.name}...`, {
-      description: `Pagamento via M-Pesa · ${formatMzn(
-        Math.round(plan.monthly * BILLING_DISCOUNT[billing].multiplier)
-      )} MZN`,
+      description: `Pagamento via M-Pesa · ${formatMzn(finalPrice)} MZN`,
       icon: <Sparkles className="h-4 w-4" />,
     });
-    // Tenta navegar para o fluxo genérico; se o plano não estiver no DB, cai num fallback.
-    setTimeout(() => navigate(`/subscribe/${plan.id}`), 800);
+    // Navega para o fluxo de subscrição usando o SLUG estável (que existe na BD via migration).
+    setTimeout(() => navigate(`/subscribe/${plan.id}`), 600);
   };
 
   return (

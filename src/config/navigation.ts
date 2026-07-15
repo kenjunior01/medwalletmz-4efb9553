@@ -1,6 +1,6 @@
 import {
   Home, Stethoscope, FileText, ClipboardList, User, Droplet, Pill, Building2, FlaskConical,
-  Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video, Crown,
+  Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video, Crown, TrendingUp,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -97,6 +97,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
   customer: [
     { path: "/", icon: Home, label: "nav.home", group: "Principal" },
     { path: "/planos", icon: Crown, label: "Planos Premium", group: "Principal" },
+    { path: "/monetizacao", icon: Wallet, label: "O meu MedWallet", group: "Principal" },
     { path: "/health/doctors", icon: Stethoscope, label: "nav.doctors", group: "Saúde" },
     { path: "/health/triage", icon: MessageSquare, label: "nav.triage", group: "Saúde" },
     { path: "/health/consultations", icon: Calendar, label: "nav.consultations", group: "Saúde" },
@@ -171,6 +172,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/admin/drivers", icon: Truck, label: "nav.drivers", group: "Gestão" },
     { path: "/admin/orders", icon: Package, label: "nav.orders", group: "Gestão" },
     { path: "/admin/transactions", icon: Wallet, label: "nav.financial", group: "Gestão" },
+    { path: "/admin/monetization", icon: TrendingUp, label: "Monetização MZ", group: "Gestão" },
     { path: "/admin/subscriptions", icon: Shield, label: "nav.insurance", group: "Gestão" },
     { path: "/admin/subscription-plans", icon: Shield, label: "nav.insurance", group: "Gestão" },
     { path: "/admin/settings", icon: Settings, label: "nav.settings", group: "Sistema" },
