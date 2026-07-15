@@ -18,12 +18,15 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { speakText } from '@/lib/googleTTS';
+import { triageLocalFallback } from '@/lib/triageFallback';
 
 interface TriageResult {
   severity: string;
   recommendation: string;
   suggested_specialty: string;
   red_flags?: string[];
+  _provider?: string;
+  _note?: string;
 }
 
 const sevColor: Record<string, string> = {
@@ -150,27 +153,59 @@ export default function Triage() {
     setLoading(true);
     setResult(null);
     try {
+      // CAMADA 0: Edge Function Supabase (primária)
       const { data, error } = await supabase.functions.invoke('ai-triage', {
         body: { symptoms, age: age ? Number(age) : null, duration, country: countryCode },
       });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      setResult(data as TriageResult);
-      if (data?.suggested_specialty) findNearbyDoctors(data.suggested_specialty);
+
+      let triageData: TriageResult | null = null;
+
+      if (error || !data || data.error) {
+        // CAMADA FALLBACK: Gemini browser + regras locais (em src/lib/triageFallback.ts)
+        console.warn('Edge Function ai-triage falhou, usando fallback local:', error || data?.error);
+        toast.info("IA cloud indisponível — a usar modo local (Gemini browser + regras clínicas)", {
+          icon: <Sparkles className="h-4 w-4" />,
+        });
+        triageData = (await triageLocalFallback(
+          symptoms,
+          age ? Number(age) : null,
+          duration || null,
+          countryCode,
+        )) as TriageResult;
+      } else {
+        triageData = data as TriageResult;
+      }
+
+      setResult(triageData);
+      if (triageData?.suggested_specialty) findNearbyDoctors(triageData.suggested_specialty);
       if (user) {
         await supabase.from('triage_logs').insert({
           patient_id: user.id,
           symptoms,
           age: age ? Number(age) : null,
           duration: duration || null,
-          severity: data.severity,
-          recommendation: data.recommendation,
-          suggested_specialty: data.suggested_specialty,
-          ai_response: data,
+          severity: triageData.severity,
+          recommendation: triageData.recommendation,
+          suggested_specialty: triageData.suggested_specialty,
+          ai_response: triageData,
         });
       }
     } catch (e: any) {
-      toast.error(e.message ?? t('common.error'));
+      // Último recurso: fallback local também (garante que triagem nunca falha totalmente)
+      try {
+        console.warn('Triage crash, último recurso fallback local:', e);
+        const localResult = await triageLocalFallback(
+          symptoms,
+          age ? Number(age) : null,
+          duration || null,
+          countryCode,
+        );
+        setResult(localResult as TriageResult);
+        if (localResult.suggested_specialty) findNearbyDoctors(localResult.suggested_specialty);
+        toast.warning("Triagem local aplicada (cloud indisponível)");
+      } catch (e2: any) {
+        toast.error(e2.message ?? t('common.error'));
+      }
     } finally {
       setLoading(false);
     }
@@ -354,6 +389,22 @@ export default function Triage() {
                     {t('health.book_doctor')}
                   </Button>
                 </div>
+
+                {(result as TriageResult)._provider && (
+                  <div className="text-[10px] text-muted-foreground/70 flex items-center gap-1.5 pt-1">
+                    <Sparkles className="h-3 w-3" />
+                    <span>
+                      Fonte: {(result as TriageResult)._provider === 'gemini-browser'
+                        ? 'Gemini AI (browser)'
+                        : (result as TriageResult)._provider === 'local_rules'
+                          ? 'Regras clínicas locais'
+                          : (result as TriageResult)._provider}
+                    </span>
+                    {(result as TriageResult)._note && (
+                      <span className="italic">— {(result as TriageResult)._note}</span>
+                    )}
+                  </div>
+                )}
               </Card>
 
               {nearbyDoctors.length > 0 && (
