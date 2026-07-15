@@ -26,8 +26,13 @@ export default function HealthProfile() {
   });
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
     supabase.from('patient_profiles').select('*').eq('user_id', user.id).maybeSingle().then(({ data }) => {
+      if (cancelled) return;
       if (data) {
         setForm({
           date_of_birth: data.date_of_birth || '',
@@ -41,7 +46,10 @@ export default function HealthProfile() {
         });
       }
       setLoading(false);
+    }).catch(() => {
+      if (!cancelled) setLoading(false);
     });
+    return () => { cancelled = true; };
   }, [user]);
 
   const save = async () => {
@@ -64,7 +72,45 @@ export default function HealthProfile() {
     toast.success('Perfil de saúde guardado');
   };
 
-  if (loading) return <div className="p-6">A carregar...</div>;
+  // Skeleton loading profissional (substitui "A carregar..." textual)
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pb-32">
+        <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-4 flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-muted animate-pulse" />
+          <div className="h-4 w-32 rounded bg-muted animate-pulse" />
+        </header>
+        <div className="p-4 space-y-4 max-w-xl mx-auto">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <div className="h-3 w-20 rounded bg-muted animate-pulse" />
+              <div className="h-10 rounded-md bg-muted animate-pulse" />
+            </div>
+            <div className="space-y-2">
+              <div className="h-3 w-20 rounded bg-muted animate-pulse" />
+              <div className="h-10 rounded-md bg-muted animate-pulse" />
+            </div>
+          </div>
+          {[1,2,3].map(i => (
+            <div key={i} className="space-y-2">
+              <div className="h-3 w-32 rounded bg-muted animate-pulse" />
+              <div className="h-20 rounded-md bg-muted animate-pulse" />
+            </div>
+          ))}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <div className="h-3 w-20 rounded bg-muted animate-pulse" />
+              <div className="h-10 rounded-md bg-muted animate-pulse" />
+            </div>
+            <div className="space-y-2">
+              <div className="h-3 w-20 rounded bg-muted animate-pulse" />
+              <div className="h-10 rounded-md bg-muted animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-32">

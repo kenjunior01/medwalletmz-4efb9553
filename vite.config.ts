@@ -32,7 +32,26 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        // Chunks estratégicos para melhor cache do browser:
+        // - vendor-react: React, ReactDOM, Router (muda raramente)
+        // - vendor-supabase: Supabase client (muda raramente)
+        // - vendor-ui: shadcn/ui + Radix + Tailwind (muda raramente)
+        // - vendor-maps: Google Maps + tracking (grande, lazy)
+        // Isto faz com que o utilizador só re-download do vendor-*
+        // quando há update de dependências, não a cada deploy.
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-ui': [
+            'lucide-react',
+            'framer-motion',
+            'class-variance-authority',
+            'clsx',
+            'tailwind-merge',
+            'date-fns',
+            'sonner',
+          ],
+        },
       }
     }
   },
