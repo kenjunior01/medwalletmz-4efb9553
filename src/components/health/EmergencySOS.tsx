@@ -51,12 +51,13 @@ export function EmergencySOS() {
 
   return (
     <>
-      {/* Floating SOS Button */}
+      {/* Floating SOS Button — bottom-right, acima do BottomNav (80px) com safe-area */}
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-4 z-40 h-14 w-14 rounded-full bg-destructive text-white shadow-premium flex items-center justify-center border-4 border-white dark:border-slate-900"
+        aria-label="S.O.S — Emergência médica"
+        className="fixed right-4 fab-safe-bottom-lg z-40 h-14 w-14 rounded-full bg-destructive text-white shadow-premium flex items-center justify-center border-4 border-white dark:border-slate-900 no-tap-target"
       >
         <ShieldAlert className="h-7 w-7" />
       </motion.button>

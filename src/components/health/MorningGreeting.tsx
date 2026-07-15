@@ -49,7 +49,7 @@ export function MorningGreeting() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="fixed inset-x-4 top-20 z-[60]"
+        className="relative mx-4 mt-3"
       >
         <Card className="p-5 border-2 border-primary/20 shadow-premium gradient-mesh overflow-hidden">
           <div className="absolute top-0 right-0 p-2">

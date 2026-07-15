@@ -182,7 +182,7 @@ export function SmartEngagementPopUp() {
           initial={{ y: 100, opacity: 0, scale: 0.9 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 100, opacity: 0, scale: 0.9 }}
-          className="fixed bottom-20 left-4 right-4 z-50 pointer-events-none"
+          className="fixed bottom-32 left-4 right-4 z-50 pointer-events-none md:bottom-8"
         >
           <div className="bg-card border border-border shadow-2xl rounded-2xl p-4 pointer-events-auto flex gap-4 items-start relative overflow-hidden max-w-sm mx-auto">
             <div className={`absolute top-0 left-0 w-1 h-full ${current.color?.split(' ')[0] || 'bg-primary'}`} />

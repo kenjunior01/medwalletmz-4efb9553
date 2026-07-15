@@ -21,14 +21,17 @@ import {
   ShieldCheck,
   Bot,
   Globe2,
-  Users,
+  Users as UsersIcon,
   Activity,
   Droplet,
   Baby,
+  Menu,
+  ChevronLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 type MenuItem = { icon: any; label: string; path: string; highlight?: boolean };
 
@@ -84,67 +87,115 @@ export default function RegionalManagerDashboard() {
   if (loading) return <div className="p-8">A carregar painel nacional...</div>;
   if (!user || !isManager) return null;
 
+  const activeLabel = menuItems.find(m => m.path === location.pathname)?.label || 'Painel Nacional';
+
+  const SidebarContent = ({ onNavigate }: { onNavigate?: () => void }) => (
+    <>
+      <div className="p-6 border-b border-border bg-primary/5">
+        <div className="flex items-center gap-2 mb-1">
+          <h1 className="text-xl font-bold text-primary">MedWallet</h1>
+          <Badge variant="outline" className="text-[10px] uppercase">{country?.id}</Badge>
+        </div>
+        <p className="text-xs text-muted-foreground font-medium">Gestor Nacional: {country?.name}</p>
+      </div>
+
+      <nav className="flex-1 p-4 overflow-y-auto no-scrollbar">
+        <ul className="space-y-1">
+          {menuItems.map(({ icon: Icon, label, path, highlight }) => {
+            const isActive = location.pathname === path;
+            return (
+              <li key={path}>
+                <Link
+                  to={path}
+                  onClick={onNavigate}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all no-tap-target ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground shadow-md font-bold'
+                      : highlight
+                        ? 'text-secondary hover:bg-secondary/10 bg-secondary/5'
+                        : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="font-medium truncate">{label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      <div className="p-4 border-t border-border mt-auto safe-area-bottom">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 no-tap-target"
+          onClick={() => signOut().then(() => navigate('/'))}
+        >
+          <LogOut className="h-4 w-4" />
+          Sair do Painel
+        </Button>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="w-64 bg-card border-r border-border flex flex-col shadow-sm">
-        <div className="p-6 border-b border-border bg-primary/5">
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-xl font-bold text-primary">MedWallet</h1>
-            <Badge variant="outline" className="text-[10px] uppercase">{country?.id}</Badge>
-          </div>
-          <p className="text-xs text-muted-foreground font-medium">Gestor Nacional: {country?.name}</p>
-        </div>
-
-        <nav className="flex-1 p-4 overflow-y-auto">
-          <ul className="space-y-1">
-            {menuItems.map(({ icon: Icon, label, path, highlight }) => {
-              const isActive = location.pathname === path;
-              return (
-                <li key={path}>
-                  <Link
-                    to={path}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                      isActive
-                        ? 'bg-primary text-primary-foreground shadow-md'
-                        : highlight
-                          ? 'text-secondary hover:bg-secondary/10 bg-secondary/5'
-                          : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="font-medium">{label}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        <div className="p-4 border-t border-border mt-auto">
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10"
-            onClick={() => signOut().then(() => navigate('/'))}
-          >
-            <LogOut className="h-4 w-4" />
-            Sair do Painel
-          </Button>
-        </div>
+      {/* Sidebar desktop */}
+      <aside className="hidden md:flex w-64 bg-card border-r border-border flex-col shadow-sm">
+        <SidebarContent />
       </aside>
 
-      <main className="flex-1 overflow-auto bg-muted/20">
-        <header className="h-16 border-b bg-card px-8 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-          <h2 className="font-semibold text-lg">
-            {menuItems.find(m => m.path === location.pathname)?.label || 'Painel Nacional'}
-          </h2>
-          <div className="flex items-center gap-4">
-             <span className="text-xs text-muted-foreground italic">Operação 100% Protegida por Backend RLS</span>
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header mobile */}
+        <header className="md:hidden sticky top-0 z-40 glass border-b border-border/50 safe-area-top">
+          <div className="flex items-center gap-2 px-4 py-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              aria-label="Voltar"
+              className="h-10 w-10 rounded-xl hover:bg-primary/10 no-tap-target"
+              data-size="icon"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex-1 min-w-0">
+              <h1 className="font-black text-sm truncate">{activeLabel}</h1>
+              <p className="text-[10px] text-muted-foreground uppercase font-bold">Gestor {country?.id}</p>
+            </div>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Abrir menu"
+                  className="h-10 w-10 rounded-xl hover:bg-primary/10 no-tap-target"
+                  data-size="icon"
+                >
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-72 p-0 flex flex-col">
+                <SheetHeader className="sr-only">
+                  <SheetTitle>Menu do Gestor Nacional</SheetTitle>
+                </SheetHeader>
+                <SidebarContent />
+              </SheetContent>
+            </Sheet>
           </div>
         </header>
-        <div className="p-8">
-          <Outlet />
-        </div>
-      </main>
+
+        <main className="flex-1 overflow-auto bg-muted/20">
+          {/* Header desktop */}
+          <header className="hidden md:flex h-16 border-b bg-card px-8 items-center justify-between sticky top-0 z-10 shadow-sm">
+            <h2 className="font-semibold text-lg">{activeLabel}</h2>
+            <span className="text-xs text-muted-foreground italic">Operação 100% Protegida por Backend RLS</span>
+          </header>
+          <div className="p-4 md:p-8">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

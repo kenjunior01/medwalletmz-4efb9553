@@ -164,9 +164,11 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
     if (message) setLastText(message.text);
   };
 
+  // No mobile: bottom-LEFT (evita colisão com EmergencySOS que fica bottom-right).
+  // No desktop: bottom-right (não há BottomNav, há DesktopRail à direita).
   const posClass = position === 'bottom-right'
-    ? 'right-4 bottom-20 md:bottom-4'
-    : 'left-4 bottom-20 md:bottom-4';
+    ? 'left-4 fab-safe-bottom md:left-auto md:right-4 md:bottom-4'
+    : 'left-4 fab-safe-bottom md:bottom-4';
 
   return (
     <>
@@ -175,13 +177,13 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
         <button
           onClick={() => setOpen(true)}
           className={cn(
-            "fixed z-40 hover:scale-105 active:scale-95 transition-transform",
+            "fixed z-40 hover:scale-105 active:scale-95 transition-transform no-tap-target",
             posClass,
           )}
           aria-label="Abrir Meddy, mascote da MedWallet"
         >
           <Meddy role={role} state="happy" size={64} className="drop-shadow-lg" />
-          {/* Pulse dot */}
+          {/* Pulse dot — usa animate-pulse nativo do Tailwind (opacity-based) */}
           <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-emerald-500 animate-pulse border-2 border-background" />
         </button>
       )}
@@ -192,8 +194,8 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
           className={cn(
             "fixed z-50 w-[320px] max-w-[calc(100vw-2rem)]",
             position === 'bottom-right'
-              ? 'right-4 bottom-20 md:bottom-4'
-              : 'left-4 bottom-20 md:bottom-4',
+              ? 'left-4 fab-safe-bottom md:left-auto md:right-4 md:bottom-4'
+              : 'left-4 fab-safe-bottom md:bottom-4',
           )}
         >
           <Card className="overflow-hidden border-primary/30 shadow-2xl">
@@ -209,7 +211,7 @@ export function MeddyFloating({ context = 'default', position = 'bottom-right' }
                 </p>
               </div>
               <Button size="icon" variant="ghost" onClick={() => { setOpen(false); setIsNudge(false); }}
-                className="text-primary-foreground hover:bg-white/20 h-7 w-7">
+                className="text-primary-foreground hover:bg-white/20 h-7 w-7 no-tap-target" data-size="icon">
                 <Minimize2 className="h-3.5 w-3.5" />
               </Button>
             </div>

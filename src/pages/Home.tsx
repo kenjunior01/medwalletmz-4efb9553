@@ -193,9 +193,12 @@ export default function Home() {
           </section>
         )}
 
+        {/* ============ ENABLE NOTIFICATIONS BANNER (apenas se ainda não ativou) ============ */}
+        <EnableNotificationsBanner />
+
         {/* ============ QUICK PILLARS (The 5 Main Actions) ============ */}
         <section className="px-4">
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {[
               { icon: Pill, label: t('home.pharmacy'), color: 'emerald', to: '/pharmacy' },
               { icon: Stethoscope, label: t('home.clinics'), color: 'primary', to: '/health/facilities?type=clinic' },
@@ -203,7 +206,7 @@ export default function Home() {
               { icon: Building2, label: t('home.hospitals'), color: 'destructive', to: '/health/facilities?type=hospital' },
               { icon: FlaskConical, label: t('home.laboratories'), color: 'secondary', to: '/health/facilities?type=laboratory' },
             ].map(c => (
-              <button key={c.label} onClick={() => navigate(c.to)} className="group flex flex-col items-center gap-2">
+              <button key={c.label} onClick={() => navigate(c.to)} className="group flex flex-col items-center gap-2 no-tap-target">
                 <div className={cn(
                   "h-14 w-full rounded-2xl flex flex-col items-center justify-center transition-all group-hover:scale-105 active:scale-95 shadow-sm border-2",
                   c.color.includes('-') ? `bg-amber-500/5 border-amber-500/10 hover:border-amber-500/30` : `bg-${c.color}/5 border-${c.color}/10 hover:border-${c.color}/30`

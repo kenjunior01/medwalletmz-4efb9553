@@ -15,6 +15,7 @@ import Home from "./pages/Home";
 import Pharmacy from "./pages/Pharmacy";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
+import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import OAuthConsent from "./pages/OAuthConsent";
@@ -163,6 +164,7 @@ const App = () => (
                     <Route path="/pharmacy" element={<Pharmacy />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/orders" element={<Orders />} />
+                    <Route path="/notifications" element={<Notifications />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/store/:id" element={<StoreDetail />} />
                     <Route path="/checkout" element={<Checkout />} />

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   LayoutDashboard,
@@ -20,25 +20,16 @@ import {
   Receipt,
   Upload,
   Sparkles,
-  ArrowDownToLine,
   Shield,
   Megaphone,
   Globe,
   ShieldCheck,
   Bot,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { DashboardShell, type DashboardMenuItem } from '@/components/layout/DashboardShell';
 
-type MenuItem = {
-  icon: any;
-  label: string;
-  path: string;
-  highlight?: boolean;
-};
-
-const menuItems: MenuItem[] = [
+const menuItems: DashboardMenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard Global', path: '/admin' },
   { icon: Globe, label: 'Métricas Mundiais', path: '/admin/global-metrics', highlight: true },
   { icon: Globe, label: 'Painel do País', path: '/admin/country-dashboard', highlight: true },
@@ -93,7 +84,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex min-h-screen">
-        <div className="w-64 bg-card border-r border-border p-4">
+        <div className="hidden md:block w-64 bg-card border-r border-border p-4">
           <Skeleton className="h-8 w-32 mb-8" />
           {Array(8).fill(0).map((_, i) => (
             <Skeleton key={i} className="h-10 w-full mb-2" />
@@ -122,58 +113,13 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
-      <aside className="w-64 bg-card border-r border-border flex flex-col">
-        <div className="p-6 border-b border-border bg-primary/5">
-          <h1 className="text-xl font-bold text-primary">MedWallet</h1>
-          <Badge variant="outline" className="text-[10px] uppercase">Global Admin</Badge>
-        </div>
-
-        <nav className="flex-1 p-4 overflow-y-auto">
-          <ul className="space-y-1">
-            {menuItems.map(({ icon: Icon, label, path, highlight }) => {
-              const isActive = location.pathname === path ||
-                (path !== '/admin' && location.pathname.startsWith(path));
-
-              return (
-                <li key={path}>
-                  <Link
-                    to={path}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-                      isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : highlight
-                          ? 'hover:bg-secondary/15 text-secondary hover:text-secondary bg-secondary/5'
-                          : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-
-        <div className="p-4 border-t border-border">
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-3 text-destructive hover:text-destructive"
-            onClick={handleSignOut}
-          >
-            <LogOut className="h-4 w-4" />
-            Sair
-          </Button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <Outlet />
-      </main>
-    </div>
+    <DashboardShell
+      title="Painel Admin"
+      badge="Global Admin"
+      menuItems={menuItems}
+      onSignOut={handleSignOut}
+    >
+      <Outlet />
+    </DashboardShell>
   );
 }

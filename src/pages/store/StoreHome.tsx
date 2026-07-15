@@ -23,8 +23,7 @@ import {
   QuickActionWidget, 
   ActivityFeedWidget,
   ChartWidget,
-  OrderStatusWidget,
-  NotificationWidget
+  OrderStatusWidget
 } from '@/components/widgets';
 
 interface StoreContext {

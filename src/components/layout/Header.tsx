@@ -1,8 +1,7 @@
-import { useMemo, useEffect, useState } from "react";
-import { MapPin, ChevronDown, Bell, Sparkles, Globe, Languages } from "lucide-react";
+import { useMemo, useEffect } from "react";
+import { MapPin, ChevronDown, Sparkles, Globe, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation as useAppLocation } from "@/contexts/LocationContext";
 import { useCountry } from "@/contexts/CountryContext";
@@ -13,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationsPanel } from "@/components/notifications/NotificationsPanel";
 
 const cities = [
   "Maputo",
@@ -55,7 +55,6 @@ export function Header() {
   const greeting = useMemo(() => getGreeting(), []);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [unread, setUnread] = useState(0);
 
   // Dynamic cities based on country config
   const cities = useMemo(() => {
@@ -82,25 +81,6 @@ export function Header() {
       setSelectedCity(cities[0]);
     }
   }, [cities, selectedCity, setSelectedCity]);
-
-  useEffect(() => {
-    if (!user) { setUnread(0); return; }
-    let cancelled = false;
-    const load = async () => {
-      const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const rxQ: any = (supabase as any).from('prescriptions').select('id', { count: 'exact', head: true }).eq('patient_id', user.id).gte('created_at', since);
-      const orQ: any = (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('customer_id', user.id).in('status', ['out_for_delivery', 'ready', 'in_transit']);
-      const [rxR, orR] = await Promise.all([rxQ, orQ]);
-      const rxC = rxR?.count || 0; const orC = orR?.count || 0;
-      if (!cancelled) setUnread((rxC || 0) + (orC || 0));
-    };
-    load();
-    const ch = supabase.channel(`hdr-notif-${user.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'prescriptions', filter: `patient_id=eq.${user.id}` }, load)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.id}` }, load)
-      .subscribe();
-    return () => { cancelled = true; supabase.removeChannel(ch); };
-  }, [user]);
 
   return (
     <header className="sticky top-0 z-50 glass border-b border-border/50 safe-area-top">
@@ -204,14 +184,7 @@ export function Header() {
           )}
 
           <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={() => navigate('/orders')} aria-label={t('header.notifications')} className="relative hover:bg-primary/10 rounded-xl transition-all h-10 w-10">
-            <Bell className="h-4 w-4" />
-            {unread > 0 && (
-              <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-accent text-accent-foreground text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-background shadow-md">
-                {unread > 9 ? '9+' : unread}
-              </span>
-            )}
-          </Button>
+          <NotificationsPanel />
         </div>
       </div>
     </header>

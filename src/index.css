@@ -120,13 +120,37 @@
     @apply font-black tracking-tight text-foreground;
   }
 
-  /* Tap targets for mobile */
+  /* Tap targets for mobile — exclui botões de ícone explícitos */
   @media (pointer: coarse) {
-    button, [role="button"], a { min-height: 44px; }
+    button:not(.no-tap-target):not([data-size="icon"]):not(.size-icon),
+    [role="button"]:not(.no-tap-target),
+    a:not(.no-tap-target) {
+      min-height: 44px;
+    }
   }
 
+  /* Safe-area utilities (iOS notch / Android gesture nav) */
   .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
-  .safe-area-top { padding-top: env(safe-area-inset-top); }
+  .safe-area-top    { padding-top: env(safe-area-inset-top); }
+  .safe-area-left   { padding-left: env(safe-area-inset-left); }
+  .safe-area-right  { padding-right: env(safe-area-inset-right); }
+
+  /* Padding-bottom com safe-area + offset customizável (para FABs) */
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  .mb-safe { margin-bottom: env(safe-area-inset-bottom); }
+
+  /* Posicionamento de FABs que respeita o home indicator iOS/Android.
+     Uso: className="bottom-fab" + tailwind 'right-4'/'left-4' */
+  .fab-safe-bottom {
+    bottom: calc(env(safe-area-inset-bottom) + 5rem); /* 80px padrão */
+  }
+  .fab-safe-bottom-lg {
+    bottom: calc(env(safe-area-inset-bottom) + 6rem); /* 96px acima do BottomNav */
+  }
+
+  /* Opt-out explícito do min-height 44px para FABs pequenos e icon buttons */
+  .no-tap-target { min-height: auto !important; }
 }
 
 @layer utilities {
@@ -252,12 +276,17 @@ html.data-saver * { animation: none !important; transition: none !important; }
   color: #e2e8f0;
 }
 
-/* Glow effect para KPIs críticos */
+/* Glow effect para KPIs críticos — APENAS em páginas de compliance.
+   O `.animate-pulse` global do Tailwind (opacity-based) é PRESERVADO.
+   Uso: <div className="compliance-pulse" /> em vez de animate-pulse. */
 @keyframes compliance-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
   50% { box-shadow: 0 0 20px 8px rgba(239, 68, 68, 0.15); }
 }
-.animate-pulse { animation: compliance-pulse 2s ease-in-out infinite; }
+.compliance-pulse { animation: compliance-pulse 2s ease-in-out infinite; }
+
+/* Em páginas de compliance o animate-pulse herdado pode ser reforçado. */
+.compliance-page .animate-pulse { animation: compliance-pulse 2s ease-in-out infinite; }
 
 /* Grid background effect for compliance pages */
 .bg-grid-pattern {
