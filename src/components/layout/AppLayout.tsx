@@ -44,10 +44,10 @@ export function AppLayout() {
       <div className="flex-1 flex flex-col min-w-0">
         <OfflineBanner />
         <Header />
-        <div className="flex-1 w-full max-w-6xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
-          <main className={`flex-1 min-w-0 ${isMobile ? "pb-24" : ""}`}>
+        <div className="flex-1 w-full max-w-7xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
+          <main className={`flex-1 min-w-0 ${isMobile ? "pb-28" : ""}`}>
             <Suspense fallback={
-              <div className="flex items-center justify-center h-screen">
+              <div className="flex items-center justify-center h-[60vh]">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             }>

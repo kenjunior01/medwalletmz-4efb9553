@@ -83,14 +83,14 @@ export function Header() {
   }, [cities, selectedCity, setSelectedCity]);
 
   return (
-    <header className="sticky top-0 z-50 glass border-b border-border/50 safe-area-top">
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-2">
-          {/* Country Selector */}
+    <header className="sticky top-0 z-40 glass-header border-b border-border/50 safe-area-top">
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 max-w-7xl mx-auto">
+        {/* LEFT: Country + Location (compact on mobile) */}
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
           {allCountries.length > 1 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label={t('header.select_country')} className="h-10 w-10 rounded-xl hover:bg-primary/10">
+                <Button variant="ghost" size="icon" aria-label={t('header.select_country')} className="h-9 w-9 rounded-xl hover:bg-primary/10 shrink-0 no-tap-target" data-size="icon">
                   {country?.flag_url ? <img src={country.flag_url} alt={country.name} className="w-5 h-5" /> : (country?.id === 'MZ' ? '🇲🇿' : <Globe className="h-4 w-4" />)}
                 </Button>
               </DropdownMenuTrigger>
@@ -111,18 +111,17 @@ export function Header() {
             </DropdownMenu>
           )}
 
-          {/* Location Selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1.5 hover:bg-primary/10 rounded-xl transition-all">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1.5 hover:bg-primary/10 rounded-xl transition-all min-w-0">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                   <MapPin className="h-4 w-4 text-primary" />
                 </div>
-                <div className="flex flex-col items-start">
-                  <span className="text-[10px] text-muted-foreground font-medium">{t('header.deliver_at')}</span>
-                  <span className="font-bold text-sm">{selectedCity}</span>
+                <div className="flex flex-col items-start min-w-0">
+                  <span className="text-[10px] text-muted-foreground font-medium leading-tight truncate">{t('header.deliver_at')}</span>
+                  <span className="font-bold text-sm leading-tight truncate max-w-[120px]">{selectedCity}</span>
                 </div>
-                <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-52 glass rounded-xl p-1">
@@ -144,26 +143,25 @@ export function Header() {
           </DropdownMenu>
         </div>
 
-        {/* Logo with Greeting - hidden on very narrow screens to avoid overlap */}
-        <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 flex-col items-center pointer-events-none">
-          <span className="text-xs text-muted-foreground flex items-center gap-1">
+        {/* CENTER: Logo + greeting — only on >= md to avoid overlap */}
+        <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 flex-col items-center pointer-events-none">
+          <span className="text-[10px] text-muted-foreground flex items-center gap-1 leading-none">
             {greeting.emoji} {t(`header.greetings.${greeting.text.toLowerCase().replace(' ', '_')}`)}
           </span>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 mt-0.5">
             <Sparkles className="h-3.5 w-3.5 text-secondary" />
-            <span className="font-extrabold text-lg text-gradient-premium">
+            <span className="font-extrabold text-lg text-gradient-premium leading-none">
               MedWallet
             </span>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-1">
-          {/* Language Selector */}
+        {/* RIGHT: Actions */}
+        <div className="flex items-center gap-0.5 shrink-0">
           {country && country.supported_locales.length > 1 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label={t('header.select_language')} className="h-10 w-10 rounded-xl hover:bg-primary/10">
+                <Button variant="ghost" size="icon" aria-label={t('header.select_language')} className="h-9 w-9 rounded-xl hover:bg-primary/10 no-tap-target" data-size="icon">
                   <Languages className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>

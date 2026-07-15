@@ -252,6 +252,104 @@
 @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.3); } 50% { box-shadow: 0 0 20px 8px hsl(var(--primary) / 0.1); } }
 .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
 
+@keyframes fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fade-in 0.35s ease-out both; }
+
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+.animate-shimmer {
+  background: linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--muted)/0.5) 50%, hsl(var(--muted)) 100%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* ============================================================
+   UI/UX Overhaul — Anti-overlap & Spacing Fixes
+   ============================================================ */
+
+/* Safe spacing for content under fixed BottomNav (mobile) */
+.content-pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 6rem); }
+
+/* Header height offset for sticky headers inside content */
+.content-pt-header { padding-top: 0; }
+
+/* Prevent flex children overflow on small screens */
+.flex-1-min-w-0 { flex: 1 1 0%; min-width: 0; }
+
+/* Truncate multi-line text reliably */
+.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Premium card hover with subtle lift (used in grids) */
+.lift-on-hover {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.25s ease;
+}
+.lift-on-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: hsl(var(--primary) / 0.25);
+}
+
+/* Subtle press effect for tappable cards */
+.press-effect:active { transform: scale(0.985); }
+
+/* Premium gradient border (for highlighted CTAs) */
+.gradient-border {
+  position: relative;
+  background: hsl(var(--card));
+  border-radius: inherit;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--gold)));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Hero pattern: subtle dotted background */
+.bg-dot-pattern {
+  background-image: radial-gradient(hsl(var(--primary) / 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Glass refinement for headers */
+.glass-header {
+  background: hsl(var(--background) / 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Focus ring: cleaner accessibility */
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Prevent iOS zoom on input focus (font-size >= 16px) */
+@media (pointer: coarse) {
+  input[type="text"], input[type="email"], input[type="tel"],
+  input[type="password"], input[type="search"], textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* Hide horizontal scrollbars on tab strips while keeping scroll */
+.no-h-scrollbar { overflow-x: auto; }
+.no-h-scrollbar::-webkit-scrollbar { display: none; }
+.no-h-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Data Saver */
 html.data-saver .blur-3xl, html.data-saver .blur-2xl, html.data-saver .float-orb { display: none !important; }
 html.data-saver * { animation: none !important; transition: none !important; }

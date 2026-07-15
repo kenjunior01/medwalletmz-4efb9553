@@ -39,8 +39,8 @@ export function BottomNav() {
   }, {} as Record<string, typeof moreItems>);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/70 border-t border-border/50 safe-area-bottom shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
-      <div className="flex items-end justify-around py-2 px-1 relative">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/70 border-t border-border/50 safe-area-bottom shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
+      <div className="flex items-end justify-around py-1.5 px-1 relative max-w-md mx-auto">
         {navItems.slice(0, 4).map(({ path, icon: Icon, label, highlight }) => {
           const isActive = location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
           const translatedLabel = t(label);
@@ -50,16 +50,16 @@ export function BottomNav() {
                 key={path}
                 to={path}
                 aria-label={translatedLabel}
-                className="flex flex-col items-center -mt-8 mx-1 mb-1"
+                className="flex flex-col items-center -mt-6 mx-1 mb-0.5 no-tap-target"
               >
                 <div className={cn(
-                  "h-16 w-16 rounded-full flex items-center justify-center shadow-premium transition-all duration-300",
+                  "h-14 w-14 rounded-full flex items-center justify-center shadow-premium transition-all duration-300 ring-4 ring-background",
                   "bg-gradient-to-br from-primary via-primary/90 to-secondary text-primary-foreground",
-                  isActive ? "scale-110 ring-4 ring-primary/20" : "hover:scale-105 active:scale-95"
+                  isActive ? "scale-110 ring-primary/20" : "hover:scale-105 active:scale-95"
                 )}>
-                  <Icon className="h-7 w-7" />
+                  <Icon className="h-6 w-6" />
                 </div>
-                <span className="text-[10px] font-black mt-1.5 text-primary uppercase tracking-tighter">{translatedLabel}</span>
+                <span className="text-[9px] font-black mt-1 text-primary uppercase tracking-tighter">{translatedLabel}</span>
               </NavLink>
             );
           }

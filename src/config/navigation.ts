@@ -1,6 +1,6 @@
 import {
   Home, Stethoscope, FileText, ClipboardList, User, Droplet, Pill, Building2, FlaskConical,
-  Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video,
+  Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video, Crown,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -96,6 +96,7 @@ export const bottomNavByRole: Record<RoleKey, NavItem[]> = {
 export const sidebarByRole: Record<RoleKey, NavItem[]> = {
   customer: [
     { path: "/", icon: Home, label: "nav.home", group: "Principal" },
+    { path: "/planos", icon: Crown, label: "Planos Premium", group: "Principal" },
     { path: "/health/doctors", icon: Stethoscope, label: "nav.doctors", group: "Saúde" },
     { path: "/health/triage", icon: MessageSquare, label: "nav.triage", group: "Saúde" },
     { path: "/health/consultations", icon: Calendar, label: "nav.consultations", group: "Saúde" },

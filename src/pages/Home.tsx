@@ -2,7 +2,7 @@ import { Seo } from "@/components/Seo";
 import {
   Stethoscope, Sparkles, Pill, MessageCircle, ArrowRight,
   Plus, Calendar, ShieldCheck, Building2,
-  BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint
+  BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse
 } from "lucide-react";
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
@@ -310,6 +310,45 @@ export default function Home() {
         <NearbyProvidersWidget />
 
         <PersonalizedForYou />
+
+        {/* ============ PLANS PREMIUM MZ (upsell) ============ */}
+        <section className="px-4">
+          <div className="bento-card p-5 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent border-amber-500/20 relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
+            <div className="relative flex items-start gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0 shadow-glow">
+                <Crown className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-black text-base">Planos Premium MZ</p>
+                  <Badge className="bg-amber-500/20 text-amber-700 border-0 text-[10px] font-black">Desde 199 MZN/mês</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground font-medium mt-1.5 leading-relaxed">
+                  Consultas grátis, descontos em farmácia, SOS obstétrico 24/7, refills ARV/TB ilimitados.
+                </p>
+                <div className="flex gap-2 mt-3 flex-wrap">
+                  <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30">
+                    <Baby className="h-3 w-3" /> Grávida 299
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30">
+                    <HeartPulse className="h-3 w-3" /> Crónico 249
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30">
+                    <Crown className="h-3 w-3" /> Premium 499
+                  </Badge>
+                </div>
+                <Button
+                  size="sm"
+                  className="mt-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black rounded-xl h-9"
+                  onClick={() => navigate('/planos')}
+                >
+                  Ver planos <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ============ EDUCATIONAL & HELP ============ */}
         <section className="px-4 grid grid-cols-2 gap-4">

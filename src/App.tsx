@@ -141,6 +141,9 @@ import BloodDonorRegister from "./pages/blood/BloodDonorRegister";
 import BloodRequestForm from "./pages/blood/BloodRequestForm";
 import Solidarity from "./pages/Solidarity";
 import { SmartEngagementPopUp } from "@/components/notifications/SmartEngagementPopUp";
+import MzPricingPlans from "./pages/MzPricingPlans";
+import NotificationCenter from "./pages/NotificationCenter";
+import MzB2BPlans from "./pages/MzB2BPlans";
 
 const queryClient = new QueryClient();
 
@@ -214,6 +217,9 @@ const App = () => (
                     <Route path="/blood/register-donor" element={<BloodDonorRegister />} />
                     <Route path="/blood/request" element={<BloodRequestForm />} />
                     <Route path="/solidarity" element={<Solidarity />} />
+                    <Route path="/planos" element={<MzPricingPlans />} />
+                    <Route path="/planos-b2b" element={<MzB2BPlans />} />
+                    <Route path="/notifications-center" element={<NotificationCenter />} />
                   </Route>
 
                   {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
