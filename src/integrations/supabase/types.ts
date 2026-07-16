@@ -176,6 +176,169 @@ export type Database = {
         }
         Relationships: []
       }
+      ape_visits: {
+        Row: {
+          ape_user_id: string | null
+          bonus_paid_mzn: number | null
+          country_id: string | null
+          created_at: string | null
+          diagnosis: string | null
+          district: string | null
+          gps_lat: number | null
+          gps_lng: number | null
+          id: string
+          notes: string | null
+          offline_synced: boolean | null
+          patient_user_id: string | null
+          province: string | null
+          rdt_result: string | null
+          referral_reason: string | null
+          referral_to: string | null
+          symptoms: Json | null
+          treatment_given: Json | null
+          village: string | null
+          visit_date: string | null
+          visit_type: string | null
+        }
+        Insert: {
+          ape_user_id?: string | null
+          bonus_paid_mzn?: number | null
+          country_id?: string | null
+          created_at?: string | null
+          diagnosis?: string | null
+          district?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          notes?: string | null
+          offline_synced?: boolean | null
+          patient_user_id?: string | null
+          province?: string | null
+          rdt_result?: string | null
+          referral_reason?: string | null
+          referral_to?: string | null
+          symptoms?: Json | null
+          treatment_given?: Json | null
+          village?: string | null
+          visit_date?: string | null
+          visit_type?: string | null
+        }
+        Update: {
+          ape_user_id?: string | null
+          bonus_paid_mzn?: number | null
+          country_id?: string | null
+          created_at?: string | null
+          diagnosis?: string | null
+          district?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          notes?: string | null
+          offline_synced?: boolean | null
+          patient_user_id?: string | null
+          province?: string | null
+          rdt_result?: string | null
+          referral_reason?: string | null
+          referral_to?: string | null
+          symptoms?: Json | null
+          treatment_given?: Json | null
+          village?: string | null
+          visit_date?: string | null
+          visit_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ape_visits_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      art_adherence_logs: {
+        Row: {
+          adherence_pct: number | null
+          art_regimen: string | null
+          art_start_date: string | null
+          bonus_paid_mzn: number | null
+          country_id: string | null
+          created_at: string | null
+          id: string
+          last_cd4_count: number | null
+          last_cd4_date: string | null
+          last_refill_date: string | null
+          last_refill_facility: string | null
+          last_viral_load: number | null
+          last_viral_load_date: string | null
+          last_whatsapp_reminder: string | null
+          missed_doses_30d: number | null
+          notes: string | null
+          patient_user_id: string | null
+          province: string | null
+          refill_due_date: string | null
+          support_group_id: string | null
+          updated_at: string | null
+          whatsapp_reminders_sent: number | null
+        }
+        Insert: {
+          adherence_pct?: number | null
+          art_regimen?: string | null
+          art_start_date?: string | null
+          bonus_paid_mzn?: number | null
+          country_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_cd4_count?: number | null
+          last_cd4_date?: string | null
+          last_refill_date?: string | null
+          last_refill_facility?: string | null
+          last_viral_load?: number | null
+          last_viral_load_date?: string | null
+          last_whatsapp_reminder?: string | null
+          missed_doses_30d?: number | null
+          notes?: string | null
+          patient_user_id?: string | null
+          province?: string | null
+          refill_due_date?: string | null
+          support_group_id?: string | null
+          updated_at?: string | null
+          whatsapp_reminders_sent?: number | null
+        }
+        Update: {
+          adherence_pct?: number | null
+          art_regimen?: string | null
+          art_start_date?: string | null
+          bonus_paid_mzn?: number | null
+          country_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_cd4_count?: number | null
+          last_cd4_date?: string | null
+          last_refill_date?: string | null
+          last_refill_facility?: string | null
+          last_viral_load?: number | null
+          last_viral_load_date?: string | null
+          last_whatsapp_reminder?: string | null
+          missed_doses_30d?: number | null
+          notes?: string | null
+          patient_user_id?: string | null
+          province?: string | null
+          refill_due_date?: string | null
+          support_group_id?: string | null
+          updated_at?: string | null
+          whatsapp_reminders_sent?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "art_adherence_logs_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blood_donation_campaigns: {
         Row: {
           address: string | null
@@ -496,10 +659,12 @@ export type Database = {
         Row: {
           address: string | null
           city: string
+          country_id: string | null
           created_at: string
           description: string | null
           email: string | null
           id: string
+          image_url: string | null
           is_active: boolean
           is_verified: boolean
           latitude: number | null
@@ -509,16 +674,20 @@ export type Database = {
           name: string
           owner_id: string
           phone: string | null
+          rating: number | null
           type: string
           updated_at: string
+          website: string | null
         }
         Insert: {
           address?: string | null
           city?: string
+          country_id?: string | null
           created_at?: string
           description?: string | null
           email?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           is_verified?: boolean
           latitude?: number | null
@@ -528,16 +697,20 @@ export type Database = {
           name: string
           owner_id: string
           phone?: string | null
+          rating?: number | null
           type?: string
           updated_at?: string
+          website?: string | null
         }
         Update: {
           address?: string | null
           city?: string
+          country_id?: string | null
           created_at?: string
           description?: string | null
           email?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           is_verified?: boolean
           latitude?: number | null
@@ -547,10 +720,20 @@ export type Database = {
           name?: string
           owner_id?: string
           phone?: string | null
+          rating?: number | null
           type?: string
           updated_at?: string
+          website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clinics_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       consultation_followups: {
         Row: {
@@ -755,6 +938,7 @@ export type Database = {
           is_active: boolean
           name: string
           phone_code: string
+          phone_prefix: string | null
           supported_locales: string[]
           timezone: string
           updated_at: string
@@ -771,6 +955,7 @@ export type Database = {
           is_active?: boolean
           name: string
           phone_code?: string
+          phone_prefix?: string | null
           supported_locales?: string[]
           timezone?: string
           updated_at?: string
@@ -787,6 +972,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           phone_code?: string
+          phone_prefix?: string | null
           supported_locales?: string[]
           timezone?: string
           updated_at?: string
@@ -1328,6 +1514,87 @@ export type Database = {
         }
         Relationships: []
       }
+      google_cloud_integrations: {
+        Row: {
+          called_at: string | null
+          called_by: string | null
+          duration_ms: number | null
+          endpoint: string | null
+          error_message: string | null
+          id: string
+          request_payload: Json | null
+          response_payload: Json | null
+          service: string
+          status_code: number | null
+        }
+        Insert: {
+          called_at?: string | null
+          called_by?: string | null
+          duration_ms?: number | null
+          endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          request_payload?: Json | null
+          response_payload?: Json | null
+          service: string
+          status_code?: number | null
+        }
+        Update: {
+          called_at?: string | null
+          called_by?: string | null
+          duration_ms?: number | null
+          endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          request_payload?: Json | null
+          response_payload?: Json | null
+          service?: string
+          status_code?: number | null
+        }
+        Relationships: []
+      }
+      health_facilities: {
+        Row: {
+          address: Json | null
+          branding_color: string | null
+          contact: Json | null
+          country_id: string | null
+          created_at: string | null
+          id: string
+          name: string | null
+          rating: number | null
+          services: string[] | null
+          status: string | null
+          type: string | null
+        }
+        Insert: {
+          address?: Json | null
+          branding_color?: string | null
+          contact?: Json | null
+          country_id?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          rating?: number | null
+          services?: string[] | null
+          status?: string | null
+          type?: string | null
+        }
+        Update: {
+          address?: Json | null
+          branding_color?: string | null
+          contact?: Json | null
+          country_id?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          rating?: number | null
+          services?: string[] | null
+          status?: string | null
+          type?: string | null
+        }
+        Relationships: []
+      }
       health_referral_rewards: {
         Row: {
           active: boolean
@@ -1819,6 +2086,7 @@ export type Database = {
         Row: {
           address: string | null
           city: string
+          country_id: string | null
           created_at: string
           description: string | null
           email: string | null
@@ -1845,6 +2113,7 @@ export type Database = {
         Insert: {
           address?: string | null
           city: string
+          country_id?: string | null
           created_at?: string
           description?: string | null
           email?: string | null
@@ -1871,6 +2140,7 @@ export type Database = {
         Update: {
           address?: string | null
           city?: string
+          country_id?: string | null
           created_at?: string
           description?: string | null
           email?: string | null
@@ -1894,7 +2164,202 @@ export type Database = {
           updated_at?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "laboratories_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      malaria_cases: {
+        Row: {
+          age_years: number | null
+          air_quality_index: number | null
+          ape_user_id: string | null
+          case_date: string
+          country_id: string | null
+          created_at: string | null
+          district: string | null
+          gps_lat: number | null
+          gps_lng: number | null
+          id: string
+          outbreak_zone: boolean | null
+          outcome: string | null
+          patient_user_id: string | null
+          pregnant: boolean | null
+          province: string | null
+          rdt_result: string | null
+          referral_to: string | null
+          reported_to_pnm: boolean | null
+          severity: string | null
+          sex: string | null
+          species: string | null
+          treatment_completed: boolean | null
+          treatment_given: string | null
+          treatment_start: string | null
+          village: string | null
+        }
+        Insert: {
+          age_years?: number | null
+          air_quality_index?: number | null
+          ape_user_id?: string | null
+          case_date?: string
+          country_id?: string | null
+          created_at?: string | null
+          district?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          outbreak_zone?: boolean | null
+          outcome?: string | null
+          patient_user_id?: string | null
+          pregnant?: boolean | null
+          province?: string | null
+          rdt_result?: string | null
+          referral_to?: string | null
+          reported_to_pnm?: boolean | null
+          severity?: string | null
+          sex?: string | null
+          species?: string | null
+          treatment_completed?: boolean | null
+          treatment_given?: string | null
+          treatment_start?: string | null
+          village?: string | null
+        }
+        Update: {
+          age_years?: number | null
+          air_quality_index?: number | null
+          ape_user_id?: string | null
+          case_date?: string
+          country_id?: string | null
+          created_at?: string | null
+          district?: string | null
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          outbreak_zone?: boolean | null
+          outcome?: string | null
+          patient_user_id?: string | null
+          pregnant?: boolean | null
+          province?: string | null
+          rdt_result?: string | null
+          referral_to?: string | null
+          reported_to_pnm?: boolean | null
+          severity?: string | null
+          sex?: string | null
+          species?: string | null
+          treatment_completed?: boolean | null
+          treatment_given?: string | null
+          treatment_start?: string | null
+          village?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "malaria_cases_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternal_profiles: {
+        Row: {
+          anc_visits_done: number | null
+          anc_visits_due: Json | null
+          blood_type: string | null
+          country_id: string | null
+          created_at: string | null
+          district: string | null
+          edd_date: string | null
+          gravida: number | null
+          id: string
+          last_bp_diastolic: number | null
+          last_bp_systolic: number | null
+          last_sos_at: string | null
+          last_weight_kg: number | null
+          lmp_date: string | null
+          notes: string | null
+          para: number | null
+          partner_name: string | null
+          partner_phone: string | null
+          patient_user_id: string | null
+          preferred_facility: string | null
+          province: string | null
+          risk_level: string | null
+          sos_active: boolean | null
+          sos_route_to_facility: Json | null
+          updated_at: string | null
+          whatsapp_reminders_active: boolean | null
+        }
+        Insert: {
+          anc_visits_done?: number | null
+          anc_visits_due?: Json | null
+          blood_type?: string | null
+          country_id?: string | null
+          created_at?: string | null
+          district?: string | null
+          edd_date?: string | null
+          gravida?: number | null
+          id?: string
+          last_bp_diastolic?: number | null
+          last_bp_systolic?: number | null
+          last_sos_at?: string | null
+          last_weight_kg?: number | null
+          lmp_date?: string | null
+          notes?: string | null
+          para?: number | null
+          partner_name?: string | null
+          partner_phone?: string | null
+          patient_user_id?: string | null
+          preferred_facility?: string | null
+          province?: string | null
+          risk_level?: string | null
+          sos_active?: boolean | null
+          sos_route_to_facility?: Json | null
+          updated_at?: string | null
+          whatsapp_reminders_active?: boolean | null
+        }
+        Update: {
+          anc_visits_done?: number | null
+          anc_visits_due?: Json | null
+          blood_type?: string | null
+          country_id?: string | null
+          created_at?: string | null
+          district?: string | null
+          edd_date?: string | null
+          gravida?: number | null
+          id?: string
+          last_bp_diastolic?: number | null
+          last_bp_systolic?: number | null
+          last_sos_at?: string | null
+          last_weight_kg?: number | null
+          lmp_date?: string | null
+          notes?: string | null
+          para?: number | null
+          partner_name?: string | null
+          partner_phone?: string | null
+          patient_user_id?: string | null
+          preferred_facility?: string | null
+          province?: string | null
+          risk_level?: string | null
+          sos_active?: boolean | null
+          sos_route_to_facility?: Json | null
+          updated_at?: string | null
+          whatsapp_reminders_active?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternal_profiles_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       medical_clinics: {
         Row: {
@@ -2088,6 +2553,105 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
+        }
+        Relationships: []
+      }
+      micro_insurance_products: {
+        Row: {
+          active: boolean | null
+          code: string | null
+          country_id: string | null
+          coverage_amount: number | null
+          coverage_currency: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          payout_auto: boolean | null
+          payout_trigger_hours: number | null
+          premium_amount: number | null
+          premium_currency: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          code?: string | null
+          country_id?: string | null
+          coverage_amount?: number | null
+          coverage_currency?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          payout_auto?: boolean | null
+          payout_trigger_hours?: number | null
+          premium_amount?: number | null
+          premium_currency?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          code?: string | null
+          country_id?: string | null
+          coverage_amount?: number | null
+          coverage_currency?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          payout_auto?: boolean | null
+          payout_trigger_hours?: number | null
+          premium_amount?: number | null
+          premium_currency?: string | null
+        }
+        Relationships: []
+      }
+      mpesa_manual_payments: {
+        Row: {
+          amount_mzn: number
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string | null
+          description: string | null
+          destination_number: string
+          id: string
+          metadata: Json | null
+          mpesa_transaction_id: string | null
+          payer_name: string | null
+          payer_phone: string | null
+          reference: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount_mzn: number
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          destination_number?: string
+          id?: string
+          metadata?: Json | null
+          mpesa_transaction_id?: string | null
+          payer_name?: string | null
+          payer_phone?: string | null
+          reference: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount_mzn?: number
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          destination_number?: string
+          id?: string
+          metadata?: Json | null
+          mpesa_transaction_id?: string | null
+          payer_name?: string | null
+          payer_phone?: string | null
+          reference?: string
+          status?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -2973,6 +3537,7 @@ export type Database = {
         Row: {
           address: string | null
           city: string
+          country_id: string | null
           created_at: string
           delivery_enabled: boolean
           delivery_fee: number | null
@@ -2992,6 +3557,7 @@ export type Database = {
         Insert: {
           address?: string | null
           city: string
+          country_id?: string | null
           created_at?: string
           delivery_enabled?: boolean
           delivery_fee?: number | null
@@ -3011,6 +3577,7 @@ export type Database = {
         Update: {
           address?: string | null
           city?: string
+          country_id?: string | null
           created_at?: string
           delivery_enabled?: boolean
           delivery_fee?: number | null
@@ -3027,7 +3594,15 @@ export type Database = {
           rating?: number | null
           type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "stores_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscription_plans: {
         Row: {
@@ -3165,6 +3740,86 @@ export type Database = {
           reason?: string
         }
         Relationships: []
+      }
+      tb_dot_records: {
+        Row: {
+          abandonment_risk: string | null
+          adherence_pct: number | null
+          bonus_paid_mzn: number | null
+          country_id: string | null
+          created_at: string | null
+          daily_meds: Json | null
+          district: string | null
+          end_date: string | null
+          id: string
+          last_taken_at: string | null
+          last_video_observation: string | null
+          missed_doses: number | null
+          notes: string | null
+          observer_user_id: string | null
+          patient_user_id: string | null
+          province: string | null
+          start_date: string
+          tb_case_id: string | null
+          treatment_phase: string | null
+          updated_at: string | null
+          video_session_url: string | null
+        }
+        Insert: {
+          abandonment_risk?: string | null
+          adherence_pct?: number | null
+          bonus_paid_mzn?: number | null
+          country_id?: string | null
+          created_at?: string | null
+          daily_meds?: Json | null
+          district?: string | null
+          end_date?: string | null
+          id?: string
+          last_taken_at?: string | null
+          last_video_observation?: string | null
+          missed_doses?: number | null
+          notes?: string | null
+          observer_user_id?: string | null
+          patient_user_id?: string | null
+          province?: string | null
+          start_date: string
+          tb_case_id?: string | null
+          treatment_phase?: string | null
+          updated_at?: string | null
+          video_session_url?: string | null
+        }
+        Update: {
+          abandonment_risk?: string | null
+          adherence_pct?: number | null
+          bonus_paid_mzn?: number | null
+          country_id?: string | null
+          created_at?: string | null
+          daily_meds?: Json | null
+          district?: string | null
+          end_date?: string | null
+          id?: string
+          last_taken_at?: string | null
+          last_video_observation?: string | null
+          missed_doses?: number | null
+          notes?: string | null
+          observer_user_id?: string | null
+          patient_user_id?: string | null
+          province?: string | null
+          start_date?: string
+          tb_case_id?: string | null
+          treatment_phase?: string | null
+          updated_at?: string | null
+          video_session_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tb_dot_records_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       triage_logs: {
         Row: {
@@ -3461,6 +4116,75 @@ export type Database = {
           },
         ]
       }
+      veterinary_clinics: {
+        Row: {
+          address: string | null
+          city: string | null
+          country_id: string | null
+          created_at: string | null
+          description: string | null
+          email: string | null
+          emergency_24h: boolean | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          owner_id: string | null
+          phone: string | null
+          rating: number | null
+          services: string[] | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          country_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          emergency_24h?: boolean | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          services?: string[] | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          country_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          emergency_24h?: boolean | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          owner_id?: string | null
+          phone?: string | null
+          rating?: number | null
+          services?: string[] | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       video_sessions: {
         Row: {
           consultation_id: string
@@ -3598,6 +4322,54 @@ export type Database = {
           total_spent?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      whatsapp_messages: {
+        Row: {
+          created_at: string | null
+          delivered_at: string | null
+          id: string
+          message_body: string
+          metadata: Json | null
+          phone_from: string | null
+          phone_to: string
+          read_at: string | null
+          sent_at: string | null
+          status: string
+          template_name: string | null
+          template_params: Json | null
+          vertical: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          delivered_at?: string | null
+          id?: string
+          message_body: string
+          metadata?: Json | null
+          phone_from?: string | null
+          phone_to: string
+          read_at?: string | null
+          sent_at?: string | null
+          status?: string
+          template_name?: string | null
+          template_params?: Json | null
+          vertical?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          delivered_at?: string | null
+          id?: string
+          message_body?: string
+          metadata?: Json | null
+          phone_from?: string | null
+          phone_to?: string
+          read_at?: string | null
+          sent_at?: string | null
+          status?: string
+          template_name?: string | null
+          template_params?: Json | null
+          vertical?: string | null
         }
         Relationships: []
       }
