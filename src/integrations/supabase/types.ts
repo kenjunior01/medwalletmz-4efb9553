@@ -663,6 +663,7 @@ export type Database = {
           created_at: string
           description: string | null
           email: string | null
+          google_place_id: string | null
           id: string
           image_url: string | null
           is_active: boolean
@@ -686,6 +687,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           email?: string | null
+          google_place_id?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -709,6 +711,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           email?: string | null
+          google_place_id?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -3543,6 +3546,7 @@ export type Database = {
           delivery_fee: number | null
           delivery_time: string | null
           description: string | null
+          google_place_id: string | null
           id: string
           image_url: string | null
           is_active: boolean | null
@@ -3563,6 +3567,7 @@ export type Database = {
           delivery_fee?: number | null
           delivery_time?: string | null
           description?: string | null
+          google_place_id?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
@@ -3583,6 +3588,7 @@ export type Database = {
           delivery_fee?: number | null
           delivery_time?: string | null
           description?: string | null
+          google_place_id?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
