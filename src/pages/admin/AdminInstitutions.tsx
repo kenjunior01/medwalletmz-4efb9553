@@ -182,9 +182,10 @@ export default function AdminInstitutions() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas as cidades</SelectItem>
-              {cities.map((c) => (
-                <SelectItem key={c} value={c as string}>{c}</SelectItem>
-              ))}
+              {cities.map((c) => {
+                const s = String(c);
+                return <SelectItem key={s} value={s}>{s}</SelectItem>;
+              })}
             </SelectContent>
           </Select>
         </div>
