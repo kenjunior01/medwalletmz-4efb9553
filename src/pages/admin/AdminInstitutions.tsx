@@ -44,7 +44,7 @@ export default function AdminInstitutions() {
     queryKey: ['admin-institutions', activeTab, search, cityFilter],
     queryFn: async () => {
       const meta = ENTITY_META[activeTab];
-      let query = supabase.from(meta.table).select('*').eq('country_id', 'MZ');
+      let query: any = (supabase as any).from(meta.table).select('*').eq('country_id', 'MZ');
 
       // For clinics table, filter by type when activeTab is hospital/clinic
       if (activeTab === 'hospital') {
@@ -77,7 +77,7 @@ export default function AdminInstitutions() {
   const updateMutation = useMutation({
     mutationFn: async ({ id, payload }: { id: string; payload: any }) => {
       const meta = ENTITY_META[activeTab];
-      const { error } = await supabase.from(meta.table).update(payload).eq('id', id);
+      const { error } = await (supabase as any).from(meta.table).update(payload).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -90,7 +90,7 @@ export default function AdminInstitutions() {
 
   const toggleActive = async (entity: any) => {
     const meta = ENTITY_META[activeTab];
-    const { error } = await supabase.from(meta.table)
+    const { error } = await (supabase as any).from(meta.table)
       .update({ is_active: !entity.is_active })
       .eq('id', entity.id);
     if (error) {

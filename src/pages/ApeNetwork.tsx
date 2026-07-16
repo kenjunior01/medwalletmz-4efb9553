@@ -59,6 +59,7 @@ export default function ApeNetwork() {
       <Seo
         title="Rede APE — MedWallet MZ"
         description="Rede de Agentes Polivalentes Elementares (APEs) activos em Moçambique usando o MedWallet MZ para servir as suas comunidades."
+        path="/ape-network"
       />
       <div className="mx-auto max-w-6xl px-4 py-6 pb-24">
         {/* Hero */}
@@ -79,7 +80,7 @@ export default function ApeNetwork() {
             <div className="mt-4 flex items-center gap-3">
               <div>
                 <div className="text-2xl font-bold">
-                  <NumberFlow value={TOTAL_APES} separator="." />
+                  <NumberFlow value={TOTAL_APES} />
                 </div>
                 <div className="text-xs text-amber-100">APEs activos</div>
               </div>

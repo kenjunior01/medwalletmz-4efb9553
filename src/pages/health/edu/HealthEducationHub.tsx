@@ -445,6 +445,7 @@ export default function HealthEducationHub() {
       <Seo
         title="Educação em Saúde — MedWallet MZ"
         description="Artigos de saúde gratuitos em Português, Emakhuwa, Xitsonga, Changana e Sena. Validados por protocolos MISAU/OMS."
+        path="/health/education"
       />
       <div className="mx-auto max-w-6xl px-4 py-6 pb-24">
         {/* Hero */}

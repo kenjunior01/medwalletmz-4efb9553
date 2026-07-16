@@ -187,7 +187,7 @@ export default function MalariaWorkflowPage() {
                     severity: fd.get('severity') as any,
                     treatment_given: fd.get('treatment_given') as string,
                     country_id: 'MZ',
-                  });
+                  } as any);
                   setShowNew(false);
                 }}
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
