@@ -246,6 +246,7 @@ export default function MzPricingPlans() {
       <Seo
         title="Planos — MedWallet MZ"
         description="Pacientes grátis para sempre. Médicos, clínicas, farmácias e hospitais têm planos SaaS B2B a partir de 250 MZN/mês."
+        path="/mz-pricing-plans"
       />
       <div className="mx-auto max-w-6xl px-4 py-6 pb-24">
         {/* Hero — modelo novo */}

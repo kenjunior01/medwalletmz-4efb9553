@@ -15,7 +15,7 @@ interface AuthContextType {
   roles: AppRole[];
   userRoles: UserRole[];
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string, referralCode?: string, countryId?: string) => Promise<{ error: Error | null; user: User | null }>;
+  signUp: (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string) => Promise<{ error: Error | null; user: User | null }>;
   signIn: (email: string, password: string, referralCode?: string) => Promise<{ error: Error | null; user: User | null }>;
   signInWithGoogle: (referralCode?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;

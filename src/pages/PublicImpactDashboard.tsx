@@ -102,6 +102,7 @@ export default function PublicImpactDashboard() {
       <Seo
         title="Impacto Público — MedWallet MZ"
         description="Transparência total: quantos moçambicanos usam o MedWallet MZ e quantas vidas são impactadas."
+        path="/impact"
       />
       <div className="mx-auto max-w-6xl px-4 py-6 pb-24">
         {/* Hero */}
@@ -147,7 +148,7 @@ export default function PublicImpactDashboard() {
                       {isLoading ? (
                         <span className="inline-block h-7 w-16 bg-muted rounded animate-pulse" />
                       ) : (
-                        <NumberFlow value={kpi.value} separator="." />
+                        <NumberFlow value={kpi.value} />
                       )}
                     </div>
                     <div className="mt-1 text-[10px] text-muted-foreground">{kpi.hint}</div>

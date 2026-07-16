@@ -31,24 +31,25 @@ export default function HealthProfile() {
       return;
     }
     let cancelled = false;
-    supabase.from('patient_profiles').select('*').eq('user_id', user.id).maybeSingle().then(({ data }) => {
-      if (cancelled) return;
-      if (data) {
-        setForm({
-          date_of_birth: data.date_of_birth || '',
-          gender: data.gender || '',
-          blood_type: data.blood_type || '',
-          allergies: (data.allergies || []).join(', '),
-          chronic_conditions: (data.chronic_conditions || []).join(', '),
-          current_medications: (data.current_medications || []).join(', '),
-          emergency_contact_name: data.emergency_contact_name || '',
-          emergency_contact_phone: data.emergency_contact_phone || '',
-        });
-      }
-      setLoading(false);
-    }).catch(() => {
-      if (!cancelled) setLoading(false);
-    });
+    (async () => {
+      try {
+        const { data } = await supabase.from('patient_profiles').select('*').eq('user_id', user.id).maybeSingle();
+        if (cancelled) return;
+        if (data) {
+          setForm({
+            date_of_birth: data.date_of_birth || '',
+            gender: data.gender || '',
+            blood_type: data.blood_type || '',
+            allergies: (data.allergies || []).join(', '),
+            chronic_conditions: (data.chronic_conditions || []).join(', '),
+            current_medications: (data.current_medications || []).join(', '),
+            emergency_contact_name: data.emergency_contact_name || '',
+            emergency_contact_phone: data.emergency_contact_phone || '',
+          });
+        }
+      } catch { /* noop */ }
+      finally { if (!cancelled) setLoading(false); }
+    })();
     return () => { cancelled = true; };
   }, [user]);
 

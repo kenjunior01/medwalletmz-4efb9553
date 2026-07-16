@@ -168,6 +168,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/admin", icon: LayoutDashboard, label: "nav.home", group: "Admin" },
     { path: "/admin/curation", icon: Shield, label: "nav.curation", group: "Admin" },
     { path: "/admin/institutions", icon: Building2, label: "Curadoria Direta", group: "Instituições" },
+    { path: "/admin/mz-importer", icon: Building2, label: "Importador MZ (Google)", group: "Instituições" },
     { path: "/admin/stores", icon: Building2, label: "nav.pharmacy", group: "Instituições" },
     { path: "/admin/labs", icon: FlaskConical, label: "nav.exams", group: "Instituições" },
     { path: "/admin/insurance", icon: Shield, label: "nav.insurance", group: "Instituições" },

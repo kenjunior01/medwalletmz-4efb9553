@@ -179,7 +179,7 @@ export default function Triage() {
       setResult(triageData);
       if (triageData?.suggested_specialty) findNearbyDoctors(triageData.suggested_specialty);
       if (user) {
-        await supabase.from('triage_logs').insert({
+        await (supabase.from('triage_logs') as any).insert({
           patient_id: user.id,
           symptoms,
           age: age ? Number(age) : null,

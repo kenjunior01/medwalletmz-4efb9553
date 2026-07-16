@@ -231,9 +231,8 @@ export default function ApeDashboard() {
                     diagnosis: fd.get('diagnosis') as string,
                     referral_to: fd.get('referral_to') as string,
                     notes: fd.get('notes') as string,
-                    country_id: 'MZ',
                     offline_synced: isOnline,
-                  });
+                  } as any);
                   setShowNewVisit(false);
                 }}
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
