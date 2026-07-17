@@ -11,6 +11,14 @@ import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from '@/lib/healthRoute
 import { UniversalReviews } from '@/components/reviews/UniversalReviews';
 import { GoogleMapEmbed } from '@/components/maps/GoogleMapEmbed';
 import { useLocation } from '@/contexts/LocationContext';
+import {
+  usePlaceDetailsForFacility,
+  OpenNowBadge,
+  PlacePhotosCarousel,
+  PopularTimesChart,
+  PlaceReviewsList,
+  PlaceDetailsLoadingInline,
+} from '@/components/maps/PlaceDetailsWidgets';
 import { useQuery } from '@tanstack/react-query';
 import { useCountry } from '@/contexts/CountryContext';
 
@@ -58,6 +66,15 @@ export default function FacilityDetail() {
             return data;
         },
         enabled: !!facility && (facility.type === 'clinic' || facility.type === 'hospital')
+    });
+
+    // Google Places API — enriquece com fotos, horário, reviews, popular times
+    const { data: placeDetails, isLoading: placeLoading } = usePlaceDetailsForFacility({
+        google_place_id: facility?.google_place_id,
+        latitude: facility?.latitude,
+        longitude: facility?.longitude,
+        type: facility?.type,
+        name: facility?.name,
     });
 
     if (loading) {
@@ -120,19 +137,52 @@ export default function FacilityDetail() {
                                 {facility.description || `${facility.name} é uma referência de saúde em ${facility.city}, oferecendo cuidados de qualidade para toda a comunidade.`}
                             </p>
 
+                            {/* Badge "Aberto agora" em tempo real (Google Places API) */}
+                            {placeLoading && <PlaceDetailsLoadingInline />}
+                            {placeDetails && (
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <OpenNowBadge details={placeDetails} />
+                                    {placeDetails.rating && (
+                                        <Badge variant="outline" className="gap-1 text-xs">
+                                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                            {placeDetails.rating.toFixed(1)} · {placeDetails.userRatingCount || 0} avaliações Google
+                                        </Badge>
+                                    )}
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-2 gap-3 mt-4">
                                 <div className="bento-card p-3 bg-primary/5 border-primary/10">
                                     <Clock className="h-4 w-4 text-primary mb-1" />
                                     <p className="text-[10px] uppercase font-bold text-muted-foreground">Horário</p>
-                                    <p className="text-xs font-bold">{facility.type === 'hospital' ? 'Aberto 24h' : '08:00 - 18:00'}</p>
+                                    <p className="text-xs font-bold">
+                                        {placeDetails?.currentOpeningHours?.openNow
+                                            ? 'Aberto agora'
+                                            : placeDetails?.currentOpeningHours
+                                            ? 'Fechado agora'
+                                            : facility.type === 'hospital' ? 'Aberto 24h' : '08:00 - 18:00'}
+                                    </p>
                                 </div>
                                 <div className="bento-card p-3 bg-secondary/5 border-secondary/10">
                                     <Star className="h-4 w-4 text-secondary mb-1" />
                                     <p className="text-[10px] uppercase font-bold text-muted-foreground">Avaliação</p>
-                                    <p className="text-xs font-bold">{facility.rating?.toFixed(1) || '4.8'} / 5.0</p>
+                                    <p className="text-xs font-bold">
+                                        {placeDetails?.rating?.toFixed(1) || facility.rating?.toFixed(1) || '4.8'} / 5.0
+                                    </p>
                                 </div>
                             </div>
                         </section>
+
+                        {/* Carrossel de fotos reais do Google Places */}
+                        {placeDetails?.photos && placeDetails.photos.length > 0 && (
+                            <section className="space-y-3">
+                                <h2 className="text-lg font-black">Fotos do Local</h2>
+                                <PlacePhotosCarousel photos={placeDetails.photos} />
+                            </section>
+                        )}
+
+                        {/* Gráfico de horas de pico (Popular Times) */}
+                        {placeDetails?.utcOffsetMinutes != null && <PopularTimesChart details={placeDetails} />}
 
                         <section className="space-y-3">
                             <h2 className="text-lg font-black">Localização e Contacto</h2>
@@ -159,7 +209,7 @@ export default function FacilityDetail() {
                                         origin={userOrigin}
                                         mode="place"
                                         height={260}
-                                        className="text-slate-900"
+                                        theme="light"
                                     />
                                 )}
 
@@ -235,7 +285,19 @@ export default function FacilityDetail() {
                         )}
                     </TabsContent>
 
-                    <TabsContent value="reviews" className="mt-6">
+                    <TabsContent value="reviews" className="mt-6 space-y-6">
+                        {/* Reviews reais do Google Places */}
+                        {placeDetails?.reviews && placeDetails.reviews.length > 0 && (
+                            <section className="space-y-3">
+                                <h2 className="text-lg font-black flex items-center gap-2">
+                                    <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
+                                    Avaliações do Google
+                                </h2>
+                                <PlaceReviewsList reviews={placeDetails.reviews} />
+                            </section>
+                        )}
+
+                        {/* Reviews da plataforma MedWallet */}
                         <UniversalReviews clinicId={facility.id} entityName={facility.name} />
                     </TabsContent>
                 </Tabs>

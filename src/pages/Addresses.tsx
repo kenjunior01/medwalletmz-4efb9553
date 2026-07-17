@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { MapPin, Plus, Edit2, Trash2, Home, Briefcase, Star } from 'lucide-react';
+import { MapPin, Plus, Edit2, Trash2, Home, Briefcase, Star, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import { getNeighborhoodsForCity } from '@/lib/regional-neighborhoods';
 
 import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
+import { GoogleMapEmbed } from '@/components/maps/GoogleMapEmbed';
 
 const labelIcons: Record<string, any> = {
   'Casa': Home,
@@ -259,6 +260,19 @@ export default function Addresses() {
                 placeholder="Av. Julius Nyerere, 123, Polana"
               />
 
+              {form.latitude && form.longitude && (
+                <GoogleMapEmbed
+                  lat={form.latitude}
+                  lng={form.longitude}
+                  title={form.label}
+                  address={form.address_line}
+                  mode="place"
+                  height={200}
+                  zoom={15}
+                  theme="light"
+                />
+              )}
+
               <div className="space-y-2">
                 <Label>Cidade</Label>
                 <Select value={form.city} onValueChange={(v) => { setForm(f => ({ ...f, city: v })); setNeighborhood(''); }}>
@@ -331,7 +345,7 @@ export default function Addresses() {
             return (
               <div
                 key={address.id}
-                className="bg-card rounded-xl border border-border p-4 space-y-2"
+                className="bg-card rounded-xl border border-border p-4 space-y-3"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
@@ -372,6 +386,20 @@ export default function Addresses() {
                 <p className="text-sm text-muted-foreground pl-10">
                   {address.address_line}, {address.city}
                 </p>
+
+                {address.latitude && address.longitude && (
+                  <GoogleMapEmbed
+                    lat={address.latitude}
+                    lng={address.longitude}
+                    title={address.label}
+                    address={`${address.address_line}, ${address.city}`}
+                    mode="place"
+                    height={200}
+                    zoom={15}
+                    theme="light"
+                  />
+                )}
+
                 {!address.is_default && (
                   <Button
                     variant="link"

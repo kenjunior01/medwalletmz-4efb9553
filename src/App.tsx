@@ -146,6 +146,7 @@ const MyAds = lazy(() => import("./pages/ads/MyAds"));
 const Facilities = lazy(() => import("./pages/health/Facilities"));
 const FacilityExplorer = lazy(() => import("./pages/health/FacilityExplorer"));
 const FacilityDetail = lazy(() => import("./pages/health/FacilityDetail"));
+const NearbyHealth = lazy(() => import("./pages/health/NearbyHealth"));
 const LegalDocs = lazy(() => import("./pages/LegalDocs"));
 const LabDetail = lazy(() => import("./pages/health/LabDetail"));
 const MyLabOrders = lazy(() => import("./pages/health/MyLabOrders"));
@@ -256,6 +257,7 @@ const App = () => (
                     <Route path="/health/facilities" element={<Facilities />} />
                     <Route path="/health/explorer" element={<FacilityExplorer />} />
                     <Route path="/health/facilities/:id" element={<FacilityDetail />} />
+                    <Route path="/health/nearby" element={<NearbyHealth />} />
                     <Route path="/blood" element={<BloodHub />} />
                     <Route path="/blood/register-donor" element={<BloodDonorRegister />} />
                     <Route path="/blood/request" element={<BloodRequestForm />} />

@@ -861,6 +861,7 @@ function MapPreview({ proposal }: { proposal: Proposal }) {
           mode="place"
           height={288}
           showModeToggle={true}
+          theme="light"
         />
       </div>
       <div className="p-3 text-xs text-muted-foreground">{lat.toFixed(6)}, {lng.toFixed(6)} · {proposal.address || proposal.city}</div>

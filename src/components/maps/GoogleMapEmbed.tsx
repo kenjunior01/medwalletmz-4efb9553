@@ -54,6 +54,8 @@ export interface GoogleMapEmbedProps {
   region?: string;
   /** Mostrar controlos de toggle de modo (padrão true) */
   showModeToggle?: boolean;
+  /** Tema visual: 'dark' (padrão, para páginas admin) ou 'light' (para páginas públicas) */
+  theme?: 'dark' | 'light';
   /** className extra para o wrapper */
   className?: string;
 }
@@ -160,11 +162,24 @@ export function GoogleMapEmbed({
   language = "pt",
   region = "MZ",
   showModeToggle = true,
+  theme = 'dark',
   className,
 }: GoogleMapEmbedProps) {
   const [mode, setMode] = useState<GoogleMapEmbedMode>(initialMode);
   const [mapType, setMapType] = useState<"roadmap" | "satellite">(initialMapType);
   const [loading, setLoading] = useState(true);
+
+  // Classes condicionais conforme o tema
+  const isDark = theme === 'dark';
+  const textLabel = isDark ? 'text-slate-400' : 'text-muted-foreground';
+  const toggleBg = isDark ? 'bg-slate-800/60' : 'bg-muted';
+  const toggleInactive = isDark ? 'text-slate-300 hover:text-white hover:bg-slate-700' : 'text-muted-foreground hover:text-foreground hover:bg-accent';
+  const layerActive = isDark ? 'bg-slate-700 text-white' : 'bg-primary/10 text-primary';
+  const layerInactive = isDark ? 'text-slate-400 hover:text-white' : 'text-muted-foreground hover:text-foreground';
+  const frameBorder = isDark ? 'border-slate-700 bg-slate-900' : 'border-border bg-muted';
+  const loadingText = isDark ? 'text-slate-400' : 'text-muted-foreground';
+  const coordText = isDark ? 'text-slate-400' : 'text-muted-foreground';
+  const btnClass = isDark ? 'border-slate-700 text-slate-200' : '';
 
   const hasApiKey = Boolean(API_KEY);
 
@@ -214,12 +229,12 @@ export function GoogleMapEmbed({
     <div className={className}>
       {/* Header com título + toggle de modo */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+        <p className={`text-xs font-semibold uppercase tracking-wider ${textLabel} flex items-center gap-2`}>
           <MapPin className="h-3 w-3" /> Localização
         </p>
 
         {showModeToggle && (
-          <div className="flex items-center gap-1 rounded-lg bg-slate-800/60 p-0.5">
+          <div className={`flex items-center gap-1 rounded-lg ${toggleBg} p-0.5`}>
             {modes.map((m) => {
               const Icon = m.icon;
               const active = mode === m.key;
@@ -232,9 +247,7 @@ export function GoogleMapEmbed({
                     setLoading(true);
                   }}
                   className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors ${
-                    active
-                      ? "bg-primary text-white"
-                      : "text-slate-300 hover:text-white hover:bg-slate-700"
+                    active ? "bg-primary text-white" : toggleInactive
                   }`}
                   aria-pressed={active}
                 >
@@ -257,7 +270,7 @@ export function GoogleMapEmbed({
               setLoading(true);
             }}
             className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium ${
-              mapType === "roadmap" ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white"
+              mapType === "roadmap" ? layerActive : layerInactive
             }`}
           >
             <Layers className="h-3 w-3" /> Mapa
@@ -269,7 +282,7 @@ export function GoogleMapEmbed({
               setLoading(true);
             }}
             className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium ${
-              mapType === "satellite" ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white"
+              mapType === "satellite" ? layerActive : layerInactive
             }`}
           >
             <Layers className="h-3 w-3" /> Satélite
@@ -278,12 +291,12 @@ export function GoogleMapEmbed({
       )}
 
       {/* Iframe com loading skeleton */}
-      <div className="relative rounded-xl overflow-hidden border border-slate-700 bg-slate-900">
+      <div className={`relative rounded-xl overflow-hidden border ${frameBorder}`}>
         {loading && (
           <div className="absolute inset-0 z-10">
             <Skeleton className="w-full h-full" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <p className="text-xs text-slate-400 animate-pulse">A carregar mapa…</p>
+              <p className={`text-xs ${loadingText} animate-pulse`}>A carregar mapa…</p>
             </div>
           </div>
         )}
@@ -304,17 +317,17 @@ export function GoogleMapEmbed({
 
       {/* Coordenadas + botões de ação */}
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs text-slate-400 font-mono">
+        <p className={`text-xs ${coordText} font-mono`}>
           {lat.toFixed(6)}, {lng.toFixed(6)}
           {address ? ` · ${address}` : ""}
         </p>
         <div className="flex gap-2">
-          <Button asChild size="sm" variant="outline" className="border-slate-700 text-slate-200">
+          <Button asChild size="sm" variant="outline" className={btnClass}>
             <a href={openInMapsUrl} target="_blank" rel="noreferrer">
               <Navigation className="h-3 w-3 mr-1" /> Abrir no Maps
             </a>
           </Button>
-          <Button asChild size="sm" variant="outline" className="border-slate-700 text-slate-200">
+          <Button asChild size="sm" variant="outline" className={btnClass}>
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
               target="_blank"
