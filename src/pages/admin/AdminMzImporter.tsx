@@ -7,18 +7,19 @@ import { toast } from 'sonner';
 import { Loader2, Download, AlertTriangle } from 'lucide-react';
 
 // Cidades por província (principais + algumas secundárias)
+// Cobertura máxima: todos os distritos + principais vilas das 11 províncias de Moçambique
 const MZ_CITIES: Record<string, string[]> = {
-  'Maputo Cidade':    ['Maputo'],
-  'Maputo Província': ['Matola', 'Boane', 'Namaacha', 'Manhiça', 'Marracuene'],
-  'Gaza':             ['Xai-Xai', 'Chókwe', 'Manjacaze', 'Bilene', 'Chibuto'],
-  'Inhambane':        ['Inhambane', 'Maxixe', 'Vilanculos', 'Massinga', 'Inharrime'],
-  'Sofala':           ['Beira', 'Dondo', 'Nhamatanda', 'Marromeu', 'Búzi'],
-  'Manica':           ['Chimoio', 'Manica', 'Sussundenga', 'Gondola', 'Catandica'],
-  'Tete':             ['Tete', 'Moatize', 'Angónia', 'Ulónguè', 'Cahora Bassa'],
-  'Zambézia':         ['Quelimane', 'Mocuba', 'Milange', 'Gurué', 'Alto Molócuè'],
-  'Nampula':          ['Nampula', 'Nacala', 'Angoche', 'Ilha de Moçambique', 'Monapo'],
-  'Cabo Delgado':     ['Pemba', 'Mocímboa da Praia', 'Montepuez', 'Chiúre', 'Mueda'],
-  'Niassa':           ['Lichinga', 'Cuamba', 'Marrupa', 'Mandimba', 'Metangula'],
+  'Maputo Cidade':    ['Maputo', 'KaMpfumo', 'Nlhamankulu', 'KaMaxaquene', 'KaMavota', 'KaMubukwana', 'KaTembe', 'KaNyaka'],
+  'Maputo Província': ['Matola', 'Boane', 'Namaacha', 'Manhiça', 'Marracuene', 'Magude', 'Moamba', 'Ressano Garcia', 'Xinavane', 'Machava', 'Ndlavela'],
+  'Gaza':             ['Xai-Xai', 'Chókwe', 'Manjacaze', 'Bilene', 'Chibuto', 'Guijá', 'Chigubo', 'Massangena', 'Massingir', 'Mabalane', 'Chicualacuala', 'Mapai', 'Praia do Bilene', 'Macia'],
+  'Inhambane':        ['Inhambane', 'Maxixe', 'Vilanculos', 'Massinga', 'Inharrime', 'Homoíne', 'Jangamo', 'Panda', 'Funhalouro', 'Mabote', 'Govuro', 'Morrumbene', 'Zavala', 'Quissico', 'Inhassoro', 'Tofo'],
+  'Sofala':           ['Beira', 'Dondo', 'Nhamatanda', 'Marromeu', 'Búzi', 'Caia', 'Chemba', 'Cheringoma', 'Chibabava', 'Gorongosa', 'Machanga', 'Maríngue', 'Muanza', 'Inhaminga'],
+  'Manica':           ['Chimoio', 'Manica', 'Sussundenga', 'Gondola', 'Catandica', 'Bárue', 'Guro', 'Machaze', 'Macossa', 'Mossurize', 'Tambara', 'Espungabera', 'Vanduzi'],
+  'Tete':             ['Tete', 'Moatize', 'Angónia', 'Ulónguè', 'Cahora Bassa', 'Songo', 'Changara', 'Chifunde', 'Chiúta', 'Macanga', 'Magoé', 'Marara', 'Mágoè', 'Mutarara', 'Zumbo', 'Doa', 'Furancungo'],
+  'Zambézia':         ['Quelimane', 'Mocuba', 'Milange', 'Gurué', 'Alto Molócuè', 'Chinde', 'Derre', 'Gilé', 'Ile', 'Inhassunge', 'Luabo', 'Lugela', 'Maganja da Costa', 'Molumbo', 'Mopeia', 'Morrumbala', 'Namacurra', 'Namarrói', 'Nicoadala', 'Pebane'],
+  'Nampula':          ['Nampula', 'Nacala', 'Angoche', 'Ilha de Moçambique', 'Monapo', 'Erati', 'Lalaua', 'Malema', 'Meconta', 'Mecubúri', 'Memba', 'Mogincual', 'Mogovolas', 'Moma', 'Mossuril', 'Muecate', 'Murrupula', 'Nacala-a-Velha', 'Nacaroa', 'Rapale', 'Ribáuè', 'Nametil'],
+  'Cabo Delgado':     ['Pemba', 'Mocímboa da Praia', 'Montepuez', 'Chiúre', 'Mueda', 'Ancuabe', 'Balama', 'Ibo', 'Macomia', 'Mecúfi', 'Meluco', 'Metuge', 'Muidumbe', 'Namuno', 'Nangade', 'Palma', 'Quissanga'],
+  'Niassa':           ['Lichinga', 'Cuamba', 'Marrupa', 'Mandimba', 'Metangula', 'Chimbunila', 'Lago', 'Majune', 'Maúa', 'Mavago', 'Mecanhelas', 'Mecula', 'Muembe', 'N\'gauma', 'Nipepe', 'Sanga'],
 };
 
 const TYPES = ['pharmacy', 'hospital', 'clinic', 'laboratory', 'veterinary'] as const;
