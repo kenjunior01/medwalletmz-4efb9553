@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { lovable } from '@/integrations/lovable';
 
 type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager';
 
@@ -213,13 +214,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (referralCode) {
       localStorage.setItem('pending_referral_code', referralCode);
     }
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    });
-    return { error: error as Error | null };
+    // Usa o broker OAuth da Lovable Cloud em vez de supabase.auth.signInWithOAuth directo.
+    // O broker da Lovable (https://oauth.lovable.app) trata do redirect URI / callback,
+    // evitando o erro "redirect_uri_mismatch" no Supabase (cujo Dashboard é gerido pela Lovable).
+    // Após o redirect, o broker devolve tokens que são aplicados via supabase.auth.setSession().
+    try {
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: `${window.location.origin}/`,
+      });
+      if (result.redirected) {
+        // Página está a redirecionar para o Google via broker Lovable
+        return { error: null };
+      }
+      if (result.error) {
+        return { error: result.error };
+      }
+      // Se chegou aqui, setSession já foi chamado dentro de lovable.auth.signInWithOAuth
+      return { error: null };
+    } catch (e) {
+      return { error: e instanceof Error ? e : new Error(String(e)) };
+    }
   };
 
   const signOut = async () => {
