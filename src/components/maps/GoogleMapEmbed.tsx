@@ -25,7 +25,7 @@
  */
 
 import { useMemo, useState } from "react";
-import { ExternalLink, Layers, MapPin, Navigation, StreetView } from "lucide-react";
+import { ExternalLink, Layers, MapPin, Navigation, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -222,7 +222,7 @@ export function GoogleMapEmbed({
   const modes: Array<{ key: GoogleMapEmbedMode; label: string; icon: any }> = [
     { key: "place", label: "Mapa", icon: MapPin },
     { key: "directions", label: "Direções", icon: Navigation },
-    { key: "streetview", label: "Street View", icon: StreetView },
+    { key: "streetview", label: "Street View", icon: Camera },
   ];
 
   return (
