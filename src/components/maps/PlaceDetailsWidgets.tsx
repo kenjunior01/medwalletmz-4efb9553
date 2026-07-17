@@ -162,23 +162,29 @@ export function PlaceReviewsList({
   if (!reviews?.length) return null;
   return (
     <div className="space-y-3 mt-3">
-      {reviews.slice(0, max).map((r, i) => (
+      {reviews.slice(0, max).map((r, i) => {
+        // Google Places API (New) returns review.text as {text, languageCode},
+        // not a plain string. We must extract `.text.text` to avoid React error #31.
+        const reviewText = r.text?.text || r.originalText?.text || "";
+        const authorName = r.authorAttribution?.displayName || r.authorName || "Anónimo";
+        const authorPhoto = r.authorAttribution?.photoUri;
+        return (
         <div key={i} className="rounded-lg border border-slate-200 p-3 bg-white">
           <div className="flex items-center gap-2 mb-1.5">
-            {r.authorAttribution?.photoUrl ? (
+            {authorPhoto ? (
               <img
-                src={r.authorAttribution.photoUrl}
-                alt={r.authorName}
+                src={authorPhoto}
+                alt={authorName}
                 className="h-6 w-6 rounded-full"
                 referrerPolicy="no-referrer"
               />
             ) : (
               <div className="h-6 w-6 rounded-full bg-slate-300 flex items-center justify-center text-[10px] font-bold text-slate-600">
-                {r.authorName?.[0]?.toUpperCase() || "?"}
+                {authorName?.[0]?.toUpperCase() || "?"}
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold truncate">{r.authorName}</p>
+              <p className="text-xs font-semibold truncate">{authorName}</p>
               <p className="text-[10px] text-slate-500">{r.relativePublishTimeDescription}</p>
             </div>
             <div className="flex items-center gap-0.5">
@@ -192,9 +198,12 @@ export function PlaceReviewsList({
               ))}
             </div>
           </div>
-          <p className="text-xs text-slate-700 line-clamp-3">{r.text}</p>
+          {reviewText && (
+            <p className="text-xs text-slate-700 line-clamp-3">{reviewText}</p>
+          )}
         </div>
-      ))}
+        );
+      })}
       {reviews.length > max && (
         <p className="text-xs text-slate-500 text-center">
           +{reviews.length - max} avaliações no Google Maps

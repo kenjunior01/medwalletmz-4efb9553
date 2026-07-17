@@ -38,15 +38,33 @@ export interface PlacePhoto {
   heightPx?: number;
 }
 
-export interface PlaceReview {
-  authorName: string;
-  rating: number;
+/**
+ * Matches the actual Google Places API (New) response shape.
+ * Note: `text` and `originalText` are objects {text, languageCode}, NOT plain strings.
+ * Rendering `review.text` directly in JSX causes React error #31
+ * ("Objects are not valid as a React child").
+ */
+export interface PlaceReviewText {
   text: string;
-  relativePublishTimeDescription: string;
-  originalText?: string;
+  languageCode?: string;
+}
+
+export interface PlaceReview {
+  /**
+   * NOTE: Google Places API (New) does NOT return a top-level `authorName`.
+   * The author name lives in `authorAttribution.displayName`.
+   * We keep this optional here only for backwards compatibility with legacy code paths,
+   * but consumers should prefer `authorAttribution?.displayName`.
+   */
+  authorName?: string;
+  name?: string;
+  rating: number;
+  text: PlaceReviewText;
+  relativePublishTimeDescription?: string;
+  originalText?: PlaceReviewText;
   authorAttribution?: {
     displayName: string;
-    photoUrl?: string;
+    photoUri?: string;
     uri?: string;
   };
 }
@@ -92,6 +110,8 @@ export interface PlaceDetails {
   };
   primaryTypeDisplayName?: { text: string; languageCode: string };
   editorialSummary?: { text: string; languageCode: string };
+  // Note: `displayName`, `editorialSummary`, `primaryTypeDisplayName` use the
+  // LocalizedText shape {text, languageCode}. Never render the whole object — always use `.text`.
   // popular_times (live) — campo "currentSecondaryOpeningHours" pode trazer popular_times
   // mas em formato complexo; extraímos se disponível.
   livePopularTimes?: PopularTimeSlot[];
