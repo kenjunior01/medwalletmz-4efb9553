@@ -14,36 +14,45 @@ const MAPS_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY')!;
 const PHOTO_PROXY = `${SUPABASE_URL}/functions/v1/place-photo?name=`;
 
 const TYPE_QUERIES: Record<string, string[]> = {
-  pharmacy:   ['farmácia', 'farmacia'],
-  hospital:   ['hospital'],
-  clinic:     ['clínica médica', 'centro de saúde'],
-  laboratory: ['laboratório de análises clínicas'],
-  veterinary: ['clínica veterinária', 'veterinária'],
+  pharmacy:   ['farmácia', 'drogaria', 'farmácia 24h', 'farmácia comunitária'],
+  hospital:   ['hospital', 'hospital central', 'hospital provincial', 'hospital rural', 'hospital distrital', 'hospital privado'],
+  clinic:     ['clínica médica', 'centro de saúde', 'posto de saúde', 'clínica privada', 'clínica dentária', 'consultório médico', 'unidade sanitária'],
+  laboratory: ['laboratório de análises clínicas', 'laboratório clínico', 'laboratório médico', 'centro de diagnóstico'],
+  veterinary: ['clínica veterinária', 'veterinária', 'hospital veterinário', 'consultório veterinário'],
 };
 
 async function placesSearch(query: string, city: string) {
-  const res = await fetch(`${GATEWAY}/places/v1/places:searchText`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${LOVABLE_KEY}`,
-      'X-Connection-Api-Key': MAPS_KEY,
-      'Content-Type': 'application/json',
-      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount,places.photos,places.googleMapsUri',
-    },
-    body: JSON.stringify({
+  const all: any[] = [];
+  let pageToken: string | undefined;
+  for (let page = 0; page < 3; page++) { // até 60 resultados por query (3 páginas x 20)
+    const body: any = {
       textQuery: `${query} em ${city}, Moçambique`,
       regionCode: 'MZ',
       languageCode: 'pt-PT',
       pageSize: 20,
-    }),
-  });
-  if (!res.ok) {
-    const t = await res.text();
-    console.error(`Places search failed [${res.status}]: ${t}`);
-    return [];
+    };
+    if (pageToken) body.pageToken = pageToken;
+    const res = await fetch(`${GATEWAY}/places/v1/places:searchText`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_KEY}`,
+        'X-Connection-Api-Key': MAPS_KEY,
+        'Content-Type': 'application/json',
+        'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount,places.photos,places.googleMapsUri,nextPageToken',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      console.error(`Places search failed [${res.status}]: ${await res.text()}`);
+      break;
+    }
+    const data = await res.json();
+    if (data.places) all.push(...data.places);
+    pageToken = data.nextPageToken;
+    if (!pageToken) break;
+    await new Promise((r) => setTimeout(r, 1500)); // token precisa "aquecer"
   }
-  const data = await res.json();
-  return data.places || [];
+  return all;
 }
 
 function photoUrl(photoName: string | undefined) {
