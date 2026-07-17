@@ -1,11 +1,9 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 // =====================================================================
-// AI TRIAGE — 4 CAMADAS DE FALLBACK
-// 1. Google Gemini API (FREE 1500 req/dia) — primária
-// 2. Groq API (ultra-rápido LPU, free tier generoso) — fallback 1
-// 3. Lovable AI Gateway — fallback 2 (se LOVABLE_API_KEY configurada)
-// 4. Motor local de regras clínicas — último recurso (sempre funciona)
+// AI TRIAGE — PRIORIDADE MÁXIMA: LOVABLE AI GATEWAY
+// 1. Lovable AI Gateway (google/gemini-3-flash-preview) — PRIMÁRIA
+// 2. Motor local de regras clínicas — fallback de emergência
 // =====================================================================
 
 interface CountryConfig {
@@ -310,7 +308,10 @@ async function triageWithLovable(
   symptoms: string, age: number | null, duration: string | null, config: CountryConfig
 ): Promise<TriageResult | null> {
   const KEY = Deno.env.get('LOVABLE_API_KEY');
-  if (!KEY) return null;
+  if (!KEY) {
+    console.error('LOVABLE_API_KEY não configurada');
+    return null;
+  }
 
   try {
     const system = `És um assistente de triagem médica em ${config.name}. Responde sempre em ${config.dialect}.
@@ -324,7 +325,7 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
       method: 'POST',
       headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp',
+        model: 'google/gemini-3-flash-preview',
         messages: [{ role: 'system', content: system }, { role: 'user', content: userMsg }],
         tools: [{
           type: 'function',
@@ -349,17 +350,21 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
     });
 
     if (!aiRes.ok) {
-      console.warn('Lovable error', aiRes.status);
+      const errTxt = await aiRes.text().catch(() => '');
+      console.error('Lovable AI error', aiRes.status, errTxt);
       return null;
     }
 
     const data = await aiRes.json();
     const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
     const parsed = args ? JSON.parse(args) : null;
-    if (!parsed) return null;
+    if (!parsed) {
+      console.error('Lovable AI: sem tool_call na resposta', JSON.stringify(data).slice(0, 500));
+      return null;
+    }
     return { ...parsed, _provider: 'lovable' };
   } catch (e) {
-    console.warn('Lovable exception:', e);
+    console.error('Lovable AI exception:', e);
     return null;
   }
 }
@@ -383,23 +388,7 @@ Deno.serve(async (req) => {
 
     const config = COUNTRY_CONFIGS[country] || COUNTRY_CONFIGS.MZ;
 
-    // CAMADA 1: Google Gemini (FREE)
-    const geminiResult = await triageWithGemini(symptoms, age, duration, config);
-    if (geminiResult) {
-      return new Response(JSON.stringify(geminiResult), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // CAMADA 2: Groq (ultra-rápido, fallback de quota/região)
-    const groqResult = await triageWithGroq(symptoms, age, duration, config);
-    if (groqResult) {
-      return new Response(JSON.stringify(groqResult), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // CAMADA 3: Lovable AI
+    // CAMADA 1 (PRIORITÁRIA): Lovable AI Gateway
     const lovableResult = await triageWithLovable(symptoms, age, duration, config);
     if (lovableResult) {
       return new Response(JSON.stringify(lovableResult), {
@@ -407,12 +396,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // CAMADA 4: Local rules (sempre funciona)
+    // CAMADA 2 (fallback): Regras clínicas locais
     const localResult = localTriage(symptoms, age, duration, config);
     return new Response(JSON.stringify({
       ...localResult,
       _provider: 'local_rules',
-      _note: 'IA indisponível — usando triagem local baseada em regras clínicas. Configure GEMINI_API_KEY ou GROQ_API_KEY para IA avançada.',
+      _note: 'Lovable AI indisponível — usando triagem local de fallback.',
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
   } catch (e) {
