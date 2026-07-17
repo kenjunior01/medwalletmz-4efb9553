@@ -68,12 +68,17 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
         // Não fazer cache de:
         // - API do Supabase (sempre fresh)
-        // - OAuth broker da Lovable
+        // - OAuth broker da Lovable — caminho /~oauth/initiate no MESMO origin
+        //   (este caminho é interceptado pelo servidor da Lovable Cloud e redireciona
+        //   para o Google. Se o SW fizer fallback para index.html, o user vê "página
+        //   não existe" em vez do redirect OAuth.)
         // - Google Fonts (CDN externo)
         navigateFallbackDenylist: [
           /^https:\/\/pfqruzusjxyidhqkiob\.supabase\.co\//,
           /^https:\/\/oauth\.lovable\.app\//,
           /^https:\/\/fonts\.(googleapis|gstatic)\.com\//,
+          // Caminho relativo /~oauth/ no mesmo origin (broker Lovable Cloud)
+          /\/~oauth\//,
         ],
         runtimeCaching: [
           {

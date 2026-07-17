@@ -12,6 +12,7 @@ import { DataSaverProvider } from "@/contexts/DataSaverContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
 import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
+import { OAuthBrokerRedirect } from "@/components/auth/OAuthBrokerRedirect";
 import { PWAInstallBanner, PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
 
 // =========================================================================
@@ -396,6 +397,12 @@ const App = () => (
                   {/* Lab Routes */}
                   <Route path="/lab/register" element={<RegistrationWizard />} />
                   <Route path="/lab/dashboard" element={<LabDashboard />} />
+
+                  {/* Rota especial: /~oauth/* — broker OAuth da Lovable Cloud
+                      capturada pelo React Router quando SW antigo serve index.html
+                      em vez de deixar o servidor redirecionar para o Google.
+                      Ver OAuthBrokerRedirect.tsx para detalhes. */}
+                  <Route path="/~oauth/*" element={<OAuthBrokerRedirect />} />
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>
