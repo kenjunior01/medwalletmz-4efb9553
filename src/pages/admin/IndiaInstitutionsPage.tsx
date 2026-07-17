@@ -409,7 +409,7 @@ export default function IndiaInstitutionsPage() {
               {selected.latitude && selected.longitude ? (
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-2">
-                    <MapPin className="h-3 w-3" /> Localização no Google Maps
+                    <MapPin className="h-3 w-3" /> Localização
                   </h3>
                   <div className="rounded-xl overflow-hidden border border-slate-700">
                     <iframe
@@ -417,7 +417,7 @@ export default function IndiaInstitutionsPage() {
                       width="100%"
                       height="280"
                       loading="lazy"
-                      src={`https://maps.google.com/maps?q=${selected.latitude},${selected.longitude}&z=14&output=embed`}
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${selected.longitude - 0.01}%2C${selected.latitude - 0.01}%2C${selected.longitude + 0.01}%2C${selected.latitude + 0.01}&layer=mapnik&marker=${selected.latitude}%2C${selected.longitude}`}
                     />
                   </div>
                   <div className="mt-2 flex gap-2">
