@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">medwalletmz</string>
-    <string name="title_activity_main">medwalletmz</string>
+    <string name="app_name">MedWallet</string>
+    <string name="title_activity_main">MedWallet</string>
     <string name="package_name">mz.medwallet.app</string>
     <string name="custom_url_scheme">mz.medwallet.app</string>
+    <string name="server_client_id">752262032073-512kkc7l8o3a0muacldpv2rhaa7uv4bk.apps.googleusercontent.com</string>
 </resources>

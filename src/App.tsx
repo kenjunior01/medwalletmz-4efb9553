@@ -11,6 +11,8 @@ import { LocationProvider } from "@/contexts/LocationContext";
 import { DataSaverProvider } from "@/contexts/DataSaverContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
+import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
+import { PWAInstallBanner, PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
 
 // =========================================================================
 // CODE-SPLITTING COM React.lazy
@@ -198,6 +200,7 @@ const App = () => (
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
+                <OAuthCallbackHandler>
                 <Suspense fallback={<LoadingScreen />}>
                 <Routes>
                   {/* Main App Routes */}
@@ -395,6 +398,10 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </Suspense>
+                </OAuthCallbackHandler>
+                {/* Componentes PWA globais (banner instalação + toast update) */}
+                <PWAInstallBanner />
+                <PWAUpdateToast />
               </BrowserRouter>
             </TooltipProvider>
           </DataSaverProvider>

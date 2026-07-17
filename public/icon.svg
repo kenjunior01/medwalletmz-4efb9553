@@ -1,11 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FFCC00;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FF9500;stop-opacity:1" />
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#065F46"/>
     </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+      <feOffset dx="0" dy="4" result="offsetblur"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.3"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
-  <rect width="512" height="512" rx="108" fill="url(#grad1)"/>
-  <text x="256" y="320" font-family="Arial, sans-serif" font-size="240" font-weight="bold" text-anchor="middle" fill="#1a1a2e">M</text>
-  <circle cx="380" cy="140" r="50" fill="#2d9c4a"/>
+
+  <!-- Fundo com cantos arredondados -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Wallet shape (carteira) -->
+  <g filter="url(#shadow)">
+    <rect x="96" y="156" width="320" height="220" rx="32" fill="#FFFFFF"/>
+    <rect x="96" y="200" width="320" height="44" fill="#E5E7EB"/>
+    <circle cx="346" cy="298" r="22" fill="url(#accent)"/>
+  </g>
+
+  <!-- Cruz médica -->
+  <g filter="url(#shadow)">
+    <rect x="232" y="92" width="48" height="124" rx="14" fill="#FFFFFF"/>
+    <rect x="194" y="130" width="124" height="48" rx="14" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Pequeno coração no canto -->
+  <path d="M 400 96 Q 396 88 388 88 Q 380 88 380 96 Q 380 88 372 88 Q 364 88 360 96 Q 360 104 380 116 Q 400 104 400 96 Z" fill="#EF4444" opacity="0.9"/>
 </svg>

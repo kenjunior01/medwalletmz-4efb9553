@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Network Security Configuration para MedWallet
+
+    Política:
+      - Tráfego HTTPS permitido por defeito
+      - Tráfego HTTP bloqueado (cleartextTrafficPermitted=false)
+      - Exceções para localhost (apenas para dev)
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+</network-security-config>

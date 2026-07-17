@@ -3,23 +3,66 @@ apply plugin: 'com.android.application'
 android {
     namespace = "mz.medwallet.app"
     compileSdk = rootProject.ext.compileSdkVersion
+
     defaultConfig {
         applicationId "mz.medwallet.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.1"
+        // =========================================================================
+        // VERSÃO DA APP — INCREMENTAR SEMPRE ANTES DE UPLOAD À PLAY STORE
+        // versionCode: inteiro, sempre +1 (Play Store usa para distinguir versões)
+        // versionName: string legível (x.y.z) mostrada aos utilizadores
+        // =========================================================================
+        versionCode 3
+        versionName "1.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+
+    // =========================================================================
+    // ASSINATURA DE RELEASE
+    // Para gerar keystore (apenas UMA VEZ — guardar com segurança!):
+    //   keytool -genkeypair -v -keystore medwallet-release.keystore \
+    //     -alias medwallet -keyalg RSA -keysize 2048 -validity 10000
+    //
+    // Colocar o keystore em: android/app/medwallet-release.keystore
+    // Criar android/keystore.properties com:
+    //   storeFile=medwallet-release.keystore
+    //   storePassword=...
+    //   keyAlias=medwallet
+    //   keyPassword=...
+    // =========================================================================
+    signingConfigs {
+        def keystoreProps = new Properties()
+        def keystorePropsFile = rootProject.file('keystore.properties')
+        if (keystorePropsFile.exists()) {
+            keystoreProps.load(new FileInputStream(keystorePropsFile))
+            release {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            // Minificação activada para reduzir tamanho do APK
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // Assinatura de release (se keystore.properties existir)
+            if (rootProject.file('keystore.properties').exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            debuggable true
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
         }
     }
 }

@@ -2,67 +2,122 @@
 <html lang="pt">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    
-    <!-- PWA Meta Tags -->
-    <title>MedWallet Global — Saúde, Farmácia e Veterinária</title>
-    <meta name="description" content="MedWallet Global: Saúde, Farmácia e Veterinária numa só carteira. Triagem IA, pagamentos localizados e segurança backend-first." />
-    <meta name="keywords" content="MedWallet, consultas médicas, telemedicina, farmácia delivery, carteira de saúde, veterinária, MedWallet Global" />
-    <meta name="author" content="MedWallet Global" />
+
+    <!-- =========================================================================
+         VIEWPORT MOBILE — viewport-fit=cover para usar notch/safe areas
+         maximum-scale=5 permite zoom até 5x (acessibilidade)
+         ========================================================================= -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+
+    <!-- =========================================================================
+         PWA CORE META TAGS
+         ========================================================================= -->
+    <title>MedWallet — Saúde, Farmácia e Veterinária</title>
+    <meta name="description" content="MedWallet: Saúde, Farmácia e Veterinária numa só carteira. Triagem IA, consultas médicas, telemedicina e pagamentos localizados em Moçambique, Brasil, Angola e mais." />
+    <meta name="keywords" content="MedWallet, consultas médicas, telemedicina, farmácia delivery, carteira de saúde, veterinária, M-Pesa, triagem IA" />
+    <meta name="author" content="MedWallet" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- =========================================================================
+         THEME COLOR — emerald-700 (light) / dark slate (dark)
+         ========================================================================= -->
     <meta name="theme-color" content="#047857" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0f1f" />
+
+    <!-- =========================================================================
+         APPLE iOS / PWA
+         - apple-mobile-web-app-capable: standalone mode quando instalado
+         - status-bar-style: black-translucent para usar safe area
+         - apple-touch-icon: ícone para homescreen iOS
+         ========================================================================= -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="MedWallet" />
-    
-    <!-- Open Graph -->
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- =========================================================================
+         PWA ICONS (todos os tamanhos para máxima compatibilidade)
+         ========================================================================= -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="mask-icon" href="/icon.svg" color="#047857" />
+
+    <!-- =========================================================================
+         OPEN GRAPH — para previews em redes sociais e WhatsApp
+         ========================================================================= -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://medwallet.global/" />
-    <meta property="og:image" content="https://medwallet.global/og-image.png" />
+    <meta property="og:url" content="https://medwalletmz.online/" />
+    <meta property="og:title" content="MedWallet — Saúde, Farmácia e Veterinária" />
+    <meta property="og:description" content="A tua carteira digital de saúde em qualquer lugar. Consultas, farmácia e veterinária." />
+    <meta property="og:image" content="https://medwalletmz.online/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="pt_MZ" />
-    <meta property="og:site_name" content="MedWallet Global" />
-    
-    <!-- Twitter -->
+    <meta property="og:site_name" content="MedWallet" />
+
+    <!-- =========================================================================
+         TWITTER CARD
+         ========================================================================= -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://medwallet.global/og-image.png" />
-    
-    <!-- JSON-LD Structured Data -->
+    <meta name="twitter:title" content="MedWallet — Saúde, Farmácia e Veterinária" />
+    <meta name="twitter:description" content="A tua carteira digital de saúde em qualquer lugar." />
+    <meta name="twitter:image" content="https://medwalletmz.online/og-image.png" />
+
+    <!-- =========================================================================
+         JSON-LD STRUCTURED DATA — para SEO e Google rich results
+         ========================================================================= -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "MedWallet Global",
+      "name": "MedWallet",
       "description": "Plataforma integrada de saúde, farmácia e veterinária com pagamentos localizados.",
-      "url": "https://medwallet.global",
+      "url": "https://medwalletmz.online",
       "applicationCategory": "HealthApplication",
-      "operatingSystem": "Web",
-      "areaServed": ["MZ", "BR", "AO", "ZA", "PT", "IN"]
+      "operatingSystem": "Web, Android, iOS",
+      "areaServed": ["MZ", "BR", "AO", "ZA", "PT", "IN"],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "MZN",
+        "description": "Gratuito para utilizadores (B2C). Planos pagos para médicos e instituições (B2B)."
+      }
     }
     </script>
-    
-    <!-- PWA Icons -->
-    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png?v=2" />
-    <link rel="icon" type="image/png" href="/favicon.png?v=2" />
-    <link rel="apple-touch-icon" href="/icon-512.png?v=2" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    
-    <!-- Preconnect to fonts -->
+
+    <!-- =========================================================================
+         FONTS — preconnect + load assíncrono para não bloquear render
+         ========================================================================= -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    
-  
-  
-  
-  <meta property="og:title" content="MedWallet Global — Saúde, Farmácia e Veterinária" />
-  <meta name="twitter:title" content="MedWallet Global — Saúde, Farmácia e Veterinária" />
-  <meta property="og:description" content="A tua carteira digital de saúde em qualquer lugar. Consultas, farmácia e veterinária." />
-  <meta name="twitter:description" content="A tua carteira digital de saúde em qualquer lugar. Consultas, farmácia e veterinária." />
-</head>
+
+    <!-- =========================================================================
+         PERFORMANCE — DNS prefetch para Supabase e Google Fonts
+         ========================================================================= -->
+    <link rel="dns-prefetch" href="https://pfqruzusjxyidhqkiob.supabase.co" />
+    <link rel="dns-prefetch" href="https://oauth.lovable.app" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+
+    <!-- =========================================================================
+         ANDENTRO DE BLOCO — usar a meta tag abaixo caso precise registar
+         apps.android.application-id para PWA install prompt melhorado
+         ========================================================================= -->
+    <meta name="google-play-app" content="app-id=mz.medwallet.app" />
+  </head>
 
   <body>
+    <!-- =========================================================================
+         ANTI-FOUC THEME SCRIPT — aplica dark mode antes do paint
+         ========================================================================= -->
     <script>
-      // Apply theme before paint to avoid flash
       (function () {
         try {
           var stored = localStorage.getItem("theme");
@@ -73,6 +128,24 @@
         } catch (e) {}
       })();
     </script>
+
+    <!-- =========================================================================
+         PWA INSTALL PROMPT — detecta beforeinstallprompt para uso posterior
+         ========================================================================= -->
+    <script>
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.__deferredInstallPrompt = e;
+        document.dispatchEvent(new CustomEvent('pwaInstallable'));
+      });
+      window.addEventListener('appinstalled', function() {
+        console.log('[PWA] App instalada com sucesso');
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'APP_INSTALLED' });
+        }
+      });
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cores principais do MedWallet (alinhadas com Tailwind) -->
+    <color name="colorPrimary">#047857</color>      <!-- emerald-700 -->
+    <color name="colorPrimaryDark">#065F46</color>  <!-- emerald-800 -->
+    <color name="colorAccent">#F59E0B</color>       <!-- amber-500 -->
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorSurface">#F8FAFC</color>
+    <color name="colorError">#DC2626</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnBackground">#0F172A</color>
+</resources>

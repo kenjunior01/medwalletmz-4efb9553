@@ -22,3 +22,45 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# =============================================================================
+# Capacitor / Android — ficheiros sensíveis e build artifacts
+# =============================================================================
+# Keystore de release (NUNCA fazer commit — contém a chave de assinatura!)
+*.keystore
+*.jks
+
+# Configuração de passwords do keystore
+android/keystore.properties
+
+# google-services.json (contém API keys do Firebase)
+# Descomentar se tiveres google-services.json com chaves reais:
+# android/app/google-services.json
+
+# Build artifacts
+android/app/build/
+android/build/
+android/.gradle/
+android/captures/
+android/local.properties
+
+# APK/AAB gerados (devem ser baixados, não commit)
+*.apk
+*.aab
+*.apks
+
+# iOS (se aplicável)
+ios/App/Pods/
+ios/build/
+ios/DerivedData/
+
+# IDE específicas do Android
+android/.idea/
+*.iml
+
+# =============================================================================
+# PWA / Vite
+# =============================================================================
+# Service worker gerado pelo vite-plugin-pwa (é gerado em build)
+dev-dist/
+

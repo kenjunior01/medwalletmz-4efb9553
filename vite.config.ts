@@ -61,11 +61,56 @@ export default defineConfig(({ mode }) => ({
     mcpPlugin(),
     VitePWA({
       registerType: "autoUpdate",
+      injectRegister: 'auto',
       manifest: false,
       workbox: {
         maximumFileSizeToCacheInBytes: 10000000,
-        globPatterns: ["**/*.{js,css,html}"],
-      }
+        globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+        // Não fazer cache de:
+        // - API do Supabase (sempre fresh)
+        // - OAuth broker da Lovable
+        // - Google Fonts (CDN externo)
+        navigateFallbackDenylist: [
+          /^https:\/\/pfqruzusjxyidhqkiob\.supabase\.co\//,
+          /^https:\/\/oauth\.lovable\.app\//,
+          /^https:\/\/fonts\.(googleapis|gstatic)\.com\//,
+        ],
+        runtimeCaching: [
+          {
+            // Cache de fonts do Google (CacheFirst — são imutáveis)
+            urlPattern: ({ url }) => url.origin === 'https://fonts.gstatic.com',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Cache de CSS de fonts (StaleWhileRevalidate)
+            urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-css',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Imagens e assets estáticos (CacheFirst)
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+      },
+      devOptions: {
+        enabled: false,
+      },
     }),
   ].filter(Boolean),
 }));

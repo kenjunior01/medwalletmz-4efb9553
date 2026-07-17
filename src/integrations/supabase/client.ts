@@ -12,6 +12,20 @@ if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// =============================================================================
+// CONFIGURAÇÃO CRÍTICA PARA OAUTH VIA LOVABLE CLOUD
+// =============================================================================
+// O broker OAuth da Lovable (https://oauth.lovable.app) devolve os tokens
+// no HASH da URL (#access_token=...&refresh_token=...&expires_in=3600) após
+// o redirect final para a app.
+//
+// Para o cliente Supabase detectar e processar estes tokens automaticamente:
+//   - detectSessionInUrl: true  → lê tokens do hash/query e faz setSession
+//   - flowType: 'implicit'     → usa o fluxo implicit (tokens no hash)
+//
+// Sem estas opções, após login Google o utilizador fica sem sessão ativa,
+// o que provoca erros em páginas protegidas.
+// =============================================================================
 export const supabase = createClient<Database>(
   SUPABASE_URL || "https://placeholder-url.supabase.co",
   SUPABASE_PUBLISHABLE_KEY || "placeholder-key",
@@ -20,6 +34,8 @@ export const supabase = createClient<Database>(
       storage: typeof window !== 'undefined' ? window.localStorage : undefined,
       persistSession: true,
       autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: 'implicit',
     }
   }
 );
