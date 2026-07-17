@@ -61,6 +61,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { GoogleMapEmbed } from '@/components/maps/GoogleMapEmbed';
 
 type EntityType = 'pharmacy' | 'clinic' | 'hospital' | 'doctor' | 'lab' | 'laboratory' | 'veterinary' | 'other';
 type TypeFilter = 'all' | 'pharmacy' | 'clinic' | 'hospital' | 'lab' | 'veterinary';
@@ -845,15 +846,23 @@ function MapPreview({ proposal }: { proposal: Proposal }) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return <Card className="p-6 text-sm text-muted-foreground text-center">Insere latitude e longitude para pré-visualizar no mapa.</Card>;
   }
-  const delta = 0.01;
-  const src = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - delta}%2C${lat - delta}%2C${lng + delta}%2C${lat + delta}&layer=mapnik&marker=${lat}%2C${lng}`;
   return (
     <Card className="overflow-hidden">
       <div className="p-3 flex items-center justify-between gap-2">
         <p className="font-semibold text-sm flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Preview no mapa</p>
         <a href={googleMapsUrl(lat, lng)} target="_blank" rel="noreferrer" className="text-xs text-primary underline inline-flex items-center gap-1">Google Maps <ExternalLink className="h-3 w-3" /></a>
       </div>
-      <iframe title={`Mapa de ${proposal.name}`} src={src} className="w-full h-72 border-0" loading="lazy" />
+      <div className="p-3">
+        <GoogleMapEmbed
+          lat={lat}
+          lng={lng}
+          title={proposal.name}
+          address={proposal.address || proposal.city}
+          mode="place"
+          height={288}
+          showModeToggle={true}
+        />
+      </div>
       <div className="p-3 text-xs text-muted-foreground">{lat.toFixed(6)}, {lng.toFixed(6)} · {proposal.address || proposal.city}</div>
     </Card>
   );

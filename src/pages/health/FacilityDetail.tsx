@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, CheckCircle2, MapPin, Phone, Navigation, Star, Clock, Calendar, Activity, ShieldCheck, Stethoscope } from 'lucide-react';
 import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from '@/lib/healthRoutes';
 import { UniversalReviews } from '@/components/reviews/UniversalReviews';
+import { GoogleMapEmbed } from '@/components/maps/GoogleMapEmbed';
+import { useLocation } from '@/contexts/LocationContext';
 import { useQuery } from '@tanstack/react-query';
 import { useCountry } from '@/contexts/CountryContext';
 
@@ -17,6 +19,8 @@ export default function FacilityDetail() {
     const currency = country?.currency_code || 'MZN';
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { coordinates } = useLocation();
+    const userOrigin = coordinates ? { lat: coordinates.latitude, lng: coordinates.longitude } : null;
 
     const { data: facility, isLoading: loading } = useQuery({
         queryKey: ['facility', id],
@@ -145,6 +149,19 @@ export default function FacilityDetail() {
                                         <Navigation className="h-3.5 w-3.5 mr-1" /> Mapa
                                     </Button>
                                 </div>
+
+                                {facility.latitude && facility.longitude && (
+                                    <GoogleMapEmbed
+                                        lat={facility.latitude}
+                                        lng={facility.longitude}
+                                        title={facility.name}
+                                        address={facility.address || facility.city}
+                                        origin={userOrigin}
+                                        mode="place"
+                                        height={260}
+                                        className="text-slate-900"
+                                    />
+                                )}
 
                                 {facility.phone && (
                                     <div className="flex items-center gap-3 p-3 bento-card border-transparent bg-muted/30">

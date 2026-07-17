@@ -21,6 +21,9 @@ import {
   Star, ShieldCheck, Search, Navigation, Activity, TrendingUp, Users,
   Heart, Pill, Microscope,
 } from "lucide-react";
+import { GoogleMap, type GMarker } from "@/components/maps/GoogleMap";
+import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
+import { useLocation } from "@/contexts/LocationContext";
 
 type Institution = {
   id: string;
@@ -61,6 +64,12 @@ export default function IndiaInstitutionsPage() {
   const { country, setCountryById } = useCountry();
   // Force-lock the country context to India on this page
   if (country?.id !== 'IN') setCountryById('IN');
+
+  // Localização do utilizador (para o modo "Direções" do GoogleMapEmbed)
+  const { coordinates } = useLocation();
+  const userOrigin = coordinates
+    ? { lat: coordinates.latitude, lng: coordinates.longitude }
+    : null;
 
   const [search, setSearch] = useState('');
   const [cityFilter, setCityFilter] = useState('all');
@@ -407,33 +416,24 @@ export default function IndiaInstitutionsPage() {
               </div>
 
               {selected.latitude && selected.longitude ? (
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-2">
-                    <MapPin className="h-3 w-3" /> Localização
-                  </h3>
-                  <div className="rounded-xl overflow-hidden border border-slate-700">
-                    <iframe
-                      title={`map-${selected.id}`}
-                      width="100%"
-                      height="280"
-                      loading="lazy"
-                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${selected.longitude - 0.01}%2C${selected.latitude - 0.01}%2C${selected.longitude + 0.01}%2C${selected.latitude + 0.01}&layer=mapnik&marker=${selected.latitude}%2C${selected.longitude}`}
-                    />
-                  </div>
-                  <div className="mt-2 flex gap-2">
-                    <Button asChild size="sm" variant="outline" className="border-slate-700 text-slate-200">
-                      <a href={`https://www.google.com/maps?q=${selected.latitude},${selected.longitude}`} target="_blank" rel="noreferrer">
-                        <Navigation className="h-3 w-3 mr-1" /> Abrir no Maps
-                      </a>
-                    </Button>
-                    {selected.website ? (
-                      <Button asChild size="sm" variant="outline" className="border-slate-700 text-slate-200">
-                        <a href={selected.website} target="_blank" rel="noreferrer">
-                          <Globe className="h-3 w-3 mr-1" /> Visitar Site
-                        </a>
-                      </Button>
-                    ) : null}
-                  </div>
+                <GoogleMapEmbed
+                  lat={selected.latitude}
+                  lng={selected.longitude}
+                  title={selected.name}
+                  address={selected.address || selected.city}
+                  origin={userOrigin}
+                  mode="place"
+                  height={300}
+                />
+              ) : null}
+
+              {selected.website ? (
+                <div className="flex gap-2">
+                  <Button asChild size="sm" variant="outline" className="border-slate-700 text-slate-200">
+                    <a href={selected.website} target="_blank" rel="noreferrer">
+                      <Globe className="h-3 w-3 mr-1" /> Visitar Site
+                    </a>
+                  </Button>
                 </div>
               ) : null}
 
