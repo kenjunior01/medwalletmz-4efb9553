@@ -26,6 +26,9 @@ interface TriageResult {
   recommendation: string;
   suggested_specialty: string;
   red_flags?: string[];
+  self_care?: string[];
+  possible_causes?: { name: string; likelihood?: 'baixa' | 'média' | 'alta' }[];
+  when_to_seek_help?: string;
   _provider?: string;
 }
 
