@@ -12,7 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, Sparkles, AlertTriangle, Stethoscope,
-  CheckCircle2, Mic, MicOff, Loader2, Volume2, ShieldCheck
+  CheckCircle2, Mic, MicOff, Loader2, Volume2, ShieldCheck,
+  HeartPulse, Lightbulb, Hospital, Pill, Building2, MapPin, Phone,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,6 +26,9 @@ interface TriageResult {
   recommendation: string;
   suggested_specialty: string;
   red_flags?: string[];
+  self_care?: string[];
+  possible_causes?: { name: string; likelihood?: string }[];
+  when_to_seek_help?: string;
   _provider?: string;
   _note?: string;
 }
@@ -47,6 +51,7 @@ export default function Triage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TriageResult | null>(null);
   const [nearbyDoctors, setNearbyDoctors] = useState<any[]>([]);
+  const [nearbyFacilities, setNearbyFacilities] = useState<{ hospitals: any[]; clinics: any[]; pharmacies: any[] }>({ hospitals: [], clinics: [], pharmacies: [] });
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
 
@@ -148,6 +153,30 @@ export default function Triage() {
     }
   };
 
+  const findNearbyFacilities = async () => {
+    try {
+      const withDist = (rows: any[]) => {
+        if (!coordinates) return (rows || []).slice(0, 3);
+        return (rows || [])
+          .map((r) => ({ ...r, _dist: r.latitude && r.longitude ? calculateDistance(r.latitude, r.longitude) : null }))
+          .sort((a, b) => (a._dist ?? 9999) - (b._dist ?? 9999))
+          .slice(0, 3);
+      };
+      const [h, c, p] = await Promise.all([
+        (supabase as any).from('hospitals').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
+        (supabase as any).from('clinics').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
+        (supabase as any).from('pharmacies').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
+      ]);
+      setNearbyFacilities({
+        hospitals: withDist(h.data || []),
+        clinics: withDist(c.data || []),
+        pharmacies: withDist(p.data || []),
+      });
+    } catch (e) {
+      console.warn('nearby facilities failed', e);
+    }
+  };
+
   const run = async () => {
     if (!symptoms.trim()) return toast.error(t('doctor_register.required_fields_error'));
     setLoading(true);
@@ -178,6 +207,7 @@ export default function Triage() {
 
       setResult(triageData);
       if (triageData?.suggested_specialty) findNearbyDoctors(triageData.suggested_specialty);
+      findNearbyFacilities();
       if (user) {
         await (supabase.from('triage_logs') as any).insert({
           patient_id: user.id,
