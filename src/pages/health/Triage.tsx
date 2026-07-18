@@ -408,6 +408,49 @@ export default function Triage() {
                       </ul>
                     </div>
                   )}
+
+                  {result.self_care && result.self_care.length > 0 && (
+                    <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-4">
+                      <p className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <HeartPulse className="h-3 w-3" /> Cuidados antes da consulta
+                      </p>
+                      <ul className="space-y-1.5">
+                        {result.self_care.map((r, i) => (
+                          <li key={i} className="text-xs flex items-start gap-2 text-foreground/80">
+                            <CheckCircle2 className="h-3 w-3 text-emerald-500 mt-0.5 shrink-0" />
+                            {r}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {result.possible_causes && result.possible_causes.length > 0 && (
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4">
+                      <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <Lightbulb className="h-3 w-3" /> Hipóteses possíveis (não é diagnóstico)
+                      </p>
+                      <ul className="space-y-1.5">
+                        {result.possible_causes.map((c, i) => (
+                          <li key={i} className="text-xs flex items-center justify-between gap-2 text-foreground/80">
+                            <span>{c.name}</span>
+                            {c.likelihood && (
+                              <Badge variant="outline" className="text-[9px] uppercase font-black">
+                                {c.likelihood}
+                              </Badge>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {result.when_to_seek_help && (
+                    <div className="text-[11px] text-muted-foreground italic border-l-2 border-primary/40 pl-3">
+                      <strong className="not-italic text-foreground/80">Quando procurar urgência: </strong>
+                      {result.when_to_seek_help}
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4 border-t flex items-center justify-between gap-4">
@@ -472,6 +515,51 @@ export default function Triage() {
                       </Card>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {(nearbyFacilities.hospitals.length + nearbyFacilities.clinics.length + nearbyFacilities.pharmacies.length) > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Instituições próximas</h3>
+                  {[
+                    { key: 'hospitals', label: 'Hospitais', icon: Hospital, items: nearbyFacilities.hospitals, color: 'text-destructive bg-destructive/10' },
+                    { key: 'clinics', label: 'Clínicas', icon: Building2, items: nearbyFacilities.clinics, color: 'text-primary bg-primary/10' },
+                    { key: 'pharmacies', label: 'Farmácias', icon: Pill, items: nearbyFacilities.pharmacies, color: 'text-secondary bg-secondary/10' },
+                  ].filter(g => g.items.length > 0).map((g) => {
+                    const Icon = g.icon;
+                    return (
+                      <div key={g.key} className="space-y-1.5">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 ml-1">{g.label}</p>
+                        {g.items.map((f: any) => (
+                          <Card key={f.id} className="p-3 hover:border-primary/30 transition-all">
+                            <div className="flex items-center gap-3">
+                              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", g.color)}>
+                                <Icon className="h-5 w-5" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-bold text-sm truncate">{f.name}</p>
+                                <p className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
+                                  <MapPin className="h-2.5 w-2.5" />
+                                  {f.city || f.address || '—'}
+                                  {f._dist != null && ` · ${f._dist.toFixed(1)} km`}
+                                </p>
+                              </div>
+                              {f.phone && (
+                                <Button size="icon" variant="outline" className="h-8 w-8 rounded-full shrink-0" asChild>
+                                  <a href={`tel:${f.phone}`}><Phone className="h-3.5 w-3.5" /></a>
+                                </Button>
+                              )}
+                              {f.latitude && f.longitude && (
+                                <Button size="icon" variant="outline" className="h-8 w-8 rounded-full shrink-0" asChild>
+                                  <a href={`https://www.google.com/maps/dir/?api=1&destination=${f.latitude},${f.longitude}`} target="_blank" rel="noopener"><MapPin className="h-3.5 w-3.5" /></a>
+                                </Button>
+                              )}
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </motion.div>
