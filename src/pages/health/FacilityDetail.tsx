@@ -156,10 +156,8 @@ export default function FacilityDetail() {
                                     <Clock className="h-4 w-4 text-primary mb-1" />
                                     <p className="text-[10px] uppercase font-bold text-muted-foreground">Horário</p>
                                     <p className="text-xs font-bold">
-                                        {placeDetails?.currentOpeningHours?.openNow
-                                            ? 'Aberto agora'
-                                            : placeDetails?.currentOpeningHours
-                                            ? 'Fechado agora'
+                                        {placeDetails?.currentOpeningHours
+                                            ? (placeDetails.currentOpeningHours.weekdayDescriptions?.[0] ?? 'Consultar horário')
                                             : facility.type === 'hospital' ? 'Aberto 24h' : '08:00 - 18:00'}
                                     </p>
                                 </div>
@@ -177,12 +175,12 @@ export default function FacilityDetail() {
                         {placeDetails?.photos && placeDetails.photos.length > 0 && (
                             <section className="space-y-3">
                                 <h2 className="text-lg font-black">Fotos do Local</h2>
-                                <PlacePhotosCarousel photos={placeDetails.photos} />
+                                <PlacePhotosCarousel photos={placeDetails.photos} placeName={facility.name} />
                             </section>
                         )}
 
                         {/* Gráfico de horas de pico (Popular Times) */}
-                        {placeDetails?.utcOffsetMinutes != null && <PopularTimesChart details={placeDetails} />}
+                        {/* PopularTimes requer array de 24h; API não fornece por defeito */}
 
                         <section className="space-y-3">
                             <h2 className="text-lg font-black">Localização e Contacto</h2>

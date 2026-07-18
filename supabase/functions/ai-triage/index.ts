@@ -26,6 +26,9 @@ interface TriageResult {
   recommendation: string;
   suggested_specialty: string;
   red_flags?: string[];
+  self_care?: string[];
+  possible_causes?: { name: string; likelihood?: 'baixa' | 'média' | 'alta' }[];
+  when_to_seek_help?: string;
   _provider?: string;
 }
 
@@ -315,9 +318,15 @@ async function triageWithLovable(
 
   try {
     const system = `És um assistente de triagem médica em ${config.name}. Responde sempre em ${config.dialect}.
-Avalia sintomas e devolve JSON com: severity ("baixa"|"moderada"|"alta"|"emergência"), recommendation (texto curto e claro), suggested_specialty (ex: "Clínica Geral", "Pediatria", "Cardiologia").
-Adapta a tua recomendação ao contexto local: ${config.health_system}.
-NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar para ${config.emergency_phone} ou ir ao hospital mais próximo.`;
+Avalia os sintomas do utente e devolve um relatório clínico estruturado (JSON) com:
+- severity: "baixa" | "moderada" | "alta" | "emergência"
+- recommendation: 1-2 frases curtas com a próxima acção certa (marcar consulta, ir à urgência, cuidar em casa...)
+- suggested_specialty: especialidade médica indicada (ex: "Clínica Geral", "Pediatria", "Cardiologia")
+- red_flags: sinais de alarme que exigem urgência imediata (0-5 itens curtos)
+- self_care: 3 a 6 orientações práticas de auto-cuidado ANTES da consulta (hidratação, repouso, medicação OTC segura por idade, sinais a monitorar). NUNCA prescrever antibióticos nem doses específicas de medicação sujeita a receita.
+- possible_causes: 2 a 4 hipóteses diagnósticas prováveis, cada uma com {name, likelihood: "baixa"|"média"|"alta"}. Deixa claro que são apenas hipóteses, não diagnóstico.
+- when_to_seek_help: 1 frase indicando quando piorar deve levar à urgência.
+Adapta ao contexto local: ${config.health_system}. Em emergência recomenda ${config.emergency_phone}. NUNCA dês diagnóstico definitivo.`;
 
     const userMsg = `Sintomas: ${symptoms}\nIdade: ${age ?? 'n/d'}\nDuração: ${duration ?? 'n/d'}\nPaís: ${config.name}`;
 
@@ -339,6 +348,20 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
                 recommendation: { type: 'string' },
                 suggested_specialty: { type: 'string' },
                 red_flags: { type: 'array', items: { type: 'string' } },
+                self_care: { type: 'array', items: { type: 'string' } },
+                possible_causes: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: { type: 'string' },
+                      likelihood: { type: 'string', enum: ['baixa', 'média', 'alta'] },
+                    },
+                    required: ['name'],
+                    additionalProperties: false,
+                  },
+                },
+                when_to_seek_help: { type: 'string' },
               },
               required: ['severity', 'recommendation', 'suggested_specialty'],
               additionalProperties: false,
