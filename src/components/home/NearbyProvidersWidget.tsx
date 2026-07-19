@@ -52,7 +52,7 @@ export function NearbyProvidersWidget() {
       const { data } = await (supabase as any)
         .from('doctor_profiles')
         .select('id, user_id, latitude, longitude, rating, consultation_fee, medical_specialties(name, icon)')
-        .eq('is_active', true)
+        .eq('is_available', true)
         .limit(50);
       const ids = (data || []).map((d: any) => d.user_id);
       const { data: profs } = await supabase.from('profiles').select('user_id, full_name, default_city').in('user_id', ids);

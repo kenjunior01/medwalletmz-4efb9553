@@ -23,7 +23,7 @@ import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 
 const DISMISS_KEY = 'mz_pwa_install_dismissed_until';
-const DISMISS_DAYS = 7;
+const DISMISS_DAYS = 30;
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -47,7 +47,7 @@ export function PWAInstallPrompt() {
     if (isIOS) {
       const dismissedUntil = Number(localStorage.getItem(DISMISS_KEY) || 0);
       if (Date.now() > dismissedUntil) {
-        const t = setTimeout(() => setVisible(true), 45000); // 45s no iOS
+        const t = setTimeout(() => setVisible(true), 120000); // 2min no iOS
         return () => clearTimeout(t);
       }
       return;
@@ -58,7 +58,7 @@ export function PWAInstallPrompt() {
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       const dismissedUntil = Number(localStorage.getItem(DISMISS_KEY) || 0);
       if (Date.now() > dismissedUntil) {
-        const t = setTimeout(() => setVisible(true), 30000); // 30s em Android
+        const t = setTimeout(() => setVisible(true), 90000); // 90s em Android
         return () => clearTimeout(t);
       }
     };
