@@ -301,7 +301,6 @@ export default function RegistrationWizard() {
           user_id: user.id,
           license_number: formData.licenseNumber,
           specialty_id: formData.specialtyId,
-          country_id: country?.id || 'MZ',
           bio: formData.bio,
           consultation_fee: parseInt(formData.consultationFee) || 500,
           years_experience: parseInt(formData.yearsExperience) || 0,
