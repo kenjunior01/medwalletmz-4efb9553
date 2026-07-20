@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocation } from '@/contexts/LocationContext';
-import { MapPin, Stethoscope, Pill, Navigation, Loader2, Clock, Sparkles } from 'lucide-react';
+import { MapPin, Stethoscope, Pill, Navigation, Loader2, Clock, Sparkles, Building2, Hospital } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { fetchRouteDistance, fmtDuration, haversineKm } from '@/lib/googleRoutes';
@@ -64,9 +64,37 @@ export function NearbyProvidersWidget() {
     },
   });
 
+  const { data: clinics } = useQuery<any[]>({
+    queryKey: ['nearby-clinics', city, onlyMyCity],
+    queryFn: async () => {
+      let q = (supabase as any)
+        .from('clinics')
+        .select('id, name, type, city, latitude, longitude, logo_url')
+        .eq('is_active', true)
+        .limit(50);
+      if (onlyMyCity && city) q = q.eq('city', city);
+      const { data } = await q;
+      return data || [];
+    },
+  });
+
+  const { data: hospitals } = useQuery<any[]>({
+    queryKey: ['nearby-hospitals', city, onlyMyCity],
+    queryFn: async () => {
+      let q = (supabase as any)
+        .from('hospitals')
+        .select('id, name, city, latitude, longitude')
+        .eq('is_active', true)
+        .limit(50);
+      if (onlyMyCity && city) q = q.eq('city', city);
+      const { data } = await q;
+      return data || [];
+    },
+  });
+
   // Ranking base (haversine, barato)
   const rankedBase = useMemo(() => {
-    const enrich = (items: any[], kind: 'pharmacy' | 'doctor') =>
+    const enrich = (items: any[], kind: 'pharmacy' | 'doctor' | 'clinic' | 'hospital') =>
       (items || []).map((it: any) => {
         let dist: number | null = null;
         if (it.latitude && it.longitude && coordinates) {
@@ -77,9 +105,14 @@ export function NearbyProvidersWidget() {
         }
         return { ...it, kind, distance: dist };
       });
-    const all = [...enrich(pharmacies || [], 'pharmacy'), ...enrich(doctors || [], 'doctor')];
+    const all = [
+      ...enrich(pharmacies || [], 'pharmacy'),
+      ...enrich(doctors || [], 'doctor'),
+      ...enrich(clinics || [], 'clinic'),
+      ...enrich(hospitals || [], 'hospital'),
+    ];
     return all.filter(it => it.distance == null || it.distance <= radiusKm);
-  }, [pharmacies, doctors, coordinates, radiusKm]);
+  }, [pharmacies, doctors, clinics, hospitals, coordinates, radiusKm]);
 
   // Top 5 — enriquecido com Google Routes (ETA + distância real)
   const top = useMemo(() => rankedBase.slice(0, 5), [rankedBase]);
@@ -94,7 +127,7 @@ export function NearbyProvidersWidget() {
         const r = await fetchRouteDistance(
           { lat: coordinates.latitude, lng: coordinates.longitude },
           { lat: Number(it.latitude), lng: Number(it.longitude) },
-          it.kind === 'pharmacy' ? 'pharmacy' : 'doctor',
+          (it.kind === 'pharmacy' ? 'pharmacy' : 'doctor') as any,
           it.id,
         );
         if (cancelled) return;
@@ -169,31 +202,47 @@ export function NearbyProvidersWidget() {
           {ranked.map(it => {
             const key = `${it.kind}-${it.id}`;
             const route = routeToggles[key];
+            const isClinic = it.kind === 'clinic';
+            const isHospital = it.kind === 'hospital';
+            const isPharmacy = it.kind === 'pharmacy';
+            const isDoctor = it.kind === 'doctor';
+            const target =
+              isPharmacy ? `/store/${it.id}` :
+              isDoctor ? `/health/book/${it.id}` :
+              isHospital ? `/health/facility/${it.id}?type=hospital` :
+              `/health/facility/${it.id}?type=clinic`;
             return (
               <button
                 key={key}
-                onClick={() => navigate(it.kind === 'pharmacy' ? `/store/${it.id}` : `/health/book/${it.id}`)}
+                onClick={() => navigate(target)}
                 className="snap-start shrink-0 w-44 bento-card text-left p-3"
               >
                 <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2 ${
-                  it.kind === 'pharmacy' ? 'bg-pharmacy/15 text-pharmacy' : 'bg-primary/15 text-primary'
+                  isPharmacy ? 'bg-pharmacy/15 text-pharmacy' :
+                  isHospital ? 'bg-destructive/15 text-destructive' :
+                  isClinic ? 'bg-amber-500/15 text-amber-600' :
+                  'bg-primary/15 text-primary'
                 }`}>
-                  {it.kind === 'pharmacy' ? <Pill className="h-5 w-5" /> : <Stethoscope className="h-5 w-5" />}
+                  {isPharmacy ? <Pill className="h-5 w-5" /> :
+                   isHospital ? <Hospital className="h-5 w-5" /> :
+                   isClinic ? <Building2 className="h-5 w-5" /> :
+                   <Stethoscope className="h-5 w-5" />}
                 </div>
                 <p className="text-sm font-bold leading-tight truncate">
-                  {it.kind === 'pharmacy' ? it.name : `Dr(a). ${it.full_name || '—'}`}
+                  {isDoctor ? `Dr(a). ${it.full_name || '—'}` : it.name}
                 </p>
                 <p className="text-[10px] text-muted-foreground truncate">
-                  {it.kind === 'pharmacy'
-                    ? (it.type || 'Farmácia')
-                    : `${it.medical_specialties?.icon || ''} ${it.medical_specialties?.name || 'Clínico'}`}
+                  {isPharmacy ? (it.type || 'Farmácia') :
+                   isHospital ? 'Hospital' :
+                   isClinic ? (it.type || 'Clínica') :
+                   `${it.medical_specialties?.icon || ''} ${it.medical_specialties?.name || 'Clínico'}`}
                 </p>
                 <div className="flex items-center justify-between mt-2 text-[10px]">
                   <span className="flex items-center gap-0.5 font-semibold text-primary">
                     <MapPin className="h-3 w-3" />
                     {it.distance != null ? `${it.distance.toFixed(1)} km` : city}
                   </span>
-                  {it.kind === 'doctor' && (
+                  {isDoctor && (
                     <span className="font-black text-primary">{it.consultation_fee} {country?.currency_code || 'MZN'}</span>
                   )}
                 </div>
