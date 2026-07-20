@@ -23,7 +23,8 @@ import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 
 const DISMISS_KEY = 'mz_pwa_install_dismissed_until';
-const DISMISS_DAYS = 30;
+const DISMISS_DAYS = 60;
+const NEVER_KEY = 'mz_pwa_install_never';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -42,12 +43,16 @@ export function PWAInstallPrompt() {
       setInstalled(true);
       return;
     }
+    // Utilizador escolheu "Nunca mais mostrar"
+    if (localStorage.getItem(NEVER_KEY) === '1') {
+      return;
+    }
     // iOS não suporta beforeinstallprompt — mostrar dica manual
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     if (isIOS) {
       const dismissedUntil = Number(localStorage.getItem(DISMISS_KEY) || 0);
       if (Date.now() > dismissedUntil) {
-        const t = setTimeout(() => setVisible(true), 120000); // 2min no iOS
+        const t = setTimeout(() => setVisible(true), 180000); // 3min no iOS
         return () => clearTimeout(t);
       }
       return;
@@ -58,7 +63,7 @@ export function PWAInstallPrompt() {
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       const dismissedUntil = Number(localStorage.getItem(DISMISS_KEY) || 0);
       if (Date.now() > dismissedUntil) {
-        const t = setTimeout(() => setVisible(true), 90000); // 90s em Android
+        const t = setTimeout(() => setVisible(true), 180000); // 3min em Android
         return () => clearTimeout(t);
       }
     };
@@ -106,6 +111,12 @@ export function PWAInstallPrompt() {
     setVisible(false);
   };
 
+  const neverShowAgain = () => {
+    localStorage.setItem(NEVER_KEY, '1');
+    setVisible(false);
+    toast.success('Não mostraremos mais este aviso.');
+  };
+
   if (installed || !visible) return null;
 
   return (
@@ -145,6 +156,12 @@ export function PWAInstallPrompt() {
                   className="text-xs text-emerald-700 hover:underline px-2"
                 >
                   Não agora
+                </button>
+                <button
+                  onClick={neverShowAgain}
+                  className="text-xs text-muted-foreground hover:text-emerald-700 hover:underline px-2 ml-auto"
+                >
+                  Não mostrar mais
                 </button>
               </div>
               <div className="mt-2 flex items-center gap-1 text-[10px] text-emerald-700">
