@@ -297,16 +297,21 @@ export default function RegistrationWizard() {
 
       // 2. Role specific logic
       if (selectedRole === 'doctor' || selectedRole === 'veterinary') {
+        if (!formData.licenseNumber?.trim()) {
+          toast.error('Número de licença profissional é obrigatório');
+          setLoading(false);
+          return;
+        }
         const { error: dErr } = await supabase.from('doctor_profiles').upsert({
           user_id: user.id,
-          license_number: formData.licenseNumber,
-          specialty_id: formData.specialtyId,
-          bio: formData.bio,
+          license_number: formData.licenseNumber.trim(),
+          specialty_id: formData.specialtyId || null,
+          bio: formData.bio || null,
           consultation_fee: parseInt(formData.consultationFee) || 500,
           years_experience: parseInt(formData.yearsExperience) || 0,
           is_available: true,
           license_url: formData.licenseUrl || null,
-        });
+        }, { onConflict: 'user_id' });
         if (dErr) throw dErr;
         await supabase.from('user_roles').upsert({ user_id: user.id, role: selectedRole, country_id: country?.id || 'MZ' });
         await refreshRoles();
