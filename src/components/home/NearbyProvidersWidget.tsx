@@ -209,8 +209,8 @@ export function NearbyProvidersWidget() {
             const target =
               isPharmacy ? `/store/${it.id}` :
               isDoctor ? `/health/book/${it.id}` :
-              isHospital ? `/health/facility/${it.id}?type=hospital` :
-              `/health/facility/${it.id}?type=clinic`;
+              isHospital ? `/health/facilities/${it.id}?type=hospital` :
+              `/health/facilities/${it.id}?type=clinic`;
             return (
               <button
                 key={key}
