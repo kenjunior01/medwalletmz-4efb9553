@@ -8,6 +8,7 @@ import { EnableNotificationsBanner } from "@/components/notifications/EnableNoti
 import { FreeTrialBanner } from "@/components/monetization/FreeTrialBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
 import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
+import { VisitorProOnboarding } from "@/components/onboarding/VisitorProOnboarding";
 import { KlipyBanner } from "@/components/klipy/KlipyBanner";
 import { PersonalizedForYou } from "@/components/health/PersonalizedForYou";
 import { AirQualityWidget } from "@/components/home/AirQualityWidget";
@@ -196,6 +197,9 @@ export default function Home() {
 
         {/* ============ ENABLE NOTIFICATIONS BANNER (apenas se ainda não ativou) ============ */}
         <EnableNotificationsBanner />
+
+        {/* Onboarding leve para visitantes/pacientes: mostrar como registar como profissional */}
+        {!isProvider && !isAdmin && <VisitorProOnboarding />}
 
         {/* ============ FREE TRIAL BANNER (alavanca de adopção) ============ */}
         <section className="px-4">
