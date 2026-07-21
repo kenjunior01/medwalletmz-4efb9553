@@ -658,6 +658,7 @@ export type Database = {
       clinics: {
         Row: {
           address: string | null
+          avg_rating: number | null
           city: string
           country_id: string | null
           created_at: string
@@ -676,12 +677,14 @@ export type Database = {
           owner_id: string
           phone: string | null
           rating: number | null
+          reviews_count: number | null
           type: string
           updated_at: string
           website: string | null
         }
         Insert: {
           address?: string | null
+          avg_rating?: number | null
           city?: string
           country_id?: string | null
           created_at?: string
@@ -700,12 +703,14 @@ export type Database = {
           owner_id: string
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           type?: string
           updated_at?: string
           website?: string | null
         }
         Update: {
           address?: string | null
+          avg_rating?: number | null
           city?: string
           country_id?: string | null
           created_at?: string
@@ -724,6 +729,7 @@ export type Database = {
           owner_id?: string
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           type?: string
           updated_at?: string
           website?: string | null
@@ -882,6 +888,7 @@ export type Database = {
       }
       consultations: {
         Row: {
+          completed_at: string | null
           consultation_type: string
           created_at: string
           diagnosis: string | null
@@ -897,6 +904,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          completed_at?: string | null
           consultation_type?: string
           created_at?: string
           diagnosis?: string | null
@@ -912,6 +920,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          completed_at?: string | null
           consultation_type?: string
           created_at?: string
           diagnosis?: string | null
@@ -1631,6 +1640,7 @@ export type Database = {
       hospitals: {
         Row: {
           address: string | null
+          avg_rating: number | null
           beds_count: number | null
           city: string
           created_at: string
@@ -1655,11 +1665,13 @@ export type Database = {
           owner_id: string | null
           phone: string | null
           rating: number | null
+          reviews_count: number | null
           updated_at: string
           website: string | null
         }
         Insert: {
           address?: string | null
+          avg_rating?: number | null
           beds_count?: number | null
           city: string
           created_at?: string
@@ -1684,11 +1696,13 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           updated_at?: string
           website?: string | null
         }
         Update: {
           address?: string | null
+          avg_rating?: number | null
           beds_count?: number | null
           city?: string
           created_at?: string
@@ -1713,6 +1727,7 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           updated_at?: string
           website?: string | null
         }
@@ -1766,6 +1781,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      institution_reviews: {
+        Row: {
+          comment: string | null
+          consultation_id: string | null
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          order_id: string | null
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          consultation_id?: string | null
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          order_id?: string | null
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          consultation_id?: string | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          order_id?: string | null
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       insurance_companies: {
         Row: {
@@ -2088,6 +2142,7 @@ export type Database = {
       laboratories: {
         Row: {
           address: string | null
+          avg_rating: number | null
           city: string
           country_id: string | null
           created_at: string
@@ -2110,11 +2165,13 @@ export type Database = {
           phone: string | null
           rating: number | null
           result_delivery_hours: number | null
+          reviews_count: number | null
           updated_at: string
           website: string | null
         }
         Insert: {
           address?: string | null
+          avg_rating?: number | null
           city: string
           country_id?: string | null
           created_at?: string
@@ -2137,11 +2194,13 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           result_delivery_hours?: number | null
+          reviews_count?: number | null
           updated_at?: string
           website?: string | null
         }
         Update: {
           address?: string | null
+          avg_rating?: number | null
           city?: string
           country_id?: string | null
           created_at?: string
@@ -2164,6 +2223,7 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           result_delivery_hours?: number | null
+          reviews_count?: number | null
           updated_at?: string
           website?: string | null
         }
@@ -2620,9 +2680,13 @@ export type Database = {
           mpesa_transaction_id: string | null
           payer_name: string | null
           payer_phone: string | null
+          proof_url: string | null
           reference: string
+          rejection_reason: string | null
           status: string
           updated_at: string | null
+          user_id: string | null
+          wallet_tx_id: string | null
         }
         Insert: {
           amount_mzn: number
@@ -2636,9 +2700,13 @@ export type Database = {
           mpesa_transaction_id?: string | null
           payer_name?: string | null
           payer_phone?: string | null
+          proof_url?: string | null
           reference: string
+          rejection_reason?: string | null
           status?: string
           updated_at?: string | null
+          user_id?: string | null
+          wallet_tx_id?: string | null
         }
         Update: {
           amount_mzn?: number
@@ -2652,9 +2720,13 @@ export type Database = {
           mpesa_transaction_id?: string | null
           payer_name?: string | null
           payer_phone?: string | null
+          proof_url?: string | null
           reference?: string
+          rejection_reason?: string | null
           status?: string
           updated_at?: string | null
+          user_id?: string | null
+          wallet_tx_id?: string | null
         }
         Relationships: []
       }
@@ -2860,6 +2932,7 @@ export type Database = {
       pharmacies: {
         Row: {
           address: string | null
+          avg_rating: number | null
           city: string
           created_at: string
           delivery_fee: number | null
@@ -2882,12 +2955,14 @@ export type Database = {
           owner_id: string | null
           phone: string | null
           rating: number | null
+          reviews_count: number | null
           sells_prescription_only: boolean | null
           updated_at: string
           website: string | null
         }
         Insert: {
           address?: string | null
+          avg_rating?: number | null
           city: string
           created_at?: string
           delivery_fee?: number | null
@@ -2910,12 +2985,14 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           sells_prescription_only?: boolean | null
           updated_at?: string
           website?: string | null
         }
         Update: {
           address?: string | null
+          avg_rating?: number | null
           city?: string
           created_at?: string
           delivery_fee?: number | null
@@ -2938,6 +3015,7 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           sells_prescription_only?: boolean | null
           updated_at?: string
           website?: string | null
@@ -3255,8 +3333,10 @@ export type Database = {
           pharmacy_confirmed_at: string | null
           pharmacy_store_id: string | null
           requires_cold_chain: boolean
+          signature_hash: string | null
           status: string
           suggested_pharmacy_id: string | null
+          verification_code: string | null
         }
         Insert: {
           chosen_pharmacy_id?: string | null
@@ -3270,8 +3350,10 @@ export type Database = {
           pharmacy_confirmed_at?: string | null
           pharmacy_store_id?: string | null
           requires_cold_chain?: boolean
+          signature_hash?: string | null
           status?: string
           suggested_pharmacy_id?: string | null
+          verification_code?: string | null
         }
         Update: {
           chosen_pharmacy_id?: string | null
@@ -3285,8 +3367,10 @@ export type Database = {
           pharmacy_confirmed_at?: string | null
           pharmacy_store_id?: string | null
           requires_cold_chain?: boolean
+          signature_hash?: string | null
           status?: string
           suggested_pharmacy_id?: string | null
+          verification_code?: string | null
         }
         Relationships: [
           {
@@ -3542,6 +3626,7 @@ export type Database = {
       stores: {
         Row: {
           address: string | null
+          avg_rating: number | null
           city: string
           country_id: string | null
           created_at: string
@@ -3559,10 +3644,12 @@ export type Database = {
           owner_id: string | null
           phone: string | null
           rating: number | null
+          reviews_count: number | null
           type: string
         }
         Insert: {
           address?: string | null
+          avg_rating?: number | null
           city: string
           country_id?: string | null
           created_at?: string
@@ -3580,10 +3667,12 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           type: string
         }
         Update: {
           address?: string | null
+          avg_rating?: number | null
           city?: string
           country_id?: string | null
           created_at?: string
@@ -3601,6 +3690,7 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           type?: string
         }
         Relationships: [
@@ -4128,6 +4218,7 @@ export type Database = {
       veterinary_clinics: {
         Row: {
           address: string | null
+          avg_rating: number | null
           city: string | null
           country_id: string | null
           created_at: string | null
@@ -4145,11 +4236,13 @@ export type Database = {
           owner_id: string | null
           phone: string | null
           rating: number | null
+          reviews_count: number | null
           services: string[] | null
           website: string | null
         }
         Insert: {
           address?: string | null
+          avg_rating?: number | null
           city?: string | null
           country_id?: string | null
           created_at?: string | null
@@ -4167,11 +4260,13 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           services?: string[] | null
           website?: string | null
         }
         Update: {
           address?: string | null
+          avg_rating?: number | null
           city?: string | null
           country_id?: string | null
           created_at?: string | null
@@ -4189,6 +4284,7 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           rating?: number | null
+          reviews_count?: number | null
           services?: string[] | null
           website?: string | null
         }
@@ -4470,7 +4566,15 @@ export type Database = {
         Args: { p_id: string; p_notes?: string }
         Returns: Json
       }
+      book_consultation_atomic: {
+        Args: { _coupon_id?: string; _reason?: string; _slot_id: string }
+        Returns: Json
+      }
       bootstrap_admin: { Args: never; Returns: Json }
+      confirm_mpesa_payment: {
+        Args: { _id: string; _mpesa_tx_id?: string }
+        Returns: Json
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -4499,6 +4603,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      gen_prescription_code: { Args: never; Returns: string }
       get_profile_private: {
         Args: { _user_id: string }
         Returns: {
@@ -4607,6 +4712,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      mark_consultation_completed: { Args: { _id: string }; Returns: Json }
       moderate_ad: {
         Args: { _action: string; _id: string; _notes?: string }
         Returns: Json
@@ -4648,6 +4754,10 @@ export type Database = {
         Args: { _coupon_id: string; _user_id: string }
         Returns: undefined
       }
+      reject_mpesa_payment: {
+        Args: { _id: string; _reason: string }
+        Returns: Json
+      }
       reject_proposal: {
         Args: { p_id: string; p_notes?: string }
         Returns: Json
@@ -4679,6 +4789,21 @@ export type Database = {
           _user_id: string
         }
         Returns: Json
+      }
+      verify_prescription: {
+        Args: { _code: string }
+        Returns: {
+          code: string
+          doctor_license: string
+          doctor_name: string
+          emitted_at: string
+          expires_at: string
+          is_valid: boolean
+          items_count: number
+          patient_initials: string
+          signature_hash: string
+          status: string
+        }[]
       }
       video_session_add_participant: {
         Args: { _role: string; _session_id: string; _user_id: string }
