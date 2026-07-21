@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, FileText, Pill, Zap, ShieldCheck, Download, CheckCircle2, Share2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { toast } from 'sonner';
+import QRCode from 'qrcode';
 
 export default function PrescriptionDetail() {
   const { id } = useParams();
@@ -106,13 +107,28 @@ export default function PrescriptionDetail() {
     if (presc.notes) { y += 4; doc.setFont('helvetica', 'bold'); doc.text('Observacoes:', 15, y); y += 5; doc.setFont('helvetica', 'normal'); doc.text(presc.notes, 15, y, { maxWidth: pageW - 30 }); }
     doc.setFontSize(8); doc.setTextColor(120);
     doc.text(`ID: ${presc.id}`, 15, 285);
+    if (presc.verification_code) {
+      doc.text(`Cód. verificação: ${presc.verification_code}`, 15, 290);
+    }
     doc.text('Documento assinado digitalmente.', pageW - 15, 285, { align: 'right' });
     return doc;
   };
 
   const fileName = () => `receita-${presc.id.slice(0,8)}.pdf`;
 
-  const downloadPdf = () => buildPdf().save(fileName());
+  const buildPdfWithQr = async () => {
+    const doc = buildPdf();
+    if (presc.verification_code) {
+      const url = `${window.location.origin}/verify/${presc.verification_code}`;
+      try {
+        const dataUrl = await QRCode.toDataURL(url, { margin: 0, width: 120 });
+        doc.addImage(dataUrl, 'PNG', doc.internal.pageSize.getWidth() - 40, 265, 25, 25);
+      } catch {}
+    }
+    return doc;
+  };
+
+  const downloadPdf = async () => (await buildPdfWithQr()).save(fileName());
 
   const openShareDialog = () => {
     setShareTitle(`Receita Digital — Dr(a). ${doctorName}`);
@@ -123,7 +139,7 @@ export default function PrescriptionDetail() {
   };
 
   const doShare = async (channel: 'native' | 'whatsapp' | 'sms') => {
-    const doc = buildPdf();
+    const doc = await buildPdfWithQr();
     const blob = doc.output('blob');
     const file = new File([blob], fileName(), { type: 'application/pdf' });
     setShareOpen(false);

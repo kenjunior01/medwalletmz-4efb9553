@@ -59,6 +59,10 @@ export default function VideoConsultation() {
               _reason: 'hangup',
             });
           }
+          // Auto-complete consultation if the doctor left
+          if (data.is_owner && id) {
+            await supabase.rpc('mark_consultation_completed', { _id: id });
+          }
           setStatus('ended');
           navigate('/health/consultations');
         })
