@@ -63,46 +63,27 @@ export default function BookConsultation() {
       return;
     }
     setSaving(true);
-    const { data, error } = await supabase
-      .from('consultations')
-      .insert({
-        doctor_id: doctor.user_id,
-        patient_id: user.id,
-        scheduled_at: selected.starts_at,
-        consultation_type: 'chat',
-        reason,
-        fee: finalAmount,
-        status: 'scheduled',
-      })
-      .select()
-      .single();
-    if (error) { setSaving(false); toast.error(error.message); return; }
-
-    // Charge wallet via pay_service (handles coupon redeem + commission to doctor)
-    const { error: payErr } = await supabase.rpc('pay_service', {
-      _user_id: user.id,
-      _service_type: 'consultation',
-      _ref_id: data.id,
-      _gross_amount: gross,
+    const { data, error } = await supabase.rpc('book_consultation_atomic', {
+      _slot_id: selected.id,
+      _reason: reason || null,
       _coupon_id: coupon?.id ?? null,
-      _description: `Consulta com Dr(a). ${doctor.full_name}`,
-      _provider_id: doctor.user_id,
     });
-    if (payErr) {
-      setSaving(false);
-      await supabase.from('consultations').delete().eq('id', data.id);
-      toast.error('Falha ao processar pagamento: ' + payErr.message);
+    setSaving(false);
+    if (error) {
+      if (error.message?.includes('slot_unavailable')) {
+        toast.error('Este horário já foi reservado. Escolhe outro.');
+        // Refresh slots
+        setSlots((prev) => prev.filter((s) => s.id !== selected.id));
+        setSelected(null);
+      } else {
+        toast.error('Falha ao reservar: ' + error.message);
+      }
       return;
     }
     await reload();
-    setSaving(false);
-
-    await supabase
-      .from('doctor_availability_slots')
-      .update({ is_booked: true, consultation_id: data.id })
-      .eq('id', selected.id);
+    const consId = (data as any)?.consultation_id;
     toast.success(`Consulta paga (${finalAmount} ${currency}) — aguarda confirmação.`);
-    navigate(`/health/consultation/${data.id}`);
+    navigate(`/health/consultation/${consId}`);
   };
 
   if (!doctor) return <div className="p-6">A carregar...</div>;
