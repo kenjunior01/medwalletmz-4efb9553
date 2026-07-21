@@ -278,6 +278,7 @@ const App = () => (
 
                   {/* Auth */}
                   <Route path="/auth" element={<Auth />} />
+                 <Route path="/verify/:code" element={<VerifyPrescription />} />
                   <Route path="/register" element={<RegistrationWizard />} />
 
                   {/* Vídeo-consulta (fullscreen, sem layout) */}
