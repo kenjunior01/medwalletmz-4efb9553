@@ -84,6 +84,7 @@ const CreatePrescription = lazy(() => import("./pages/doctor/CreatePrescription"
 const DoctorAvailability = lazy(() => import("./pages/doctor/DoctorAvailability"));
 const MyPrescriptions = lazy(() => import("./pages/health/MyPrescriptions"));
 const PrescriptionDetail = lazy(() => import("./pages/health/PrescriptionDetail"));
+const VerifyPrescription = lazy(() => import("./pages/health/VerifyPrescription"));
 const HealthPlans = lazy(() => import("./pages/health/HealthPlans"));
 const Subscribe = lazy(() => import("./pages/subscribe/Subscribe"));
 const SubscribePlans = lazy(() => import("./pages/subscribe/SubscribePlans"));
