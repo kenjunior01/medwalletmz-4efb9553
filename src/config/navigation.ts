@@ -110,6 +110,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/health/records", icon: FileText, label: "nav.records", group: "Saúde" },
     { path: "/health/insurance", icon: Shield, label: "nav.insurance", group: "Saúde" },
     { path: "/blood", icon: Droplet, label: "nav.blood", group: "Comunidade" },
+    { path: "/ranking", icon: Crown, label: "Ranking", group: "Comunidade" },
     { path: "/pharmacy", icon: Pill, label: "nav.pharmacy", group: "Compras" },
     { path: "/orders", icon: ClipboardList, label: "nav.orders", group: "Compras" },
     { path: "/wallet", icon: Wallet, label: "nav.wallet", group: "Conta" },
@@ -173,6 +174,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/admin/stores", icon: Building2, label: "nav.pharmacy", group: "Instituições" },
     { path: "/admin/labs", icon: FlaskConical, label: "nav.exams", group: "Instituições" },
     { path: "/admin/insurance", icon: Shield, label: "nav.insurance", group: "Instituições" },
+    { path: "/admin/mpesa-confirmations", icon: Wallet, label: "Confirmações M-Pesa", group: "Gestão" },
     { path: "/admin/users", icon: Users, label: "nav.users", group: "Gestão" },
     { path: "/admin/drivers", icon: Truck, label: "nav.drivers", group: "Gestão" },
     { path: "/admin/orders", icon: Package, label: "nav.orders", group: "Gestão" },
@@ -186,6 +188,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
   country_manager: [
     { path: "/admin/country-dashboard", icon: LayoutDashboard, label: "nav.dashboard", group: "Região" },
     { path: "/admin/curation", icon: Shield, label: "nav.approvals", group: "Região" },
+    { path: "/admin/mpesa-confirmations", icon: Wallet, label: "Confirmações M-Pesa", group: "Região" },
     { path: "/admin/transactions", icon: Wallet, label: "nav.financial", group: "Região" },
     { path: "/admin/country-settings", icon: Settings, label: "nav.settings", group: "Região" },
     { path: "/profile", icon: User, label: "nav.profile", group: "Conta" },
