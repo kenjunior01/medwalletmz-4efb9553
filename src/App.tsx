@@ -168,6 +168,8 @@ const AdminMonetization = lazy(() => import("./pages/admin/AdminMonetization"));
 const HealthEducationHub = lazy(() => import("./pages/health/edu/HealthEducationHub"));
 const PublicImpactDashboard = lazy(() => import("./pages/PublicImpactDashboard"));
 const ApeNetwork = lazy(() => import("./pages/ApeNetwork"));
+const Ranking = lazy(() => import("./pages/Ranking"));
+const AdminMpesaConfirmations = lazy(() => import("./pages/admin/AdminMpesaConfirmations"));
 
 // =========================================================================
 // QueryClient com cache optimizado
@@ -271,6 +273,7 @@ const App = () => (
                     <Route path="/educacao" element={<HealthEducationHub />} />
                     <Route path="/impacto" element={<PublicImpactDashboard />} />
                     <Route path="/rede-ape" element={<ApeNetwork />} />
+                    <Route path="/ranking" element={<Ranking />} />
                   </Route>
 
                   {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
@@ -314,6 +317,7 @@ const App = () => (
                     <Route path="insurance" element={<AdminInsurance />} />
                     <Route path="ads" element={<AdminAds />} />
                     <Route path="labs" element={<AdminLabs />} />
+                    <Route path="mpesa-confirmations" element={<AdminMpesaConfirmations />} />
                     <Route path="global-metrics" element={<GlobalMetrics />} />
                     <Route path="global-command" element={<GlobalCommandCenter />} />
                     <Route path="financial" element={<FinancialDashboard />} />
