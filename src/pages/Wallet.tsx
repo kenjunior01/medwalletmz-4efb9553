@@ -65,6 +65,7 @@ export default function Wallet() {
   const [phone, setPhone] = useState('');
   const [bonusPct, setBonusPct] = useState(5);
   const [submitting, setSubmitting] = useState(false);
+  const [proofFile, setProofFile] = useState<File | null>(null);
 
   const loadTx = async () => {
     if (!user) return;
@@ -95,28 +96,48 @@ export default function Wallet() {
 
     setSubmitting(true);
     try {
-      // Inserir transação pendente para validação manual (Offline)
-      const { error } = await (supabase as any).from('wallet_transactions').insert({
-        user_id: user?.id,
-        amount: amt,
-        type: 'deposit',
-        status: 'pending',
-        description: `Depósito via ${methodLabel[method] || method} - Ref: ${reference}`,
-        metadata: {
-          payment_method: method,
-          payment_reference: reference,
-          payment_phone: phone,
-          offline_deposit: true
+      if (method === 'mpesa') {
+        // Upload de comprovativo (opcional mas recomendado)
+        let proofUrl: string | null = null;
+        if (proofFile) {
+          const path = `${user?.id}/${Date.now()}-${proofFile.name}`;
+          const { error: upErr } = await supabase.storage.from('mpesa-proofs').upload(path, proofFile);
+          if (upErr) throw upErr;
+          proofUrl = path;
         }
-      });
-
-      if (error) throw error;
+        const { error } = await (supabase as any).from('mpesa_manual_payments').insert({
+          user_id: user?.id,
+          amount_mzn: amt,
+          reference,
+          payer_phone: phone,
+          proof_url: proofUrl,
+          status: 'pending',
+          description: `Depósito M-Pesa`,
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any).from('wallet_transactions').insert({
+          user_id: user?.id,
+          amount: amt,
+          type: 'deposit',
+          status: 'pending',
+          description: `Depósito via ${methodLabel[method] || method} - Ref: ${reference}`,
+          metadata: {
+            payment_method: method,
+            payment_reference: reference,
+            payment_phone: phone,
+            offline_deposit: true,
+          },
+        });
+        if (error) throw error;
+      }
 
       toast.success(t('wallet.success_msg') || 'Solicitação enviada!');
       setOpen(false);
       setAmount('');
       setReference('');
       setPhone('');
+      setProofFile(null);
     } catch (e: any) {
       toast.error(e.message);
     } finally {
@@ -303,6 +324,17 @@ export default function Wallet() {
                   placeholder={country?.config?.phone_placeholder || "Número de envio"}
                 />
               </div>
+              {method === 'mpesa' && (
+                <div>
+                  <Label htmlFor="dep-proof" className="text-xs">Comprovativo (imagem, opcional)</Label>
+                  <Input
+                    id="dep-proof"
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={e => setProofFile(e.target.files?.[0] || null)}
+                  />
+                </div>
+              )}
             </div>
 
             {bonusPreview > 0 && (
