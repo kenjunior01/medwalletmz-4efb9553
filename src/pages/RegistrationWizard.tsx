@@ -282,7 +282,15 @@ export default function RegistrationWizard() {
   };
 
   const submitRegistration = async () => {
-    if (!user) return navigate('/auth');
+    if (!user) {
+      toast.info('Crie a sua conta primeiro para continuarmos o seu registo profissional.');
+      const params = new URLSearchParams({
+        tab: 'register',
+        mode: 'professional',
+        next: `/register?role=${selectedRole ?? ''}`,
+      });
+      return navigate(`/auth?${params.toString()}`);
+    }
     setLoading(true);
     try {
       // 1. Update Profile (common)
@@ -425,6 +433,22 @@ export default function RegistrationWizard() {
                 Pacientes usam grátis para sempre. Profissionais e instituições têm planos pagos.
               </p>
             </div>
+
+            {!user && (
+              <div className="rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 p-3 flex gap-3 items-start">
+                <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                </div>
+                <div className="text-xs leading-relaxed">
+                  <p className="font-black text-primary mb-0.5">Olá! Sou a Meddy 👋</p>
+                  <p className="text-muted-foreground">
+                    Escolha o seu perfil abaixo. Se ainda não tem conta, pedirei o email e senha
+                    logo a seguir — depois voltamos exactamente para este passo para completar
+                    o registo profissional.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Paciente — destaque gratuito (card grande no topo) */}
             <motion.button

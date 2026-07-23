@@ -139,10 +139,20 @@ export default function Auth() {
   const [phone, setPhone] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const referralCode = useMemo(() => new URLSearchParams(location.search).get('ref')?.trim() || '', [location.search]);
+  const initialTab = useMemo(() => new URLSearchParams(location.search).get('tab'), [location.search]);
+  const nextPath = useMemo(() => new URLSearchParams(location.search).get('next'), [location.search]);
+  const mode = useMemo(() => new URLSearchParams(location.search).get('mode'), [location.search]);
+
+  useEffect(() => {
+    if (initialTab === 'register' || initialTab === 'login') {
+      setTab(initialTab);
+    }
+  }, [initialTab]);
 
   const goAfterAuth = async (userId?: string | null) => {
     try {
-      if (!userId) return navigate('/register');
+      if (!userId) return navigate(nextPath || '/register');
+      if (nextPath) return navigate(nextPath);
 
       // Busca perfil e roles simultaneamente para decisão mais inteligente
       const [profileRes, rolesRes] = await Promise.all([
@@ -233,9 +243,8 @@ export default function Auth() {
         toast.error(error.message.includes('Invalid login credentials') ? t('auth.invalid_credentials') : t('common.error'));
       } else {
         toast.success(t('auth.welcome_back'));
-        const searchParams = new URLSearchParams(location.search);
-        if (searchParams.get('mode') === 'professional') {
-          navigate('/register');
+        if (mode === 'professional' || nextPath) {
+          navigate(nextPath || '/register');
         } else {
           await goAfterAuth(signedIn?.id);
         }
@@ -257,8 +266,8 @@ export default function Auth() {
         toast.error(error.message.includes('already registered') ? t('auth.email_registered') : t('common.error'));
       } else {
         toast.success(t('auth.account_created'));
-        // Redireciona sempre para seleção de perfil após novo registo
-        navigate('/register');
+        // Redireciona para o destino previsto (ex: /register?role=doctor) ou para o wizard.
+        navigate(nextPath || '/register');
       }
     } catch (err) {
       toast.error(t('common.error'));
