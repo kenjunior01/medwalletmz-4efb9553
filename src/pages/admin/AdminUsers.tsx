@@ -66,9 +66,8 @@ export default function AdminUsers() {
     queryKey: ['admin-users', search, roleFilter, country?.id],
     queryFn: async () => {
       // Fetch profiles via admin RPC
-      const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full', {
-        p_country_id: country?.id
-      });
+      // RPC has no arguments — filter by country client-side below.
+      const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full');
       if (profilesError) throw profilesError;
       let profiles: any[] = profilesRaw || [];
 
