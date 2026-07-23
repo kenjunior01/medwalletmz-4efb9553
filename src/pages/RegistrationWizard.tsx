@@ -282,7 +282,15 @@ export default function RegistrationWizard() {
   };
 
   const submitRegistration = async () => {
-    if (!user) return navigate('/auth');
+    if (!user) {
+      toast.info('Crie a sua conta primeiro para continuarmos o seu registo profissional.');
+      const params = new URLSearchParams({
+        tab: 'register',
+        mode: 'professional',
+        next: `/register?role=${selectedRole ?? ''}`,
+      });
+      return navigate(`/auth?${params.toString()}`);
+    }
     setLoading(true);
     try {
       // 1. Update Profile (common)
