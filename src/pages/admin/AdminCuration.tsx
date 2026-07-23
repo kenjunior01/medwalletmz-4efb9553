@@ -141,9 +141,12 @@ export default function AdminCuration() {
   const [reviewing, setReviewing] = useState<Proposal | null>(null);
   const [draft, setDraft] = useState<Partial<Proposal>>({});
   const [uploadingImage, setUploadingImage] = useState(false);
+  // Admins globais podem inspecionar propostas de todos os países.
+  const [showAllCountries, setShowAllCountries] = useState(false);
+  const countryFilterId = (isAdmin && showAllCountries) ? null : (country?.id ?? null);
 
   const citiesQuery = useQuery<string[]>({
-    queryKey: ['curation-cities', country?.id],
+    queryKey: ['curation-cities', countryFilterId],
     enabled: !loading && (isAdmin || isManager),
     queryFn: async () => {
       let q = (supabase as any)
@@ -151,7 +154,7 @@ export default function AdminCuration() {
         .select('city')
         .order('city', { ascending: true });
 
-      if (country?.id) q = q.eq('country_id', country.id);
+      if (countryFilterId) q = q.eq('country_id', countryFilterId);
 
       const { data, error } = await q;
       if (error) throw error;
@@ -161,11 +164,11 @@ export default function AdminCuration() {
   });
 
   const statsQuery = useQuery<Record<string, number>>({
-    queryKey: ['curation-stats', country?.id],
+    queryKey: ['curation-stats', countryFilterId],
     enabled: !loading && (isAdmin || isManager),
     queryFn: async () => {
       let q = (supabase as any).from('place_proposals').select('status');
-      if (country?.id) q = q.eq('country_id', country.id);
+      if (countryFilterId) q = q.eq('country_id', countryFilterId);
 
       const { data, error } = await q;
       if (error) throw error;
@@ -178,7 +181,7 @@ export default function AdminCuration() {
   });
 
   const proposalsQuery = useQuery<Proposal[]>({
-    queryKey: ['curation-proposals', country?.id, tab, sourceFilter, cityFilter, typeFilter, search.trim(), page],
+    queryKey: ['curation-proposals', countryFilterId, tab, sourceFilter, cityFilter, typeFilter, search.trim(), page],
     enabled: !loading && (isAdmin || isManager),
     queryFn: async () => {
       let q = (supabase as any)
@@ -187,7 +190,7 @@ export default function AdminCuration() {
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
-      if (country?.id) q = q.eq('country_id', country.id);
+      if (countryFilterId) q = q.eq('country_id', countryFilterId);
       if (tab !== 'all') q = q.eq('status', tab);
       if (sourceFilter !== 'all') q = q.eq('source', sourceFilter);
       if (cityFilter !== 'all') q = q.eq('city', cityFilter);
@@ -208,7 +211,7 @@ export default function AdminCuration() {
         .select('id, name, address, city, phone, website, description, image_url, latitude, longitude, type, created_at')
         .order('created_at', { ascending: false });
 
-      if (country?.id) sq = sq.eq('country_id', country.id);
+      if (countryFilterId) sq = sq.eq('country_id', countryFilterId);
       const { data: storesData } = await sq;
 
       let cq = (supabase as any)
@@ -216,7 +219,7 @@ export default function AdminCuration() {
         .select('id, name, address, city, phone, website, description, logo_url, latitude, longitude, created_at')
         .order('created_at', { ascending: false });
 
-      if (country?.id) cq = cq.eq('country_id', country.id);
+      if (countryFilterId) cq = cq.eq('country_id', countryFilterId);
       const { data: clinicsData } = await cq;
 
       const legacyRows: Proposal[] = [
