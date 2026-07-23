@@ -3033,6 +3033,7 @@ export type Database = {
           id: string
           origin_lat: number
           origin_lng: number
+          polyline: string | null
         }
         Insert: {
           dest_id: string
@@ -3044,6 +3045,7 @@ export type Database = {
           id?: string
           origin_lat: number
           origin_lng: number
+          polyline?: string | null
         }
         Update: {
           dest_id?: string
@@ -3055,6 +3057,7 @@ export type Database = {
           id?: string
           origin_lat?: number
           origin_lng?: number
+          polyline?: string | null
         }
         Relationships: []
       }
