@@ -519,6 +519,22 @@ export default function AdminCuration() {
         </Link>
       </header>
 
+      {isAdmin && (
+        <div className="flex items-center gap-2 text-xs">
+          <button
+            type="button"
+            onClick={() => setShowAllCountries((v) => !v)}
+            className={cn(
+              'px-3 py-1.5 rounded-full border font-semibold transition',
+              showAllCountries ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-transparent'
+            )}
+          >
+            {showAllCountries ? 'A mostrar TODOS os países' : `A filtrar por ${country?.name ?? '—'}`}
+          </button>
+          <span className="text-muted-foreground">Clique para alternar entre país actual e visão global.</span>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
         {[
           { key: 'pending', label: 'Pendentes', tone: 'bg-warning/15 text-warning' },
