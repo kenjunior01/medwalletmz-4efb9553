@@ -12,6 +12,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
+import { Spotlight, SplitText, GradientText, FloatingParticles, MagneticWrapper, ShimmerButton, TextMorph } from '@/components/ui/premium';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
@@ -296,6 +297,7 @@ export default function Auth() {
 
   return (
     <div className="min-h-[100dvh] relative overflow-hidden bg-background flex flex-col font-sans selection:bg-primary/20">
+      <FloatingParticles count={15} />
       <DynamicBackground />
 
       {/* Header Interativo */}
@@ -319,6 +321,7 @@ export default function Auth() {
       </motion.div>
 
       {/* Main Content */}
+      <Spotlight size={350}>
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-6 pb-20">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -343,12 +346,16 @@ export default function Auth() {
                 <Heart className="h-4 w-4 fill-current" />
               </motion.div>
             </motion.div>
-            <h1 className="text-5xl font-black tracking-tighter text-foreground mb-3 flex items-center justify-center gap-2">
-              Med<span className="text-secondary">Wallet</span>
+            <h1 className="text-5xl font-black tracking-tighter text-foreground mb-3 flex items-center justify-center gap-0.5">
+              <SplitText text="Med" as="span" />
+              <GradientText>Wallet</GradientText>
             </h1>
             <p className="text-muted-foreground font-bold flex items-center justify-center gap-2 uppercase tracking-[0.2em] text-[10px]">
               A tua revolução na saúde <Star className="h-3 w-3 text-gold fill-gold" />
             </p>
+            <div className="flex items-center justify-center mt-2">
+              <TextMorph words={['Saúde', 'Farmácia', 'Bem-estar', 'Consultas']} className="text-xs font-bold text-primary/60 uppercase tracking-[0.3em]" />
+            </div>
           </div>
 
           {/* Auth Card com Vidro Reforçado */}
@@ -385,16 +392,14 @@ export default function Auth() {
                   >
                     {GOOGLE_AUTH_ENABLED && (
                       <>
-                        <Button
-                          type="button"
-                          variant="outline"
+                        <ShimmerButton
                           onClick={handleGoogle}
                           disabled={loading}
-                          className="w-full h-12 rounded-2xl font-black mb-4 border-2 bg-white hover:bg-slate-50 flex items-center justify-center gap-3"
+                          className="w-full h-12 rounded-2xl font-black mb-4 flex items-center justify-center gap-3 border-2 border-white/30"
                         >
                           <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2 14-5.4l-6.5-5.3C29.5 34.9 26.9 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.5 5.3C41.7 35.1 44 30 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
                           Continuar com Google
-                        </Button>
+                        </ShimmerButton>
                         <div className="mb-6 flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-muted-foreground">
                           <span className="flex-1 h-px bg-border" /> ou <span className="flex-1 h-px bg-border" />
                         </div>
@@ -438,14 +443,16 @@ export default function Auth() {
                           {errors.password && <p className="text-[10px] text-destructive font-black ml-2 uppercase animate-bounce-in">{errors.password}</p>}
                         </div>
 
-                        <Button
-                          type="submit"
-                          className="w-full h-14 rounded-2xl font-black text-lg shadow-premium hover:shadow-primary/30 transition-all bg-primary hover:bg-primary/95 group relative overflow-hidden"
-                          disabled={loading}
-                        >
-                          <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">{t('auth.access_wallet')} <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
-                        </Button>
+                        <MagneticWrapper className="w-full">
+                          <Button
+                            type="submit"
+                            className="w-full h-14 rounded-2xl font-black text-lg shadow-premium hover:shadow-primary/30 transition-all bg-primary hover:bg-primary/95 group relative overflow-hidden"
+                            disabled={loading}
+                          >
+                            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                            {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">{t('auth.access_wallet')} <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
+                          </Button>
+                        </MagneticWrapper>
                       </form>
                     ) : (
                       <form onSubmit={handleRegister} className="space-y-5">
@@ -521,14 +528,16 @@ export default function Auth() {
                           {errors.password && <p className="text-[10px] text-destructive font-black ml-2 uppercase animate-bounce-in">{errors.password}</p>}
                         </div>
 
-                        <Button
-                          type="submit"
-                          className="w-full h-14 rounded-2xl font-black text-lg shadow-premium hover:shadow-primary/30 transition-all bg-primary hover:bg-primary/95 group relative overflow-hidden"
-                          disabled={loading}
-                        >
-                          <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">{t('auth.create_account')} <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
-                        </Button>
+                        <MagneticWrapper className="w-full">
+                          <Button
+                            type="submit"
+                            className="w-full h-14 rounded-2xl font-black text-lg shadow-premium hover:shadow-primary/30 transition-all bg-primary hover:bg-primary/95 group relative overflow-hidden"
+                            disabled={loading}
+                          >
+                            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                            {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">{t('auth.create_account')} <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
+                          </Button>
+                        </MagneticWrapper>
                       </form>
                     )}
                   </motion.div>
@@ -556,6 +565,7 @@ export default function Auth() {
           </p>
         </motion.div>
       </div>
+      </Spotlight>
     </div>
   );
 }

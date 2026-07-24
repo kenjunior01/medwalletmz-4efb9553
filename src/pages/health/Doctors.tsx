@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Stethoscope, Star, Clock, CheckCircle2, ArrowLeft, Bell, Sparkles, Video, MessageCircle, MapPin } from 'lucide-react';
+import { MagneticWrapper } from '@/components/ui/premium';
+import { LottieEmptyState } from '@/components/lottie';
 import WaitlistDialog from '@/components/providers/WaitlistDialog';
 import { MeddyEmptyState } from '@/components/mascot/MeddyEmptyState';
 import { useLocation } from '@/contexts/LocationContext';

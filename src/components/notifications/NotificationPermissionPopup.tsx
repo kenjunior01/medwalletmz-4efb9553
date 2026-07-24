@@ -2,7 +2,9 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, BellRing, X, Check } from "lucide-react";
+import { Bell, X, Check } from "lucide-react";
+import { LottieAnimation } from "@/components/lottie";
+import { FloatingParticles, GradientText, ShimmerButton, SplitText } from "@/components/ui/premium";
 
 const STORAGE_KEY = "medwallet_notif_prompt_dismissed";
 const SHOW_DELAY = 5000;
@@ -31,34 +33,10 @@ function useNotificationEligible() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Animated ringing bell                                              */
+/*  Animated ringing bell (replaced with Lottie)                       */
 /* ------------------------------------------------------------------ */
 function AnimatedBell() {
-  return (
-    <motion.div
-      className="relative flex items-center justify-center"
-      initial={false}
-      animate={{ rotate: [0, 14, -14, 10, -10, 6, -6, 0] }}
-      transition={{
-        duration: 1.8,
-        repeat: Infinity,
-        repeatDelay: 2.4,
-        ease: "easeInOut",
-      }}
-    >
-      {/* Glow ring */}
-      <motion.span
-        className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/40 via-sky-500/30 to-teal-400/40 blur-xl"
-        animate={{ scale: [1, 1.35, 1], opacity: [0.5, 0.8, 0.5] }}
-        transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      {/* Icon circle */}
-      <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 via-sky-500 to-teal-500 shadow-lg shadow-sky-500/30">
-        <BellRing className="h-7 w-7 text-white" strokeWidth={2.2} />
-      </span>
-    </motion.div>
-  );
+  return <LottieAnimation src="notification" width={64} height={64} />;
 }
 
 /* ------------------------------------------------------------------ */
@@ -73,17 +51,22 @@ function SuccessState() {
       exit={{ scale: 0.8, opacity: 0 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
-      <motion.span
-        className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-green-500 shadow-lg shadow-emerald-500/30"
-        initial={{ rotate: -90 }}
-        animate={{ rotate: 0 }}
-        transition={{ type: "spring", stiffness: 200, damping: 15 }}
-      >
-        <Check className="h-7 w-7 text-white" strokeWidth={3} />
-      </motion.span>
-      <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-        Notificações activadas!
-      </span>
+      <div className="flex items-center gap-2">
+        <motion.span
+          className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-green-500 shadow-lg shadow-emerald-500/30"
+          initial={{ rotate: -90 }}
+          animate={{ rotate: 0 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+        >
+          <Check className="h-7 w-7 text-white" strokeWidth={3} />
+        </motion.span>
+        <LottieAnimation src="success" width={48} height={48} />
+      </div>
+      <SplitText
+        text="Notificações activadas!"
+        className="text-lg font-black text-emerald-600 dark:text-emerald-400"
+        as="span"
+      />
     </motion.div>
   );
 }
@@ -175,6 +158,8 @@ export default function NotificationPermissionPopup() {
               className="relative z-10 w-full max-w-md overflow-hidden rounded-[2rem] bg-white/90 p-6 shadow-2xl shadow-black/10 backdrop-blur-xl dark:bg-gray-900/90"
               onClick={(e) => e.stopPropagation()}
             >
+              <FloatingParticles count={8} className="opacity-40" />
+
               {/* Drag handle */}
               <span className="mx-auto mb-4 block h-1 w-10 rounded-full bg-gray-300 dark:bg-gray-600" />
 
@@ -198,7 +183,8 @@ export default function NotificationPermissionPopup() {
               damping: 26,
             }}
           >
-            <div className="pointer-events-auto w-[380px] overflow-hidden rounded-[2rem] bg-white/90 p-6 shadow-2xl shadow-black/10 backdrop-blur-xl dark:bg-gray-900/90">
+            <div className="pointer-events-auto relative w-[380px] overflow-hidden rounded-[2rem] bg-white/90 p-6 shadow-2xl shadow-black/10 backdrop-blur-xl dark:bg-gray-900/90">
+              <FloatingParticles count={8} className="opacity-40" />
               <PopupContent
                 succeeded={succeeded}
                 onEnable={handleEnable}
@@ -227,7 +213,7 @@ function PopupContent({ succeeded, onEnable, onDismiss }: PopupContentProps) {
       {/* Close button */}
       <button
         onClick={onDismiss}
-        className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+        className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
         aria-label="Fechar"
       >
         <X className="h-4 w-4" />
@@ -253,7 +239,12 @@ function PopupContent({ succeeded, onEnable, onDismiss }: PopupContentProps) {
 
             {/* Copy */}
             <h3 className="mb-1.5 text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-              Fica ligado! 🔔
+              <GradientText
+                children="Fica ligado! 🔔"
+                from="#06b6d4"
+                via="#0ea5e9"
+                to="#14b8a6"
+              />
             </h3>
             <p className="mb-5 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
               Activa as notificações para não perderes consultas, alertas de
@@ -262,15 +253,13 @@ function PopupContent({ succeeded, onEnable, onDismiss }: PopupContentProps) {
 
             {/* Actions */}
             <div className="flex items-center gap-3">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+              <ShimmerButton
                 onClick={onEnable}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/25 transition-shadow hover:shadow-xl hover:shadow-sky-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+                className="flex-1 !rounded-xl !px-5 !py-2.5 text-sm font-semibold"
               >
                 <Bell className="h-4 w-4" />
                 Activar Notificações
-              </motion.button>
+              </ShimmerButton>
 
               <motion.button
                 whileHover={{ scale: 1.03 }}

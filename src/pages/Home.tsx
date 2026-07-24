@@ -28,7 +28,8 @@ import { useWallet } from "@/hooks/useWallet";
 import { useCountry } from "@/contexts/CountryContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import NumberFlow from "@number-flow/react";
+import { FloatingParticles, NumberTicker, GradientText, MagneticWrapper, PulseRing } from "@/components/ui/premium";
+import { LottieEmptyState } from "@/components/lottie";
 import { motion, AnimatePresence } from "framer-motion";
 import { Fragment, useState } from "react";
 import { toast } from "sonner";
@@ -158,6 +159,7 @@ export default function Home() {
                 backgroundPosition: 'center'
               } : {}}
             >
+              <FloatingParticles count={12} className="opacity-50" />
               <div className="relative z-10">
                 <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] opacity-80 mb-2">
                   <Sparkles className="h-3.5 w-3.5" /> {greet()}{user ? `, ${firstName}` : ''}
@@ -217,12 +219,14 @@ export default function Home() {
               { icon: FlaskConical, label: t('home.laboratories'), bgClass: 'bg-secondary/5 border-secondary/10 hover:border-secondary/30', textClass: 'text-secondary', to: '/health/facilities?type=laboratory' },
             ].map(c => (
               <button key={c.label} onClick={() => navigate(c.to)} className="group flex flex-col items-center gap-2 no-tap-target">
-                <div className={cn(
-                  "h-14 w-full rounded-2xl flex flex-col items-center justify-center transition-all group-hover:scale-105 active:scale-95 shadow-sm border-2",
-                  c.bgClass
-                )}>
-                  <c.icon className={cn("h-6 w-6", c.textClass)} />
-                </div>
+                <MagneticWrapper>
+                  <div className={cn(
+                    "h-14 w-full rounded-2xl flex flex-col items-center justify-center transition-all group-hover:scale-105 active:scale-95 shadow-sm border-2",
+                    c.bgClass
+                  )}>
+                    <c.icon className={cn("h-6 w-6", c.textClass)} />
+                  </div>
+                </MagneticWrapper>
                 <span className="text-[10px] font-black text-center leading-tight text-foreground/80">{c.label}</span>
               </button>
             ))}
@@ -240,14 +244,17 @@ export default function Home() {
               <div>
                 <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">{t('home.wallet_card')}</p>
                 <div className="flex items-baseline gap-1 mt-1">
-                  <NumberFlow value={Number(wallet?.balance ?? 0)} className="text-3xl font-black tabular-nums" />
+                  <NumberTicker value={Number(wallet?.balance ?? 0)} className="text-3xl font-black" prefix="" suffix="" />
                   <span className="text-xs font-bold opacity-80">{country?.currency_code || 'MZN'}</span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] opacity-60">{t('wallet.secure_instant')}</span>
-                <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur">
-                  <Plus className="h-4 w-4" />
+                <div className="relative">
+                  <PulseRing color="rgba(255,255,255,0.6)" />
+                  <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur">
+                    <Plus className="h-4 w-4" />
+                  </div>
                 </div>
               </div>
             </motion.button>
@@ -297,7 +304,7 @@ export default function Home() {
               <div className="max-w-[70%]">
                 <div className="flex items-center gap-2 mb-2">
                   <Badge className="bg-secondary text-white border-0 font-bold uppercase tracking-widest text-[9px]">{t('health.urgent')}</Badge>
-                  <h2 className="text-2xl font-black">{t('health.meddy_now')}</h2>
+                  <h2 className="text-2xl font-black"><GradientText>{t('health.meddy_now')}</GradientText></h2>
                 </div>
                 <p className="text-white/80 text-xs font-bold leading-relaxed">
                   {t('health.meddy_now_desc')}
