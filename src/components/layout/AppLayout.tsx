@@ -9,6 +9,7 @@ import { MeddyFloating } from "@/components/mascot/MeddyFloating";
 import { SmartEngagementPopUp } from "@/components/notifications/SmartEngagementPopUp";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 import NotificationPermissionPopup from "@/components/notifications/NotificationPermissionPopup";
+import { PopupCoordinatorProvider } from "./PopupCoordinator";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useDeviceType } from "@/hooks/useDeviceType";
 import { useCapacitor } from "@/hooks/useCapacitor";
@@ -41,29 +42,31 @@ export function AppLayout() {
   const isMobile = device === "mobile";
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {!isMobile && <AppSidebar />}
-      <div className="flex-1 flex flex-col min-w-0">
-        <OfflineBanner />
-        <Header />
-        <div className="flex-1 w-full max-w-7xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
-          <main className={`flex-1 min-w-0 ${isMobile ? "pb-28" : ""}`}>
-            <Suspense fallback={
-              <div className="flex items-center justify-center h-[60vh]">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            }>
-              <Outlet />
-            </Suspense>
-          </main>
-          {device === "desktop" && <DesktopRail />}
+    <PopupCoordinatorProvider>
+      <div className="min-h-screen bg-background flex">
+        {!isMobile && <AppSidebar />}
+        <div className="flex-1 flex flex-col min-w-0">
+          <OfflineBanner />
+          <Header />
+          <div className="flex-1 w-full max-w-7xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
+            <main className={`flex-1 min-w-0 ${isMobile ? "pb-28" : ""}`}>
+              <Suspense fallback={
+                <div className="flex items-center justify-center h-[60vh]">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              }>
+                <Outlet />
+              </Suspense>
+            </main>
+            {device === "desktop" && <DesktopRail />}
+          </div>
+          {isMobile && <BottomNav />}
         </div>
-        {isMobile && <BottomNav />}
+        <SmartEngagementPopUp />
+        <PWAInstallPrompt />
+        <NotificationPermissionPopup />
+        <MeddyFloating context={context} />
       </div>
-      <SmartEngagementPopUp />
-      <PWAInstallPrompt />
-      <NotificationPermissionPopup />
-      <MeddyFloating context={context} />
-    </div>
+    </PopupCoordinatorProvider>
   );
 }

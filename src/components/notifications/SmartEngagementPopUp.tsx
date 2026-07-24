@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "@/contexts/LocationContext";
 import { useCountry } from "@/contexts/CountryContext";
+import { usePopupCoordinator } from "@/components/layout/PopupCoordinator";
 
 /**
  * SmartEngagementPopUp — Sistema de notificações "In-App" inteligentes.
@@ -27,6 +28,7 @@ export function SmartEngagementPopUp() {
   const [show, setShow] = useState(false);
   const [type, setType] = useState<PopUpType>("referral");
   const [envContext, setEnvContext] = useState<{ title: string; desc: string; icon: any; color: string; action?: () => void; btnText?: string } | null>(null);
+  const { activePopup, release } = usePopupCoordinator();
 
   useEffect(() => {
     if (!user) return;
@@ -169,10 +171,14 @@ export function SmartEngagementPopUp() {
       type: type,
       action: action
     }).then();
+    if (action === 'dismissed' || action === 'clicked') {
+      release('engagement');
+    }
   };
 
   const current = config[type];
   if (!current || !current.title) return null;
+  if (activePopup && activePopup !== 'engagement') return null;
   const Icon = current.icon;
 
   return (

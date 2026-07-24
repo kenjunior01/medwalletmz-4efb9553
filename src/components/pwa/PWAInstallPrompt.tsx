@@ -21,6 +21,7 @@ import { Download, X, Smartphone, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { usePopupCoordinator } from '@/components/layout/PopupCoordinator';
 
 const DISMISS_KEY = 'mz_pwa_install_dismissed_until';
 const DISMISS_DAYS = 60;
@@ -36,6 +37,7 @@ export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [installed, setInstalled] = useState(false);
+  const { activePopup, release } = usePopupCoordinator();
 
   useEffect(() => {
     // Detecta se já está instalado (standalone)
@@ -109,6 +111,7 @@ export function PWAInstallPrompt() {
     const until = Date.now() + DISMISS_DAYS * 24 * 60 * 60 * 1000;
     localStorage.setItem(DISMISS_KEY, String(until));
     setVisible(false);
+    release('pwa');
   };
 
   const neverShowAgain = () => {
@@ -118,6 +121,8 @@ export function PWAInstallPrompt() {
   };
 
   if (installed || !visible) return null;
+  // Don't show if another popup is active (unless it's us)
+  if (activePopup && activePopup !== 'pwa') return null;
 
   return (
     <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md px-2 animate-slide-up">
