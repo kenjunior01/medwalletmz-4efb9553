@@ -78,7 +78,17 @@
     "trust_strip": {
       "doctors": "+120 médicos",
       "available": "24/7"
-    }
+    },
+    "nearby_title": "Cerca de ti",
+    "nearby_radius": "Radio {{km}} km",
+    "nearby_sorted_by": "ordenado por {{sortBy}}",
+    "nearby_sort_distance": "distancia / ruta",
+    "nearby_sort_rating": "valoracion",
+    "nearby_sort_price": "precio",
+    "nearby_sort_eta": "tiempo real",
+    "nearby_activate_location": "Activa la ubicacion para resultados precisos",
+    "nearby_activate_btn": "Activar",
+    "nearby_no_providers": "Aun no hay proveedores en {{city}}."
   },
   "checkout": {
     "title": "Finalizar Pedido",
@@ -394,5 +404,31 @@
     "no_users_found": "Nenhum utilizador encontrado.",
     "prev": "Anterior",
     "next": "Próximo"
+  },
+  "ranking": {
+    "title": "Ranking",
+    "no_data": "Sin datos todavia.",
+    "reviews_count": "{{count}} valoraciones",
+    "tab_doctors": "Medicos",
+    "tab_clinics": "Clinicas",
+    "tab_hospitals": "Hospitales",
+    "tab_pharmacies": "Farmacias",
+    "tab_laboratories": "Laboratorios",
+    "tab_veterinary": "Veterinarias"
+  },
+  "subscribe": {
+    "page_title": "Planes de suscripcion",
+    "page_subtitle": "Elige el plan ideal para ti",
+    "tab_customers": "Usuarios",
+    "tab_doctors": "Medicos",
+    "tab_clinics": "Clinicas",
+    "tab_hospitals": "Hospitales",
+    "tab_labs": "Laboratorios",
+    "tab_pharmacies": "Farmacias",
+    "tab_drivers": "Repartidores",
+    "no_plans": "Sin planes disponibles para este perfil por ahora.",
+    "month": "mes",
+    "year": "ano",
+    "subscribe_btn": "Suscribirse"
   }
 }

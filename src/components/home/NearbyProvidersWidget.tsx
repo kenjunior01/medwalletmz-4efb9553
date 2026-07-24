@@ -7,12 +7,13 @@ import { MapPin, Stethoscope, Pill, Navigation, Loader2, Clock, Sparkles, Buildi
 import { Button } from '@/components/ui/button';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { fetchRouteDistance, fmtDuration, haversineKm } from '@/lib/googleRoutes';
-import { useCountry } from '@/contexts/CountryContext';
+import { useCountry, useTranslation } from '@/contexts/CountryContext';
 
 export function NearbyProvidersWidget() {
   const navigate = useNavigate();
   const { coordinates, city, requestLocation, loading, calculateDistance } = useLocation();
   const { country } = useCountry();
+  const { t } = useTranslation();
   const { settings } = usePlatformSettings();
   const radiusKm = Number(settings.nearby_radius_km) || 25;
   const ranking = (settings.nearby_ranking as string) || 'distance';
@@ -178,25 +179,25 @@ export function NearbyProvidersWidget() {
       <div className="flex items-center justify-between mb-3">
         <div>
           <h2 className="text-xl font-black flex items-center gap-2">
-            <Navigation className="h-4 w-4 text-primary" /> Perto de ti
+            <Navigation className="h-4 w-4 text-primary" /> {t('home.nearby_title')}
           </h2>
           <p className="text-xs text-muted-foreground">
             {coordinates
-              ? `Raio ${radiusKm} km · ordenado por ${ranking === 'rating' ? 'avaliação' : ranking === 'price' ? 'preço' : ranking === 'eta' ? 'tempo real' : 'distância / rota'} · ${city}`
-              : 'Ativa a localização para resultados precisos'}
+              ? `${t('home.nearby_radius', { km: radiusKm })} · ${t('home.nearby_sorted_by', { sortBy: t(`home.nearby_sort_${ranking}`) })} · ${city}`
+              : t('home.nearby_activate_location')}
           </p>
         </div>
         {!coordinates && (
           <Button size="sm" variant="outline" onClick={requestLocation} disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <MapPin className="h-4 w-4 mr-1" />}
-            Ativar
+            {t('home.nearby_activate_btn')}
           </Button>
         )}
       </div>
 
       {ranked.length === 0 ? (
         <div className="bento-card p-4 text-sm text-muted-foreground">
-          Ainda não há prestadores em {city}.
+          {t('home.nearby_no_providers', { city: city || '' })}
         </div>
       ) : (
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory">

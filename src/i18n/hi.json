@@ -78,7 +78,17 @@
     "trust_strip": {
       "doctors": "+120 डॉक्टर",
       "available": "24/7 उपलब्ध"
-    }
+    },
+    "nearby_title": "Aapke paas",
+    "nearby_radius": "Rediyas {{km}} kimi",
+    "nearby_sorted_by": "{{sortBy}} dvaara kramabaddh",
+    "nearby_sort_distance": "doori / maarg",
+    "nearby_sort_rating": "reting",
+    "nearby_sort_price": "keemat",
+    "nearby_sort_eta": "riyal-taim",
+    "nearby_activate_location": "sateek parinaamon ke lie sthaan saksham karen",
+    "nearby_activate_btn": "Saksham karen",
+    "nearby_no_providers": "{{city}} mein abhi tak koi pradaata upalabdh nahin hai."
   },
   "checkout": {
     "title": "ऑर्डर पूरा करें",
@@ -394,5 +404,31 @@
     "no_users_found": "Nenhum utilizador encontrado.",
     "prev": "Anterior",
     "next": "Próximo"
+  },
+  "ranking": {
+    "title": "Ranking",
+    "no_data": "Abhi tak koi data nahin.",
+    "reviews_count": "{{count}} sameekshaayein",
+    "tab_doctors": "Daktar",
+    "tab_clinics": "Klinik",
+    "tab_hospitals": "Aspataal",
+    "tab_pharmacies": "Faarmasi",
+    "tab_laboratories": "Prayogshaalaayein",
+    "tab_veterinary": "Pashu Chikitsa"
+  },
+  "subscribe": {
+    "page_title": "Sadasyata Yojanaayein",
+    "page_subtitle": "Apne lie aadarsh yojana chunein",
+    "tab_customers": "Upayogkarta",
+    "tab_doctors": "Daktar",
+    "tab_clinics": "Klinik",
+    "tab_hospitals": "Aspataal",
+    "tab_labs": "Prayogshaalaayein",
+    "tab_pharmacies": "Faarmasi",
+    "tab_drivers": "Delivery Driver",
+    "no_plans": "Is profile ke lie abhi tak koi yojana upalabdh nahin hai.",
+    "month": "mahina",
+    "year": "varsh",
+    "subscribe_btn": "Sadasyata len"
   }
 }

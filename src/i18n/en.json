@@ -78,7 +78,17 @@
     "do_deliveries": "Faço entregas",
     "competitive_commission": "Comissão competitiva, pagamentos diários",
     "suggest_place_title": "Conheces uma farmácia ou clínica?",
-    "suggest_place_desc": "Sugere e, quando publicarmos, recebes saldo + Pulse automaticamente."
+    "suggest_place_desc": "Sugere e, quando publicarmos, recebes saldo + Pulse automaticamente.",
+    "nearby_title": "Near you",
+    "nearby_radius": "Radius {{km}} km",
+    "nearby_sorted_by": "sorted by {{sortBy}}",
+    "nearby_sort_distance": "distance / route",
+    "nearby_sort_rating": "rating",
+    "nearby_sort_price": "price",
+    "nearby_sort_eta": "real-time",
+    "nearby_activate_location": "Enable location for accurate results",
+    "nearby_activate_btn": "Enable",
+    "nearby_no_providers": "No providers available in {{city}} yet."
   },
   "checkout": {
     "title": "Checkout",
@@ -394,5 +404,31 @@
     "no_users_found": "No users found.",
     "prev": "Previous",
     "next": "Next"
+  },
+  "ranking": {
+    "title": "Ranking",
+    "no_data": "No data yet.",
+    "reviews_count": "{{count}} reviews",
+    "tab_doctors": "Doctors",
+    "tab_clinics": "Clinics",
+    "tab_hospitals": "Hospitals",
+    "tab_pharmacies": "Pharmacies",
+    "tab_laboratories": "Laboratories",
+    "tab_veterinary": "Veterinary"
+  },
+  "subscribe": {
+    "page_title": "Subscription Plans",
+    "page_subtitle": "Choose the ideal plan for you",
+    "tab_customers": "Users",
+    "tab_doctors": "Doctors",
+    "tab_clinics": "Clinics",
+    "tab_hospitals": "Hospitals",
+    "tab_labs": "Laboratories",
+    "tab_pharmacies": "Pharmacies",
+    "tab_drivers": "Drivers",
+    "no_plans": "No plans available for this profile yet.",
+    "month": "month",
+    "year": "year",
+    "subscribe_btn": "Subscribe"
   }
 }

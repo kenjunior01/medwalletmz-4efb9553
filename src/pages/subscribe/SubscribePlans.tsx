@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, Sparkles, ArrowLeft } from "lucide-react";
-import { useCountry } from "@/contexts/CountryContext";
+import { useCountry, useTranslation } from "@/contexts/CountryContext";
 
 interface Plan {
   id: string;
@@ -21,18 +21,19 @@ interface Plan {
 }
 
 const audiences = [
-  { key: "customer", label: "Utilizadores" },
-  { key: "doctor", label: "Médicos" },
-  { key: "clinic", label: "Clínicas" },
-  { key: "hospital", label: "Hospitais" },
-  { key: "lab", label: "Laboratórios" },
-  { key: "store_owner", label: "Farmácias" },
-  { key: "driver", label: "Entregadores" },
+  { key: "customer", labelKey: "subscribe.tab_customers" },
+  { key: "doctor", labelKey: "subscribe.tab_doctors" },
+  { key: "clinic", labelKey: "subscribe.tab_clinics" },
+  { key: "hospital", labelKey: "subscribe.tab_hospitals" },
+  { key: "lab", labelKey: "subscribe.tab_labs" },
+  { key: "store_owner", labelKey: "subscribe.tab_pharmacies" },
+  { key: "driver", labelKey: "subscribe.tab_drivers" },
 ];
 
 export default function SubscribePlans() {
   const nav = useNavigate();
   const { country } = useCountry();
+  const { t } = useTranslation();
   const [sp] = useSearchParams();
   const [audience, setAudience] = useState(sp.get("audience") || "customer");
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -62,8 +63,8 @@ export default function SubscribePlans() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-lg font-bold">Planos de subscrição</h1>
-          <p className="text-xs text-muted-foreground">Escolha o plano ideal para si</p>
+          <h1 className="text-lg font-bold">{t('subscribe.page_title')}</h1>
+          <p className="text-xs text-muted-foreground">{t('subscribe.page_subtitle')}</p>
         </div>
       </header>
 
@@ -72,17 +73,17 @@ export default function SubscribePlans() {
           <TabsList className="w-full flex overflow-x-auto">
             {audiences.map(a => (
               <TabsTrigger key={a.key} value={a.key} className="flex-1 whitespace-nowrap">
-                {a.label}
+                {t(a.labelKey)}
               </TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
 
         {loading ? (
-          <p className="text-center text-muted-foreground py-8">A carregar...</p>
+          <p className="text-center text-muted-foreground py-8">{t('common.loading')}</p>
         ) : plans.length === 0 ? (
           <Card className="p-8 text-center text-muted-foreground">
-            Sem planos disponíveis para este perfil por enquanto.
+            {t('subscribe.no_plans')}
           </Card>
         ) : (
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -108,7 +109,7 @@ export default function SubscribePlans() {
                     <span className="text-3xl font-black text-primary">
                       {p.price_mzn.toLocaleString(locale)}
                     </span>
-                    <span className="text-muted-foreground text-sm"> {currencySymbol} / {p.billing_period === "monthly" ? "mês" : p.billing_period === "yearly" ? "ano" : p.billing_period}</span>
+                    <span className="text-muted-foreground text-sm"> {currencySymbol} / {p.billing_period === 'monthly' ? t('subscribe.month') : p.billing_period === 'yearly' ? t('subscribe.year') : p.billing_period}</span>
                   </div>
                   <ul className="space-y-1.5 mb-4 text-sm">
                     {feats.map((f, i) => (
@@ -119,7 +120,7 @@ export default function SubscribePlans() {
                     ))}
                   </ul>
                   <Button className="w-full" onClick={() => nav(`/subscribe/${p.id}`)}>
-                    Subscrever
+                    {t('subscribe.subscribe_btn')}
                   </Button>
                 </Card>
               );

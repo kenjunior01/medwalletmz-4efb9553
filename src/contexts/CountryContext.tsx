@@ -350,3 +350,9 @@ export function useCountry() {
   }
   return context;
 }
+
+/** Convenience hook — exposes only t() + locale for i18n in components that don't need country data. */
+export function useTranslation() {
+  const { t, locale } = useCountry();
+  return { t, locale };
+}

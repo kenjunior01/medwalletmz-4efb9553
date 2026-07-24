@@ -78,7 +78,17 @@
     "trust_strip": {
       "doctors": "+120 dokters",
       "available": "24/7"
-    }
+    },
+    "nearby_title": "Naby jou",
+    "nearby_radius": "Radius {{km}} km",
+    "nearby_sorted_by": "gesorteer volgens {{sortBy}}",
+    "nearby_sort_distance": "afstand / roete",
+    "nearby_sort_rating": "gradering",
+    "nearby_sort_price": "prys",
+    "nearby_sort_eta": "werklike tyd",
+    "nearby_activate_location": "Aktiveer ligging vir akkurate resultate",
+    "nearby_activate_btn": "Aktiveer",
+    "nearby_no_providers": "Nog geen verskaffers in {{city}} nie."
   },
   "checkout": {
     "title": "Voltooi Bestelling",
@@ -394,5 +404,31 @@
     "no_users_found": "Nenhum utilizador encontrado.",
     "prev": "Anterior",
     "next": "Próximo"
+  },
+  "ranking": {
+    "title": "Ranglys",
+    "no_data": "Nog geen data nie.",
+    "reviews_count": "{{count}} resensies",
+    "tab_doctors": "Dokters",
+    "tab_clinics": "Klinieke",
+    "tab_hospitals": "Hospitale",
+    "tab_pharmacies": "Apteeke",
+    "tab_laboratories": "Laboratoriums",
+    "tab_veterinary": "Veeartseny"
+  },
+  "subscribe": {
+    "page_title": "Subskripsieplanne",
+    "page_subtitle": "Kies die ideale plan vir jou",
+    "tab_customers": "Gebruikers",
+    "tab_doctors": "Dokters",
+    "tab_clinics": "Klinieke",
+    "tab_hospitals": "Hospitale",
+    "tab_labs": "Laboratoriums",
+    "tab_pharmacies": "Apteeke",
+    "tab_drivers": "Bestellingsbestuurders",
+    "no_plans": "Geen planne beskikbaar vir hierdie profiel tans nie.",
+    "month": "maand",
+    "year": "jaar",
+    "subscribe_btn": "Teken in"
   }
 }

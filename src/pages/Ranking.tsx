@@ -6,20 +6,22 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, Star, Trophy, MapPin } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from '@/contexts/CountryContext';
 
 type Tab = 'doctors' | 'clinics' | 'hospitals' | 'pharmacies' | 'laboratories' | 'veterinary';
 
-const TABS: { id: Tab; label: string; table: string; typeFilter?: string }[] = [
-  { id: 'doctors', label: 'Médicos', table: 'doctor_profiles' },
-  { id: 'clinics', label: 'Clínicas', table: 'clinics' },
-  { id: 'hospitals', label: 'Hospitais', table: 'clinics', typeFilter: 'hospital' },
-  { id: 'pharmacies', label: 'Farmácias', table: 'stores', typeFilter: 'pharmacy' },
-  { id: 'laboratories', label: 'Laboratórios', table: 'stores', typeFilter: 'laboratory' },
-  { id: 'veterinary', label: 'Veterinárias', table: 'stores', typeFilter: 'veterinary' },
+const TABS_CONFIG: { id: Tab; labelKey: string; table: string; typeFilter?: string }[] = [
+  { id: 'doctors', labelKey: 'ranking.tab_doctors', table: 'doctor_profiles' },
+  { id: 'clinics', labelKey: 'ranking.tab_clinics', table: 'clinics' },
+  { id: 'hospitals', labelKey: 'ranking.tab_hospitals', table: 'clinics', typeFilter: 'hospital' },
+  { id: 'pharmacies', labelKey: 'ranking.tab_pharmacies', table: 'stores', typeFilter: 'pharmacy' },
+  { id: 'laboratories', labelKey: 'ranking.tab_laboratories', table: 'stores', typeFilter: 'laboratory' },
+  { id: 'veterinary', labelKey: 'ranking.tab_veterinary', table: 'stores', typeFilter: 'veterinary' },
 ];
 
 export default function Ranking() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>('doctors');
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function Ranking() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const cfg = TABS.find(t => t.id === tab)!;
+      const cfg = TABS_CONFIG.find(tc => tc.id === tab)!;
       if (cfg.id === 'doctors') {
         const { data } = await (supabase as any)
           .from('doctor_profiles')
@@ -73,23 +75,23 @@ export default function Ranking() {
         </Button>
         <div className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-gold" />
-          <h1 className="font-bold text-lg">Ranking</h1>
+          <h1 className="font-bold text-lg">{t('ranking.title')}</h1>
         </div>
       </header>
 
       <main className="p-4 space-y-4">
         <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
           <TabsList className="w-full overflow-x-auto flex justify-start">
-            {TABS.map(t => (
-              <TabsTrigger key={t.id} value={t.id} className="shrink-0">{t.label}</TabsTrigger>
+            {TABS_CONFIG.map(tabCfg => (
+              <TabsTrigger key={tabCfg.id} value={tabCfg.id} className="shrink-0">{t(tabCfg.labelKey)}</TabsTrigger>
             ))}
           </TabsList>
-          {TABS.map(t => (
-            <TabsContent key={t.id} value={t.id} className="space-y-2 mt-4">
+          {TABS_CONFIG.map(tabCfg => (
+            <TabsContent key={tabCfg.id} value={tabCfg.id} className="space-y-2 mt-4">
               {loading ? (
                 [1,2,3,4].map(i => <Skeleton key={i} className="h-16 rounded-xl" />)
               ) : rows.length === 0 ? (
-                <p className="text-center text-sm text-muted-foreground py-8">Sem dados ainda.</p>
+                <p className="text-center text-sm text-muted-foreground py-8">{t('ranking.no_data')}</p>
               ) : rows.map((r, i) => (
                 <Card key={r.id} className="p-3 flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
@@ -108,7 +110,7 @@ export default function Ranking() {
                       <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
                       {r.rating.toFixed(1)}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">{r.reviews} avaliações</p>
+                    <p className="text-[10px] text-muted-foreground">{t('ranking.reviews_count', { count: r.reviews })}</p>
                   </div>
                 </Card>
               ))}
