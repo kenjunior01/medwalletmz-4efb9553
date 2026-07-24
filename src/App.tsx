@@ -13,7 +13,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
 import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
 import { OAuthBrokerRedirect } from "@/components/auth/OAuthBrokerRedirect";
-import { PWAInstallBanner, PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
+import { PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
 
 // =========================================================================
 // CODE-SPLITTING COM React.lazy
@@ -422,8 +422,7 @@ const App = () => (
                 </Routes>
                 </Suspense>
                 </OAuthCallbackHandler>
-                {/* Componentes PWA globais (banner instalação + toast update) */}
-                <PWAInstallBanner />
+                {/* Componentes PWA globais (toast update) */}
                 <PWAUpdateToast />
               </BrowserRouter>
             </TooltipProvider>

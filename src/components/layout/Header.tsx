@@ -161,7 +161,7 @@ export function Header() {
           {country && country.supported_locales.length > 1 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label={t('header.select_language')} className="h-9 w-9 rounded-xl hover:bg-primary/10 no-tap-target" data-size="icon">
+                <Button variant="ghost" size="icon" aria-label={t('header.select_language')} className="hidden sm:flex h-9 w-9 rounded-xl hover:bg-primary/10 no-tap-target" data-size="icon">
                   <Languages className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>

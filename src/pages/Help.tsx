@@ -190,7 +190,7 @@ export default function Help() {
     .filter((category) => category.questions.length > 0);
 
   return (
-    <div className="flex flex-col min-h-screen pb-24">
+    <div className="flex flex-col min-h-screen">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 border-b border-border bg-card sticky top-0 z-10">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">

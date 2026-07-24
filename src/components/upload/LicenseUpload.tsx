@@ -1,83 +1,66 @@
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Upload, CheckCircle2, Loader2, FileText } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { Upload, X, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-interface Props {
-  label: string;
-  description?: string;
-  /** unique slot name, e.g. 'carta', 'viatura', 'cedula', 'misau' */
-  slot: string;
-  value?: string | null;
-  onUploaded: (url: string) => void;
+interface LicenseUploadProps {
+  value?: string;
+  onChange?: (url: string) => void;
+  label?: string;
   accept?: string;
+  maxSizeMB?: number;
 }
 
-export function LicenseUpload({ label, description, slot, value, onUploaded, accept = 'image/*,application/pdf,.doc,.docx,.xls,.xlsx' }: Props) {
-  const { user } = useAuth();
-  const [uploading, setUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(value ?? null);
+export function LicenseUpload({ value, onChange, label = "Carregar documento", accept = ".pdf,.jpg,.jpeg,.png", maxSizeMB = 5 }: LicenseUploadProps) {
+  const [preview, setPreview] = useState<string | null>(value || null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleFile = async (file: File) => {
-    if (!user) { toast.error('Inicia sessão primeiro'); return; }
-    if (file.size > 15 * 1024 * 1024) { toast.error('Ficheiro deve ter no máximo 15 MB'); return; }
-    setUploading(true);
-    try {
-      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-      const path = `${user.id}/${slot}-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from('licenses').upload(path, file, {
-        cacheControl: '3600', upsert: true, contentType: file.type,
-      });
-      if (error) throw error;
-      setPreviewUrl(path);
-      onUploaded(path);
-      toast.success('Licença enviada');
-    } catch (e: any) {
-      toast.error('Erro no envio: ' + e.message);
-    } finally {
-      setUploading(false);
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      setError(`Ficheiro demasiado grande (máx ${maxSizeMB}MB)`);
+      return;
     }
+
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    onChange?.(url);
   };
 
-  const hasFile = !!previewUrl;
+  const remove = () => {
+    setPreview(null);
+    onChange?.("");
+  };
+
+  if (preview) {
+    return (
+      <div className="relative rounded-xl border border-border overflow-hidden">
+        <div className="flex items-center gap-3 p-3">
+          <FileText className="h-8 w-8 text-primary shrink-0" />
+          <span className="text-sm font-medium truncate flex-1">Documento carregado</span>
+          <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={remove}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      {description && <p className="text-xs text-muted-foreground -mt-1">{description}</p>}
-      <label className={`flex items-center gap-3 rounded-xl border-2 border-dashed p-3 cursor-pointer transition-colors ${hasFile ? 'border-primary/40 bg-primary/5' : 'border-border hover:border-primary/40'}`}>
-        <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${hasFile ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'}`}>
-          {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : hasFile ? <CheckCircle2 className="h-5 w-5" /> : <Upload className="h-5 w-5" />}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate">
-            {hasFile ? 'Ficheiro enviado' : uploading ? 'A enviar…' : 'Carregar ficheiro'}
-          </p>
-          <p className="text-[11px] text-muted-foreground truncate">
-            {hasFile ? previewUrl?.split('/').pop() : 'JPG, PNG, PDF ou DOC · máx. 15 MB'}
-          </p>
-        </div>
-        <input
-          type="file"
-          accept={accept}
-          className="hidden"
-          disabled={uploading}
-          onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
-        />
-        {hasFile && (
-          <Button type="button" variant="ghost" size="sm" onClick={async (e) => {
-            e.preventDefault();
-            if (!previewUrl) return;
-            const { data } = await supabase.storage.from('licenses').createSignedUrl(previewUrl, 60);
-            if (data?.signedUrl) window.open(data.signedUrl, '_blank');
-          }}>
-            <FileText className="h-4 w-4" />
-          </Button>
-        )}
+    <div>
+      <label className={cn(
+        "flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border hover:border-primary/50 p-6 cursor-pointer transition-colors",
+        error && "border-destructive"
+      )}>
+        <Upload className="h-8 w-8 text-muted-foreground" />
+        <span className="text-sm font-medium">{label}</span>
+        <span className="text-xs text-muted-foreground">PDF, JPG, PNG (máx {maxSizeMB}MB)</span>
+        <input type="file" accept={accept} onChange={handleFile} className="hidden" />
       </label>
+      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
     </div>
   );
 }

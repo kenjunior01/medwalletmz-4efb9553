@@ -447,7 +447,7 @@ export default function HealthEducationHub() {
         description="Artigos de saúde gratuitos em Português, Emakhuwa, Xitsonga, Changana e Sena. Validados por protocolos MISAU/OMS."
         path="/health/education"
       />
-      <div className="mx-auto max-w-6xl px-4 py-6 pb-24">
+      <div className="mx-auto max-w-6xl px-4 py-6">
         {/* Hero */}
         <div className="rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white shadow-lg">
           <div className="flex items-start gap-3">

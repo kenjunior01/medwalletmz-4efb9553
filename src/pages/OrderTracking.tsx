@@ -248,7 +248,7 @@ export default function OrderTracking() {
 
   if (loading) {
     return (
-      <div className="flex flex-col pb-24 animate-fade-in">
+      <div className="flex flex-col animate-fade-in">
         <div className="flex items-center gap-3 p-4 border-b border-border bg-card sticky top-0 z-10">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">
             <ArrowLeft className="h-5 w-5" />
@@ -281,7 +281,7 @@ export default function OrderTracking() {
   const currencySymbol = country?.currency_symbol || country?.currency_code || 'MZN';
 
   return (
-    <div className="flex flex-col pb-24 animate-fade-in">
+    <div className="flex flex-col animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 border-b border-border bg-card sticky top-0 z-10">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">

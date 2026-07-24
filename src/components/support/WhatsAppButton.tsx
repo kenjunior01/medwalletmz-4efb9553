@@ -27,7 +27,7 @@ export function WhatsAppButton() {
   };
 
   return (
-    <div className="fixed bottom-20 right-4 z-50 md:bottom-6">
+    <div className="fixed bottom-[5.5rem] right-3 z-50 md:bottom-6 md:right-6">
       {/* Chat Options Panel */}
       <div
         className={cn(
@@ -86,7 +86,7 @@ export function WhatsAppButton() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all duration-300 hover:scale-110',
+          'flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg transition-all duration-300 hover:scale-110',
           isOpen
             ? 'bg-destructive rotate-0'
             : 'bg-green-500 hover:bg-green-600'

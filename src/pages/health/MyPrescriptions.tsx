@@ -32,7 +32,7 @@ export default function MyPrescriptions() {
   }, [user]);
 
   return (
-    <div className="flex flex-col gap-4 p-4 pb-24 animate-fade-in">
+    <div className="flex flex-col gap-4 p-4 animate-fade-in">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
         <div>

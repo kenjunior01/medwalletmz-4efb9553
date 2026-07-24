@@ -57,7 +57,7 @@ export default function LabDashboard() {
   }
 
   return (
-    <div className="p-4 pb-24 max-w-5xl mx-auto space-y-4">
+    <div className="p-4 max-w-5xl mx-auto space-y-4">
       <header className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => nav('/')} aria-label="Voltar"><ArrowLeft className="h-5 w-5" /></Button>
         <div className="flex-1">

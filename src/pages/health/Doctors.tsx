@@ -87,7 +87,7 @@ export default function Doctors() {
   return (
     <>
       <Seo title={`${t('home.doctors')} | MedWallet`} description={t('doctor_register.join_subtitle')} path="/health/doctors" />
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b">
         <div className="flex items-center gap-3 p-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>

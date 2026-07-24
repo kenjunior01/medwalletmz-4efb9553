@@ -252,7 +252,7 @@ export default function MzB2BPlans() {
         description="Planos SaaS para médicos, clínicas, hospitais, farmácias, laboratórios e entregadores. Desde 250 MZN/mês até 45 000 MZN/mês."
         path="/planos-b2b"
       />
-      <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 pb-24">
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
         {/* HERO */}
         <section className="relative px-4 pt-8 pb-6 overflow-hidden">
           <div className="absolute inset-0 bg-dot-pattern opacity-50 pointer-events-none" />

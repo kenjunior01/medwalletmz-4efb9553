@@ -79,7 +79,7 @@ export default function DoctorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       <SkipLink />
       <main id="main" className="p-4 space-y-5">
         {/* Hero panel */}

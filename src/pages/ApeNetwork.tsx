@@ -61,7 +61,7 @@ export default function ApeNetwork() {
         description="Rede de Agentes Polivalentes Elementares (APEs) activos em Moçambique usando o MedWallet MZ para servir as suas comunidades."
         path="/ape-network"
       />
-      <div className="mx-auto max-w-6xl px-4 py-6 pb-24">
+      <div className="mx-auto max-w-6xl px-4 py-6">
         {/* Hero */}
         <div className="rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 p-6 text-white shadow-xl relative overflow-hidden">
           <div className="absolute -right-4 -top-4 opacity-10">

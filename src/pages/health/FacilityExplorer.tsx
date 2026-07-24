@@ -57,7 +57,7 @@ export default function FacilityExplorer() {
   }, [country, filter]);
 
   return (
-    <div className="p-4 space-y-6 pb-24 animate-fade-in">
+    <div className="p-4 space-y-6 animate-fade-in">
       <header className="flex flex-col gap-2">
         <h1 className="text-2xl font-black">Centro de Saúde Global</h1>
         <p className="text-sm text-muted-foreground">Tudo o que precisas em {country?.name || 'Moçambique'}</p>

@@ -115,7 +115,7 @@ export default function Favorites() {
   /* ---------------------------------------------------------------- */
 
   return (
-    <div className="bg-background min-h-screen pb-24">
+    <div className="bg-background min-h-screen">
       {/* ---- Header ---- */}
       <header className="sticky top-0 z-10 flex items-center gap-3 bg-background/80 backdrop-blur-md border-b px-4 py-3">
         <Button

@@ -248,7 +248,7 @@ export default function MzPricingPlans() {
         description="Pacientes grátis para sempre. Médicos, clínicas, farmácias e hospitais têm planos SaaS B2B a partir de 250 MZN/mês."
         path="/mz-pricing-plans"
       />
-      <div className="mx-auto max-w-6xl px-4 py-6 pb-24">
+      <div className="mx-auto max-w-6xl px-4 py-6">
         {/* Hero — modelo novo */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}

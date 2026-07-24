@@ -139,7 +139,7 @@ export default function MonetizationHub() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
       {/* HEADER */}
       <header className="sticky top-0 z-10 flex items-center gap-3 bg-background/80 px-4 py-3 backdrop-blur border-b border-border">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>

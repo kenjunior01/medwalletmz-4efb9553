@@ -100,7 +100,7 @@ export default function StoreDetail() {
   }
 
   return (
-    <div className="flex flex-col pb-24">
+    <div className="flex flex-col">
       {/* Header Image */}
       <div className="relative h-48">
         <img

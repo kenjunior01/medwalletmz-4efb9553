@@ -75,7 +75,7 @@ export default function GlobalCommandCenter() {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-slate-50 min-h-screen pb-24">
+    <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black flex items-center gap-2">

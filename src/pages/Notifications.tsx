@@ -238,7 +238,7 @@ export default function NotificationsPage() {
   }, [items]);
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border/50 safe-area-top">
         <div className="flex items-center gap-2 px-4 py-3">

@@ -98,7 +98,7 @@ export default function HealthEducation() {
   if (slug) return <ArticleDetail article={article} related={related} loading={loadingOne} onBack={() => navigate("/health/education")} user={user} navigate={navigate} />;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 flex items-center gap-3 bg-background/80 px-4 py-3 backdrop-blur border-b">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-5 w-5" />
@@ -306,7 +306,7 @@ function ArticleDetail({ article, related, loading, onBack, user, navigate }: { 
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 flex items-center gap-3 bg-background/80 px-4 py-3 backdrop-blur border-b">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />

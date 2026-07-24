@@ -104,7 +104,7 @@ export default function PublicImpactDashboard() {
         description="Transparência total: quantos moçambicanos usam o MedWallet MZ e quantas vidas são impactadas."
         path="/impact"
       />
-      <div className="mx-auto max-w-6xl px-4 py-6 pb-24">
+      <div className="mx-auto max-w-6xl px-4 py-6">
         {/* Hero */}
         <div className="rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 p-6 text-white shadow-xl relative overflow-hidden">
           <div className="absolute -right-8 -top-8 opacity-10">

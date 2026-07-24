@@ -92,7 +92,7 @@ export default function FacilityDetail() {
     };
 
     return (
-        <div className="flex flex-col pb-24 animate-fade-in">
+        <div className="flex flex-col animate-fade-in">
             {/* Hero Header */}
             <div className="relative h-56">
                 <SafeImage src={getSafeImageUrl(facility.logo_url || facility.image_url)} alt={facility.name} className="h-full w-full object-cover" />

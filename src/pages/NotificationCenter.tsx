@@ -255,7 +255,7 @@ export default function NotificationCenter() {
   return (
     <>
       <Seo title="Notificações — MedWallet MZ" description="Central de notificações da tua conta MedWallet." path="/notifications" />
-      <div className="min-h-screen bg-background pb-24">
+      <div className="min-h-screen bg-background">
         {/* Header */}
         <header className="sticky top-0 z-20 glass border-b border-border/50 safe-area-top">
           <div className="flex items-center justify-between px-4 py-3">

@@ -40,7 +40,7 @@ export default function NearbyHealth() {
         description="Encontre hospitais, clínicas, farmácias e médicos perto de si em tempo real, com fotos, ratings e horários do Google Maps."
         path="/health/nearby"
       />
-      <div className="p-4 flex flex-col gap-4 animate-fade-in pb-24">
+      <div className="p-4 flex flex-col gap-4 animate-fade-in">
         {/* Header */}
         <div>
           <h1 className="text-2xl font-black flex items-center gap-2">

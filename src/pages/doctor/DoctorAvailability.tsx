@@ -54,7 +54,7 @@ export default function DoctorAvailability() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-3 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
         <h1 className="font-bold flex items-center gap-2"><CalendarClock className="h-5 w-5 text-primary" /> Horários disponíveis</h1>
