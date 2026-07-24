@@ -334,7 +334,7 @@ Adapta ao contexto local: ${config.health_system}. Em emergência recomenda ${co
       method: 'POST',
       headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'google/gemini-3-flash-preview',
+        model: 'google/gemini-2.5-flash',
         messages: [{ role: 'system', content: system }, { role: 'user', content: userMsg }],
         tools: [{
           type: 'function',
