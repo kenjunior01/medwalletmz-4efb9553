@@ -82,6 +82,9 @@ const DoctorDashboard = lazy(() => import("./pages/doctor/DoctorDashboard"));
 const DoctorPatients = lazy(() => import("./pages/doctor/DoctorPatients"));
 const CreatePrescription = lazy(() => import("./pages/doctor/CreatePrescription"));
 const DoctorAvailability = lazy(() => import("./pages/doctor/DoctorAvailability"));
+const DoctorProfile = lazy(() => import("./pages/doctor/DoctorProfile"));
+const PharmacyProfile = lazy(() => import("./pages/store/PharmacyProfile"));
+const InstitutionProfile = lazy(() => import("./pages/clinic/InstitutionProfile"));
 const MyPrescriptions = lazy(() => import("./pages/health/MyPrescriptions"));
 const PrescriptionDetail = lazy(() => import("./pages/health/PrescriptionDetail"));
 const VerifyPrescription = lazy(() => import("./pages/health/VerifyPrescription"));
@@ -121,7 +124,7 @@ const CountrySettings = lazy(() => import("./pages/admin/CountrySettings"));
 const CountryDashboard = lazy(() => import("./pages/admin/CountryDashboard"));
 const RegionalOnboarding = lazy(() => import("./pages/admin/RegionalOnboarding"));
 const RegionalManagerDashboard = lazy(() => import("./pages/admin/RegionalManagerDashboard"));
-const RegionalMetrics = lazy(() => import("./pages/admin/RegionalMetrics"));
+const RegionalMetrics = lazy(() => import("./pages/admin/RegionalMetricsDashboard"));
 const ComplianceCommandCenter = lazy(() => import("./pages/admin/ComplianceCommandCenter"));
 const PartnerVerification = lazy(() => import("./pages/admin/PartnerVerification"));
 const DocumentVault = lazy(() => import("./pages/admin/DocumentVault"));
@@ -376,6 +379,7 @@ const App = () => (
                     <Route path="orders" element={<AdminOrders />} />
                     <Route path="drivers" element={<AdminDrivers />} />
                     <Route path="reports" element={<AdminReports />} />
+                    <Route path="metrics" element={<RegionalMetrics />} />
                   </Route>
 
                   {/* Store Owner Routes — protegido ao nível da rota */}
@@ -404,6 +408,9 @@ const App = () => (
                   <Route path="/doctor/patients" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorPatients /></ProtectedRoute>} />
                   <Route path="/doctor/prescription/new" element={<ProtectedRoute allowedRoles={['doctor']}><CreatePrescription /></ProtectedRoute>} />
                   <Route path="/doctor/availability" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorAvailability /></ProtectedRoute>} />
+                  <Route path="/doctor/profile" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorProfile /></ProtectedRoute>} />
+                  <Route path="/pharmacy/profile" element={<ProtectedRoute allowedRoles={['store_owner', 'pharmacy']}><PharmacyProfile /></ProtectedRoute>} />
+                  <Route path="/institution/profile" element={<ProtectedRoute allowedRoles={['clinic', 'hospital']}><InstitutionProfile /></ProtectedRoute>} />
 
                   {/* Clinic Routes — protegido ao nível da rota */}
                   <Route path="/clinic/register" element={<RegistrationWizard />} />

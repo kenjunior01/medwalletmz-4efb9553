@@ -1,197 +1,186 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { useManagedCountry } from '@/hooks/useManagedCountry';
 import { useCountry } from '@/contexts/CountryContext';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Search, UserCheck, UserX, Shield, Mail, Phone } from 'lucide-react';
-import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Users, Search, Filter, ChevronRight, MoreVertical,
+  Shield, Ban, CheckCircle, AlertCircle, Eye,
+  Stethoscope, Store, Building2, UserCircle
+} from 'lucide-react';
+import {
+  GlassCard, BentoCard, BentoGrid,
+} from '@/components/ui/design-system';
 
-interface UserProfile {
-  user_id: string;
-  full_name: string | null;
-  phone: string | null;
-  email?: string;
+interface ManagedUser {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  role: string;
+  country_code: string;
+  is_active: boolean;
   created_at: string;
-  role?: string;
+  last_sign_in?: string;
 }
 
 export default function ManagerUsers() {
-  const { managedCountryId, countryCode, countryName } = useManagedCountry();
+  const { user } = useAuth();
+  const { managedCountryId, countryCode } = useManagedCountry();
   const { t } = useCountry();
-  const [users, setUsers] = useState<UserProfile[]>([]);
-  const [search, setSearch] = useState('');
+  const navigate = useNavigate();
+  const [users, setUsers] = useState<ManagedUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const PAGE_SIZE = 20;
+  const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
 
   useEffect(() => {
-    if (!managedCountryId) return;
-
-    async function loadUsers() {
-      setLoading(true);
-      try {
-        // Query ISOLADA por país — NUNCA carrega outros países
-        const from = page * PAGE_SIZE;
-        const to = from + PAGE_SIZE - 1;
-
-        const { data, count, error } = await supabase
-          .from('profiles')
-          .select('user_id, full_name, phone, created_at', { count: 'exact' })
-          .eq('country_id', managedCountryId)
-          .order('created_at', { ascending: false })
-          .range(from, to);
-
-        if (error) {
-          console.error('Erro ao carregar utilizadores:', error);
-          return;
-        }
-
-        // Buscar roles destes utilizadores
-        const userIds = (data || []).map(u => u.user_id);
-        const { data: roles } = userIds.length > 0
-          ? await supabase.from('user_roles').select('user_id, role').in('user_id', userIds)
-          : { data: [] };
-
-        const roleMap: Record<string, string[]> = {};
-        (roles || []).forEach((r: any) => {
-          if (!roleMap[r.user_id]) roleMap[r.user_id] = [];
-          roleMap[r.user_id].push(r.role);
-        });
-
-        const usersWithRoles = (data || []).map(u => ({
-          ...u,
-          role: (roleMap[u.user_id] || []).join(', '),
-        }));
-
-        setUsers(usersWithRoles);
-        setTotal(count || 0);
-      } catch (err) {
-        console.error('Erro:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
+    if (!user || !managedCountryId) return;
     loadUsers();
-  }, [managedCountryId, page]);
+  }, [user, managedCountryId]);
 
-  const filteredUsers = useMemo(() => {
-    if (!search.trim()) return users;
-    const q = search.toLowerCase();
-    return users.filter(u =>
-      (u.full_name || '').toLowerCase().includes(q) ||
-      (u.phone || '').includes(q)
-    );
-  }, [users, search]);
+  const loadUsers = async () => {
+    setLoading(true);
+    let query = supabase
+      .from('profiles')
+      .select('*')
+      .eq('country_id', managedCountryId)
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+    const { data, error } = await query;
+    if (data) {
+      setUsers(data.map((p: any) => ({
+        id: p.id,
+        full_name: p.full_name || p.email,
+        email: p.email,
+        phone: p.phone || '',
+        role: p.primary_role || 'user',
+        country_code: p.country_code || countryCode,
+        is_active: p.is_active ?? true,
+        created_at: p.created_at,
+        last_sign_in: p.last_sign_in_at,
+      })));
+    }
+    setLoading(false);
+  };
 
-  const getRoleColor = (role: string) => {
-    if (role.includes('admin')) return 'destructive';
-    if (role.includes('country_manager')) return 'default';
-    if (role.includes('doctor')) return 'secondary';
-    if (role.includes('store_owner')) return 'outline';
-    if (role.includes('driver')) return 'outline';
-    return 'secondary';
+  const toggleUserActive = async (userId: string, isActive: boolean) => {
+    await supabase
+      .from('profiles')
+      .update({ is_active: !isActive })
+      .eq('id', userId);
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_active: !isActive } : u));
+  };
+
+  const filteredUsers = users.filter(u => {
+    const matchesSearch = searchQuery === '' ||
+      u.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.phone.includes(searchQuery);
+    const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
+
+  const roleIcon = (role: string) => {
+    switch (role) {
+      case 'doctor': return <Stethoscope className="h-3.5 w-3.5" />;
+      case 'store_owner': case 'pharmacy': return <Store className="h-3.5 w-3.5" />;
+      case 'clinic': case 'hospital': return <Building2 className="h-3.5 w-3.5" />;
+      default: return <UserCircle className="h-3.5 w-3.5" />;
+    }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho */}
+    <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-bold">{t('manager.users_title') || 'Gestão de Utilizadores'}</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          {t('manager.users_subtitle') || 'Apenas utilizadores da sua região'} — {countryName} ({countryCode})
-        </p>
-        <Badge variant="outline" className="mt-2 text-[10px]">
-            {t('manager.total_users') || 'Total'}: {total}
-          </Badge>
+        <h1 className="text-xl font-black">{t('manager.users_title') || 'Utilizadores da Região'}</h1>
+        <p className="text-sm text-muted-foreground">{t('manager.users_desc') || 'Gerir utilizadores do seu país'}</p>
       </div>
 
-      {/* Pesquisa */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder={t('manager.search_users') || 'Pesquisar por nome ou telefone...'}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
-        />
+      {/* Search & Filters */}
+      <div className="flex gap-2">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t('manager.search_users') || 'Pesquisar utilizadores...'}
+            className="pl-9"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
-      {/* Lista de usuários */}
-      <div className="space-y-2">
-        {loading ? (
-          Array(5).fill(0).map((_, i) => (
-            <div key={i} className="h-16 rounded-xl bg-muted/30 animate-pulse" />
-          ))
-        ) : filteredUsers.length === 0 ? (
-          <Card className="border-none shadow-sm">
-            <CardContent className="py-8 text-center">
-              <p className="text-muted-foreground">{t('manager.no_users_found') || 'Nenhum utilizador encontrado.'}</p>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredUsers.map((user) => (
-            <Card key={user.user_id} className="border-none shadow-sm hover:shadow-md transition-all">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center font-bold text-sm">
-                      {(user.full_name || '?')[0].toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">{user.full_name || '—'}</p>
-                      <div className="flex items-center gap-3 mt-0.5">
-                        {user.phone && (
-                          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                            <Phone className="h-3 w-3" />{user.phone}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {user.role && (
-                      <Badge variant={getRoleColor(user.role) as any} className="text-[10px]">
-                        {user.role}
-                      </Badge>
-                    )}
-                    <p className="text-[10px] text-muted-foreground hidden sm:block">
-                      {user.created_at ? new Date(user.created_at).toLocaleDateString() : '—'}
-                    </p>
-                  </div>
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {['all', 'user', 'doctor', 'store_owner', 'clinic'].map(role => (
+          <button
+            key={role}
+            onClick={() => setRoleFilter(role)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+              roleFilter === role
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted/50 text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {role === 'all' ? (t('manager.all') || 'Todos') : role}
+          </button>
+        ))}
+      </div>
+
+      {/* User count */}
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">{filteredUsers.length} {t('manager.users_found') || 'utilizadores encontrados'}</p>
+      </div>
+
+      {/* User list */}
+      {loading ? (
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-16 rounded-xl bg-muted/50 animate-pulse" />
+          ))}
+        </div>
+      ) : filteredUsers.length === 0 ? (
+        <GlassCard className="!p-8 text-center">
+          <Users className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
+          <p className="text-sm text-muted-foreground">{t('manager.no_users') || 'Nenhum utilizador encontrado'}</p>
+        </GlassCard>
+      ) : (
+        <div className="space-y-2">
+          {filteredUsers.map(u => (
+            <GlassCard key={u.id} className="!p-3 flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted">
+                {roleIcon(u.role)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold truncate">{u.full_name}</p>
+                  {!u.is_active && (
+                    <Badge className="bg-red-500/10 text-red-500 border-red-500/20 text-[9px]">
+                      Inactivo
+                    </Badge>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
-
-      {/* Paginação */}
-      {!search && totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-4">
-          <Button
-            variant="outline" size="sm"
-            disabled={page === 0}
-            onClick={() => setPage(p => p - 1)}
-          >
-              ← {t('manager.prev') || 'Anterior'}
-          </Button>
-          <span className="text-xs text-muted-foreground">
-            {page + 1} / {totalPages}
-          </span>
-          <Button
-            variant="outline" size="sm"
-            disabled={page >= totalPages - 1}
-            onClick={() => setPage(p => p + 1)}
-          >
-            {t('manager.next') || 'Próximo'} →
-          </Button>
+                <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <Badge variant="outline" className="text-[10px]">{u.role}</Badge>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className={`h-8 w-8 p-0 ${u.is_active ? 'text-red-500 hover:bg-red-500/10' : 'text-emerald-500 hover:bg-emerald-500/10'}`}
+                  onClick={() => toggleUserActive(u.id, u.is_active)}
+                  title={u.is_active ? 'Desactivar' : 'Activar'}
+                >
+                  {u.is_active ? <Ban className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
+                </Button>
+              </div>
+            </GlassCard>
+          ))}
         </div>
       )}
     </div>
