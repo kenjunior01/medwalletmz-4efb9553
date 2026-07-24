@@ -190,3 +190,6 @@ export function useLocation() {
   }
   return context;
 }
+
+/** Alias seguro — evita conflito com react-router-dom useLocation. */
+export const useGeoLocation = useLocation;

@@ -174,6 +174,8 @@ const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 const ChangePassword = lazy(() => import("./pages/auth/ChangePassword"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const Withdraw = lazy(() => import("./pages/Withdraw"));
+const CancelAppointment = lazy(() => import("./pages/health/CancelAppointment"));
+const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute"));
 
 // ---- Manager Pages (páginas EXCLUSIVAS do gestor regional) ----
 const ManagerHome = lazy(() => import("./pages/manager/ManagerHome"));
@@ -235,6 +237,7 @@ const App = () => (
                     <Route path="/health/doctors" element={<Doctors />} />
                     <Route path="/health/book/:doctorId" element={<BookConsultation />} />
                     <Route path="/health/consultations" element={<MyConsultations />} />
+                    <Route path="/health/cancel/:id" element={<CancelAppointment />} />
                     <Route path="/health/sessions" element={<VideoSessions />} />
                     <Route path="/health/consultation/:id" element={<ConsultationChat />} />
                     <Route path="/health/profile" element={<HealthProfile />} />

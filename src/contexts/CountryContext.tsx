@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocation } from '@/contexts/LocationContext';
 import { hexToHslComponents } from '@/lib/colors';
@@ -231,7 +231,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   });
   const [loading, setLoading] = useState(true);
 
-  const t = (path: string, params?: Record<string, string>) => {
+  const t = useCallback((path: string, params?: Record<string, string>) => {
     const keys = path.split('.');
     let current = translations[locale] || translations['pt'];
 
@@ -258,7 +258,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
       });
     }
     return current;
-  };
+  }, [locale]);
 
   useEffect(() => {
     localStorage.setItem('appLocale', locale);
@@ -324,15 +324,15 @@ export function CountryProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const setCountryById = (id: string) => {
+  const setCountryById = useCallback((id: string) => {
     const selected = allCountries.find(c => c.id === id);
     if (selected) {
       setCountry(selected);
       localStorage.setItem('selectedCountryId', id);
-      setCountryCode(id); // This also updates city and persistence in LocationContext
+      setCountryCode(id);
       if (!selected.supported_locales?.includes(locale)) setLocale(selected.default_locale);
     }
-  };
+  }, [allCountries, locale]);
 
   return (
     <CountryContext.Provider value={{

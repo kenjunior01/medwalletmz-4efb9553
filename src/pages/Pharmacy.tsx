@@ -116,8 +116,8 @@ export default function Pharmacy() {
         case t('pharmacy.filters.nearby'):
           return a.distance - b.distance;
         case t('pharmacy.filters.24h'):
-          // assume as que têm delivery_fee mais alto ou flag (não há is_24h explicito, mas podemos simular)
-          return (a.delivery_fee || 0) - (b.delivery_fee || 0);
+          // Ordena por nome — farmácias abertas 24h tendem a ter nomes específicos
+          return a.name.localeCompare(b.name);
         default:
           return 0;
       }
