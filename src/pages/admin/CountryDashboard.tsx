@@ -30,16 +30,22 @@ export default function CountryDashboard() {
     enabled: !!country?.id,
     queryFn: async () => {
       const countryId = country!.id;
+      const startMonth = new Date();
+      startMonth.setDate(1);
+      startMonth.setHours(0, 0, 0, 0);
       const { count: usersCount } = await supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
       const { count: storesCount } = await (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
       const { count: clinicsCount } = await (supabase as any).from('clinics').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
       const { count: pendingCount } = await (supabase as any).from('place_proposals').select('id', { count: 'exact', head: true }).eq('status', 'pending').eq('country_id', countryId);
       const { count: partnerApps } = await (supabase as any).from('partner_applications').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
 
+      const { data: volumeData } = await (supabase as any).from('orders').select('total').eq('country_code', countryId).gte('created_at', startMonth.toISOString()).eq('status', 'delivered');
+      const totalVolume = (volumeData || []).reduce((s: number, o: any) => s + Number(o.total || 0), 0);
+
       return {
         activeUsers: usersCount || 0,
         pendingApprovals: pendingCount || 0,
-        totalVolume: countryId === 'MZ' ? 850400 : 120500, // Simulated
+        totalVolume,
         activeProviders: (storesCount || 0) + (clinicsCount || 0),
         partnerApplications: partnerApps || 0
       };
@@ -369,12 +375,11 @@ export default function CountryDashboard() {
                 <p className="font-bold text-sm mb-1">Micro-seguros M-Pesa</p>
                 <div className="flex items-center gap-2 mb-2">
                   <Badge variant="outline" className="text-[10px] text-emerald-600 border-emerald-200">Em Operação</Badge>
-                  <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-tighter">Rec 5.3</span>
                 </div>
                 <div className="h-2 w-full bg-emerald-500/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 w-[65%]" />
+                  <div className="h-full bg-emerald-500 transition-all" style={{ width: `${Math.min(100, ((stats?.activeProviders || 0) / 10) * 100)}%` }} />
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-2">65% de cobertura da rede farmaceutica em Maputo.</p>
+                <p className="text-[10px] text-muted-foreground mt-2">{stats?.activeProviders || 0} unidades activas em {country?.name}.</p>
               </div>
             </CardContent>
           </Card>

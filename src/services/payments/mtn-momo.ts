@@ -1,8 +1,9 @@
 // ========================================================================
-// MTN Mobile Money Payment Service (STUB)
+// MTN Mobile Money Payment Service — MTN MoMo API v2.0 (PayHub)
 // Countries: CM, CI, CG, GN, BF, BJ, SN, ML, UG, RW, ZA, NG
 // ========================================================================
 
+import { supabase } from '@/integrations/supabase/client';
 import { BasePaymentService, PaymentProvider, PaymentRequest, PaymentResponse, PaymentVerification, RefundRequest, RefundResponse, BalanceResponse, PaymentMethod } from './types';
 
 export class MTNMoMoService extends BasePaymentService {
@@ -14,64 +15,73 @@ export class MTNMoMoService extends BasePaymentService {
     icon: '💛',
     color: '#FFCC00',
     enabled: true,
-    sandbox: true,
+    sandbox: false,
   };
 
   async initiatePayment(request: PaymentRequest): Promise<PaymentResponse> {
-    // STUB: Replace with MTN MoMo API v2.0
-    // POST https://proxy.momoapi.mtn.com/v2_01/collection/payments
-    console.log(`[MTN MoMo STUB] Initiating: ${request.amount} ${request.currency} to ${request.phoneNumber}`);
-    return {
-      success: true,
-      transactionId: `MTN-${Date.now()}-${Math.random().toString(36).substring(7)}`,
-      providerTransactionId: `MSISDN-${Date.now()}`,
-      status: 'pending',
-      message: 'MTN Mobile Money payment initiated. Please confirm on your phone.',
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+        body: {
+          provider: 'mtn_momo', action: 'initiate',
+          amount: request.amount, currency: request.currency,
+          phone_number: request.phoneNumber, country_code: request.countryCode,
+          reference: request.reference, description: request.description,
+          callback_url: request.callbackUrl, metadata: request.metadata,
+        },
+      });
+      if (error) return { success: false, status: 'failed', message: error.message || 'Erro ao iniciar pagamento MTN MoMo', timestamp: new Date().toISOString() };
+      return {
+        success: true,
+        transactionId: data?.transaction_id || data?.reference || `MTN-${Date.now()}`,
+        providerTransactionId: data?.provider_ref,
+        status: data?.status || 'pending',
+        message: data?.message || 'Pagamento MTN MoMo iniciado. Confirme no seu telemóvel.',
+        timestamp: new Date().toISOString(),
+      };
+    } catch {
+      return { success: false, status: 'failed', message: 'Serviço MTN MoMo indisponível. Tente novamente.', timestamp: new Date().toISOString() };
+    }
   }
 
   async verifyPayment(transactionId: string): Promise<PaymentVerification> {
-    console.log(`[MTN MoMo STUB] Verifying: ${transactionId}`);
-    return {
-      transactionId,
-      status: 'success',
-      amount: 0,
-      currency: 'XAF',
-      verifiedAt: new Date().toISOString(),
-    };
+    try {
+      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+        body: { provider: 'mtn_momo', action: 'verify', transaction_id: transactionId },
+      });
+      if (error) return { transactionId, status: 'failed', verifiedAt: new Date().toISOString() };
+      return { transactionId, providerTransactionId: data?.provider_ref, status: data?.status === 'completed' ? 'success' : data?.status === 'failed' ? 'failed' : 'pending', amount: data?.amount, currency: data?.currency, verifiedAt: new Date().toISOString() };
+    } catch {
+      return { transactionId, status: 'failed', verifiedAt: new Date().toISOString() };
+    }
   }
 
   async processRefund(request: RefundRequest): Promise<RefundResponse> {
-    console.log(`[MTN MoMo STUB] Refund: ${request.transactionId}`);
-    return {
-      success: true,
-      refundId: `REF-MTN-${Date.now()}`,
-      status: 'processed',
-      message: 'Refund processed',
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+        body: { provider: 'mtn_momo', action: 'refund', transaction_id: request.transactionId, amount: request.amount, reason: request.reason },
+      });
+      if (error) return { success: false, status: 'failed', message: error.message, timestamp: new Date().toISOString() };
+      return { success: true, refundId: data?.refund_id || `REF-MTN-${Date.now()}`, status: data?.status || 'pending', message: data?.message || 'Reembolso solicitado', timestamp: new Date().toISOString() };
+    } catch {
+      return { success: false, status: 'failed', message: 'Erro ao processar reembolso', timestamp: new Date().toISOString() };
+    }
   }
 
   async getBalance(): Promise<BalanceResponse> {
-    return {
-      available: 750000,
-      currency: 'XAF',
-      pending: 25000,
-      lastUpdated: new Date().toISOString(),
-    };
+    try {
+      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+        body: { provider: 'mtn_momo', action: 'balance' },
+      });
+      if (error) return { available: 0, currency: 'XAF', pending: 0, lastUpdated: new Date().toISOString() };
+      return { available: data?.available || 0, currency: data?.currency || 'XAF', pending: data?.pending || 0, lastUpdated: new Date().toISOString() };
+    } catch {
+      return { available: 0, currency: 'XAF', pending: 0, lastUpdated: new Date().toISOString() };
+    }
   }
 
   getPaymentMethods(): PaymentMethod[] {
     return [
-      {
-        providerId: 'mtn_momo',
-        type: 'mobile_money',
-        label: 'MTN Mobile Money',
-        icon: '💛',
-        requiresPhone: true,
-        requiresEmail: false,
-      },
+      { providerId: 'mtn_momo', type: 'mobile_money', label: 'MTN Mobile Money', icon: '💛', requiresPhone: true, requiresEmail: false },
     ];
   }
 }

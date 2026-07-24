@@ -78,26 +78,40 @@ export default function ManagerHome() {
     startMonth.setDate(1);
     startMonth.setHours(0, 0, 0, 0);
 
-    const filter = countryFilter;
+    const startPrevMonth = new Date(startMonth);
+    startPrevMonth.setMonth(startPrevMonth.getMonth() - 1);
+    const endPrevMonth = new Date(startMonth);
+    endPrevMonth.setDate(endPrevMonth.getDate() - 1);
 
-    const [usersRes, doctorsRes, storesRes, clinicsRes, ordersRes] = await Promise.all([
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [usersRes, doctorsRes, storesRes, clinicsRes, ordersRes, ordersPrevRes, activeUsersRes, revenueRes] = await Promise.all([
       supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId),
       supabase.from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
       supabase.from('stores').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
       supabase.from('clinics').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-      supabase.from('orders').select('id', { count: 'exact', head: true }).gte('created_at', startMonth.toISOString()),
+      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startMonth.toISOString()),
+      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
+      supabase.from('orders').select('total').eq('country_code', countryCode).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
     ]);
+
+    const totalRevenue = (revenueRes.data || []).reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
+    const prevOrders = ordersPrevRes.count || 0;
+    const currOrders = ordersRes.count || 0;
+    const growthRate = prevOrders > 0 ? (((currOrders - prevOrders) / prevOrders) * 100).toFixed(1) : (currOrders > 0 ? '100.0' : '0.0');
 
     setStats({
       totalUsers: usersRes.count || 0,
-      activeUsers: Math.floor((usersRes.count || 0) * 0.7),
+      activeUsers: activeUsersRes.count || 0,
       totalDoctors: doctorsRes.count || 0,
       totalPharmacies: storesRes.count || 0,
       totalInstitutions: clinicsRes.count || 0,
-      totalOrders: ordersRes.count || 0,
-      monthlyRevenue: Math.floor(Math.random() * 500000) + 50000,
+      totalOrders: currOrders,
+      monthlyRevenue: totalRevenue,
       pendingVerifications: pendingVerifications.length,
-      growthRate: (Math.random() * 15 + 2).toFixed(1) as any,
+      growthRate: Number(growthRate),
     });
     setLoading(false);
   };

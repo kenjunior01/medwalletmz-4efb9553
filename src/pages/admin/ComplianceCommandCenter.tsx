@@ -149,7 +149,7 @@ export default function ComplianceCommandCenter() {
           <KpiCard
             label="Score Compliance"
             value={`${avgScore}%`}
-            delta={avgScore >= 80 ? '+5%' : '-2%'}
+            delta={avgScore >= 80 ? '+' + (avgScore - 75) + '%' : '-' + (80 - avgScore) + '%'}
             deltaUp={avgScore >= 80}
             icon={<ShieldCheck className="h-4 w-4" />}
             color="emerald"

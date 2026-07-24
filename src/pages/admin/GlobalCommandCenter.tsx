@@ -17,16 +17,34 @@ export default function GlobalCommandCenter() {
   const [newManagerEmail, setNewManagerEmail] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [globalStats, setGlobalStats] = useState({ totalRevenue: 0, totalGrowth: 0 });
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   const loadData = async () => {
     setLoading(true);
-    const { data: cData } = await (supabase.from('countries' as any) as any).select('*').order('name');
-    const { data: mData } = await supabase
-      .from('country_management' as any)
-      .select('*, profiles:user_id(full_name, phone)');
+    const [cRes, mRes, nRes] = await Promise.all([
+      (supabase.from('countries' as any) as any).select('*').order('name'),
+      supabase.from('country_management' as any).select('*, profiles:user_id(full_name, phone)'),
+      (supabase as any).from('partner_applications').select('*').order('created_at', { ascending: false }).limit(5),
+    ]);
 
-    setCountries(cData || []);
-    setManagers(mData || []);
+    setCountries(cRes.data || []);
+    setManagers(mRes.data || []);
+    setNotifications(nRes.data || []);
+
+    // Calculate real global revenue
+    const { data: ordersData } = await (supabase as any).from('orders').select('total, country_code, created_at').eq('status', 'delivered');
+    const startMonth = new Date();
+    startMonth.setDate(1); startMonth.setHours(0, 0, 0, 0);
+    const startPrevMonth = new Date(startMonth); startPrevMonth.setMonth(startPrevMonth.getMonth() - 1);
+    let currentRevenue = 0, prevRevenue = 0;
+    (ordersData || []).forEach((o: any) => {
+      const amt = Number(o.total || 0);
+      if (new Date(o.created_at) >= startMonth) currentRevenue += amt;
+      else if (new Date(o.created_at) >= startPrevMonth) prevRevenue += amt;
+    });
+    const growth = prevRevenue > 0 ? ((currentRevenue - prevRevenue) / prevRevenue * 100) : 0;
+    setGlobalStats({ totalRevenue: currentRevenue, totalGrowth: Math.round(growth * 10) / 10 });
     setLoading(false);
   };
 
@@ -91,10 +109,10 @@ export default function GlobalCommandCenter() {
 
       {/* Visão Macro */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard title="Receita Global Estimada" value="1.2M MT" icon={<TrendingUp className="text-emerald-500" />} />
+        <StatCard title="Receita Global" value={`${(globalStats.totalRevenue || 0).toLocaleString()}`} icon={<TrendingUp className="text-emerald-500" />} />
         <StatCard title="Países Ativos" value={countries.length} icon={<MapPin className="text-blue-500" />} />
         <StatCard title="Total de Gestores" value={managers.length} icon={<ShieldCheck className="text-purple-500" />} />
-        <StatCard title="Taxa de Crescimento" value="+24%" icon={<TrendingUp className="text-orange-500" />} />
+        <StatCard title="Taxa de Crescimento" value={`${globalStats.totalGrowth >= 0 ? '+' : ''}${globalStats.totalGrowth}%`} icon={<TrendingUp className="text-orange-500" />} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -184,15 +202,19 @@ export default function GlobalCommandCenter() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 border rounded-xl bg-orange-50 border-orange-200">
-              <p className="text-xs font-bold text-orange-800">NOVA SOLICITAÇÃO: ANGOLA</p>
-              <p className="text-sm mt-1">Clínica Sagrada Esperança quer aderir à plataforma.</p>
-              <Button size="sm" variant="outline" className="mt-2 w-full border-orange-300 text-orange-800 hover:bg-orange-100">Ver Detalhes</Button>
-            </div>
-            <div className="p-4 border rounded-xl bg-slate-50">
-              <p className="text-xs font-bold">HISTÓRICO</p>
-              <p className="text-sm text-muted-foreground mt-1">8 novas farmácias aprovadas em Lagos, Nigéria.</p>
-            </div>
+            {notifications.length === 0 ? (
+              <div className="p-4 border rounded-xl bg-slate-50 text-center">
+                <p className="text-sm text-muted-foreground">Sem candidaturas de parceria pendentes.</p>
+              </div>
+            ) : (
+              notifications.map((n: any, i: number) => (
+                <div key={n.id || i} className="p-4 border rounded-xl bg-orange-50 border-orange-200">
+                  <p className="text-xs font-bold text-orange-800">CANDIDATURA: {n.country_id?.toUpperCase()}</p>
+                  <p className="text-sm mt-1">{(n as any).name || (n as any).organization_name || 'Nova candidatura recebida'}.</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">{n.created_at ? new Date(n.created_at).toLocaleDateString('pt-PT') : ''}</p>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
       </div>

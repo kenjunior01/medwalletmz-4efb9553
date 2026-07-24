@@ -330,7 +330,6 @@ export default function AdminHome() {
           value={`${(stats?.totalRevenue || 0).toLocaleString()} ${country?.currency_code || 'MZN'}`}
           subtitle={`Hoje: ${(stats?.todayRevenue || 0).toLocaleString()} ${country?.currency_code || 'MZN'}`}
           icon={DollarSign}
-          trend={{ value: 18, isPositive: true }}
           colorClass="text-gold"
         />
       </div>

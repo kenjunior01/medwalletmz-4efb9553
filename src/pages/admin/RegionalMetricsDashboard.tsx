@@ -1,59 +1,42 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Globe, MapPin, Users, Building2, TrendingUp, TrendingDown, CreditCard,
   ChevronDown, ChevronUp, Layers, DollarSign, UserCheck, ShoppingCart,
   Stethoscope, Activity, BarChart3, Eye, Download, Filter, ArrowUpRight,
-  ArrowDownRight, Target, Zap, Clock
+  ArrowDownRight, Target, Zap, Clock, Star as StarIcon
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
 import { Button } from "@/components/ui/button";
 import { REGIONS, getCountriesByRegion, useCountry } from "@/contexts/CountryContext";
 import type { Country } from "@/contexts/CountryContext";
+import { supabase } from '@/integrations/supabase/client';
 
-// ====== MOCK DATA GENERATORS (will be replaced by real Supabase queries) ======
+// ====== TYPES ======
 
-function generateRegionMetrics(regionId: string, countryCount: number) {
-  const base = {
-    totalUsers: Math.floor(Math.random() * 50000) + 2000 * countryCount,
-    totalTransactions: Math.floor(Math.random() * 100000) + 5000 * countryCount,
-    totalRevenue: Math.floor(Math.random() * 5000000) + 100000 * countryCount,
-    activeDoctors: Math.floor(Math.random() * 500) + 50 * countryCount,
-    activePharmacies: Math.floor(Math.random() * 300) + 30 * countryCount,
-    activeInstitutions: Math.floor(Math.random() * 200) + 20 * countryCount,
-    totalOrders: Math.floor(Math.random() * 80000) + 3000 * countryCount,
-    pendingVerifications: Math.floor(Math.random() * 50) + 5,
-    regionalManagers: Math.floor(Math.random() * 10) + 1,
-    avgRating: (Math.random() * 1.5 + 3.5).toFixed(1),
-    growthRate: (Math.random() * 20 - 5).toFixed(1),
-    avgOrderValue: Math.floor(Math.random() * 500) + 50,
-    churnRate: (Math.random() * 10 + 2).toFixed(1),
-  };
-
-  return {
-    ...base,
-    totalUsersFormatted: formatNumber(base.totalUsers),
-    totalRevenueFormatted: formatCurrency(base.totalRevenue),
-    growthPositive: Number(base.growthRate) >= 0,
-    topCountry: `Country_${regionId}`,
-  };
+interface CountryMetrics {
+  users: number;
+  activeUsers: number;
+  revenue: number;
+  orders: number;
+  doctors: number;
+  pharmacies: number;
+  institutions: number;
+  growth: number;
+  avgRating: number;
+  pendingVerifications: number;
+  regionalManagers: number;
+  churnRate: number;
+  avgOrderValue: number;
 }
 
-function generateCountryMetrics(country: Country) {
-  return {
-    users: Math.floor(Math.random() * 20000) + 1000,
-    revenue: Math.floor(Math.random() * 1000000) + 50000,
-    orders: Math.floor(Math.random() * 20000) + 500,
-    doctors: Math.floor(Math.random() * 200) + 10,
-    pharmacies: Math.floor(Math.random() * 100) + 5,
-    institutions: Math.floor(Math.random() * 80) + 3,
-    growth: (Math.random() * 25 - 3).toFixed(1),
-    avgRating: (Math.random() * 1.5 + 3.5).toFixed(1),
-    pendingVerifications: Math.floor(Math.random() * 15) + 1,
-    activeUsers: Math.floor(Math.random() * 15000) + 500,
-    paymentMethods: country.config?.payment_methods?.length || 0,
-    cities: country.config?.cities?.length || 0,
-  };
+interface RegionMetrics extends CountryMetrics {
+  totalUsersFormatted: string;
+  totalRevenueFormatted: string;
+  growthPositive: boolean;
+  topCountry: string;
 }
+
+// ====== HELPERS ======
 
 function formatNumber(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
@@ -82,6 +65,56 @@ function getLast7Days() {
   return days;
 }
 
+function aggregateRegionMetrics(countryMetricsMap: Record<string, CountryMetrics>, countries: Country[]): RegionMetrics {
+  let totalUsers = 0, activeUsers = 0, revenue = 0, orders = 0, doctors = 0;
+  let pharmacies = 0, institutions = 0, pendingVerifications = 0, regionalManagers = 0;
+  let totalRating = 0, ratingCount = 0, totalGrowth = 0, totalChurn = 0, totalOrderValue = 0;
+
+  countries.forEach(c => {
+    const m = countryMetricsMap[c.id];
+    if (!m) return;
+    totalUsers += m.users;
+    activeUsers += m.activeUsers;
+    revenue += m.revenue;
+    orders += m.orders;
+    doctors += m.doctors;
+    pharmacies += m.pharmacies;
+    institutions += m.institutions;
+    pendingVerifications += m.pendingVerifications;
+    regionalManagers += m.regionalManagers;
+    totalRating += m.avgRating;
+    ratingCount++;
+    totalGrowth += m.growth;
+    totalChurn += m.churnRate;
+    totalOrderValue += m.avgOrderValue;
+  });
+
+  const growthRate = countries.length > 0 ? totalGrowth / countries.length : 0;
+  const churnRate = countries.length > 0 ? totalChurn / countries.length : 0;
+  const avgRating = ratingCount > 0 ? totalRating / ratingCount : 0;
+  const avgOrderValue = countries.length > 0 ? totalOrderValue / countries.length : 0;
+
+  return {
+    users: totalUsers,
+    activeUsers,
+    revenue,
+    orders,
+    doctors,
+    pharmacies,
+    institutions,
+    growth: growthRate,
+    avgRating,
+    pendingVerifications,
+    regionalManagers,
+    churnRate,
+    avgOrderValue,
+    totalUsersFormatted: formatNumber(totalUsers),
+    totalRevenueFormatted: formatCurrency(revenue),
+    growthPositive: growthRate >= 0,
+    topCountry: countries[0]?.id || '',
+  };
+}
+
 // ====== MAIN COMPONENT ======
 
 export default function RegionalMetricsDashboard() {
@@ -90,6 +123,9 @@ export default function RegionalMetricsDashboard() {
   const [selectedCountryId, setSelectedCountryId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
   const [viewMode, setViewMode] = useState<'overview' | 'comparison' | 'performance'>('overview');
+  const [countryMetrics, setCountryMetrics] = useState<Record<string, CountryMetrics>>({});
+  const [loading, setLoading] = useState(true);
+  const [weeklyActivity, setWeeklyActivity] = useState<number[]>([]);
 
   const regionData = useMemo(() => getCountriesByRegion(allCountries), [allCountries]);
   const selectedRegion = regionData.find((r) => r.id === selectedRegionId) ?? null;
@@ -97,19 +133,109 @@ export default function RegionalMetricsDashboard() {
   const totalCountries = allCountries.length;
   const totalCities = allCountries.reduce((sum, c) => sum + (c.config?.cities?.length || 0), 0);
 
-  // Aggregate global metrics
-  const globalMetrics = useMemo(() => ({
-    totalUsers: allCountries.reduce((sum, _) => sum + Math.floor(Math.random() * 5000) + 1000, 0),
-    totalRevenue: allCountries.reduce((sum, _) => sum + Math.floor(Math.random() * 500000) + 50000, 0),
-    totalTransactions: allCountries.reduce((sum, _) => sum + Math.floor(Math.random() * 20000) + 2000, 0),
-    totalDoctors: allCountries.reduce((sum, _) => sum + Math.floor(Math.random() * 200) + 20, 0),
-    totalPharmacies: allCountries.reduce((sum, _) => sum + Math.floor(Math.random() * 100) + 10, 0),
-    activeCountries: totalCountries,
-    activeRegions: regionData.length,
-  }), [allCountries, totalCountries, regionData.length]);
+  // Load real metrics from Supabase
+  useEffect(() => {
+    loadAllMetrics();
+  }, [allCountries]);
+
+  const loadAllMetrics = async () => {
+    setLoading(true);
+    const metricsMap: Record<string, CountryMetrics> = {};
+    const countryIds = allCountries.map(c => c.id);
+    if (countryIds.length === 0) { setLoading(false); return; }
+
+    const startMonth = new Date();
+    startMonth.setDate(1);
+    startMonth.setHours(0, 0, 0, 0);
+
+    const startPrevMonth = new Date(startMonth);
+    startPrevMonth.setMonth(startPrevMonth.getMonth() - 1);
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Load weekly order activity
+    try {
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - 6);
+      weekStart.setHours(0, 0, 0, 0);
+      const { data: weekOrders } = await (supabase as any).from('orders')
+        .select('created_at')
+        .gte('created_at', weekStart.toISOString());
+      
+      if (weekOrders) {
+        const dayCounts = Array(7).fill(0);
+        weekOrders.forEach((o: any) => {
+          const d = new Date(o.created_at);
+          const dayIdx = 6 - Math.floor((weekStart.getTime() - d.getTime()) / (24 * 60 * 60 * 1000));
+          if (dayIdx >= 0 && dayIdx < 7) dayCounts[6 - dayIdx]++;
+        });
+        setWeeklyActivity(dayCounts);
+      }
+    } catch { setWeeklyActivity([]); }
+
+    // Load metrics per country
+    await Promise.all(countryIds.map(async (cc) => {
+      try {
+        const [usersRes, activeUsersRes, doctorsRes, storesRes, clinicsRes, ordersRes, ordersPrevRes, revenueRes, pendingDocsRes, pendingStoresRes, managersRes] = await Promise.all([
+          supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', cc),
+          supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', cc).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
+          supabase.from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', cc),
+          (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_code', cc),
+          (supabase as any).from('clinics').select('id', { count: 'exact', head: true }).eq('country_code', cc),
+          (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', cc).gte('created_at', startMonth.toISOString()),
+          (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', cc).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
+          (supabase as any).from('orders').select('total').eq('country_code', cc).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
+          supabase.from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', cc).eq('is_verified', false),
+          (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_code', cc).eq('is_verified', false),
+          supabase.from('country_management').select('id', { count: 'exact', head: true }).eq('country_id', cc),
+        ]);
+
+        const totalRevenue = (revenueRes.data || []).reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
+        const currOrders = ordersRes.count || 0;
+        const prevOrders = ordersPrevRes.count || 0;
+        const growth = prevOrders > 0 ? ((currOrders - prevOrders) / prevOrders) * 100 : (currOrders > 0 ? 100 : 0);
+
+        metricsMap[cc] = {
+          users: usersRes.count || 0,
+          activeUsers: activeUsersRes.count || 0,
+          revenue: totalRevenue,
+          orders: currOrders,
+          doctors: doctorsRes.count || 0,
+          pharmacies: storesRes.count || 0,
+          institutions: clinicsRes.count || 0,
+          growth: Math.round(growth * 10) / 10,
+          avgRating: 0,
+          pendingVerifications: (pendingDocsRes.count || 0) + (pendingStoresRes.count || 0),
+          regionalManagers: managersRes.count || 0,
+          churnRate: 0,
+          avgOrderValue: currOrders > 0 ? Math.round(totalRevenue / currOrders) : 0,
+        };
+      } catch {
+        metricsMap[cc] = { users: 0, activeUsers: 0, revenue: 0, orders: 0, doctors: 0, pharmacies: 0, institutions: 0, growth: 0, avgRating: 0, pendingVerifications: 0, regionalManagers: 0, churnRate: 0, avgOrderValue: 0 };
+      }
+    }));
+
+    setCountryMetrics(metricsMap);
+    setLoading(false);
+  };
+
+  // Aggregate global metrics from real data
+  const globalMetrics = useMemo(() => {
+    const allMetrics = Object.values(countryMetrics);
+    return {
+      totalUsers: allMetrics.reduce((s, m) => s + m.users, 0),
+      totalRevenue: allMetrics.reduce((s, m) => s + m.revenue, 0),
+      totalTransactions: allMetrics.reduce((s, m) => s + m.orders, 0),
+      totalDoctors: allMetrics.reduce((s, m) => s + m.doctors, 0),
+      totalPharmacies: allMetrics.reduce((s, m) => s + m.pharmacies, 0),
+      activeCountries: totalCountries,
+      activeRegions: regionData.length,
+    };
+  }, [countryMetrics, totalCountries, regionData.length]);
 
   const weekDays = getLast7Days();
-  const miniChartData = useMemo(() => weekDays.map(() => Math.floor(Math.random() * 100) + 20), [weekDays]);
+  const maxWeekly = Math.max(...weeklyActivity, 1);
 
   return (
     <div className="space-y-6">
@@ -140,8 +266,8 @@ export default function RegionalMetricsDashboard() {
               </button>
             ))}
           </div>
-          <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-            <Download className="h-3.5 w-3.5" /> Exportar
+          <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={loadAllMetrics}>
+            <Download className="h-3.5 w-3.5" /> Atualizar
           </Button>
         </div>
       </div>
@@ -172,199 +298,204 @@ export default function RegionalMetricsDashboard() {
         <MetricCard
           icon={<Layers className="h-5 w-5" />} label="Regiões"
           value={globalMetrics.activeRegions} color="text-blue-500" bg="bg-blue-500/10"
-          trend={"+2.1%"} trendUp={true}
         />
         <MetricCard
           icon={<MapPin className="h-5 w-5" />} label="Países"
           value={globalMetrics.activeCountries} color="text-emerald-500" bg="bg-emerald-500/10"
-          trend={"+3" trendUp={true}
         />
         <MetricCard
           icon={<Users className="h-5 w-5" />} label="Utilizadores"
           value={formatNumber(globalMetrics.totalUsers)} color="text-violet-500" bg="bg-violet-500/10"
-          trend="+12.4%" trendUp={true}
         />
         <MetricCard
           icon={<DollarSign className="h-5 w-5" />} label="Receita"
           value={formatCurrency(globalMetrics.totalRevenue)} color="text-gold" bg="bg-amber-500/10"
-          trend="+8.7%" trendUp={true}
         />
         <MetricCard
           icon={<Stethoscope className="h-5 w-5" />} label="Médicos"
           value={formatNumber(globalMetrics.totalDoctors)} color="text-teal-500" bg="bg-teal-500/10"
-          trend="+5.2%" trendUp={true}
         />
         <MetricCard
           icon={<ShoppingCart className="h-5 w-5" />} label="Encomendas"
           value={formatNumber(globalMetrics.totalTransactions)} color="text-rose-500" bg="bg-rose-500/10"
-          trend="+15.3%" trendUp={true}
         />
       </div>
 
       {/* Mini Chart Area */}
       <div className="bento-card p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-sm">Actividade Semanal</h3>
+          <h3 className="font-bold text-sm">Actividade Semanal (Encomendas)</h3>
           <Badge variant="secondary" className="text-xs">Últimos 7 dias</Badge>
         </div>
         <div className="flex items-end gap-1.5 h-32">
-          {miniChartData.map((val, i) => (
+          {weeklyActivity.length > 0 ? weeklyActivity.map((val, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-1">
               <div
                 className="w-full rounded-t-lg bg-gradient-to-t from-primary to-primary/60 transition-all hover:from-primary hover:to-primary/80 min-h-[8px]"
-                style={{ height: `${(val / 120) * 100}%` }}
+                style={{ height: `${(val / maxWeekly) * 100}%` }}
               />
               <span className="text-[9px] text-muted-foreground font-medium">{weekDays[i].split(' ')[0]}</span>
             </div>
-          ))}
+          )) : (
+            <p className="text-sm text-muted-foreground w-full text-center py-8">Sem dados disponíveis</p>
+          )}
         </div>
       </div>
 
-      {viewMode === 'overview' && (
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">A carregar métricas regionais...</p>
+        </div>
+      ) : (
         <>
-          {/* Region Cards Grid */}
-          <div>
-            <h2 className="mb-3 text-lg font-bold">Regiões — {regionData.length} activas</h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {regionData.map((region) => {
-                const metrics = generateRegionMetrics(region.id, region.items.length);
-                return (
-                  <button
-                    key={region.id}
-                    onClick={() => {
-                      setSelectedRegionId(selectedRegionId === region.id ? null : region.id);
-                      setSelectedCountryId(null);
-                    }}
-                    className={`bento-card group flex flex-col items-start gap-2 p-4 text-left transition-all hover:scale-[1.02] ${
-                      selectedRegionId === region.id ? "ring-2 ring-primary shadow-lg" : ""
-                    }`}
-                  >
-                    <div className="flex w-full items-center justify-between">
-                      <span className="text-2xl">{region.emoji}</span>
-                      {Number(metrics.growthRate) >= 0 ? (
-                        <ArrowUpRight className="h-4 w-4 text-emerald-500" />
-                      ) : (
-                        <ArrowDownRight className="h-4 w-4 text-red-500" />
-                      )}
-                    </div>
-                    <span className="font-bold leading-tight">{region.label}</span>
-                    <div className="flex items-center gap-1.5">
-                      <Badge variant="secondary" className="text-xs">
-                        {region.items.length} {region.items.length === 1 ? "país" : "países"}
-                      </Badge>
-                    </div>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 w-full">
+          {viewMode === 'overview' && (
+            <>
+              {/* Region Cards Grid */}
+              <div>
+                <h2 className="mb-3 text-lg font-bold">Regiões — {regionData.length} activas</h2>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                  {regionData.map((region) => {
+                    const metrics = aggregateRegionMetrics(countryMetrics, region.items);
+                    return (
+                      <button
+                        key={region.id}
+                        onClick={() => {
+                          setSelectedRegionId(selectedRegionId === region.id ? null : region.id);
+                          setSelectedCountryId(null);
+                        }}
+                        className={`bento-card group flex flex-col items-start gap-2 p-4 text-left transition-all hover:scale-[1.02] ${
+                          selectedRegionId === region.id ? "ring-2 ring-primary shadow-lg" : ""
+                        }`}
+                      >
+                        <div className="flex w-full items-center justify-between">
+                          <span className="text-2xl">{region.emoji}</span>
+                          {metrics.growthPositive ? (
+                            <ArrowUpRight className="h-4 w-4 text-emerald-500" />
+                          ) : (
+                            <ArrowDownRight className="h-4 w-4 text-red-500" />
+                          )}
+                        </div>
+                        <span className="font-bold leading-tight">{region.label}</span>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="secondary" className="text-xs">
+                            {region.items.length} {region.items.length === 1 ? "país" : "países"}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 w-full">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Utilizadores</p>
+                            <p className="text-sm font-bold">{metrics.totalUsersFormatted}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Receita</p>
+                            <p className="text-sm font-bold">{metrics.totalRevenueFormatted}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Médicos</p>
+                            <p className="text-sm font-bold">{metrics.doctors}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Crescimento</p>
+                            <p className={`text-sm font-bold ${metrics.growthPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+                              {metrics.growthPositive ? '+' : ''}{metrics.growth}%
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Selected Region Detail */}
+              {selectedRegion && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">{selectedRegion.emoji}</span>
                       <div>
-                        <p className="text-xs text-muted-foreground">Utilizadores</p>
-                        <p className="text-sm font-bold">{metrics.totalUsersFormatted}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Receita</p>
-                        <p className="text-sm font-bold">{metrics.totalRevenueFormatted}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Médicos</p>
-                        <p className="text-sm font-bold">{metrics.activeDoctors}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Crescimento</p>
-                        <p className={`text-sm font-bold ${metrics.growthPositive ? 'text-emerald-500' : 'text-red-500'}`}>
-                          {metrics.growthPositive ? '+' : ''}{metrics.growthRate}%
+                        <h2 className="text-xl font-black">{selectedRegion.label}</h2>
+                        <p className="text-sm text-muted-foreground">
+                          {selectedRegion.items.length} países · {selectedRegion.items.reduce((s, c) => s + (c.config?.cities?.length || 0), 0)} cidades
                         </p>
                       </div>
                     </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                    <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => { setSelectedRegionId(null); setSelectedCountryId(null); }}>
+                      Fechar
+                    </Button>
+                  </div>
 
-          {/* Selected Region Detail */}
-          {selectedRegion && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{selectedRegion.emoji}</span>
-                  <div>
-                    <h2 className="text-xl font-black">{selectedRegion.label}</h2>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedRegion.items.length} países · {selectedRegion.items.reduce((s, c) => s + (c.config?.cities?.length || 0), 0)} cidades
-                    </p>
+                  {/* Region Quick Stats */}
+                  {(() => {
+                    const rm = aggregateRegionMetrics(countryMetrics, selectedRegion.items);
+                    return (
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        <QuickStat icon={<UserCheck className="h-4 w-4" />} label="Gestores" value={String(rm.regionalManagers)} />
+                        <QuickStat icon={<Activity className="h-4 w-4" />} label="Verificações Pend." value={String(rm.pendingVerifications)} />
+                        <QuickStat icon={<StarIcon className="h-4 w-4" />} label="Ticket Médio" value={String(rm.avgOrderValue)} />
+                        <QuickStat icon={<Clock className="h-4 w-4" />} label="Encomendas" value={String(rm.orders)} />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Countries in region */}
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {selectedRegion.items.map((country) => {
+                      const cm = countryMetrics[country.id] || { users: 0, activeUsers: 0, revenue: 0, orders: 0, doctors: 0, pharmacies: 0, institutions: 0, growth: 0, avgRating: 0, pendingVerifications: 0, regionalManagers: 0, churnRate: 0, avgOrderValue: 0 };
+                      const isSelected = selectedCountryId === country.id;
+                      return (
+                        <button
+                          key={country.id}
+                          onClick={() => setSelectedCountryId(isSelected ? null : country.id)}
+                          className={`bento-card flex flex-col gap-3 p-5 text-left transition-all hover:scale-[1.01] ${
+                            isSelected ? "ring-2 ring-primary shadow-lg" : ""
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-3xl">{isoToFlag(country.id)}</span>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="truncate font-bold leading-tight">{country.name}</h3>
+                              <p className="text-xs text-muted-foreground">{country.id} · {country.currency_code}</p>
+                            </div>
+                            <Badge variant="outline" className="shrink-0 font-mono text-xs">{country.currency_symbol}</Badge>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
+                            <MiniStat icon={<Users className="h-3.5 w-3.5" />} value={formatNumber(cm.users)} label="Utilizadores" />
+                            <MiniStat icon={<Stethoscope className="h-3.5 w-3.5" />} value={String(cm.doctors)} label="Médicos" />
+                            <MiniStat icon={<ShoppingCart className="h-3.5 w-3.5" />} value={formatNumber(cm.orders)} label="Encomendas" />
+                          </div>
+                          <div className="flex items-center justify-between border-t border-border/50 pt-3">
+                            <div className={`flex items-center gap-1 text-xs font-semibold ${cm.growth >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                              {cm.growth >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                              {cm.growth >= 0 ? '+' : ''}{cm.growth}%
+                            </div>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <CreditCard className="h-3 w-3" />
+                              <span>{country.config?.payment_methods?.length || 0} métodos</span>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => { setSelectedRegionId(null); setSelectedCountryId(null); }}>
-                  Fechar
-                </Button>
-              </div>
+              )}
 
-              {/* Region Quick Stats */}
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <QuickStat icon={<UserCheck className="h-4 w-4" />} label="Gestores" value={String(generateRegionMetrics(selectedRegion.id, 1).regionalManagers)} />
-                <QuickStat icon={<Activity className="h-4 w-4" />} label="Verificações Pend." value={String(generateRegionMetrics(selectedRegion.id, 1).pendingVerifications)} />
-                <QuickStat icon={<Star className="h-4 w-4" />} label="Avaliação Média" value={`${generateRegionMetrics(selectedRegion.id, 1).avgRating}/5`} />
-                <QuickStat icon={<Clock className="h-4 w-4" />} label="Ticket Médio" value={String(generateRegionMetrics(selectedRegion.id, 1).avgOrderValue)} />
-              </div>
-
-              {/* Countries in region */}
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {selectedRegion.items.map((country) => {
-                  const cm = generateCountryMetrics(country);
-                  const isSelected = selectedCountryId === country.id;
-                  return (
-                    <button
-                      key={country.id}
-                      onClick={() => setSelectedCountryId(isSelected ? null : country.id)}
-                      className={`bento-card flex flex-col gap-3 p-5 text-left transition-all hover:scale-[1.01] ${
-                        isSelected ? "ring-2 ring-primary shadow-lg" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-3xl">{isoToFlag(country.id)}</span>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="truncate font-bold leading-tight">{country.name}</h3>
-                          <p className="text-xs text-muted-foreground">{country.id} · {country.currency_code}</p>
-                        </div>
-                        <Badge variant="outline" className="shrink-0 font-mono text-xs">{country.currency_symbol}</Badge>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        <MiniStat icon={<Users className="h-3.5 w-3.5" />} value={formatNumber(cm.users)} label="Utilizadores" />
-                        <MiniStat icon={<Stethoscope className="h-3.5 w-3.5" />} value={String(cm.doctors)} label="Médicos" />
-                        <MiniStat icon={<ShoppingCart className="h-3.5 w-3.5" />} value={formatNumber(cm.orders)} label="Encomendas" />
-                      </div>
-                      <div className="flex items-center justify-between border-t border-border/50 pt-3">
-                        <div className={`flex items-center gap-1 text-xs font-semibold ${Number(cm.growth) >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                          {Number(cm.growth) >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                          {Number(cm.growth) >= 0 ? '+' : ''}{cm.growth}%
-                        </div>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Star className="h-3 w-3" />
-                          <span>{cm.avgRating}/5</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <CreditCard className="h-3 w-3" />
-                          <span>{cm.paymentMethods} métodos</span>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+              {/* Country Detail Panel */}
+              {selectedRegion && selectedCountry && (
+                <CountryDetailPanel country={selectedCountry} metrics={countryMetrics[selectedCountry.id]} onClose={() => setSelectedCountryId(null)} />
+              )}
+            </>
           )}
 
-          {/* Country Detail Panel */}
-          {selectedRegion && selectedCountry && (
-            <CountryDetailPanel country={selectedCountry} onClose={() => setSelectedCountryId(null)} />
+          {viewMode === 'comparison' && (
+            <ComparisonView regionData={regionData} countryMetrics={countryMetrics} />
+          )}
+
+          {viewMode === 'performance' && (
+            <PerformanceView regionData={regionData} countryMetrics={countryMetrics} />
           )}
         </>
-      )}
-
-      {viewMode === 'comparison' && (
-        <ComparisonView regionData={regionData} />
-      )}
-
-      {viewMode === 'performance' && (
-        <PerformanceView regionData={regionData} />
       )}
     </div>
   );
@@ -415,8 +546,8 @@ function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string
   );
 }
 
-function CountryDetailPanel({ country, onClose }: { country: Country; onClose: () => void }) {
-  const cm = generateCountryMetrics(country);
+function CountryDetailPanel({ country, metrics, onClose }: { country: Country; metrics?: CountryMetrics; onClose: () => void }) {
+  const cm = metrics || { users: 0, activeUsers: 0, revenue: 0, orders: 0, doctors: 0, pharmacies: 0, institutions: 0, growth: 0, avgRating: 0, pendingVerifications: 0, regionalManagers: 0, churnRate: 0, avgOrderValue: 0 };
   return (
     <div className="bento-card p-5 space-y-4">
       <div className="flex items-center justify-between">
@@ -436,19 +567,19 @@ function CountryDetailPanel({ country, onClose }: { country: Country; onClose: (
         <DetailStat icon={<Building2 className="h-4 w-4" />} label="Farmácias" value={cm.pharmacies} />
         <DetailStat icon={<Building2 className="h-4 w-4" />} label="Instituições" value={cm.institutions} />
         <DetailStat icon={<ShoppingCart className="h-4 w-4" />} label="Encomendas" value={cm.orders} />
-        <DetailStat icon={<CreditCard className="h-4 w-4" />} label="Métodos Pag." value={cm.paymentMethods} />
-        <DetailStat icon={<MapPin className="h-4 w-4" />} label="Cidades" value={cm.cities} />
+        <DetailStat icon={<DollarSign className="h-4 w-4" />} label="Receita" value={cm.revenue} />
+        <DetailStat icon={<MapPin className="h-4 w-4" />} label="Cidades" value={country.config?.cities?.length || 0} />
       </div>
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-xl bg-muted/50 p-3 text-center">
-          <p className={`text-lg font-black ${Number(cm.growth) >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-            {Number(cm.growth) >= 0 ? '+' : ''}{cm.growth}%
+          <p className={`text-lg font-black ${cm.growth >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+            {cm.growth >= 0 ? '+' : ''}{cm.growth}%
           </p>
           <p className="text-[10px] text-muted-foreground">Crescimento</p>
         </div>
         <div className="rounded-xl bg-muted/50 p-3 text-center">
-          <p className="text-lg font-black">{cm.avgRating}/5</p>
-          <p className="text-[10px] text-muted-foreground">Avaliação</p>
+          <p className="text-lg font-black">{cm.avgOrderValue}</p>
+          <p className="text-[10px] text-muted-foreground">Ticket Médio</p>
         </div>
         <div className="rounded-xl bg-muted/50 p-3 text-center">
           <p className="text-lg font-black text-amber-500">{cm.pendingVerifications}</p>
@@ -497,7 +628,7 @@ function DetailStat({ icon, label, value }: { icon: React.ReactNode; label: stri
   );
 }
 
-function ComparisonView({ regionData }: { regionData: ReturnType<typeof getCountriesByRegion> }) {
+function ComparisonView({ regionData, countryMetrics }: { regionData: ReturnType<typeof getCountriesByRegion>; countryMetrics: Record<string, CountryMetrics> }) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-bold">Comparação entre Regiões</h2>
@@ -515,7 +646,7 @@ function ComparisonView({ regionData }: { regionData: ReturnType<typeof getCount
           </thead>
           <tbody>
             {regionData.map((region) => {
-              const m = generateRegionMetrics(region.id, region.items.length);
+              const m = aggregateRegionMetrics(countryMetrics, region.items);
               return (
                 <tr key={region.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
                   <td className="p-3 font-semibold">
@@ -526,10 +657,10 @@ function ComparisonView({ regionData }: { regionData: ReturnType<typeof getCount
                   </td>
                   <td className="text-right p-3">{region.items.length}</td>
                   <td className="text-right p-3 font-mono">{m.totalUsersFormatted}</td>
-                  <td className="text-right p-3 font-mono">{m.activeDoctors}</td>
+                  <td className="text-right p-3 font-mono">{m.doctors}</td>
                   <td className="text-right p-3 font-mono">{m.totalRevenueFormatted}</td>
                   <td className={`text-right p-3 font-mono font-semibold ${m.growthPositive ? 'text-emerald-500' : 'text-red-500'}`}>
-                    {m.growthPositive ? '+' : ''}{m.growthRate}%
+                    {m.growthPositive ? '+' : ''}{m.growth}%
                   </td>
                 </tr>
               );
@@ -541,30 +672,29 @@ function ComparisonView({ regionData }: { regionData: ReturnType<typeof getCount
   );
 }
 
-function PerformanceView({ regionData }: { regionData: ReturnType<typeof getCountriesByRegion> }) {
-  // Performance leaderboard
+function PerformanceView({ regionData, countryMetrics }: { regionData: ReturnType<typeof getCountriesByRegion>; countryMetrics: Record<string, CountryMetrics> }) {
   const leaderboard = useMemo(() => {
     return regionData.map(region => {
-      const m = generateRegionMetrics(region.id, region.items.length);
+      const m = aggregateRegionMetrics(countryMetrics, region.items);
       return {
         regionId: region.id,
         label: region.label,
         emoji: region.emoji,
         countryCount: region.items.length,
         score: Math.round(
-          (Number(m.growthRate) * 2) +
-          (m.activeDoctors / 10) +
-          (m.totalUsers / 10000) +
-          (Number(m.avgRating) * 10)
+          (m.growth * 2) +
+          (m.doctors / 10) +
+          (m.users / 10000) +
+          (m.regionalManagers * 15)
         ),
-        growth: Number(m.growthRate),
-        avgRating: Number(m.avgRating),
+        growth: m.growth,
+        avgRating: m.avgRating,
         managers: m.regionalManagers,
         pendingVerifications: m.pendingVerifications,
-        churnRate: Number(m.churnRate),
+        churnRate: m.churnRate,
       };
     }).sort((a, b) => b.score - a.score);
-  }, [regionData]);
+  }, [regionData, countryMetrics]);
 
   return (
     <div className="space-y-4">
@@ -584,12 +714,12 @@ function PerformanceView({ regionData }: { regionData: ReturnType<typeof getCoun
         </div>
         <div className="bento-card p-4 text-center">
           <TrendingUp className="h-5 w-5 mx-auto text-emerald-500 mb-1" />
-          <p className="text-xl font-black">{(leaderboard.reduce((s, r) => s + r.growth, 0) / leaderboard.length).toFixed(1)}%</p>
+          <p className="text-xl font-black">{leaderboard.length > 0 ? (leaderboard.reduce((s, r) => s + r.growth, 0) / leaderboard.length).toFixed(1) : 0}%</p>
           <p className="text-[10px] text-muted-foreground">Crescimento Médio</p>
         </div>
         <div className="bento-card p-4 text-center">
           <Zap className="h-5 w-5 mx-auto text-amber-500 mb-1" />
-          <p className="text-xl font-black">{(leaderboard.reduce((s, r) => s + r.churnRate, 0) / leaderboard.length).toFixed(1)}%</p>
+          <p className="text-xl font-black">{leaderboard.length > 0 ? (leaderboard.reduce((s, r) => s + r.churnRate, 0) / leaderboard.length).toFixed(1) : 0}%</p>
           <p className="text-[10px] text-muted-foreground">Churn Médio</p>
         </div>
       </div>
@@ -627,13 +757,5 @@ function PerformanceView({ regionData }: { regionData: ReturnType<typeof getCoun
         ))}
       </div>
     </div>
-  );
-}
-
-function Star({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" className={className}>
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
   );
 }

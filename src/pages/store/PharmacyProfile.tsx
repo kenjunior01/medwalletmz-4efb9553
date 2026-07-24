@@ -270,7 +270,7 @@ export default function PharmacyProfile() {
               </div>
               <div className="flex gap-2">
                 <Button onClick={handleSave} disabled={saving}>
-                  {saving ? (t('common.loading') || 'A guardar...') : (t('common.save') || 'Guardar'))}
+                  {saving ? (t('common.loading') || 'A guardar...') : (t('common.save') || 'Guardar')}
                 </Button>
                 <Button variant="outline" onClick={() => { setEditing(false); setEditForm({}); }}>
                   {t('common.cancel') || 'Cancelar'}
