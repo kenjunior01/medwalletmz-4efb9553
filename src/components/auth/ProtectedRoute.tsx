@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
-  const { user, profile, loading } = useAuth();
+  const { user, hasRole, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -30,7 +30,7 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
     );
   }
 
-  if (allowedRoles && profile?.role && !allowedRoles.includes(profile.role)) {
+  if (allowedRoles && !allowedRoles.some(r => hasRole(r as any))) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background p-4">
         <Card className="max-w-md w-full p-6 flex flex-col items-center gap-4 text-center">

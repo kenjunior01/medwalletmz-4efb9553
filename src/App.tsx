@@ -303,8 +303,12 @@ const App = () => (
                   <Route path="/health/video/:id" element={<VideoConsultation />} />
                   <Route path="/health/room/:id" element={<ConsultationRoom />} />
 
-                  {/* Admin Routes */}
-                  <Route path="/admin" element={<AdminDashboard />}>
+                  {/* Admin Routes — protegido ao nível da rota + guard interno em AdminDashboard */}
+                  <Route path="/admin" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager']}><AdminDashboard /></ProtectedRoute>
+                    </Suspense>
+                  }>
                     <Route index element={<AdminHome />} />
                     <Route path="stores" element={<AdminStores />} />
                     <Route path="clinics" element={<AdminClinics />} />
@@ -355,8 +359,12 @@ const App = () => (
                     <Route path="google-cloud" element={<GoogleCloudHub />} />
                   </Route>
 
-                  {/* Regional Manager Routes — ISOLADAS, com páginas próprias */}
-                  <Route path="/manager" element={<RegionalManagerDashboard />}>
+                  {/* Regional Manager Routes — protegido ao nível da rota + guard interno */}
+                  <Route path="/manager" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['country_manager', 'admin']}><RegionalManagerDashboard /></ProtectedRoute>
+                    </Suspense>
+                  }>
                     <Route index element={<ManagerHome />} />
                     <Route path="users" element={<ManagerUsers />} />
                     {/* Páginas compartilhadas (usam os mesmos componentes admin mas
@@ -368,10 +376,14 @@ const App = () => (
                     <Route path="reports" element={<AdminReports />} />
                   </Route>
 
-                  {/* Store Owner Routes */}
+                  {/* Store Owner Routes — protegido ao nível da rota */}
                   <Route path="/store/register" element={<RegistrationWizard />} />
                   <Route path="/pharmacy/register" element={<RegistrationWizard />} />
-                  <Route path="/store/dashboard" element={<StoreOwnerDashboard />}>
+                  <Route path="/store/dashboard" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['store_owner']}><StoreOwnerDashboard /></ProtectedRoute>
+                    </Suspense>
+                  }>
                     <Route index element={<StoreHome />} />
                     <Route path="products" element={<StoreProducts />} />
                     <Route path="orders" element={<StoreOrders />} />
@@ -379,26 +391,26 @@ const App = () => (
                     <Route path="settings" element={<StoreSettings />} />
                   </Route>
 
-                  {/* Driver Routes */}
+                  {/* Driver Routes — protegido ao nível da rota */}
                   <Route path="/driver/register" element={<RegistrationWizard />} />
-                  <Route path="/driver/dashboard" element={<DriverDashboard />} />
-                  <Route path="/driver/history" element={<DriverHistory />} />
+                  <Route path="/driver/dashboard" element={<ProtectedRoute allowedRoles={['driver']}><DriverDashboard /></ProtectedRoute>} />
+                  <Route path="/driver/history" element={<ProtectedRoute allowedRoles={['driver']}><DriverHistory /></ProtectedRoute>} />
 
-                  {/* Doctor Routes */}
+                  {/* Doctor Routes — protegido ao nível da rota */}
                   <Route path="/doctor/register" element={<RegistrationWizard />} />
-                  <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-                  <Route path="/doctor/patients" element={<DoctorPatients />} />
-                  <Route path="/doctor/prescription/new" element={<CreatePrescription />} />
-                  <Route path="/doctor/availability" element={<DoctorAvailability />} />
+                  <Route path="/doctor/dashboard" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDashboard /></ProtectedRoute>} />
+                  <Route path="/doctor/patients" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorPatients /></ProtectedRoute>} />
+                  <Route path="/doctor/prescription/new" element={<ProtectedRoute allowedRoles={['doctor']}><CreatePrescription /></ProtectedRoute>} />
+                  <Route path="/doctor/availability" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorAvailability /></ProtectedRoute>} />
 
-                  {/* Clinic Routes */}
+                  {/* Clinic Routes — protegido ao nível da rota */}
                   <Route path="/clinic/register" element={<RegistrationWizard />} />
                   <Route path="/hospital/register" element={<RegistrationWizard />} />
-                  <Route path="/clinic/dashboard" element={<ClinicDashboard />} />
+                  <Route path="/clinic/dashboard" element={<ProtectedRoute allowedRoles={['clinic', 'hospital']}><ClinicDashboard /></ProtectedRoute>} />
 
-                  {/* Lab Routes */}
+                  {/* Lab Routes — protegido ao nível da rota */}
                   <Route path="/lab/register" element={<RegistrationWizard />} />
-                  <Route path="/lab/dashboard" element={<LabDashboard />} />
+                  <Route path="/lab/dashboard" element={<ProtectedRoute allowedRoles={['lab']}><LabDashboard /></ProtectedRoute>} />
 
                   {/* Rota especial: /~oauth/* — broker OAuth da Lovable Cloud
                       capturada pelo React Router quando SW antigo serve index.html

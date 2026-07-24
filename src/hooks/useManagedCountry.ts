@@ -19,12 +19,12 @@ import { useNavigate } from 'react-router-dom';
  *     .eq('country_id', managedCountryId);
  */
 export function useManagedCountry() {
-  const { user, userRoles, hasRole, loading, isAdmin } = useAuth();
+  const { user, userRoles, hasRole, loading } = useAuth();
   const { country, setCountryById } = useCountry();
   const navigate = useNavigate();
 
   const isManager = hasRole('country_manager');
-  const isGlobalAdmin = isAdmin;
+  const isGlobalAdmin = hasRole('admin');
 
   // O country_id que este gestor pode gerir
   const managedCountryId = useMemo(() => {

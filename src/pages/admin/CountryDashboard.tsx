@@ -161,7 +161,7 @@ export default function CountryDashboard() {
           <CardContent className="p-4">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               {/* APE */}
-              <button onClick={() => navigate('/manager/mz-verticals/ape')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all">
+              <button onClick={() => navigate('/admin/mz-verticals/ape')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600"><Users className="h-3.5 w-3.5" /></div>
                   <span className="text-[10px] uppercase font-black tracking-wider text-emerald-700">APE</span>
@@ -170,7 +170,7 @@ export default function CountryDashboard() {
                 <div className="text-[10px] text-muted-foreground">Visitas APE digitais</div>
               </button>
               {/* TB DOT */}
-              <button onClick={() => navigate('/manager/mz-verticals/tb-dot')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/30 transition-all">
+              <button onClick={() => navigate('/admin/mz-verticals/tb-dot')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/30 transition-all">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600"><Activity className="h-3.5 w-3.5" /></div>
                   <span className="text-[10px] uppercase font-black tracking-wider text-amber-700">TB DOT</span>
@@ -179,7 +179,7 @@ export default function CountryDashboard() {
                 <div className="text-[10px] text-muted-foreground">Casos TB observados</div>
               </button>
               {/* ART */}
-              <button onClick={() => navigate('/manager/mz-verticals/art')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-purple-500 hover:bg-purple-50/30 transition-all">
+              <button onClick={() => navigate('/admin/mz-verticals/art')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-purple-500 hover:bg-purple-50/30 transition-all">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600"><HeartPulse className="h-3.5 w-3.5" /></div>
                   <span className="text-[10px] uppercase font-black tracking-wider text-purple-700">ART HIV</span>
@@ -188,7 +188,7 @@ export default function CountryDashboard() {
                 <div className="text-[10px] text-muted-foreground">Pacientes ARV ativos</div>
               </button>
               {/* Malaria */}
-              <button onClick={() => navigate('/manager/mz-verticals/malaria')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-rose-500 hover:bg-rose-50/30 transition-all">
+              <button onClick={() => navigate('/admin/mz-verticals/malaria')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-rose-500 hover:bg-rose-50/30 transition-all">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600"><Droplet className="h-3.5 w-3.5" /></div>
                   <span className="text-[10px] uppercase font-black tracking-wider text-rose-700">Malaria</span>
@@ -197,7 +197,7 @@ export default function CountryDashboard() {
                 <div className="text-[10px] text-muted-foreground">Casos test-and-treat</div>
               </button>
               {/* Maternal */}
-              <button onClick={() => navigate('/manager/mz-verticals/maternal')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-pink-500 hover:bg-pink-50/30 transition-all">
+              <button onClick={() => navigate('/admin/mz-verticals/maternal')} className="text-left p-3 rounded-xl border border-slate-200 hover:border-pink-500 hover:bg-pink-50/30 transition-all">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="p-1.5 rounded-lg bg-pink-500/10 text-pink-600"><Baby className="h-3.5 w-3.5" /></div>
                   <span className="text-[10px] uppercase font-black tracking-wider text-pink-700">Materna</span>
@@ -206,7 +206,7 @@ export default function CountryDashboard() {
                 <div className="text-[10px] text-muted-foreground">Gestantes em seguimento</div>
               </button>
               {/* M-Pesa Pending */}
-              <button onClick={() => navigate('/manager/insurance')} className="text-left p-3 rounded-xl border-2 border-amber-400/50 bg-amber-50/30 hover:bg-amber-100/50 transition-all">
+              <button onClick={() => navigate('/admin/mpesa-confirmations')} className="text-left p-3 rounded-xl border-2 border-amber-400/50 bg-amber-50/30 hover:bg-amber-100/50 transition-all">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600"><Wallet className="h-3.5 w-3.5" /></div>
                   <span className="text-[10px] uppercase font-black tracking-wider text-amber-700">M-Pesa</span>

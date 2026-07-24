@@ -3,8 +3,8 @@ import type { RoleKey } from "@/config/navigation";
 
 /** Priority order when a user has multiple roles. */
 const PRIORITY: RoleKey[] = [
-  "admin", "doctor", "clinic", "hospital", "lab",
-  "store_owner", "driver", "customer",
+  "admin", "country_manager", "doctor", "clinic", "hospital",
+  "lab", "insurance", "store_owner", "driver", "customer",
 ];
 
 export function usePrimaryRole(): { role: RoleKey; loading: boolean } {
