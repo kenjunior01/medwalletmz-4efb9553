@@ -11,8 +11,10 @@ import hi from '@/i18n/hi.json';
 import es from '@/i18n/es.json';
 import fr from '@/i18n/fr.json';
 import af from '@/i18n/af.json';
+import sw from '@/i18n/sw.json';
+import am from '@/i18n/am.json';
 
-const translations: Record<string, any> = { pt, 'pt-BR': ptBR, en, hi, es, fr, af };
+const translations: Record<string, any> = { pt, 'pt-BR': ptBR, en, hi, es, fr, af, sw, am };
 
 export interface Country {
   id: string; // ISO Code e.g. 'MZ', 'BR'
@@ -255,7 +257,7 @@ const STATIC_COUNTRIES: Country[] = [
   // =========================================================================
   {
     id: 'KE', name: 'Kenya', currency_code: 'KES', currency_symbol: 'KSh', phone_code: '254',
-    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Nairobi',
+    default_locale: 'en', supported_locales: ['en', 'sw', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Nairobi',
     region: 'africa_east', region_label: 'África Oriental',
     branding_config: { primary_color: '#BB0000', secondary_color: '#006600', accent_color: '#000000' },
     config: {
@@ -272,7 +274,7 @@ const STATIC_COUNTRIES: Country[] = [
   },
   {
     id: 'TZ', name: 'Tanzania', currency_code: 'TZS', currency_symbol: 'TSh', phone_code: '255',
-    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Dar_es_Salaam',
+    default_locale: 'en', supported_locales: ['en', 'sw', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Dar_es_Salaam',
     region: 'africa_east', region_label: 'África Oriental',
     branding_config: { primary_color: '#00A651', secondary_color: '#009739', accent_color: '#1A3C8F' },
     config: {
@@ -289,7 +291,7 @@ const STATIC_COUNTRIES: Country[] = [
   },
   {
     id: 'UG', name: 'Uganda', currency_code: 'UGX', currency_symbol: 'USh', phone_code: '256',
-    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Kampala',
+    default_locale: 'en', supported_locales: ['en', 'sw', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Kampala',
     region: 'africa_east', region_label: 'África Oriental',
     branding_config: { primary_color: '#000000', secondary_color: '#FFD100', accent_color: '#D40000' },
     config: {
@@ -306,7 +308,7 @@ const STATIC_COUNTRIES: Country[] = [
   },
   {
     id: 'ET', name: 'Ethiopia', currency_code: 'ETB', currency_symbol: 'Br', phone_code: '251',
-    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Addis_Ababa',
+    default_locale: 'en', supported_locales: ['en', 'am', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Addis_Ababa',
     region: 'africa_east', region_label: 'África Oriental',
     branding_config: { primary_color: '#009B3A', secondary_color: '#FCDD09', accent_color: '#DA121A' },
     config: {
@@ -322,7 +324,7 @@ const STATIC_COUNTRIES: Country[] = [
   },
   {
     id: 'RW', name: 'Rwanda', currency_code: 'RWF', currency_symbol: 'FRw', phone_code: '250',
-    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Kigali',
+    default_locale: 'en', supported_locales: ['en', 'sw', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Kigali',
     region: 'africa_east', region_label: 'África Oriental',
     branding_config: { primary_color: '#00A651', secondary_color: '#0072C6', accent_color: '#FCD116' },
     config: {

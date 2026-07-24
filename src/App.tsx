@@ -121,6 +121,7 @@ const CountrySettings = lazy(() => import("./pages/admin/CountrySettings"));
 const CountryDashboard = lazy(() => import("./pages/admin/CountryDashboard"));
 const RegionalOnboarding = lazy(() => import("./pages/admin/RegionalOnboarding"));
 const RegionalManagerDashboard = lazy(() => import("./pages/admin/RegionalManagerDashboard"));
+const RegionalMetrics = lazy(() => import("./pages/admin/RegionalMetrics"));
 const ComplianceCommandCenter = lazy(() => import("./pages/admin/ComplianceCommandCenter"));
 const PartnerVerification = lazy(() => import("./pages/admin/PartnerVerification"));
 const DocumentVault = lazy(() => import("./pages/admin/DocumentVault"));
@@ -343,6 +344,7 @@ const App = () => (
                     <Route path="country-settings" element={<CountrySettings />} />
                     <Route path="country-dashboard" element={<CountryDashboard />} />
                     <Route path="regional-onboarding" element={<RegionalOnboarding />} />
+                    <Route path="regional-metrics" element={<RegionalMetrics />} />
                     <Route path="compliance" element={<ComplianceCommandCenter />} />
                     <Route path="compliance/partners" element={<PartnerVerification />} />
                     <Route path="compliance/documents" element={<DocumentVault />} />
