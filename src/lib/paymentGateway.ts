@@ -117,7 +117,7 @@ class ManualGateway implements PaymentGateway {
 // M-Pesa Gateway — Kenya (Safaricom STK), TZ/MZ/DRC (manual C2B)
 // ─────────────────────────────────────────────────────────────────
 
-class M-PesaGateway implements PaymentGateway {
+class MPesaGateway implements PaymentGateway {
   id = 'mpesa';
   name = 'M-Pesa';
   supportedMethods = [
