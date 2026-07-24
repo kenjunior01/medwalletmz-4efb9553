@@ -125,7 +125,7 @@ export function PWAInstallPrompt() {
   if (activePopup && activePopup !== 'pwa') return null;
 
   return (
-    <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md px-2 animate-slide-up">
+    <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 w-[calc(100%-2rem)] max-w-md px-2 animate-slide-up">
       <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-white shadow-xl">
         <div className="p-4">
           <div className="flex items-start gap-3">

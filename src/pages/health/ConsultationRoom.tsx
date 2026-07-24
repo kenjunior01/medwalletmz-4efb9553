@@ -127,7 +127,7 @@ export default function ConsultationRoom() {
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 pb-24 grid gap-6 md:grid-cols-[1.3fr_1fr]">
+      <div className="max-w-5xl mx-auto px-4 grid gap-6 md:grid-cols-[1.3fr_1fr]">
         <Card className="overflow-hidden bg-black border-white/10 aspect-video relative">
           <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
           {!camOn && (

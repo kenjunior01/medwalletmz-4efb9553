@@ -336,7 +336,7 @@ export default function Checkout() {
   }
 
   return (
-    <div className="flex flex-col pb-24">
+    <div className="flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 border-b border-border bg-card sticky top-0 z-10">
         <Button

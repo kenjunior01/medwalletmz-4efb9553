@@ -64,7 +64,7 @@ export default function BloodHub() {
   return (
     <>
       <Seo title="Doação de sangue em Moçambique | MedWallet" description="Registe-se como dador ou peça sangue. Ligue doadores e pacientes em Moçambique." path="/blood" />
-    <div className="p-4 space-y-4 max-w-4xl mx-auto pb-32">
+    <div className="p-4 space-y-4 max-w-4xl mx-auto">
       <header className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 rounded-2xl bg-red-500/10 flex items-center justify-center shadow-sm">

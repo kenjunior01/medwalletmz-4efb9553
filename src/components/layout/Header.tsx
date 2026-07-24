@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation as useAppLocation } from "@/contexts/LocationContext";
-import { useCountry } from "@/contexts/CountryContext";
+import { useCountry, getCountriesByRegion } from "@/contexts/CountryContext";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -85,32 +85,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 glass-header border-b border-border/50 safe-area-top">
       <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 max-w-7xl mx-auto">
-        {/* LEFT: Country + Location (compact on mobile) */}
+        {/* LEFT: Location (compact on mobile) */}
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          {allCountries.length > 1 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label={t('header.select_country')} className="h-9 w-9 rounded-xl hover:bg-primary/10 shrink-0 no-tap-target" data-size="icon">
-                  {country?.flag_url ? <img src={country.flag_url} alt={country.name} className="w-5 h-5" /> : (country?.id === 'MZ' ? '🇲🇿' : <Globe className="h-4 w-4" />)}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-48 glass rounded-xl p-1">
-                {allCountries.map((c) => (
-                  <DropdownMenuItem
-                    key={c.id}
-                    onClick={() => setCountryById(c.id)}
-                    className={`rounded-lg py-2 px-3 cursor-pointer ${
-                      c.id === country?.id ? "bg-primary text-primary-foreground" : ""
-                    }`}
-                  >
-                    <span className="mr-2">{c.id === 'MZ' ? '🇲🇿' : '🌐'}</span>
-                    {c.name}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1.5 hover:bg-primary/10 rounded-xl transition-all min-w-0">
@@ -158,31 +134,56 @@ export function Header() {
 
         {/* RIGHT: Actions */}
         <div className="flex items-center gap-0.5 shrink-0">
-          {country && country.supported_locales.length > 1 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label={t('header.select_language')} className="hidden sm:flex h-9 w-9 rounded-xl hover:bg-primary/10 no-tap-target" data-size="icon">
-                  <Languages className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-32 glass rounded-xl p-1">
-                {country.supported_locales.map((l) => {
-                  const labels: Record<string, string> = { pt: 'Português', en: 'English', es: 'Español', fr: 'Français', af: 'Afrikaans', hi: 'हिन्दी', 'pt-BR': 'Português (BR)' };
-                  return (
-                  <DropdownMenuItem
-                    key={l}
-                    onClick={() => setLocale(l)}
-                    className={`rounded-lg py-2 px-3 cursor-pointer font-bold text-xs ${
-                      l === locale ? "bg-primary text-primary-foreground" : ""
-                    }`}
-                  >
-                    {labels[l] || l}
-                  </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          {/* Language + Country merged into one dropdown on mobile */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label={t('header.select_language')} className="h-9 w-9 rounded-xl hover:bg-primary/10 no-tap-target" data-size="icon">
+                <Languages className="h-4 w-4 text-muted-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44 glass rounded-xl p-1">
+              {country && country.supported_locales.length > 1 && (
+                <div className="pb-1 mb-1 border-b border-border/50">
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground px-2 pt-1 tracking-wider">Idioma</p>
+                  {country.supported_locales.map((l) => {
+                    const labels: Record<string, string> = { pt: 'Português', en: 'English', es: 'Español', fr: 'Français', af: 'Afrikaans', hi: 'हिन्दी', 'pt-BR': 'Português (BR)' };
+                    return (
+                    <DropdownMenuItem
+                      key={l}
+                      onClick={() => setLocale(l)}
+                      className={`rounded-lg py-2 px-3 cursor-pointer font-bold text-xs ${
+                        l === locale ? "bg-primary text-primary-foreground" : ""
+                      }`}
+                    >
+                      {labels[l] || l}
+                    </DropdownMenuItem>
+                    );
+                  })}
+                </div>
+              )}
+              {allCountries.length > 1 && (() => {
+                const regionGroups = getCountriesByRegion(allCountries);
+                return regionGroups.map(group => (
+                  <div key={group.id}>
+                    <p className="text-[10px] font-bold uppercase text-muted-foreground px-2 pt-1 tracking-wider">
+                      {group.emoji} {group.label}
+                    </p>
+                    {group.items.map((c) => (
+                      <DropdownMenuItem
+                        key={c.id}
+                        onClick={() => setCountryById(c.id)}
+                        className={`rounded-lg py-2 px-3 cursor-pointer ${
+                          c.id === country?.id ? "bg-primary text-primary-foreground" : ""
+                        }`}
+                      >
+                        {c.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                ));
+              })()}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <ThemeToggle />
           <NotificationsPanel />

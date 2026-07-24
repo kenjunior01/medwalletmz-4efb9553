@@ -55,7 +55,7 @@ export default function RegionalOnboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur border-b p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">

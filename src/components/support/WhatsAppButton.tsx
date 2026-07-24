@@ -27,7 +27,7 @@ export function WhatsAppButton() {
   };
 
   return (
-    <div className="fixed bottom-[5.5rem] right-3 z-50 md:bottom-6 md:right-6">
+    <div className="fixed bottom-20 md:bottom-6 right-3 z-40">
       {/* Chat Options Panel */}
       <div
         className={cn(

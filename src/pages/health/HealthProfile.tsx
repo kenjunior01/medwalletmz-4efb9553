@@ -76,7 +76,7 @@ export default function HealthProfile() {
   // Skeleton loading profissional (substitui "A carregar..." textual)
   if (loading) {
     return (
-      <div className="min-h-screen bg-background pb-32">
+      <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-4 flex items-center gap-3">
           <div className="h-9 w-9 rounded-lg bg-muted animate-pulse" />
           <div className="h-4 w-32 rounded bg-muted animate-pulse" />
@@ -114,7 +114,7 @@ export default function HealthProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-4 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
         <h1 className="font-bold">Perfil de saúde</h1>

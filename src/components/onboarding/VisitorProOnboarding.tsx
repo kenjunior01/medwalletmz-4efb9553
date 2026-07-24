@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stethoscope, X, Menu, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { usePopupCoordinator } from '@/components/layout/PopupCoordinator';
 
 const DISMISS_KEY = 'mz_visitor_pro_onboarding_dismissed';
 
@@ -9,11 +10,13 @@ const DISMISS_KEY = 'mz_visitor_pro_onboarding_dismissed';
  * Banner leve que guia visitantes/pacientes até ao ponto de registo
  * como Profissional de Saúde a partir do menu lateral.
  * — Não intrusivo, uma única vez, dispensável para sempre.
+ * — Integrated with PopupCoordinator to avoid overlap with popups.
  */
 export function VisitorProOnboarding() {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
+  const { activePopup, release } = usePopupCoordinator();
 
   useEffect(() => {
     if (localStorage.getItem(DISMISS_KEY) === '1') return;
@@ -24,9 +27,12 @@ export function VisitorProOnboarding() {
   const dismiss = () => {
     localStorage.setItem(DISMISS_KEY, '1');
     setVisible(false);
+    release('onboarding');
   };
 
   if (!visible) return null;
+  // Hide if a higher-priority popup is active
+  if (activePopup && activePopup !== 'onboarding') return null;
 
   return (
     <div className="px-4 mt-4">

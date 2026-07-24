@@ -105,7 +105,7 @@ export default function LabDetail() {
   if (!lab) return <div className="p-4">Laboratório não encontrado.</div>;
 
   return (
-    <div className="p-4 flex flex-col gap-4 animate-fade-in pb-32">
+    <div className="p-4 flex flex-col gap-4 animate-fade-in">
       <Button variant="ghost" size="sm" onClick={() => nav(-1)} className="w-fit -ml-2">
         <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
       </Button>

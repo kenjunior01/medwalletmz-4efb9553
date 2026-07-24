@@ -611,7 +611,7 @@ export default function DriverDashboard() {
 
   // Mobile Layout (existing)
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-primary text-primary-foreground p-4">
         <div className="flex items-center justify-between mb-4">

@@ -145,7 +145,7 @@ export default function Home() {
       <MorningGreeting />
       <EmergencySOS />
 
-      <div className="pb-24 animate-fade-in space-y-6">
+      <div className="animate-fade-in space-y-6">
         {/* ============ HERO SECTION ============ */}
         {showRoleHero ? (
           <RoleHero roles={roles as any} name={firstName !== 'visitante' ? firstName : undefined} />

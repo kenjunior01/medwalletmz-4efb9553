@@ -32,7 +32,7 @@ export default function Cart() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4 pb-28 animate-fade-in">
+    <div className="flex flex-col gap-4 p-4 animate-fade-in">
       <h1 className="text-2xl font-bold">Meu Carrinho</h1>
       
       {/* Store info */}
@@ -114,7 +114,7 @@ export default function Cart() {
       </div>
 
       {/* Checkout Button */}
-      <div className="fixed bottom-20 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border">
+      <div className="fixed bottom-16 md:bottom-4 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border z-30">
         <Button 
           size="lg" 
           className="w-full rounded-xl h-12 text-base font-semibold"

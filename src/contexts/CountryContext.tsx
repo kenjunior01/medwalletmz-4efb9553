@@ -24,6 +24,8 @@ export interface Country {
   default_locale: string;
   supported_locales: string[];
   timezone: string;
+  region?: string; // 'africa_south' | 'africa_east' | 'africa_west' | 'africa_north' | 'latam' | 'europe' | 'asia'
+  region_label?: string;
   branding_config?: {
     primary_color?: string;
     secondary_color?: string;
@@ -37,6 +39,7 @@ const STATIC_COUNTRIES: Country[] = [
   {
     id: 'MZ', name: 'Moçambique', currency_code: 'MZN', currency_symbol: 'MT', phone_code: '258',
     default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'hi', 'pt-BR'], timezone: 'Africa/Maputo',
+    region: 'africa_south', region_label: 'África Austral',
     branding_config: {
       primary_color: '#009739',   // Verde Moçambique
       secondary_color: '#FFD100', // Amarelo
@@ -67,6 +70,7 @@ const STATIC_COUNTRIES: Country[] = [
   {
     id: 'BR', name: 'Brasil', currency_code: 'BRL', currency_symbol: 'R$', phone_code: '55',
     default_locale: 'pt-BR', supported_locales: ['pt-BR', 'pt', 'en', 'es', 'fr', 'af', 'hi'], timezone: 'America/Sao_Paulo',
+    region: 'latam', region_label: 'América Latina',
     branding_config: {
       primary_color: '#009C3B',   // Verde bandeira
       secondary_color: '#FFDF00', // Amarelo bandeira
@@ -103,6 +107,7 @@ const STATIC_COUNTRIES: Country[] = [
   {
     id: 'AO', name: 'Angola', currency_code: 'AOA', currency_symbol: 'Kz', phone_code: '244',
     default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'hi', 'pt-BR'], timezone: 'Africa/Luanda',
+    region: 'africa_south', region_label: 'África Austral (PALOP)',
     config: {
       cities: ["Luanda", "Benguela", "Huambo", "Lubango", "Cabinda", "Malanje", "Namibe"],
       phone_placeholder: "+244 9XX XXX XXX",
@@ -126,6 +131,7 @@ const STATIC_COUNTRIES: Country[] = [
   {
     id: 'ZA', name: 'South Africa', currency_code: 'ZAR', currency_symbol: 'R', phone_code: '27',
     default_locale: 'en', supported_locales: ['en', 'af', 'pt', 'es', 'fr', 'hi', 'pt-BR'], timezone: 'Africa/Johannesburg',
+    region: 'africa_south', region_label: 'África Austral',
     config: {
       cities: ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", "Bloemfontein"],
       phone_placeholder: "+27 XX XXX XXXX",
@@ -149,6 +155,7 @@ const STATIC_COUNTRIES: Country[] = [
   {
     id: 'PT', name: 'Portugal', currency_code: 'EUR', currency_symbol: '€', phone_code: '351',
     default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'hi', 'pt-BR'], timezone: 'Europe/Lisbon',
+    region: 'europe', region_label: 'Europa',
     config: {
       cities: ["Lisboa", "Porto", "Braga", "Coimbra", "Setúbal", "Aveiro", "Faro"],
       phone_placeholder: "+351 9XX XXX XXX",
@@ -172,6 +179,7 @@ const STATIC_COUNTRIES: Country[] = [
   {
     id: 'IN', name: 'India', currency_code: 'INR', currency_symbol: '₹', phone_code: '91',
     default_locale: 'hi', supported_locales: ['hi', 'en', 'pt', 'es', 'fr', 'af', 'pt-BR'], timezone: 'Asia/Kolkata',
+    region: 'asia', region_label: 'Ásia',
     config: {
       cities: ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata"],
       phone_placeholder: "+91 XXXXX-XXXXX",
@@ -191,8 +199,311 @@ const STATIC_COUNTRIES: Country[] = [
         email: "support.in@medwallet.com"
       }
     }
+  },
+  // =========================================================================
+  // AFRICA — PALOP (Países Africanos de Língua Oficial Portuguesa)
+  // =========================================================================
+  {
+    id: 'CV', name: 'Cabo Verde', currency_code: 'CVE', currency_symbol: '$', phone_code: '238',
+    default_locale: 'pt', supported_locales: ['pt', 'en', 'fr'], timezone: 'Atlantic/Cape_Verde',
+    region: 'africa_west', region_label: 'África Ocidental (PALOP)',
+    branding_config: { primary_color: '#003893', secondary_color: '#FEDF00', accent_color: '#CF142B' },
+    config: {
+      cities: ["Praia", "Mindelo", "Santa Maria", "Assomada", "São Filipe"],
+      phone_placeholder: "+238 XXX XXXX",
+      registration_defaults: { consultation_fee: 800, delivery_fee: 150 },
+      payment_methods: [
+        { id: "multicaixa_cv", name: "Multicaixa", type: "bank", icon: "🏦", description: "Pagamento via Multicaixa" },
+        { id: "wallet", name: "Carteira MedWallet", type: "wallet", icon: "👛", description: "Saldo em Escudos" }
+      ],
+      support: { whatsapp: "2389999999", phone: "+238 999 9999", email: "suporte.cv@medwallet.com" }
+    }
+  },
+  {
+    id: 'ST', name: 'São Tomé e Príncipe', currency_code: 'STN', currency_symbol: 'Db', phone_code: '239',
+    default_locale: 'pt', supported_locales: ['pt', 'fr'], timezone: 'Africa/Sao_Tome',
+    region: 'africa_central', region_label: 'África Central (PALOP)',
+    branding_config: { primary_color: '#009739', secondary_color: '#FFD100', accent_color: '#D40000' },
+    config: {
+      cities: ["São Tomé", "Trindade", "Neves", "Santana", "Guadalupe"],
+      phone_placeholder: "+239 XXX XXXX",
+      registration_defaults: { consultation_fee: 15000, delivery_fee: 2000 },
+      payment_methods: [
+        { id: "wallet", name: "Carteira MedWallet", type: "wallet", icon: "👛", description: "Saldo em Dobras" }
+      ],
+      support: { whatsapp: "239999999", phone: "+239 999 999", email: "suporte.st@medwallet.com" }
+    }
+  },
+  {
+    id: 'GW', name: 'Guiné-Bissau', currency_code: 'XOF', currency_symbol: 'CFA', phone_code: '245',
+    default_locale: 'pt', supported_locales: ['pt', 'fr'], timezone: 'Africa/Bissau',
+    region: 'africa_west', region_label: 'África Ocidental (PALOP)',
+    branding_config: { primary_color: '#006233', secondary_color: '#FCD116', accent_color: '#D40000' },
+    config: {
+      cities: ["Bissau", "Bafatá", "Gabú", "Biombo", "Cacheu"],
+      phone_placeholder: "+245 XXX XXXX",
+      registration_defaults: { consultation_fee: 5000, delivery_fee: 500 },
+      payment_methods: [
+        { id: "orange_money", name: "Orange Money", type: "mobile_money", icon: "📱", description: "Pagamento Orange", requires_phone: true },
+        { id: "wallet", name: "Carteira MedWallet", type: "wallet", icon: "👛", description: "Saldo em CFA" }
+      ],
+      support: { whatsapp: "2457777777", phone: "+245 777 7777", email: "suporte.gw@medwallet.com" }
+    }
+  },
+  // =========================================================================
+  // AFRICA — East Africa
+  // =========================================================================
+  {
+    id: 'KE', name: 'Kenya', currency_code: 'KES', currency_symbol: 'KSh', phone_code: '254',
+    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Nairobi',
+    region: 'africa_east', region_label: 'África Oriental',
+    branding_config: { primary_color: '#BB0000', secondary_color: '#006600', accent_color: '#000000' },
+    config: {
+      cities: ["Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret", "Lamu"],
+      phone_placeholder: "+254 7XX XXX XXX",
+      registration_defaults: { consultation_fee: 1500, delivery_fee: 200 },
+      payment_methods: [
+        { id: "mpesa_ke", name: "M-Pesa Kenya", type: "mobile_money", icon: "📱", description: "Safaricom M-Pesa", requires_phone: true, badge: "Popular" },
+        { id: "airtel_money", name: "Airtel Money", type: "mobile_money", icon: "📱", description: "Pagamento Airtel", requires_phone: true },
+        { id: "wallet", name: "MedWallet (KES)", type: "wallet", icon: "👛", description: "Pay with KES balance" }
+      ],
+      support: { whatsapp: "254799999999", phone: "+254 799 999 999", email: "support.ke@medwallet.com" }
+    }
+  },
+  {
+    id: 'TZ', name: 'Tanzania', currency_code: 'TZS', currency_symbol: 'TSh', phone_code: '255',
+    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Dar_es_Salaam',
+    region: 'africa_east', region_label: 'África Oriental',
+    branding_config: { primary_color: '#00A651', secondary_color: '#009739', accent_color: '#1A3C8F' },
+    config: {
+      cities: ["Dar es Salaam", "Dodoma", "Mwanza", "Arusha", "Mbeya", "Zanzibar"],
+      phone_placeholder: "+255 6XX XXX XXX",
+      registration_defaults: { consultation_fee: 25000, delivery_fee: 5000 },
+      payment_methods: [
+        { id: "mpesa_tz", name: "M-Pesa Tanzania", type: "mobile_money", icon: "📱", description: "Vodacom M-Pesa TZ", requires_phone: true },
+        { id: "tigo_pesa", name: "Tigo Pesa", type: "mobile_money", icon: "📱", description: "Pagamento Tigo", requires_phone: true },
+        { id: "wallet", name: "MedWallet (TZS)", type: "wallet", icon: "👛", description: "Pay with TZS balance" }
+      ],
+      support: { whatsapp: "255699999999", phone: "+255 699 999 999", email: "support.tz@medwallet.com" }
+    }
+  },
+  {
+    id: 'UG', name: 'Uganda', currency_code: 'UGX', currency_symbol: 'USh', phone_code: '256',
+    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Kampala',
+    region: 'africa_east', region_label: 'África Oriental',
+    branding_config: { primary_color: '#000000', secondary_color: '#FFD100', accent_color: '#D40000' },
+    config: {
+      cities: ["Kampala", "Entebbe", "Jinja", "Gulu", "Mbarara", "Fort Portal"],
+      phone_placeholder: "+256 7XX XXX XXX",
+      registration_defaults: { consultation_fee: 50000, delivery_fee: 10000 },
+      payment_methods: [
+        { id: "mtt_momo", name: "MTN MoMo", type: "mobile_money", icon: "📱", description: "MTN Mobile Money", requires_phone: true, badge: "Popular" },
+        { id: "airtel_money_ug", name: "Airtel Money", type: "mobile_money", icon: "📱", description: "Pagamento Airtel", requires_phone: true },
+        { id: "wallet", name: "MedWallet (UGX)", type: "wallet", icon: "👛", description: "Pay with UGX balance" }
+      ],
+      support: { whatsapp: "256799999999", phone: "+256 799 999 999", email: "support.ug@medwallet.com" }
+    }
+  },
+  {
+    id: 'ET', name: 'Ethiopia', currency_code: 'ETB', currency_symbol: 'Br', phone_code: '251',
+    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Addis_Ababa',
+    region: 'africa_east', region_label: 'África Oriental',
+    branding_config: { primary_color: '#009B3A', secondary_color: '#FCDD09', accent_color: '#DA121A' },
+    config: {
+      cities: ["Addis Ababa", "Dire Dawa", "Bahir Dar", "Hawassa", "Mekelle", "Adama"],
+      phone_placeholder: "+251 9X XXX XXXX",
+      registration_defaults: { consultation_fee: 500, delivery_fee: 100 },
+      payment_methods: [
+        { id: "telebirr", name: "telebirr", type: "mobile_money", icon: "📱", description: "Ethio Telecom telebirr", requires_phone: true, badge: "Popular" },
+        { id: "wallet", name: "MedWallet (ETB)", type: "wallet", icon: "👛", description: "Pay with ETB balance" }
+      ],
+      support: { whatsapp: "251999999999", phone: "+251 99 999 9999", email: "support.et@medwallet.com" }
+    }
+  },
+  {
+    id: 'RW', name: 'Rwanda', currency_code: 'RWF', currency_symbol: 'FRw', phone_code: '250',
+    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Kigali',
+    region: 'africa_east', region_label: 'África Oriental',
+    branding_config: { primary_color: '#00A651', secondary_color: '#0072C6', accent_color: '#FCD116' },
+    config: {
+      cities: ["Kigali", "Musanze", "Gisenyi", "Butare", "Rubavu", "Muhanga"],
+      phone_placeholder: "+250 7XX XXX XXX",
+      registration_defaults: { consultation_fee: 5000, delivery_fee: 1500 },
+      payment_methods: [
+        { id: "mtn_momo_rw", name: "MTN MoMo", type: "mobile_money", icon: "📱", description: "MTN Mobile Money Rwanda", requires_phone: true, badge: "Popular" },
+        { id: "airtel_rw", name: "Airtel Money", type: "mobile_money", icon: "📱", description: "Pagamento Airtel", requires_phone: true },
+        { id: "wallet", name: "MedWallet (RWF)", type: "wallet", icon: "👛", description: "Pay with RWF balance" }
+      ],
+      support: { whatsapp: "250799999999", phone: "+250 799 999 999", email: "support.rw@medwallet.com" }
+    }
+  },
+  // =========================================================================
+  // AFRICA — West Africa
+  // =========================================================================
+  {
+    id: 'NG', name: 'Nigeria', currency_code: 'NGN', currency_symbol: '₦', phone_code: '234',
+    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Lagos',
+    region: 'africa_west', region_label: 'África Ocidental',
+    branding_config: { primary_color: '#008751', secondary_color: '#FFFFFF', accent_color: '#000000' },
+    config: {
+      cities: ["Lagos", "Abuja", "Kano", "Ibadan", "Port Harcourt", "Benin City", "Kaduna"],
+      phone_placeholder: "+234 8XX XXX XXXX",
+      registration_defaults: { consultation_fee: 5000, delivery_fee: 1000 },
+      payment_methods: [
+        { id: "paystack_ng", name: "Paystack", type: "card", icon: "💳", description: "Card or Bank Transfer", badge: "Popular" },
+        { id: "flutterwave", name: "Flutterwave", type: "card", icon: "💳", description: "Visa/Mastercard/Bank" },
+        { id: "wallet", name: "MedWallet (NGN)", type: "wallet", icon: "👛", description: "Pay with NGN balance" }
+      ],
+      support: { whatsapp: "23489999999999", phone: "+234 899 999 9999", email: "support.ng@medwallet.com" }
+    }
+  },
+  {
+    id: 'GH', name: 'Ghana', currency_code: 'GHS', currency_symbol: 'GH₵', phone_code: '233',
+    default_locale: 'en', supported_locales: ['en', 'fr', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Accra',
+    region: 'africa_west', region_label: 'África Ocidental',
+    branding_config: { primary_color: '#006B3F', secondary_color: '#FFD100', accent_color: '#D40000' },
+    config: {
+      cities: ["Accra", "Kumasi", "Tamale", "Takoradi", "Cape Coast", "Sunyani"],
+      phone_placeholder: "+233 XX XXX XXXX",
+      registration_defaults: { consultation_fee: 100, delivery_fee: 30 },
+      payment_methods: [
+        { id: "momo_gh", name: "MTN MoMo", type: "mobile_money", icon: "📱", description: "MTN Mobile Money Ghana", requires_phone: true, badge: "Popular" },
+        { id: "vodafone_cash", name: "Vodafone Cash", type: "mobile_money", icon: "📱", description: "Pagamento Vodafone", requires_phone: true },
+        { id: "wallet", name: "MedWallet (GHS)", type: "wallet", icon: "👛", description: "Pay with GHS balance" }
+      ],
+      support: { whatsapp: "233209999999", phone: "+233 20 999 9999", email: "support.gh@medwallet.com" }
+    }
+  },
+  {
+    id: 'SN', name: 'Senegal', currency_code: 'XOF', currency_symbol: 'CFA', phone_code: '221',
+    default_locale: 'fr', supported_locales: ['fr', 'en', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Dakar',
+    region: 'africa_west', region_label: 'África Ocidental',
+    branding_config: { primary_color: '#00853F', secondary_color: '#FCD116', accent_color: '#E31B23' },
+    config: {
+      cities: ["Dakar", "Saint-Louis", "Thiès", "Kaolack", "Ziguinchor", "Rufisque"],
+      phone_placeholder: "+221 7X XXX XXXX",
+      registration_defaults: { consultation_fee: 10000, delivery_fee: 2000 },
+      payment_methods: [
+        { id: "orange_money_sn", name: "Orange Money", type: "mobile_money", icon: "📱", description: "Pagamento Orange", requires_phone: true, badge: "Popular" },
+        { id: "wave", name: "Wave", type: "mobile_money", icon: "📱", description: "Pagamento Wave", requires_phone: true },
+        { id: "wallet", name: "MedWallet (XOF)", type: "wallet", icon: "👛", description: "Pay with CFA balance" }
+      ],
+      support: { whatsapp: "221779999999", phone: "+221 77 999 9999", email: "support.sn@medwallet.com" }
+    }
+  },
+  {
+    id: 'CI', name: "Côte d'Ivoire", currency_code: 'XOF', currency_symbol: 'CFA', phone_code: '225',
+    default_locale: 'fr', supported_locales: ['fr', 'en', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Abidjan',
+    region: 'africa_west', region_label: 'África Ocidental',
+    branding_config: { primary_color: '#F77F00', secondary_color: '#FFFFFF', accent_color: '#009E60' },
+    config: {
+      cities: ["Abidjan", "Yamoussoukro", "Bouaké", "Daloa", "Korhogo", "San Pedro"],
+      phone_placeholder: "+225 0X XX XX XX XX",
+      registration_defaults: { consultation_fee: 5000, delivery_fee: 1000 },
+      payment_methods: [
+        { id: "orange_money_ci", name: "Orange Money", type: "mobile_money", icon: "📱", description: "Pagamento Orange CI", requires_phone: true, badge: "Popular" },
+        { id: "wave_ci", name: "Wave", type: "mobile_money", icon: "📱", description: "Pagamento Wave CI", requires_phone: true },
+        { id: "wallet", name: "MedWallet (XOF)", type: "wallet", icon: "👛", description: "Pay with CFA balance" }
+      ],
+      support: { whatsapp: "2250799999999", phone: "+225 07 9999 9999", email: "support.ci@medwallet.com" }
+    }
+  },
+  // =========================================================================
+  // AFRICA — North Africa
+  // =========================================================================
+  {
+    id: 'MA', name: 'Maroc', currency_code: 'MAD', currency_symbol: 'MAD', phone_code: '212',
+    default_locale: 'fr', supported_locales: ['fr', 'en', 'es', 'pt', 'hi', 'pt-BR'], timezone: 'Africa/Casablanca',
+    region: 'africa_north', region_label: 'África do Norte',
+    branding_config: { primary_color: '#C1272D', secondary_color: '#006233', accent_color: '#000000' },
+    config: {
+      cities: ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda"],
+      phone_placeholder: "+212 6XX XXX XXX",
+      registration_defaults: { consultation_fee: 200, delivery_fee: 30 },
+      payment_methods: [
+        { id: "cih", name: "CIH Bank", type: "bank", icon: "🏦", description: "Pagamento via CIH" },
+        { id: "wallet", name: "MedWallet (MAD)", type: "wallet", icon: "👛", description: "Pay with MAD balance" }
+      ],
+      support: { whatsapp: "212699999999", phone: "+212 699 999 999", email: "support.ma@medwallet.com" }
+    }
+  },
+  {
+    id: 'EG', name: 'Egypt', currency_code: 'EGP', currency_symbol: 'E£', phone_code: '20',
+    default_locale: 'en', supported_locales: ['en', 'fr', 'es', 'pt', 'hi', 'pt-BR'], timezone: 'Africa/Cairo',
+    region: 'africa_north', region_label: 'África do Norte',
+    branding_config: { primary_color: '#CE1126', secondary_color: '#FFFFFF', accent_color: '#000000' },
+    config: {
+      cities: ["Cairo", "Alexandria", "Giza", "Sharm El Sheikh", "Luxor", "Aswan"],
+      phone_placeholder: "+20 1XX XXX XXXX",
+      registration_defaults: { consultation_fee: 300, delivery_fee: 50 },
+      payment_methods: [
+        { id: "fawry", name: "Fawry", type: "bank", icon: "🏦", description: "Pagamento Fawry", badge: "Popular" },
+        { id: "wallet", name: "MedWallet (EGP)", type: "wallet", icon: "👛", description: "Pay with EGP balance" }
+      ],
+      support: { whatsapp: "201099999999", phone: "+20 109 999 9999", email: "support.eg@medwallet.com" }
+    }
+  },
+  // =========================================================================
+  // AFRICA — Central Africa
+  // =========================================================================
+  {
+    id: 'CM', name: 'Cameroun', currency_code: 'XAF', currency_symbol: 'FCFA', phone_code: '237',
+    default_locale: 'fr', supported_locales: ['fr', 'en', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Douala',
+    region: 'africa_central', region_label: 'África Central',
+    branding_config: { primary_color: '#007A5E', secondary_color: '#FFD100', accent_color: '#D40000' },
+    config: {
+      cities: ["Douala", "Yaoundé", "Garoua", "Bamenda", "Maroua", "Ngaoundéré", "Bafoussam"],
+      phone_placeholder: "+237 6XX XXX XXX",
+      registration_defaults: { consultation_fee: 3000, delivery_fee: 500 },
+      payment_methods: [
+        { id: "orange_money_cm", name: "Orange Money", type: "mobile_money", icon: "📱", description: "Pagamento Orange CM", requires_phone: true, badge: "Popular" },
+        { id: "mtn_momo_cm", name: "MTN MoMo", type: "mobile_money", icon: "📱", description: "MTN Mobile Money CM", requires_phone: true },
+        { id: "wallet", name: "MedWallet (XAF)", type: "wallet", icon: "👛", description: "Pay with FCFA balance" }
+      ],
+      support: { whatsapp: "237699999999", phone: "+237 699 999 999", email: "support.cm@medwallet.com" }
+    }
+  },
+  {
+    id: 'CD', name: 'RD Congo', currency_code: 'CDF', currency_symbol: 'FC', phone_code: '243',
+    default_locale: 'fr', supported_locales: ['fr', 'en', 'pt', 'es', 'hi', 'pt-BR'], timezone: 'Africa/Kinshasa',
+    region: 'africa_central', region_label: 'África Central',
+    branding_config: { primary_color: '#007FFF', secondary_color: '#F7D618', accent_color: '#CE1021' },
+    config: {
+      cities: ["Kinshasa", "Lubumbashi", "Mbuji-Mayi", "Kananga", "Goma", "Bukavu", "Matadi"],
+      phone_placeholder: "+243 8X XXX XXXX",
+      registration_defaults: { consultation_fee: 5000, delivery_fee: 1000 },
+      payment_methods: [
+        { id: "momo_cd", name: "M-Pesa DRC", type: "mobile_money", icon: "📱", description: "Vodacom M-Pesa RDC", requires_phone: true },
+        { id: "airtel_money_cd", name: "Airtel Money", type: "mobile_money", icon: "📱", description: "Pagamento Airtel", requires_phone: true },
+        { id: "wallet", name: "MedWallet (CDF)", type: "wallet", icon: "👛", description: "Pay with FC balance" }
+      ],
+      support: { whatsapp: "243819999999", phone: "+243 819 999 999", email: "support.cd@medwallet.com" }
+    }
   }
 ];
+
+/** Regional groupings — used for Regional Manager hierarchy */
+export const REGIONS = [
+  { id: 'africa_south', label: 'África Austral', emoji: '🌍', countries: ['MZ', 'AO', 'ZA'] },
+  { id: 'africa_east', label: 'África Oriental', emoji: '🌿', countries: ['KE', 'TZ', 'UG', 'ET', 'RW'] },
+  { id: 'africa_west', label: 'África Ocidental', emoji: '🏖️', countries: ['NG', 'GH', 'SN', 'CI', 'CV', 'GW'] },
+  { id: 'africa_north', label: 'África do Norte', emoji: '🏜️', countries: ['MA', 'EG'] },
+  { id: 'africa_central', label: 'África Central', emoji: '🌳', countries: ['CM', 'CD', 'ST'] },
+  { id: 'latam', label: 'América Latina', emoji: '🌎', countries: ['BR'] },
+  { id: 'europe', label: 'Europa', emoji: '🏰', countries: ['PT'] },
+  { id: 'asia', label: 'Ásia', emoji: '🌏', countries: ['IN'] },
+] as const;
+
+/** Get countries grouped by region */
+export function getCountriesByRegion(countries: Country[]) {
+  return REGIONS.map(r => ({
+    ...r,
+    items: countries.filter(c => r.countries.includes(c.id)),
+  })).filter(r => r.items.length > 0);
+}
+
+/** Regional Manager role type */
+export type RegionId = typeof REGIONS[number]['id'];
 
 interface CountryContextType {
   country: Country | null;
