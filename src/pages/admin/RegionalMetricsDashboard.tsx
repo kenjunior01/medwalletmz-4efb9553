@@ -177,7 +177,7 @@ export default function RegionalMetricsDashboard() {
         <MetricCard
           icon={<MapPin className="h-5 w-5" />} label="Países"
           value={globalMetrics.activeCountries} color="text-emerald-500" bg="bg-emerald-500/10"
-          trend={"+3" trendUp={true}
+          trend={"+3"} trendUp={true}
         />
         <MetricCard
           icon={<Users className="h-5 w-5" />} label="Utilizadores"
