@@ -53,15 +53,17 @@ export class ErrorBoundary extends Component<Props, State> {
             </Button>
           </div>
 
-          <div className="mt-12 p-4 bg-muted rounded-xl text-left w-full max-w-2xl overflow-auto max-h-60">
-            <p className="font-mono text-xs text-destructive font-bold">Erro Detalhado:</p>
-            <p className="font-mono text-xs text-destructive mt-1">{this.state.error?.toString()}</p>
-            {this.state.error?.stack && (
-              <pre className="mt-2 font-mono text-[10px] text-muted-foreground whitespace-pre-wrap opacity-50">
-                {this.state.error?.stack}
-              </pre>
-            )}
-          </div>
+          {import.meta.env.DEV && this.state.error && (
+            <div className="mt-12 p-4 bg-muted rounded-xl text-left w-full max-w-2xl overflow-auto max-h-60">
+              <p className="font-mono text-xs text-destructive font-bold">Erro Detalhado (dev only):</p>
+              <p className="font-mono text-xs text-destructive mt-1">{this.state.error?.toString()}</p>
+              {this.state.error?.stack && (
+                <pre className="mt-2 font-mono text-[10px] text-muted-foreground whitespace-pre-wrap opacity-50">
+                  {this.state.error?.stack}
+                </pre>
+              )}
+            </div>
+          )}
         </div>
       );
     }

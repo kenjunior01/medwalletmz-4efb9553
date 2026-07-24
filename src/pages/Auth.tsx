@@ -422,7 +422,7 @@ export default function Auth() {
                         <div className="space-y-2">
                           <div className="flex justify-between items-center px-2">
                             <Label htmlFor="password" className="font-black text-[10px] uppercase tracking-widest text-primary/60">{t('auth.password')}</Label>
-                            <button type="button" className="text-[10px] font-black text-secondary hover:underline uppercase tracking-tighter">{t('auth.forgot_password')}</button>
+                            <button type="button" onClick={() => navigate('/auth/forgot-password')} className="text-[10px] font-black text-secondary hover:underline uppercase tracking-tighter">{t('auth.forgot_password')}</button>
                           </div>
                           <div className="relative group">
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />

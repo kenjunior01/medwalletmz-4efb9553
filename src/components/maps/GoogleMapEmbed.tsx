@@ -60,9 +60,7 @@ export interface GoogleMapEmbedProps {
   className?: string;
 }
 
-const API_KEY =
-  (import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined) ||
-  "AIzaSyCSmjlxj48ngrPinTo4gdVBzmBf9CPVrFU";
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
 
 /**
  * Constrói o URL oficial do Maps Embed API.

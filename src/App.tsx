@@ -170,6 +170,10 @@ const PublicImpactDashboard = lazy(() => import("./pages/PublicImpactDashboard")
 const ApeNetwork = lazy(() => import("./pages/ApeNetwork"));
 const Ranking = lazy(() => import("./pages/Ranking"));
 const AdminMpesaConfirmations = lazy(() => import("./pages/admin/AdminMpesaConfirmations"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const ChangePassword = lazy(() => import("./pages/auth/ChangePassword"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const Withdraw = lazy(() => import("./pages/Withdraw"));
 
 // ---- Manager Pages (páginas EXCLUSIVAS do gestor regional) ----
 const ManagerHome = lazy(() => import("./pages/manager/ManagerHome"));
@@ -252,6 +256,8 @@ const App = () => (
                     <Route path="/partners" element={<Partners />} />
                     <Route path="/referrals" element={<Referrals />} />
                     <Route path="/wallet" element={<Wallet />} />
+                    <Route path="/wallet/withdraw" element={<Withdraw />} />
+                    <Route path="/favorites" element={<Favorites />} />
                     <Route path="/legal" element={<Legal />} />
                     <Route path="/legal/:type" element={<LegalDocs />} />
                     <Route path="/suggest-place" element={<SuggestPlace />} />
@@ -285,6 +291,8 @@ const App = () => (
 
                   {/* Auth */}
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/auth/change-password" element={<ChangePassword />} />
                  <Route path="/verify/:code" element={<VerifyPrescription />} />
                   <Route path="/register" element={<RegistrationWizard />} />
 
