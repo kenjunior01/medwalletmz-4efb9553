@@ -39,6 +39,7 @@ export function NearbyProvidersWidget() {
         .from('stores')
         .select('id, name, type, city, latitude, longitude, image_url')
         .eq('is_active', true)
+        .eq('type', 'pharmacy')
         .limit(50);
       if (onlyMyCity && city) q = q.eq('city', city);
       const { data } = await q;

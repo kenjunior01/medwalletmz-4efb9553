@@ -9,13 +9,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 type Tab = 'doctors' | 'clinics' | 'hospitals' | 'pharmacies' | 'laboratories' | 'veterinary';
 
-const TABS: { id: Tab; label: string; table: string; nameField?: string }[] = [
+const TABS: { id: Tab; label: string; table: string; typeFilter?: string }[] = [
   { id: 'doctors', label: 'Médicos', table: 'doctor_profiles' },
   { id: 'clinics', label: 'Clínicas', table: 'clinics' },
-  { id: 'hospitals', label: 'Hospitais', table: 'hospitals' },
-  { id: 'pharmacies', label: 'Farmácias', table: 'pharmacies' },
-  { id: 'laboratories', label: 'Laboratórios', table: 'laboratories' },
-  { id: 'veterinary', label: 'Veterinárias', table: 'veterinary_clinics' },
+  { id: 'hospitals', label: 'Hospitais', table: 'clinics', typeFilter: 'hospital' },
+  { id: 'pharmacies', label: 'Farmácias', table: 'stores', typeFilter: 'pharmacy' },
+  { id: 'laboratories', label: 'Laboratórios', table: 'stores', typeFilter: 'laboratory' },
+  { id: 'veterinary', label: 'Veterinárias', table: 'stores', typeFilter: 'veterinary' },
 ];
 
 export default function Ranking() {
@@ -44,9 +44,12 @@ export default function Ranking() {
           subtitle: d.specialty,
         })));
       } else {
-        const { data } = await (supabase as any)
+        let query = (supabase as any)
           .from(cfg.table)
-          .select('id, name, avg_rating, reviews_count, city, address')
+          .select('id, name, avg_rating, reviews_count, city, address');
+        if (cfg.typeFilter) query = query.eq('type', cfg.typeFilter);
+        else query = query.eq('is_active', true);
+        const { data } = await query
           .order('avg_rating', { ascending: false })
           .order('reviews_count', { ascending: false })
           .limit(50);

@@ -166,17 +166,20 @@ export function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-32 glass rounded-xl p-1">
-                {country.supported_locales.map((l) => (
+                {country.supported_locales.map((l) => {
+                  const labels: Record<string, string> = { pt: 'Português', en: 'English', es: 'Español', fr: 'Français', af: 'Afrikaans', hi: 'हिन्दी', 'pt-BR': 'Português (BR)' };
+                  return (
                   <DropdownMenuItem
                     key={l}
                     onClick={() => setLocale(l)}
-                    className={`rounded-lg py-2 px-3 cursor-pointer uppercase font-bold text-xs ${
+                    className={`rounded-lg py-2 px-3 cursor-pointer font-bold text-xs ${
                       l === locale ? "bg-primary text-primary-foreground" : ""
                     }`}
                   >
-                    {l}
+                    {labels[l] || l}
                   </DropdownMenuItem>
-                ))}
+                  );
+                })}
               </DropdownMenuContent>
             </DropdownMenu>
           )}

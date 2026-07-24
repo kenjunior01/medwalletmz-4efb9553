@@ -114,7 +114,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/pharmacy", icon: Pill, label: "nav.pharmacy", group: "Compras" },
     { path: "/orders", icon: ClipboardList, label: "nav.orders", group: "Compras" },
     { path: "/wallet", icon: Wallet, label: "nav.wallet", group: "Conta" },
-    { path: "/subscriptions", icon: Shield, label: "nav.insurance", group: "Conta" },
+    { path: "/subscriptions", icon: Shield, label: "nav.subscriptions", group: "Conta" },
     { path: "/profile", icon: User, label: "nav.profile", group: "Conta" },
     { path: "/help", icon: MessageSquare, label: "nav.help", group: "Conta" },
   ],
@@ -125,7 +125,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/doctor/patients", icon: Users, label: "nav.patients", group: "Consultório" },
     { path: "/doctor/prescription/new", icon: FileText, label: "nav.prescriptions", group: "Consultório" },
     { path: "/wallet", icon: Wallet, label: "nav.wallet", group: "Conta" },
-    { path: "/subscriptions", icon: Shield, label: "nav.insurance", group: "Conta" },
+    { path: "/subscriptions", icon: Shield, label: "nav.subscriptions", group: "Conta" },
     { path: "/profile", icon: User, label: "nav.profile", group: "Conta" },
   ],
   clinic: [

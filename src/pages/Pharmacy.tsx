@@ -84,7 +84,9 @@ export default function Pharmacy() {
       const { data, error } = await query;
 
       if (error) throw error;
-      setPharmacies(data || []);
+      // Deduplicate by name to avoid showing the same pharmacy twice
+      const unique = (data || []).filter((p: any, i: number, arr: any[]) => arr.findIndex((x: any) => x.name === p.name) === i);
+      setPharmacies(unique);
     } catch (error) {
       console.error("Erro ao carregar farmácias:", error);
     } finally {

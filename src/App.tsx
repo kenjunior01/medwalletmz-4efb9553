@@ -171,6 +171,10 @@ const ApeNetwork = lazy(() => import("./pages/ApeNetwork"));
 const Ranking = lazy(() => import("./pages/Ranking"));
 const AdminMpesaConfirmations = lazy(() => import("./pages/admin/AdminMpesaConfirmations"));
 
+// ---- Manager Pages (páginas EXCLUSIVAS do gestor regional) ----
+const ManagerHome = lazy(() => import("./pages/manager/ManagerHome"));
+const ManagerUsers = lazy(() => import("./pages/manager/ManagerUsers"));
+
 // =========================================================================
 // QueryClient com cache optimizado
 // =========================================================================
@@ -340,36 +344,17 @@ const App = () => (
                     <Route path="google-cloud" element={<GoogleCloudHub />} />
                   </Route>
 
-                  {/* Regional Manager Routes */}
+                  {/* Regional Manager Routes — ISOLADAS, com páginas próprias */}
                   <Route path="/manager" element={<RegionalManagerDashboard />}>
-                    <Route index element={<CountryDashboard />} />
-                    <Route path="curation" element={<AdminCuration />} />
-                    <Route path="institutions" element={<AdminInstitutions />} />
+                    <Route index element={<ManagerHome />} />
+                    <Route path="users" element={<ManagerUsers />} />
+                    {/* Páginas compartilhadas (usam os mesmos componentes admin mas
+                        o isolamento de dados é feito via useManagedCountry + backend RLS) */}
                     <Route path="stores" element={<AdminStores />} />
                     <Route path="clinics" element={<AdminClinics />} />
-                    <Route path="veterinary" element={<AdminClinics />} />
-                    <Route path="labs" element={<AdminLabs />} />
                     <Route path="orders" element={<AdminOrders />} />
-                    <Route path="users" element={<AdminUsers />} />
                     <Route path="drivers" element={<AdminDrivers />} />
-                    <Route path="insurance" element={<AdminInsurance />} />
-                    <Route path="ads" element={<AdminAds />} />
                     <Route path="reports" element={<AdminReports />} />
-                    <Route path="import" element={<AdminImport />} />
-                    <Route path="compliance" element={<ComplianceCommandCenter />} />
-                    <Route path="compliance/partners" element={<PartnerVerification />} />
-                    <Route path="compliance/documents" element={<DocumentVault />} />
-                    <Route path="compliance/audit" element={<AuditTrail />} />
-                    <Route path="compliance/insurance" element={<MicroInsurance />} />
-                    <Route path="compliance/frameworks" element={<RegulatoryFrameworks />} />
-                    <Route path="compliance/copilot" element={<MeddyCopilot />} />
-                    <Route path="india" element={<IndiaInstitutionsPage />} />
-                    <Route path="mz-verticals/ape" element={<ApeDashboard />} />
-                    <Route path="mz-verticals/tb-dot" element={<TbDotPage />} />
-                    <Route path="mz-verticals/art" element={<ArtAdherencePage />} />
-                    <Route path="mz-verticals/malaria" element={<MalariaWorkflowPage />} />
-                    <Route path="mz-verticals/maternal" element={<MaternalHealthPage />} />
-                    <Route path="google-cloud" element={<GoogleCloudHub />} />
                   </Route>
 
                   {/* Store Owner Routes */}

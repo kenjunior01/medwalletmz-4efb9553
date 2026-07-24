@@ -60,6 +60,7 @@
     "clinics": "क्लीनिक",
     "laboratories": "प्रयोगशालाएं",
     "hospitals": "अस्पताल",
+    "veterinary": "पशु चिकित्सा",
     "exams": "परीक्षाएं",
     "plans": "योजनाएं",
     "insurance": "बीमा",
@@ -119,7 +120,8 @@
     "sending_number": "आपका भेजने वाला नंबर",
     "bonus_notice": "सत्यापन के बाद आपको +{{amount}} {{currency}} बोनस ({{percent}}%) मिलेगा।",
     "submit_validation": "सत्यापन के लिए भेजें",
-    "validation_delay": "कार्य दिवसों में मैन्युअल सत्यापन में 24 घंटे तक लग सकते हैं।"
+    "validation_delay": "कार्य दिवसों में मैन्युअल सत्यापन में 24 घंटे तक लग सकते हैं।",
+    "success_msg": "जमा अनुरोध भेजा गया! सत्यापन की प्रतीक्षा करें (अधिकतम 24 घंटे)।"
   },
   "doctor_register": {
     "title": "डॉक्टर पंजीकरण",
@@ -263,6 +265,12 @@
     "article_hypertension_subtitle": "अपना रक्तचाप नियंत्रित करें",
     "weather_rainy_title": "{{country}} में बारिश का मौसम",
     "weather_rainy_subtitle": "पानी और मच्छरों के साथ अतिरिक्त सावधानी बरतें।",
+    "no_doctors_title": "इस विशेषज्ञता में अभी तक कोई डॉक्टर नहीं",
+    "no_doctors_message": "हम नेटवर्क का विस्तार कर रहे हैं। इस बीच, यहाँ उपलब्ध विकल्प हैं — एक चुनें:",
+    "notify_me": "उपलब्ध होने पर मुझे सूचित करें",
+    "notify_me_desc": "जैसे ही उपलब्ध हो, तुरंत सूचना",
+    "chat_general_title": "सामान्य चिकित्सा चैट",
+    "chat_general_desc": "सामान्य चिकित्सक से बात करें (कोई भी विशेषज्ञता)",
     "referral_promo_title": "दोस्तों को आमंत्रित करके {{amount}} {{currency}} कमाएं",
     "referral_promo_subtitle": "टेलीकंसल्टेशन के लिए मुफ्त बैलेंस",
     "triage_emergency_warning": "यह मूल्यांकन चिकित्सा परामर्श का स्थान नहीं लेता है। यदि आपको सांस लेने में गंभीर तकलीफ या सीने में दर्द हो रहा है, तो तुरंत {{number}} पर कॉल करें या नजदीकी अस्पताल जाएं।",
@@ -354,7 +362,8 @@
     "insurance": "बीमा",
     "prescriptions": "नुस्खे",
     "drivers": "डिलीवरी पार्टनर",
-    "settings": "सेटिंग्स"
+    "settings": "सेटिंग्स",
+    "subscriptions": "सदस्यताएँ"
   },
   "greeting": {
     "good_morning": "सुप्रभात, {{name}}!",
@@ -363,5 +372,27 @@
     "remind_pressure": "अनुस्मारक: क्या आपने इस सप्ताह अपना रक्तचाप जांचा है?",
     "activate_alerts": "अलर्ट सक्रिय करें",
     "understood": "समझ गया"
+  },
+  "manager": {
+    "welcome_title": "Painel Regional",
+    "panel_label": "Gestor Regional",
+    "isolation_notice": "Acesso restrito aos dados da sua região. Não pode ver dados de outras regiões.",
+    "isolated_session": "Sessão isolada por região",
+    "region_isolated": "Dados 100% isolados por região",
+    "active_in_region": "Ativos na região",
+    "total_orders": "Total de pedidos",
+    "registered_pharmacies": "Farmácias registadas",
+    "verified_doctors": "Médicos verificados",
+    "registered_clinics": "Clínicas registadas",
+    "active_drivers": "Entregadores ativos",
+    "recent_registrations": "Registos Recentes na Região",
+    "no_recent_activity": "Sem atividade recente na sua região.",
+    "users_title": "Gestão de Utilizadores da Região",
+    "users_subtitle": "Apenas utilizadores registados na sua região",
+    "total_users": "Total de utilizadores",
+    "search_users": "Pesquisar por nome ou telefone...",
+    "no_users_found": "Nenhum utilizador encontrado.",
+    "prev": "Anterior",
+    "next": "Próximo"
   }
 }

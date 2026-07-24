@@ -362,7 +362,8 @@
     "insurance": "Seguros",
     "prescriptions": "Receitas",
     "drivers": "Entregadores",
-    "settings": "Definições"
+    "settings": "Definições",
+    "subscriptions": "Subscrições"
   },
   "greeting": {
     "good_morning": "Bom dia, {{name}}!",
@@ -371,5 +372,27 @@
     "remind_pressure": "Lembrete: Já verificaste a tua tensão arterial esta semana?",
     "activate_alerts": "Ativar Alertas",
     "understood": "Entendido"
+  },
+  "manager": {
+    "welcome_title": "Painel Regional",
+    "panel_label": "Gestor Regional",
+    "isolation_notice": "Acesso restrito aos dados da sua região. Não pode ver dados de outras regiões.",
+    "isolated_session": "Sessão isolada por região",
+    "region_isolated": "Dados 100% isolados por região",
+    "active_in_region": "Ativos na região",
+    "total_orders": "Total de pedidos",
+    "registered_pharmacies": "Farmácias registadas",
+    "verified_doctors": "Médicos verificados",
+    "registered_clinics": "Clínicas registadas",
+    "active_drivers": "Entregadores ativos",
+    "recent_registrations": "Registos Recentes na Região",
+    "no_recent_activity": "Sem atividade recente na sua região.",
+    "users_title": "Gestão de Utilizadores da Região",
+    "users_subtitle": "Apenas utilizadores registados na sua região",
+    "total_users": "Total de utilizadores",
+    "search_users": "Pesquisar por nome ou telefone...",
+    "no_users_found": "Nenhum utilizador encontrado.",
+    "prev": "Anterior",
+    "next": "Próximo"
   }
 }

@@ -14,7 +14,11 @@
     "doctor": "Doctor",
     "pharmacy": "Pharmacy",
     "driver": "Driver",
-    "more": "More"
+    "more": "More",
+    "in": "em",
+    "moments": "Momentos MedWallet",
+    "friend": "amigo",
+    "visitor": "visitante"
   },
   "referrals": {
     "program_title": "Referral Program",
@@ -52,7 +56,29 @@
     "trust_strip": {
       "doctors": "+120 doctors",
       "available": "24/7"
-    }
+    },
+    "provider_panel": "Painel profissional",
+    "your_business": "O teu negócio",
+    "doctor_dashboard": "Painel médico",
+    "deliveries": "Entregas",
+    "clinics": "Clínicas",
+    "laboratories": "Laboratórios",
+    "hospitals": "Hospitais",
+    "veterinary": "Veterinária",
+    "exams": "Exames",
+    "plans": "Planos",
+    "insurance": "Seguros",
+    "solidarity": "Solidários",
+    "ads": "Anúncios",
+    "for_professionals": "PARA PROFISSIONAIS",
+    "work_with_medwallet": "Trabalha com a MedWallet",
+    "become_provider_desc": "Médico, farmácia, motorista ou clínica — recebe pacientes/pedidos e a tua carteira em MZN.",
+    "im_doctor": "Sou médico",
+    "have_pharmacy": "Tenho farmácia",
+    "do_deliveries": "Faço entregas",
+    "competitive_commission": "Comissão competitiva, pagamentos diários",
+    "suggest_place_title": "Conheces uma farmácia ou clínica?",
+    "suggest_place_desc": "Sugere e, quando publicarmos, recebes saldo + Pulse automaticamente."
   },
   "checkout": {
     "title": "Checkout",
@@ -94,7 +120,8 @@
     "bonus_notice": "You receive +{{amount}} {{currency}} bonus ({{percent}}%) after validation.",
     "submit_validation": "Submit for validation",
     "validation_delay": "Manual validation can take up to 24h on business days.",
-    "success_msg": "Deposit request sent! Waiting for validation (up to 24h)."
+    "success_msg": "Deposit request sent! Waiting for validation (up to 24h).",
+    "secure_instant": "Seguro & Instantâneo"
   },
   "doctor_register": {
     "title": "Doctor Registration",
@@ -335,14 +362,37 @@
     "insurance": "Insurance",
     "prescriptions": "Prescriptions",
     "drivers": "Drivers",
-    "settings": "Settings"
+    "settings": "Settings",
+    "subscriptions": "Subscriptions"
   },
   "greeting": {
     "good_morning": "Good morning, {{name}}!",
-    "day_maputo": "Today in Maputo is an ideal day to focus on your health.",
     "tip_water": "Tip: Drink warm water with lemon to wake up your metabolism.",
     "remind_pressure": "Reminder: Have you checked your blood pressure this week?",
     "activate_alerts": "Activate Alerts",
-    "understood": "Understood"
+    "understood": "Understood",
+    "day_region": "Hoje em {{city}} está um dia ideal para focar na tua saúde."
+  },
+  "manager": {
+    "welcome_title": "Regional Panel",
+    "panel_label": "Regional Manager",
+    "isolation_notice": "Access restricted to your region data. You cannot see data from other regions.",
+    "isolated_session": "Session isolated by region",
+    "region_isolated": "Data 100% isolated by region",
+    "active_in_region": "Active in region",
+    "total_orders": "Total orders",
+    "registered_pharmacies": "Registered pharmacies",
+    "verified_doctors": "Verified doctors",
+    "registered_clinics": "Registered clinics",
+    "active_drivers": "Active drivers",
+    "recent_registrations": "Recent Registrations in Region",
+    "no_recent_activity": "No recent activity in your region.",
+    "users_title": "Regional User Management",
+    "users_subtitle": "Only users registered in your region",
+    "total_users": "Total users",
+    "search_users": "Search by name or phone...",
+    "no_users_found": "No users found.",
+    "prev": "Previous",
+    "next": "Next"
   }
 }

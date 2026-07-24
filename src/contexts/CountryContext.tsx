@@ -36,7 +36,7 @@ export interface Country {
 const STATIC_COUNTRIES: Country[] = [
   {
     id: 'MZ', name: 'Moçambique', currency_code: 'MZN', currency_symbol: 'MT', phone_code: '258',
-    default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Africa/Maputo',
+    default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'hi', 'pt-BR'], timezone: 'Africa/Maputo',
     branding_config: {
       primary_color: '#009739',   // Verde Moçambique
       secondary_color: '#FFD100', // Amarelo
@@ -66,7 +66,7 @@ const STATIC_COUNTRIES: Country[] = [
   },
   {
     id: 'BR', name: 'Brasil', currency_code: 'BRL', currency_symbol: 'R$', phone_code: '55',
-    default_locale: 'pt-BR', supported_locales: ['pt-BR', 'en', 'es'], timezone: 'America/Sao_Paulo',
+    default_locale: 'pt-BR', supported_locales: ['pt-BR', 'pt', 'en', 'es', 'fr', 'af', 'hi'], timezone: 'America/Sao_Paulo',
     branding_config: {
       primary_color: '#009C3B',   // Verde bandeira
       secondary_color: '#FFDF00', // Amarelo bandeira
@@ -102,7 +102,7 @@ const STATIC_COUNTRIES: Country[] = [
   },
   {
     id: 'AO', name: 'Angola', currency_code: 'AOA', currency_symbol: 'Kz', phone_code: '244',
-    default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Africa/Luanda',
+    default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'hi', 'pt-BR'], timezone: 'Africa/Luanda',
     config: {
       cities: ["Luanda", "Benguela", "Huambo", "Lubango", "Cabinda", "Malanje", "Namibe"],
       phone_placeholder: "+244 9XX XXX XXX",
@@ -125,7 +125,7 @@ const STATIC_COUNTRIES: Country[] = [
   },
   {
     id: 'ZA', name: 'South Africa', currency_code: 'ZAR', currency_symbol: 'R', phone_code: '27',
-    default_locale: 'en', supported_locales: ['en', 'af'], timezone: 'Africa/Johannesburg',
+    default_locale: 'en', supported_locales: ['en', 'af', 'pt', 'es', 'fr', 'hi', 'pt-BR'], timezone: 'Africa/Johannesburg',
     config: {
       cities: ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", "Bloemfontein"],
       phone_placeholder: "+27 XX XXX XXXX",
@@ -148,7 +148,7 @@ const STATIC_COUNTRIES: Country[] = [
   },
   {
     id: 'PT', name: 'Portugal', currency_code: 'EUR', currency_symbol: '€', phone_code: '351',
-    default_locale: 'pt', supported_locales: ['pt', 'en'], timezone: 'Europe/Lisbon',
+    default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'hi', 'pt-BR'], timezone: 'Europe/Lisbon',
     config: {
       cities: ["Lisboa", "Porto", "Braga", "Coimbra", "Setúbal", "Aveiro", "Faro"],
       phone_placeholder: "+351 9XX XXX XXX",
@@ -171,7 +171,7 @@ const STATIC_COUNTRIES: Country[] = [
   },
   {
     id: 'IN', name: 'India', currency_code: 'INR', currency_symbol: '₹', phone_code: '91',
-    default_locale: 'hi', supported_locales: ['hi', 'en'], timezone: 'Asia/Kolkata',
+    default_locale: 'hi', supported_locales: ['hi', 'en', 'pt', 'es', 'fr', 'af', 'pt-BR'], timezone: 'Asia/Kolkata',
     config: {
       cities: ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata"],
       phone_placeholder: "+91 XXXXX-XXXXX",
@@ -218,6 +218,10 @@ export function CountryProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       console.warn('LocalStorage blocked', e);
     }
+
+    // Default to detected country's locale, falling back to browser language
+    const detectedCountry = STATIC_COUNTRIES.find(c => c.id === gpsCountry);
+    if (detectedCountry) return detectedCountry.default_locale;
 
     const browserLang = navigator.language.split('-')[0];
     const map: Record<string, string> = {
@@ -275,7 +279,11 @@ export function CountryProvider({ children }: { children: ReactNode }) {
       const detected = allCountries.find(c => c.id === gpsCountry);
       if (detected && country?.id !== gpsCountry) {
         setCountry(detected);
-        if (!localStorage.getItem('appLocale')) setLocale(detected.default_locale);
+        // Always sync locale to country's default when country changes
+        if (!detected.supported_locales?.includes(locale)) {
+          setLocale(detected.default_locale);
+          localStorage.removeItem('appLocale');
+        }
       }
     }
   }, [gpsCountry, allCountries]);
