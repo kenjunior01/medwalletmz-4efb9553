@@ -97,6 +97,14 @@
     --glass: 215 40% 10% / 0.85;
     --glass-border: 215 50% 90% / 0.1;
 
+    /* Service colors — dark mode adjustments */
+    --pharmacy: 190 65% 55%;
+    --pharmacy-foreground: 215 65% 12%;
+    --gold: 42 85% 60%;
+    --gold-foreground: 215 65% 12%;
+    --emerald: 160 65% 50%;
+    --emerald-foreground: 215 65% 12%;
+
     /* Neumorphism — dark theme */
     --neu-bg: 215 30% 12%;
     --neu-light: 215 30% 18%;
@@ -184,10 +192,19 @@
     @apply rounded-[2rem] border bg-card relative overflow-hidden transition-all duration-300;
     box-shadow: var(--shadow-md);
   }
-  .bento-card:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
-    border-color: hsl(var(--primary) / 0.3);
+  @media (hover: hover) {
+    .bento-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+      border-color: hsl(var(--primary) / 0.3);
+    }
+  }
+  @media (hover: none) {
+    .bento-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: none;
+      border-color: hsl(var(--primary) / 0.15);
+    }
   }
 
   .text-gradient-premium {

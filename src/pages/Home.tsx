@@ -210,18 +210,18 @@ export default function Home() {
         <section className="px-4">
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {[
-              { icon: Pill, label: t('home.pharmacy'), color: 'emerald', to: '/pharmacy' },
-              { icon: Stethoscope, label: t('home.clinics'), color: 'primary', to: '/health/facilities?type=clinic' },
-              { icon: PawPrint, label: t('home.veterinary'), color: 'amber-600', to: '/health/veterinary' },
-              { icon: Building2, label: t('home.hospitals'), color: 'destructive', to: '/health/facilities?type=hospital' },
-              { icon: FlaskConical, label: t('home.laboratories'), color: 'secondary', to: '/health/facilities?type=laboratory' },
+              { icon: Pill, label: t('home.pharmacy'), bgClass: 'bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/30', textClass: 'text-emerald-500', to: '/pharmacy' },
+              { icon: Stethoscope, label: t('home.clinics'), bgClass: 'bg-primary/5 border-primary/10 hover:border-primary/30', textClass: 'text-primary', to: '/health/facilities?type=clinic' },
+              { icon: PawPrint, label: t('home.veterinary'), bgClass: 'bg-amber-500/5 border-amber-500/10 hover:border-amber-500/30', textClass: 'text-amber-500', to: '/health/veterinary' },
+              { icon: Building2, label: t('home.hospitals'), bgClass: 'bg-destructive/5 border-destructive/10 hover:border-destructive/30', textClass: 'text-destructive', to: '/health/facilities?type=hospital' },
+              { icon: FlaskConical, label: t('home.laboratories'), bgClass: 'bg-secondary/5 border-secondary/10 hover:border-secondary/30', textClass: 'text-secondary', to: '/health/facilities?type=laboratory' },
             ].map(c => (
               <button key={c.label} onClick={() => navigate(c.to)} className="group flex flex-col items-center gap-2 no-tap-target">
                 <div className={cn(
                   "h-14 w-full rounded-2xl flex flex-col items-center justify-center transition-all group-hover:scale-105 active:scale-95 shadow-sm border-2",
-                  c.color.includes('-') ? `bg-amber-500/5 border-amber-500/10 hover:border-amber-500/30` : `bg-${c.color}/5 border-${c.color}/10 hover:border-${c.color}/30`
+                  c.bgClass
                 )}>
-                  <c.icon className={cn("h-6 w-6", c.color.includes('-') ? `text-${c.color}` : `text-${c.color}`)} />
+                  <c.icon className={cn("h-6 w-6", c.textClass)} />
                 </div>
                 <span className="text-[10px] font-black text-center leading-tight text-foreground/80">{c.label}</span>
               </button>

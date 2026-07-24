@@ -308,11 +308,11 @@ export default function Auth() {
           variant="ghost"
           size="icon"
           onClick={() => navigate('/')}
-          className="rounded-2xl bg-white/50 backdrop-blur-md hover:bg-white transition-all shadow-sm group"
+          className="rounded-2xl bg-white/50 dark:bg-card/50 backdrop-blur-md hover:bg-white/70 dark:hover:bg-card/70 transition-all shadow-sm group"
         >
           <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
         </Button>
-        <div className="flex items-center gap-2 bg-white/50 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm">
+        <div className="flex items-center gap-2 bg-white/50 dark:bg-card/50 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm">
           <Globe className="h-4 w-4 text-secondary" />
           <span className="text-[10px] font-black uppercase tracking-wider">{country?.name || 'MedWallet'}</span>
         </div>
@@ -354,9 +354,9 @@ export default function Auth() {
           {/* Auth Card com Vidro Reforçado */}
           <motion.div
             layout
-            className="glass-card p-1 border-white/40 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]"
+            className="glass-card p-1 border-white/40 dark:border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]"
           >
-            <div className="bg-white/40 backdrop-blur-xl rounded-[calc(var(--radius)-4px)] p-8 relative overflow-hidden">
+            <div className="bg-white/40 dark:bg-card/40 backdrop-blur-xl rounded-[calc(var(--radius)-4px)] p-8 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] animate-shimmer" />
 
               <Tabs value={tab} onValueChange={(v) => setTab(v as 'login' | 'register')} className="w-full">
