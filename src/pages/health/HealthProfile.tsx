@@ -133,7 +133,7 @@ export default function HealthProfile() {
           <div><Label>Telefone</Label><Input value={form.emergency_contact_phone} onChange={e => setForm({...form, emergency_contact_phone: e.target.value})} /></div>
         </div>
       </div>
-      <div className="fixed bottom-0 inset-x-0 p-4 bg-background border-t">
+      <div className="fixed bottom-16 md:bottom-4 inset-x-0 p-4 bg-background border-t z-30">
         <Button className="w-full" size="lg" onClick={save} disabled={saving}>
           {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Guardar
         </Button>

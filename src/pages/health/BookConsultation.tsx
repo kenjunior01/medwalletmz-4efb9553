@@ -181,7 +181,7 @@ export default function BookConsultation() {
         </Card>
       </div>
 
-      <div className="fixed bottom-0 inset-x-0 p-4 bg-background border-t">
+      <div className="fixed bottom-16 md:bottom-4 inset-x-0 p-4 bg-background border-t z-30">
         <Button className="w-full" size="lg" disabled={!selected || saving || lowBalance} onClick={handleBook}>
           {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
           {lowBalance ? 'Depositar saldo' : `Confirmar e pagar (${finalAmount.toFixed(2)} ${currency})`}
