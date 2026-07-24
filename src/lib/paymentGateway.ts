@@ -338,7 +338,7 @@ class WalletGateway implements PaymentGateway {
 // ─────────────────────────────────────────────────────────────────
 
 const GATEWAYS: PaymentGateway[] = [
-  new M-PesaGateway(),
+  new MPesaGateway(),
   new OrangeMoneyGateway(),
   new MTNMoMoGateway(),
   new TelebirrGateway(),
