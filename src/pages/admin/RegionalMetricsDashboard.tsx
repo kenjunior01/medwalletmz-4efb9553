@@ -5,7 +5,7 @@ import {
   Stethoscope, Activity, BarChart3, Eye, Download, Filter, ArrowUpRight,
   ArrowDownRight, Target, Zap, Clock
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { REGIONS, getCountriesByRegion, useCountry } from "@/contexts/CountryContext";
 import type { Country } from "@/contexts/CountryContext";
@@ -177,7 +177,7 @@ export default function RegionalMetricsDashboard() {
         <MetricCard
           icon={<MapPin className="h-5 w-5" />} label="Países"
           value={globalMetrics.activeCountries} color="text-emerald-500" bg="bg-emerald-500/10"
-          trend={"+3" trendUp={true}
+          trend={"+3"} trendUp={true}
         />
         <MetricCard
           icon={<Users className="h-5 w-5" />} label="Utilizadores"
