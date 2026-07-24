@@ -24,10 +24,12 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        "hidden md:flex sticky top-0 self-start h-screen border-r border-border bg-background/95 backdrop-blur flex-col overflow-y-auto",
+        "hidden md:flex sticky top-0 self-start h-screen border-r border-border bg-background/95 backdrop-blur flex-col overflow-y-auto relative",
         compact ? "w-16" : "w-60"
       )}
     >
+      {/* Gradient accent bar at top */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
       <div className={cn("px-3 py-4 border-b border-border", compact && "px-2")}>
         <NavLink to="/" className="flex items-center gap-2">
           <img src="/icon-512.png" alt="MedWallet" className="h-8 w-8 rounded-lg" />
@@ -55,9 +57,9 @@ export function AppSidebar() {
                       to={path}
                       title={compact ? translatedLabel : undefined}
                       className={cn(
-                        "flex items-center gap-3 mx-2 px-2 py-2 rounded-lg text-sm transition-colors",
+                        "flex items-center gap-3 mx-2 px-2 py-2 rounded-lg text-sm transition-all",
                         active
-                          ? "bg-primary/10 text-primary font-semibold"
+                          ? "bg-primary/10 text-primary font-semibold border-l-2 border-primary"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground",
                         compact && "justify-center"
                       )}
