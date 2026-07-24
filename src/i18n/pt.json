@@ -430,5 +430,97 @@
     "month": "mes",
     "year": "ano",
     "subscribe_btn": "Subscrever"
+  },
+  "bottomnav": {
+    "hub_title": "MedWallet Hub",
+    "current_location": "Localização Atual",
+    "change": "Alterar",
+    "my_institutions": "As Minhas Instituições",
+    "active": "Activo",
+    "open_dashboard": "Painel",
+    "add_institution": "Adicionar",
+    "add_institution_desc": "Mais papéis profissionais",
+    "join_professional": "Entrar como Profissional",
+    "join_professional_desc": "Registe a sua clínica, farmácia, laboratório ou comece como médico ou condutor",
+    "explore_roles": "Explorar papéis",
+    "emergency": "Emergência",
+    "emergency_desc": "Triagem imediata com IA"
+  },
+  "profilehub": {
+    "overview": "Geral",
+    "institutions": "Instituições",
+    "settings": "Definições",
+    "account": "Conta",
+    "active_roles": "Papéis Activos",
+    "verified": "Verificado",
+    "open": "Abrir",
+    "available_roles": "Papéis Disponíveis",
+    "language_region": "Idioma & Região",
+    "notifications": "Notificações",
+    "notifications_desc": "Gerir alertas e preferências",
+    "notifications_soon": "Em breve!",
+    "theme": "Tema",
+    "theme_desc": "Claro, escuro ou automático",
+    "theme_soon": "Em breve!",
+    "change_password": "Alterar Palavra-passe",
+    "change_password_desc": "Actualizar a sua senha de acesso",
+    "password_soon": "Em breve!",
+    "payment_settings": "Pagamentos",
+    "payment_settings_desc": "M-Pesa, cartão e métodos de pagamento",
+    "addresses": "Endereços",
+    "addresses_desc": "Gerir moradas de entrega e cobrança",
+    "privacy": "Privacidade & Segurança",
+    "privacy_desc": "Dados, permissões e termos de uso"
+  },
+  "sidebar": {
+    "my_institutions": "Instituições"
+  },
+  "changePassword": {
+    "errors": {
+      "currentRequired": "A senha actual é obrigatória",
+      "minLength": "A nova senha deve ter no mínimo 6 caracteres",
+      "mismatch": "As senhas não coincidem",
+      "confirmRequired": "Confirme a nova senha",
+      "fixErrors": "Corrija os erros antes de continuar",
+      "invalidSession": "Sessão inválida. Faça login novamente.",
+      "wrongPassword": "Senha actual incorreta",
+      "generic": "Erro ao alterar senha. Tente novamente."
+    },
+    "strength": {
+      "weak": "Fraca",
+      "medium": "Média",
+      "strong": "Forte"
+    },
+    "info": {
+      "title": "Proteja sua conta",
+      "description": "Use uma senha forte com letras, números e símbolos"
+    },
+    "current": "Senha actual",
+    "new": "Nova senha",
+    "confirm": "Confirmar nova senha",
+    "match": "As senhas coincidem",
+    "submitting": "A alterar senha...",
+    "submit": "Alterar Senha",
+    "success": "Senha alterada com sucesso!",
+    "tips": {
+      "title": "Dicas de segurança",
+      "tip1": "Use pelo menos 6 caracteres com letras e números",
+      "tip2": "Não reutilize senhas de outros serviços",
+      "tip3": "Evite informações pessoais como datas ou nomes"
+    }
+  },
+  "rail": {
+    "join_title": "Entra na MedWallet",
+    "join_desc": "Carteira local, médicos verificados e farmácia 24h num só sítio.",
+    "join_cta": "Começar",
+    "wallet_label": "Carteira",
+    "wallet_discount": "Desconto auto em todas as compras",
+    "quick_access": "Acesso rápido",
+    "my_consultations": "Minhas consultas",
+    "meddy_consult": "Meddy Consulta",
+    "invite_friends": "Convidar amigos",
+    "invite_title": "Convida amigos",
+    "invite_desc": "Ganha saldo local e Pulse por cada amigo que entra.",
+    "invite_cta": "Ver meu link"
   }
 }

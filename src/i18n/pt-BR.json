@@ -386,22 +386,22 @@
   "manager": {
     "welcome_title": "Painel Regional",
     "panel_label": "Gestor Regional",
-    "isolation_notice": "Acesso restrito aos dados da sua região. Não pode ver dados de outras regiões.",
+    "isolation_notice": "Acesso restrito aos dados da sua região. Você não pode ver dados de outras regiões.",
     "isolated_session": "Sessão isolada por região",
     "region_isolated": "Dados 100% isolados por região",
     "active_in_region": "Ativos na região",
     "total_orders": "Total de pedidos",
-    "registered_pharmacies": "Farmácias registadas",
+    "registered_pharmacies": "Farmácias registradas",
     "verified_doctors": "Médicos verificados",
-    "registered_clinics": "Clínicas registadas",
+    "registered_clinics": "Clínicas registradas",
     "active_drivers": "Entregadores ativos",
-    "recent_registrations": "Registos Recentes na Região",
+    "recent_registrations": "Registros Recentes na Região",
     "no_recent_activity": "Sem atividade recente na sua região.",
-    "users_title": "Gestão de Utilizadores da Região",
-    "users_subtitle": "Apenas utilizadores registados na sua região",
-    "total_users": "Total de utilizadores",
+    "users_title": "Gestão de Usuários da Região",
+    "users_subtitle": "Apenas usuários registrados na sua região",
+    "total_users": "Total de usuários",
     "search_users": "Pesquisar por nome ou telefone...",
-    "no_users_found": "Nenhum utilizador encontrado.",
+    "no_users_found": "Nenhum usuário encontrado.",
     "prev": "Anterior",
     "next": "Próximo"
   },
@@ -430,5 +430,97 @@
     "month": "mes",
     "year": "ano",
     "subscribe_btn": "Assinar"
+  },
+  "bottomnav": {
+    "hub_title": "MedWallet Hub",
+    "current_location": "Localização Atual",
+    "change": "Alterar",
+    "my_institutions": "Minhas Instituições",
+    "active": "Ativo",
+    "open_dashboard": "Painel",
+    "add_institution": "Adicionar",
+    "add_institution_desc": "Mais papéis profissionais",
+    "join_professional": "Entrar como Profissional",
+    "join_professional_desc": "Registre sua clínica, farmácia, laboratório ou comece como médico ou motorista",
+    "explore_roles": "Explorar papéis",
+    "emergency": "Emergência",
+    "emergency_desc": "Triagem imediata com IA"
+  },
+  "profilehub": {
+    "overview": "Geral",
+    "institutions": "Instituições",
+    "settings": "Configurações",
+    "account": "Conta",
+    "active_roles": "Papéis Ativos",
+    "verified": "Verificado",
+    "open": "Abrir",
+    "available_roles": "Papéis Disponíveis",
+    "language_region": "Idioma & Região",
+    "notifications": "Notificações",
+    "notifications_desc": "Gerenciar alertas e preferências",
+    "notifications_soon": "Em breve!",
+    "theme": "Tema",
+    "theme_desc": "Claro, escuro ou automático",
+    "theme_soon": "Em breve!",
+    "change_password": "Alterar Senha",
+    "change_password_desc": "Atualizar sua senha de acesso",
+    "password_soon": "Em breve!",
+    "payment_settings": "Pagamentos",
+    "payment_settings_desc": "M-Pesa, cartão e métodos de pagamento",
+    "addresses": "Endereços",
+    "addresses_desc": "Gerenciar endereços de entrega e cobrança",
+    "privacy": "Privacidade & Segurança",
+    "privacy_desc": "Dados, permissões e termos de uso"
+  },
+  "sidebar": {
+    "my_institutions": "Instituições"
+  },
+  "changePassword": {
+    "errors": {
+      "currentRequired": "A senha atual é obrigatória",
+      "minLength": "A nova senha deve ter no mínimo 6 caracteres",
+      "mismatch": "As senhas não coincidem",
+      "confirmRequired": "Confirme a nova senha",
+      "fixErrors": "Corrija os erros antes de continuar",
+      "invalidSession": "Sessão inválida. Faça login novamente.",
+      "wrongPassword": "Senha atual incorreta",
+      "generic": "Erro ao alterar senha. Tente novamente."
+    },
+    "strength": {
+      "weak": "Fraca",
+      "medium": "Média",
+      "strong": "Forte"
+    },
+    "info": {
+      "title": "Proteja sua conta",
+      "description": "Use uma senha forte com letras, números e símbolos"
+    },
+    "current": "Senha atual",
+    "new": "Nova senha",
+    "confirm": "Confirmar nova senha",
+    "match": "As senhas coincidem",
+    "submitting": "Alterando senha...",
+    "submit": "Alterar Senha",
+    "success": "Senha alterada com sucesso!",
+    "tips": {
+      "title": "Dicas de segurança",
+      "tip1": "Use pelo menos 6 caracteres com letras e números",
+      "tip2": "Não reutilize senhas de outros serviços",
+      "tip3": "Evite informações pessoais como datas ou nomes"
+    }
+  },
+  "rail": {
+    "join_title": "Entre na MedWallet",
+    "join_desc": "Carteira local, médicos verificados e farmácia 24h em um só lugar.",
+    "join_cta": "Começar",
+    "wallet_label": "Carteira",
+    "wallet_discount": "Desconto automático em todas as compras",
+    "quick_access": "Acesso rápido",
+    "my_consultations": "Minhas consultas",
+    "meddy_consult": "Meddy Consulta",
+    "invite_friends": "Convidar amigos",
+    "invite_title": "Convide amigos",
+    "invite_desc": "Ganhe saldo local e Pulse por cada amigo que entrar.",
+    "invite_cta": "Ver meu link"
   }
 }

@@ -384,26 +384,26 @@
     "understood": "Entendido"
   },
   "manager": {
-    "welcome_title": "Painel Regional",
+    "welcome_title": "Panel Regional",
     "panel_label": "Gestor Regional",
-    "isolation_notice": "Acesso restrito aos dados da sua região. Não pode ver dados de outras regiões.",
-    "isolated_session": "Sessão isolada por região",
-    "region_isolated": "Dados 100% isolados por região",
-    "active_in_region": "Ativos na região",
+    "isolation_notice": "Acceso restringido a los datos de su región. No puede ver datos de otras regiones.",
+    "isolated_session": "Sesión aislada por región",
+    "region_isolated": "Datos 100% aislados por región",
+    "active_in_region": "Activos en la región",
     "total_orders": "Total de pedidos",
-    "registered_pharmacies": "Farmácias registadas",
+    "registered_pharmacies": "Farmacias registradas",
     "verified_doctors": "Médicos verificados",
-    "registered_clinics": "Clínicas registadas",
-    "active_drivers": "Entregadores ativos",
-    "recent_registrations": "Registos Recentes na Região",
-    "no_recent_activity": "Sem atividade recente na sua região.",
-    "users_title": "Gestão de Utilizadores da Região",
-    "users_subtitle": "Apenas utilizadores registados na sua região",
-    "total_users": "Total de utilizadores",
-    "search_users": "Pesquisar por nome ou telefone...",
-    "no_users_found": "Nenhum utilizador encontrado.",
+    "registered_clinics": "Clínicas registradas",
+    "active_drivers": "Repartidores activos",
+    "recent_registrations": "Registros Recientes en la Región",
+    "no_recent_activity": "Sin actividad reciente en su región.",
+    "users_title": "Gestión de Usuarios de la Región",
+    "users_subtitle": "Solo usuarios registrados en su región",
+    "total_users": "Total de usuarios",
+    "search_users": "Buscar por nombre o teléfono...",
+    "no_users_found": "Ningún usuario encontrado.",
     "prev": "Anterior",
-    "next": "Próximo"
+    "next": "Siguiente"
   },
   "ranking": {
     "title": "Ranking",
@@ -430,5 +430,97 @@
     "month": "mes",
     "year": "ano",
     "subscribe_btn": "Suscribirse"
+  },
+  "bottomnav": {
+    "hub_title": "MedWallet Hub",
+    "current_location": "Ubicación Actual",
+    "change": "Cambiar",
+    "my_institutions": "Mis Instituciones",
+    "active": "Activo",
+    "open_dashboard": "Panel",
+    "add_institution": "Agregar",
+    "add_institution_desc": "Más roles profesionales",
+    "join_professional": "Entrar como Profesional",
+    "join_professional_desc": "Registra tu clínica, farmacia, laboratorio o comienza como médico o conductor",
+    "explore_roles": "Explorar roles",
+    "emergency": "Emergencia",
+    "emergency_desc": "Triaje inmediato con IA"
+  },
+  "profilehub": {
+    "overview": "General",
+    "institutions": "Instituciones",
+    "settings": "Configuración",
+    "account": "Cuenta",
+    "active_roles": "Roles Activos",
+    "verified": "Verificado",
+    "open": "Abrir",
+    "available_roles": "Roles Disponibles",
+    "language_region": "Idioma y Región",
+    "notifications": "Notificaciones",
+    "notifications_desc": "Gestionar alertas y preferencias",
+    "notifications_soon": "¡Próximamente!",
+    "theme": "Tema",
+    "theme_desc": "Claro, oscuro o automático",
+    "theme_soon": "¡Próximamente!",
+    "change_password": "Cambiar Contraseña",
+    "change_password_desc": "Actualizar tu contraseña de acceso",
+    "password_soon": "¡Próximamente!",
+    "payment_settings": "Pagos",
+    "payment_settings_desc": "M-Pesa, tarjeta y métodos de pago",
+    "addresses": "Direcciones",
+    "addresses_desc": "Gestionar direcciones de entrega y facturación",
+    "privacy": "Privacidad y Seguridad",
+    "privacy_desc": "Datos, permisos y términos de uso"
+  },
+  "sidebar": {
+    "my_institutions": "Instituciones"
+  },
+  "changePassword": {
+    "errors": {
+      "currentRequired": "La contraseña actual es obligatoria",
+      "minLength": "La nueva contraseña debe tener al menos 6 caracteres",
+      "mismatch": "Las contraseñas no coinciden",
+      "confirmRequired": "Confirma la nueva contraseña",
+      "fixErrors": "Corrige los errores antes de continuar",
+      "invalidSession": "Sesión inválida. Inicia sesión de nuevo.",
+      "wrongPassword": "Contraseña actual incorrecta",
+      "generic": "Error al cambiar la contraseña. Inténtalo de nuevo."
+    },
+    "strength": {
+      "weak": "Débil",
+      "medium": "Media",
+      "strong": "Fuerte"
+    },
+    "info": {
+      "title": "Protege tu cuenta",
+      "description": "Usa una contraseña fuerte con letras, números y símbolos"
+    },
+    "current": "Contraseña actual",
+    "new": "Nueva contraseña",
+    "confirm": "Confirmar nueva contraseña",
+    "match": "Las contraseñas coinciden",
+    "submitting": "Cambiando contraseña...",
+    "submit": "Cambiar Contraseña",
+    "success": "¡Contraseña cambiada con éxito!",
+    "tips": {
+      "title": "Consejos de seguridad",
+      "tip1": "Usa al menos 6 caracteres con letras y números",
+      "tip2": "No reutilices contraseñas de otros servicios",
+      "tip3": "Evita información personal como fechas o nombres"
+    }
+  },
+  "rail": {
+    "join_title": "Únete a MedWallet",
+    "join_desc": "Cartera local, médicos verificados y farmacia 24h en un solo lugar.",
+    "join_cta": "Comenzar",
+    "wallet_label": "Cartera",
+    "wallet_discount": "Descuento automático en todas las compras",
+    "quick_access": "Acceso rápido",
+    "my_consultations": "Mis consultas",
+    "meddy_consult": "Meddy Consulta",
+    "invite_friends": "Invitar amigos",
+    "invite_title": "Invita amigos",
+    "invite_desc": "Gana saldo local y Pulse por cada amigo que se une.",
+    "invite_cta": "Ver mi enlace"
   }
 }

@@ -430,5 +430,97 @@
     "month": "month",
     "year": "year",
     "subscribe_btn": "Subscribe"
+  },
+  "bottomnav": {
+    "hub_title": "MedWallet Hub",
+    "current_location": "Current Location",
+    "change": "Change",
+    "my_institutions": "My Institutions",
+    "active": "Active",
+    "open_dashboard": "Dashboard",
+    "add_institution": "Add",
+    "add_institution_desc": "More professional roles",
+    "join_professional": "Join as Professional",
+    "join_professional_desc": "Register your clinic, pharmacy, laboratory or start as a doctor or driver",
+    "explore_roles": "Explore roles",
+    "emergency": "Emergency",
+    "emergency_desc": "Immediate AI triage"
+  },
+  "profilehub": {
+    "overview": "Overview",
+    "institutions": "Institutions",
+    "settings": "Settings",
+    "account": "Account",
+    "active_roles": "Active Roles",
+    "verified": "Verified",
+    "open": "Open",
+    "available_roles": "Available Roles",
+    "language_region": "Language & Region",
+    "notifications": "Notifications",
+    "notifications_desc": "Manage alerts and preferences",
+    "notifications_soon": "Coming soon!",
+    "theme": "Theme",
+    "theme_desc": "Light, dark or automatic",
+    "theme_soon": "Coming soon!",
+    "change_password": "Change Password",
+    "change_password_desc": "Update your access password",
+    "password_soon": "Coming soon!",
+    "payment_settings": "Payments",
+    "payment_settings_desc": "M-Pesa, card and payment methods",
+    "addresses": "Addresses",
+    "addresses_desc": "Manage delivery and billing addresses",
+    "privacy": "Privacy & Security",
+    "privacy_desc": "Data, permissions and terms of use"
+  },
+  "sidebar": {
+    "my_institutions": "Institutions"
+  },
+  "changePassword": {
+    "errors": {
+      "currentRequired": "Current password is required",
+      "minLength": "New password must be at least 6 characters",
+      "mismatch": "Passwords do not match",
+      "confirmRequired": "Confirm the new password",
+      "fixErrors": "Fix the errors before continuing",
+      "invalidSession": "Invalid session. Please log in again.",
+      "wrongPassword": "Current password is incorrect",
+      "generic": "Error changing password. Please try again."
+    },
+    "strength": {
+      "weak": "Weak",
+      "medium": "Medium",
+      "strong": "Strong"
+    },
+    "info": {
+      "title": "Protect your account",
+      "description": "Use a strong password with letters, numbers and symbols"
+    },
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "Confirm new password",
+    "match": "Passwords match",
+    "submitting": "Changing password...",
+    "submit": "Change Password",
+    "success": "Password changed successfully!",
+    "tips": {
+      "title": "Security tips",
+      "tip1": "Use at least 6 characters with letters and numbers",
+      "tip2": "Do not reuse passwords from other services",
+      "tip3": "Avoid personal information like dates or names"
+    }
+  },
+  "rail": {
+    "join_title": "Join MedWallet",
+    "join_desc": "Local wallet, verified doctors and 24h pharmacy in one place.",
+    "join_cta": "Get started",
+    "wallet_label": "Wallet",
+    "wallet_discount": "Auto discount on all purchases",
+    "quick_access": "Quick access",
+    "my_consultations": "My consultations",
+    "meddy_consult": "Meddy Consult",
+    "invite_friends": "Invite friends",
+    "invite_title": "Invite friends",
+    "invite_desc": "Earn local balance and Pulse for each friend who joins.",
+    "invite_cta": "View my link"
   }
 }
