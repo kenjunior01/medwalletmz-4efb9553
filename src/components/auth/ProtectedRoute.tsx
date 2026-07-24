@@ -6,9 +6,10 @@ import { Loader2, Shield, ArrowLeft } from 'lucide-react';
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];
+  children?: React.ReactNode;
 }
 
-export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
+export default function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps) {
   const { user, hasRole, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,5 +51,5 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
     );
   }
 
-  return <Outlet />;
+  return <>{children ?? <Outlet />}</>;
 }
