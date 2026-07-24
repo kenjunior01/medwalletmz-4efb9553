@@ -438,3 +438,248 @@ html.data-saver * { animation: none !important; transition: none !important; }
 }
 .hash-pulse { animation: hash-pulse 2s ease-in-out infinite; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   REGIONAL IDENTITY SYSTEM
+   Each country gets unique CSS attributes via data-country on <html>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Default fallback — Mozambique green theme */
+:root {
+  --region-primary: #009739;
+  --region-secondary: #FFD100;
+  --region-accent: #D40000;
+  --region-gradient-hero: linear-gradient(135deg, #009739 0%, #FFD100 50%, #D40000 100%);
+  --region-gradient-card: linear-gradient(145deg, #F1F8E9, #FFFFFF);
+  --region-gradient-accent: linear-gradient(135deg, #FFD100, #FFE44D);
+  --region-logo-glow: #00973940;
+}
+
+/* ── Angola: warm red/black with golden accents ────────────────────── */
+[data-country="AO"] {
+  --region-primary: #C62828;
+  --region-secondary: #FFD600;
+  --region-accent: #212121;
+  --region-gradient-hero: linear-gradient(135deg, #C62828 0%, #212121 50%, #FFD600 100%);
+  --region-gradient-card: linear-gradient(145deg, #FFEBEE, #FFFFFF);
+}
+
+/* ── Brazil: tropical green/yellow/blue ────────────────────────────── */
+[data-country="BR"] {
+  --region-primary: #009C3B;
+  --region-secondary: #FFDF00;
+  --region-accent: #002776;
+  --region-gradient-hero: linear-gradient(135deg, #009C3B 0%, #FFDF00 45%, #002776 100%);
+  --region-gradient-card: linear-gradient(145deg, #E8F5E9, #FFFFFF);
+}
+
+/* ── South Africa: Rainbow Nation multi-color ──────────────────────── */
+[data-country="ZA"] {
+  --region-primary: #007749;
+  --region-secondary: #FFB81C;
+  --region-accent: #002395;
+  --region-gradient-hero: linear-gradient(135deg, #007749 0%, #FFB81C 30%, #002395 60%, #DE3831 100%);
+  --region-gradient-card: linear-gradient(145deg, #F0F7F0, #FFFFFF);
+}
+
+/* ── Portugal: classic green/red with golden ───────────────────────── */
+[data-country="PT"] {
+  --region-primary: #006600;
+  --region-secondary: #FF0000;
+  --region-accent: #FFCC00;
+  --region-gradient-hero: linear-gradient(135deg, #006600 0%, #FF0000 60%, #FFCC00 100%);
+  --region-gradient-card: linear-gradient(145deg, #F1F8E9, #FFFFFF);
+}
+
+/* ── India: saffron/white/green tricolor ───────────────────────────── */
+[data-country="IN"] {
+  --region-primary: #FF9933;
+  --region-secondary: #138808;
+  --region-accent: #000080;
+  --region-gradient-hero: linear-gradient(135deg, #FF9933 0%, #FFFFFF 45%, #138808 100%);
+  --region-gradient-card: linear-gradient(145deg, #FFF8E1, #FFFFFF);
+}
+
+/* ── Kenya: bold red/black/green with white ──────────────────────────── */
+[data-country="KE"] {
+  --region-primary: #BB0000;
+  --region-secondary: #006600;
+  --region-accent: #FFFFFF;
+  --region-gradient-hero: linear-gradient(135deg, #1A1A1A 0%, #BB0000 35%, #006600 70%, #FFFFFF 100%);
+  --region-gradient-card: linear-gradient(145deg, #FFF3F3, #FFFFFF);
+}
+
+/* ── Tanzania: green/blue/gold ──────────────────────────────────────── */
+[data-country="TZ"] {
+  --region-primary: #00A651;
+  --region-secondary: #1A3C8F;
+  --region-accent: #FFD700;
+  --region-gradient-hero: linear-gradient(135deg, #00A651 0%, #1A3C8F 50%, #FFD700 100%);
+  --region-gradient-card: linear-gradient(145deg, #E8F5E9, #FFFFFF);
+}
+
+/* ── Ethiopia: green/yellow/red with blue star ──────────────────────── */
+[data-country="ET"] {
+  --region-primary: #078930;
+  --region-secondary: #FCDD09;
+  --region-accent: #DA121A;
+  --region-gradient-hero: linear-gradient(135deg, #078930 0%, #FCDD09 45%, #DA121A 100%);
+  --region-gradient-card: linear-gradient(145deg, #F1F8E9, #FFFFFF);
+}
+
+/* ── Nigeria: clean green/white ────────────────────────────────────── */
+[data-country="NG"] {
+  --region-primary: #008751;
+  --region-secondary: #FFFFFF;
+  --region-accent: #008751;
+  --region-gradient-hero: linear-gradient(135deg, #008751 0%, #FFFFFF 50%, #008751 100%);
+  --region-gradient-card: linear-gradient(145deg, #E8F5EE, #FFFFFF);
+}
+
+/* ── Ghana: red/gold/green ──────────────────────────────────────────── */
+[data-country="GH"] {
+  --region-primary: #006B3F;
+  --region-secondary: #FCD116;
+  --region-accent: #CE1126;
+  --region-gradient-hero: linear-gradient(135deg, #CE1126 0%, #FCD116 35%, #006B3F 100%);
+  --region-gradient-card: linear-gradient(145deg, #F1F8E9, #FFFFFF);
+}
+
+/* ── Egypt: red/white/gold ──────────────────────────────────────────── */
+[data-country="EG"] {
+  --region-primary: #C8102E;
+  --region-secondary: #FFFFFF;
+  --region-accent: #C09300;
+  --region-gradient-hero: linear-gradient(135deg, #C8102E 0%, #FFFFFF 40%, #C09300 100%);
+  --region-gradient-card: linear-gradient(145deg, #FFF8E1, #FFFFFF);
+}
+
+/* ── Morocco: bold red/green ────────────────────────────────────────── */
+[data-country="MA"] {
+  --region-primary: #C1272D;
+  --region-secondary: #006233;
+  --region-accent: #FFB74D;
+  --region-gradient-hero: linear-gradient(135deg, #C1272D 0%, #006233 100%);
+  --region-gradient-card: linear-gradient(145deg, #FFF3F0, #FFFFFF);
+}
+
+/* ── Rwanda: blue/gold/green ─────────────────────────────────────────── */
+[data-country="RW"] {
+  --region-primary: #0072C6;
+  --region-secondary: #FCD116;
+  --region-accent: #00A651;
+  --region-gradient-hero: linear-gradient(135deg, #0072C6 0%, #FCD116 50%, #00A651 100%);
+  --region-gradient-card: linear-gradient(145deg, #E3F2FD, #FFFFFF);
+}
+
+/* ── Uganda: black/yellow/red ───────────────────────────────────────── */
+[data-country="UG"] {
+  --region-primary: #212121;
+  --region-secondary: #FFD100;
+  --region-accent: #D40000;
+  --region-gradient-hero: linear-gradient(135deg, #1A1A1A 0%, #FFD100 50%, #D40000 100%);
+  --region-gradient-card: linear-gradient(145deg, #F5F5F0, #FFFFFF);
+}
+
+/* ── Cabo Verde: ocean blue/yellow/red ─────────────────────────────── */
+[data-country="CV"] {
+  --region-primary: #003893;
+  --region-secondary: #FEDF00;
+  --region-accent: #CF142B;
+  --region-gradient-hero: linear-gradient(135deg, #003893 0%, #FEDF00 60%, #CF142B 100%);
+  --region-gradient-card: linear-gradient(145deg, #E8EAF6, #FFFFFF);
+}
+
+/* ── Senegal: green/yellow/red ──────────────────────────────────────── */
+[data-country="SN"] {
+  --region-primary: #00853F;
+  --region-secondary: #FCD116;
+  --region-accent: #E31B23;
+  --region-gradient-hero: linear-gradient(135deg, #00853F 0%, #FCD116 50%, #E31B23 100%);
+  --region-gradient-card: linear-gradient(145deg, #F1F8E9, #FFFFFF);
+}
+
+/* ── Côte d'Ivoire: orange/white/green ─────────────────────────────── */
+[data-country="CI"] {
+  --region-primary: #F77F00;
+  --region-secondary: #FFFFFF;
+  --region-accent: #009E60;
+  --region-gradient-hero: linear-gradient(135deg, #F77F00 0%, #FFFFFF 50%, #009E60 100%);
+  --region-gradient-card: linear-gradient(145deg, #FFF8E1, #FFFFFF);
+}
+
+/* ── Cameroon: green/yellow/red ─────────────────────────────────────── */
+[data-country="CM"] {
+  --region-primary: #007A5E;
+  --region-secondary: #FFD100;
+  --region-accent: #D40000;
+  --region-gradient-hero: linear-gradient(135deg, #007A5E 0%, #FFD100 40%, #D40000 100%);
+  --region-gradient-card: linear-gradient(145deg, #F1F8E9, #FFFFFF);
+}
+
+/* ── DR Congo: blue/gold/red ────────────────────────────────────────── */
+[data-country="CD"] {
+  --region-primary: #007FFF;
+  --region-secondary: #F7D618;
+  --region-accent: #CE1027;
+  --region-gradient-hero: linear-gradient(135deg, #007FFF 0%, #CE1027 40%, #F7D618 100%);
+  --region-gradient-card: linear-gradient(145deg, #E8EAF6, #FFFFFF);
+}
+
+/* ── São Tomé: green/yellow/red ─────────────────────────────────────── */
+[data-country="ST"] {
+  --region-primary: #009739;
+  --region-secondary: #FFD100;
+  --region-accent: #D40000;
+  --region-gradient-hero: linear-gradient(135deg, #009739 0%, #FFD100 50%, #D40000 100%);
+  --region-gradient-card: linear-gradient(145deg, #F1F8E9, #FFFFFF);
+}
+
+/* ── Guiné-Bissau: dark green/yellow/red ───────────────────────────── */
+[data-country="GW"] {
+  --region-primary: #006233;
+  --region-secondary: #FCD116;
+  --region-accent: #D40000;
+  --region-gradient-hero: linear-gradient(135deg, #006233 0%, #FCD116 50%, #D40000 100%);
+  --region-gradient-card: linear-gradient(145deg, #F1F8E9, #FFFFFF);
+}
+
+/* ── Region-specific decorative background patterns ───────────────────── */
+[data-country="ZA"] .gradient-ocean::before {
+  background-image: repeating-linear-gradient(
+    45deg, transparent, transparent 10px, rgba(255,184,28,0.05) 10px, rgba(255,184,28,0.05) 20px
+  );
+}
+
+[data-country="MA"] .gradient-ocean::before,
+[data-country="EG"] .gradient-ocean::before {
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 15px, rgba(255,183,77,0.04) 15px, rgba(255,183,77,0.04) 16px
+  );
+}
+
+[data-country="TZ"] .gradient-ocean::before,
+[data-country="CV"] .gradient-ocean::before {
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 20px, rgba(0,58,143,0.03) 20px, rgba(0,58,143,0.03) 22px
+  );
+}
+
+[data-country="KE"] .gradient-ocean::before,
+[data-country="ET"] .gradient-ocean::before,
+[data-country="UG"] .gradient-ocean::before {
+  background-image: radial-gradient(circle at 20% 80%, rgba(0,102,0,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(187,0,0,0.04) 0%, transparent 50%);
+}
+
+[data-country="NG"] .gradient-ocean::before,
+[data-country="GH"] .gradient-ocean::before,
+[data-country="SN"] .gradient-ocean::before {
+  background-image: repeating-linear-gradient(
+    90deg, transparent, transparent 12px, rgba(0,135,81,0.04) 12px, rgba(0,135,81,0.04) 14px
+  );
+}
+
+/* Smooth transitions when switching regions */
+[data-country] * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+}

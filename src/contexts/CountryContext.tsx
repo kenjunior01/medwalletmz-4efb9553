@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { supabase } from '@/integrations/supabase/client';
 import { useLocation } from '@/contexts/LocationContext';
 import { hexToHslComponents } from '@/lib/colors';
+import { RegionThemeProvider } from '@/themes/RegionThemeProvider';
 
 // Translations store
 import pt from '@/i18n/pt.json';
@@ -110,6 +111,11 @@ const STATIC_COUNTRIES: Country[] = [
     id: 'AO', name: 'Angola', currency_code: 'AOA', currency_symbol: 'Kz', phone_code: '244',
     default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'hi', 'pt-BR'], timezone: 'Africa/Luanda',
     region: 'africa_south', region_label: 'África Austral (PALOP)',
+    branding_config: {
+      primary_color: '#C62828',   // Vermelho Angola
+      secondary_color: '#FFD600', // Amarelo/Estrela
+      accent_color: '#212121',    // Preto
+    },
     config: {
       cities: ["Luanda", "Benguela", "Huambo", "Lubango", "Cabinda", "Malanje", "Namibe"],
       phone_placeholder: "+244 9XX XXX XXX",
@@ -134,6 +140,11 @@ const STATIC_COUNTRIES: Country[] = [
     id: 'ZA', name: 'South Africa', currency_code: 'ZAR', currency_symbol: 'R', phone_code: '27',
     default_locale: 'en', supported_locales: ['en', 'af', 'pt', 'es', 'fr', 'hi', 'pt-BR'], timezone: 'Africa/Johannesburg',
     region: 'africa_south', region_label: 'África Austral',
+    branding_config: {
+      primary_color: '#007749',   // Green SA
+      secondary_color: '#FFB81C', // Gold
+      accent_color: '#002395',    // Blue
+    },
     config: {
       cities: ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth", "Bloemfontein"],
       phone_placeholder: "+27 XX XXX XXXX",
@@ -158,6 +169,11 @@ const STATIC_COUNTRIES: Country[] = [
     id: 'PT', name: 'Portugal', currency_code: 'EUR', currency_symbol: '€', phone_code: '351',
     default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'hi', 'pt-BR'], timezone: 'Europe/Lisbon',
     region: 'europe', region_label: 'Europa',
+    branding_config: {
+      primary_color: '#006600',   // Verde bandeira
+      secondary_color: '#FF0000', // Vermelho bandeira
+      accent_color: '#FFCC00',    // Dourado (esfera armilar)
+    },
     config: {
       cities: ["Lisboa", "Porto", "Braga", "Coimbra", "Setúbal", "Aveiro", "Faro"],
       phone_placeholder: "+351 9XX XXX XXX",
@@ -182,6 +198,11 @@ const STATIC_COUNTRIES: Country[] = [
     id: 'IN', name: 'India', currency_code: 'INR', currency_symbol: '₹', phone_code: '91',
     default_locale: 'hi', supported_locales: ['hi', 'en', 'pt', 'es', 'fr', 'af', 'pt-BR'], timezone: 'Asia/Kolkata',
     region: 'asia', region_label: 'Ásia',
+    branding_config: {
+      primary_color: '#FF9933',   // Açafrão
+      secondary_color: '#138808', // Verde
+      accent_color: '#000080',    // Azul Navy (chakra)
+    },
     config: {
       cities: ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata"],
       phone_placeholder: "+91 XXXXX-XXXXX",
@@ -584,6 +605,8 @@ export function CountryProvider({ children }: { children: ReactNode }) {
       if (primary_color) root.style.setProperty('--primary', hexToHslComponents(primary_color));
       if (secondary_color) root.style.setProperty('--secondary', hexToHslComponents(secondary_color));
       if (accent_color) root.style.setProperty('--accent', hexToHslComponents(accent_color));
+      // Set data-region attribute for CSS region-specific selectors
+      root.setAttribute('data-country', country.id);
     }
   }, [country]);
 
@@ -651,7 +674,9 @@ export function CountryProvider({ children }: { children: ReactNode }) {
     <CountryContext.Provider value={{
       country, allCountries, setCountryById, locale, setLocale, t, loading, reload: fetchCountries
     }}>
-      {children}
+      <RegionThemeProvider countryId={country?.id || 'MZ'}>
+        {children}
+      </RegionThemeProvider>
     </CountryContext.Provider>
   );
 }
