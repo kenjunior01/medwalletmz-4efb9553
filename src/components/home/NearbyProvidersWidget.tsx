@@ -183,7 +183,7 @@ export function NearbyProvidersWidget() {
           </h2>
           <p className="text-xs text-muted-foreground">
             {coordinates
-              ? `${t('home.nearby_radius', { km: radiusKm })} · ${t('home.nearby_sorted_by', { sortBy: t(`home.nearby_sort_${ranking}`) })} · ${city}`
+              ? `${t('home.nearby_radius', { km: String(radiusKm) })} · ${t('home.nearby_sorted_by', { sortBy: t(`home.nearby_sort_${ranking}`) })} · ${city}`
               : t('home.nearby_activate_location')}
           </p>
         </div>

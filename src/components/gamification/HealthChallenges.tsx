@@ -142,14 +142,14 @@ export function HealthChallenges({ className = '' }: { className?: string }) {
               {t('gamification.level')} 4
             </p>
             <p className="text-xs" style={{ color: theme.colors.textMuted }}>
-              {t('gamification.next_level', { points: 350 })}
+              {t('gamification.next_level', { points: '350' })}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
             <Flame className="w-4 h-4 text-orange-500" />
-            <span style={{ color: theme.colors.text }}>{t('gamification.streak_days', { days: 12 })}</span>
+            <span style={{ color: theme.colors.text }}>{t('gamification.streak_days', { days: '12' })}</span>
           </div>
           <div className="flex items-center gap-1">
             <Zap className="w-4 h-4" style={{ color: theme.colors.primary }} />

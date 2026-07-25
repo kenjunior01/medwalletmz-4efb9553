@@ -3,7 +3,19 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 
-type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager';
+type AppRole =
+  | 'customer'
+  | 'store_owner'
+  | 'driver'
+  | 'admin'
+  | 'doctor'
+  | 'clinic'
+  | 'hospital'
+  | 'lab'
+  | 'pharmacy'
+  | 'insurance'
+  | 'veterinary'
+  | 'country_manager';
 
 interface UserRole {
   role: AppRole;

@@ -90,7 +90,12 @@ export function InsuranceClaimForm({
 
   const onValid = async (values: ClaimFormValues) => {
     try {
-      await onSubmit(values);
+      await onSubmit({
+        policyId: values.policyId,
+        claimType: values.claimType,
+        amount: values.amount,
+        description: values.description,
+      });
       toast.success(t('microInsurance.claim.success'));
       setSubmitted(true);
       reset();

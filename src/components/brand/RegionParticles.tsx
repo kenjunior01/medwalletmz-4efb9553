@@ -6,11 +6,10 @@
  * Supports 10 patterns: fireflies, pollen, sand, snow, confetti, rainbow,
  * ocean, leaves, mist, stars.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Particles, { initParticlesEngine } from '@tsparticles/react';
-import { loadSlim } from '@tsparticles/slim';
+import { useCallback, useMemo } from 'react';
+import Particles from '@tsparticles/react';
 import type { ISourceOptions } from '@tsparticles/engine';
-import { getTheme, getProvinceTheme, useProvince } from '@/themes';
+import { getTheme, useProvince } from '@/themes';
 import { useCountry } from '@/contexts/CountryContext';
 import { useDataSaver } from '@/contexts/DataSaverContext';
 import type { ProvinceTheme } from '@/themes/provinces';
@@ -31,12 +30,13 @@ const prefersReducedMotion = () =>
 // These modify the base ISourceOptions to create distinct visual feels.
 
 function applyOceanPattern(base: ISourceOptions, _colors: string[], speed: number): ISourceOptions {
+  const particles = (base.particles ?? {}) as any;
   return {
     ...base,
     particles: {
-      ...base.particles!,
+      ...particles,
       move: {
-        ...base.particles!.move!,
+        ...(particles.move ?? {}),
         enable: true,
         speed: speed * 0.8,
         direction: 'bottom',
@@ -50,11 +50,11 @@ function applyOceanPattern(base: ISourceOptions, _colors: string[], speed: numbe
       } as any,
       // Wider, flatter particles for wave feel
       size: {
-        ...base.particles!.size!,
+        ...(particles.size ?? {}),
         value: { min: 2, max: 5 },
       },
       opacity: {
-        ...base.particles!.opacity!,
+        ...(particles.opacity ?? {}),
         value: { min: 0.1, max: 0.4 },
       },
     },
@@ -62,12 +62,13 @@ function applyOceanPattern(base: ISourceOptions, _colors: string[], speed: numbe
 }
 
 function applyLeavesPattern(base: ISourceOptions, _colors: string[], speed: number): ISourceOptions {
+  const particles = (base.particles ?? {}) as any;
   return {
     ...base,
     particles: {
-      ...base.particles!,
+      ...particles,
       move: {
-        ...base.particles!.move!,
+        ...(particles.move ?? {}),
         enable: true,
         speed: speed * 0.4,
         direction: 'bottom',
@@ -80,15 +81,15 @@ function applyLeavesPattern(base: ISourceOptions, _colors: string[], speed: numb
         gravity: { enable: true },
       } as any,
       shape: {
-        ...base.particles!.shape!,
+        ...(particles.shape ?? {}),
         type: 'circle',
       },
       size: {
-        ...base.particles!.size!,
+        ...(particles.size ?? {}),
         value: { min: 3, max: 7 },
       },
       opacity: {
-        ...base.particles!.opacity!,
+        ...(particles.opacity ?? {}),
         value: { min: 0.2, max: 0.6 },
         animation: {
           enable: true,
@@ -101,13 +102,14 @@ function applyLeavesPattern(base: ISourceOptions, _colors: string[], speed: numb
 }
 
 function applyMistPattern(base: ISourceOptions, _colors: string[], _speed: number): ISourceOptions {
+  const particles = (base.particles ?? {}) as any;
   return {
     ...base,
     fpsLimit: 20,
     particles: {
-      ...base.particles!,
+      ...particles,
       move: {
-        ...base.particles!.move!,
+        ...(particles.move ?? {}),
         enable: true,
         speed: 0.2,
         direction: 'none',
@@ -116,12 +118,12 @@ function applyMistPattern(base: ISourceOptions, _colors: string[], _speed: numbe
         outModes: { default: 'out' },
       },
       shape: {
-        ...base.particles!.shape!,
+        ...(particles.shape ?? {}),
         type: 'circle',
       },
       // Large, blurry particles for mist
       size: {
-        ...base.particles!.size!,
+        ...(particles.size ?? {}),
         value: { min: 30, max: 80 },
         animation: {
           enable: true,
@@ -130,7 +132,7 @@ function applyMistPattern(base: ISourceOptions, _colors: string[], _speed: numbe
         },
       },
       opacity: {
-        ...base.particles!.opacity!,
+        ...(particles.opacity ?? {}),
         value: { min: 0.01, max: 0.05 },
         animation: {
           enable: true,
@@ -143,21 +145,22 @@ function applyMistPattern(base: ISourceOptions, _colors: string[], _speed: numbe
 }
 
 function applyStarsPattern(base: ISourceOptions, _colors: string[], _speed: number): ISourceOptions {
+  const particles = (base.particles ?? {}) as any;
   return {
     ...base,
     fpsLimit: 24,
     particles: {
-      ...base.particles!,
+      ...particles,
       move: {
-        ...base.particles!.move!,
+        ...(particles.move ?? {}),
         enable: false, // Stationary
       },
       shape: {
-        ...base.particles!.shape!,
+        ...(particles.shape ?? {}),
         type: 'circle',
       },
       size: {
-        ...base.particles!.size!,
+        ...(particles.size ?? {}),
         value: { min: 1, max: 3 },
         animation: {
           enable: true,
@@ -166,7 +169,7 @@ function applyStarsPattern(base: ISourceOptions, _colors: string[], _speed: numb
         },
       },
       opacity: {
-        ...base.particles!.opacity!,
+        ...(particles.opacity ?? {}),
         value: { min: 0.1, max: 0.9 },
         animation: {
           enable: true,
@@ -207,19 +210,12 @@ export function RegionParticles({ className = '', density, provinceTheme }: Regi
   const { country } = useCountry();
   const { enabled: isDataSaver } = useDataSaver();
   const { province: contextProvince } = useProvince();
-  const [init, setInit] = useState(false);
 
   // Determine effective province theme: explicit prop > context
   const province = provinceTheme ?? contextProvince;
 
   // Skip particles in data saver mode or reduced motion
   if (isDataSaver || prefersReducedMotion()) return null;
-
-  useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-    }).then(() => setInit(true));
-  }, []);
 
   const particleConfig = useMemo((): ISourceOptions => {
     // Province takes precedence when available
@@ -343,8 +339,6 @@ export function RegionParticles({ className = '', density, provinceTheme }: Regi
 
     return base;
   }, [country, province, density]);
-
-  if (!init) return null;
 
   const id = province?.id ?? country?.id ?? 'MZ';
 

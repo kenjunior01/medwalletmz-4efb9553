@@ -3,7 +3,7 @@ export { PillTracker } from './PillTracker';
 export { EmergencySOS } from './EmergencySOS';
 export { FollowUpReminders } from './FollowUpReminders';
 export { PostConsultationReview } from './PostConsultationReview';
-export { DispatchRadar } from './DispatchRadar';
+export { default as DispatchRadar } from './DispatchRadar';
 export { MorningGreeting } from './MorningGreeting';
 export { PersonalizedForYou } from './PersonalizedForYou';
 export { HealthProfileOnboarding } from './HealthProfileOnboarding';
