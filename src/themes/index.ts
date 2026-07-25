@@ -48,16 +48,90 @@ export function getThemesByRegion(region: string): RegionTheme[] {
   return getAllThemes().filter(t => t.region === region);
 }
 
-/** Region metadata with emoji flags */
-export const REGION_META: Record<string, { label: string; flag: string; description: string }> = {
-  africa_south: { label: 'África Austral', flag: '🌍', description: 'Moçambique, Angola, South Africa' },
-  africa_east: { label: 'África Oriental', flag: '🌿', description: 'Kenya, Tanzania, Ethiopia, Rwanda' },
-  africa_west: { label: 'África Ocidental', flag: '🏖️', description: 'Nigeria, Ghana, Senegal, Guiné-Bissau' },
-  africa_north: { label: 'África do Norte', flag: '🏜️', description: 'Marrocos, Egypt' },
-  africa_central: { label: 'África Central', flag: '🌳', description: 'Cameroun, RD Congo, São Tomé' },
-  latam: { label: 'América Latina', flag: '🌎', description: 'Brasil' },
-  europe: { label: 'Europa', flag: '🏰', description: 'Portugal' },
-  asia: { label: 'Ásia', flag: '🌏', description: 'India' },
+/** Region metadata with cultural identity, symbols, and landmarks */
+export interface RegionMetaInfo {
+  label: string;
+  flag: string;
+  description: string;
+  symbol: string;
+  pattern: string;
+  landmarks: string[];
+  culturalElement: string;
+}
+
+export const REGION_META: Record<string, RegionMetaInfo> = {
+  africa_south: {
+    label: 'Africa Austral',
+    flag: '🌍',
+    description: 'Mocambique, Angola, South Africa, Portugal, Cabo Verde',
+    symbol: '🦁',
+    pattern: 'waves',
+    landmarks: ['Maputo', 'Luanda', 'Cape Town', 'Lisboa'],
+    culturalElement: 'Ubuntu - "Eu sou porque nos somos"',
+  },
+  africa_east: {
+    label: 'Africa Oriental',
+    flag: '🌿',
+    description: 'Kenya, Tanzania, Ethiopia, Uganda, Rwanda',
+    symbol: '🏞️',
+    pattern: 'mountains',
+    landmarks: ['Nairobi', 'Dar es Salaam', 'Addis Ababa', 'Kigali'],
+    culturalElement: 'Great Rift Valley - Berco da humanidade',
+  },
+  africa_west: {
+    label: 'Africa Ocidental',
+    flag: '🏖️',
+    description: 'Nigeria, Ghana, Senegal, Guine-Bissau, Costa Marfim',
+    symbol: '🥁',
+    pattern: 'geometric',
+    landmarks: ['Lagos', 'Accra', 'Dakar', 'Bissau'],
+    culturalElement: 'Ritmos etexteis Kente - Heranca cultural viva',
+  },
+  africa_north: {
+    label: 'Africa do Norte',
+    flag: '🏜️',
+    description: 'Marrocos, Egipto',
+    symbol: '🕌',
+    pattern: 'sand-dunes',
+    landmarks: ['Casablanca', 'Cairo'],
+    culturalElement: 'Padroes geometricos islamicos e arte berbere',
+  },
+  africa_central: {
+    label: 'Africa Central',
+    flag: '🌳',
+    description: 'Camaroun, RD Congo, Sao Tome e Principe',
+    symbol: '🌍',
+    pattern: 'forest',
+    landmarks: ['Yaounde', 'Kinshasa', 'Sao Tome'],
+    culturalElement: 'Bacia do Congo - Coracao verde de Africa',
+  },
+  latam: {
+    label: 'America Latina',
+    flag: '🌎',
+    description: 'Brasil',
+    symbol: '⚽',
+    pattern: 'none',
+    landmarks: ['Sao Paulo', 'Rio de Janeiro', 'Brasilia'],
+    culturalElement: 'Carnaval, samba e cultura vibrante',
+  },
+  europe: {
+    label: 'Europa',
+    flag: '🏰',
+    description: 'Portugal',
+    symbol: '⚓',
+    pattern: 'waves',
+    landmarks: ['Lisboa', 'Porto', 'Faro'],
+    culturalElement: 'Heranca maritima e Fado - Saudade universal',
+  },
+  asia: {
+    label: 'Asia',
+    flag: '🌏',
+    description: 'India',
+    symbol: '🕉️',
+    pattern: 'mandala',
+    landmarks: ['Mumbai', 'Delhi', 'Bangalore', 'Chennai'],
+    culturalElement: 'Ayurveda e tradicoes milenares de saude',
+  },
 };
 
 export type { RegionTheme };

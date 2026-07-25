@@ -678,8 +678,8 @@
     "coverage_amount": "Coverage Amount"
   },
   "healthWallet": {
-    "title": "National Health Card",
-    "subtitle": "Your portable medical history",
+    "title": "National Health Wallet",
+    "subtitle": "Portable medical history",
     "qr_code": "QR Code",
     "scan_to_verify": "Scan to verify",
     "medical_id": "Medical ID",
@@ -691,7 +691,13 @@
     "share_with_doctor": "Share with Doctor",
     "download_pdf": "Download PDF",
     "emergency_access": "Emergency Access",
-    "last_updated": "Last updated"
+    "last_updated": "Last Updated",
+    "lab_results": "Lab Results",
+    "emergency_info": "Emergency Information",
+    "generate_qr": "Generate QR Code",
+    "vaccines": "Vaccines",
+    "conditions": "Conditions",
+    "medications": "Medications"
   },
   "offline": {
     "mode_active": "Offline Mode Active",
@@ -844,5 +850,40 @@
     "top_features": "Most Used Features",
     "user_growth": "User Growth",
     "revenue_tracking": "Revenue Tracking"
+  },
+  "surgery": {
+    "title": "Surgery Support",
+    "subtitle": "Complete surgical workflow management",
+    "schedule": "Schedule Surgery",
+    "pre_op": "Pre-Op Checklist",
+    "post_op": "Post-Op Instructions",
+    "cost_breakdown": "Cost Breakdown",
+    "family_contacts": "Family Contacts",
+    "notify": "Notify",
+    "notified": "Notified",
+    "procedure_cost": "Procedure",
+    "anesthesia_cost": "Anesthesia",
+    "theater_cost": "Operating Room",
+    "medication_cost": "Medication",
+    "total": "Total",
+    "insurance_cover": "Insurance Coverage",
+    "out_of_pocket": "Out of Pocket",
+    "priority_elective": "Elective",
+    "priority_urgent": "Urgent",
+    "priority_emergency": "Emergency",
+    "status_scheduled": "Scheduled",
+    "status_in_progress": "In Progress",
+    "status_completed": "Completed",
+    "status_post_op": "Post-Op",
+    "status_cancelled": "Cancelled",
+    "available_procedures": "Available Procedures",
+    "required_tests": "Required Tests",
+    "surgeon": "Surgeon",
+    "anesthesiologist": "Anesthesiologist",
+    "facility": "Facility",
+    "theater": "Room",
+    "duration": "Estimated Duration",
+    "complexity": "Complexity",
+    "insurance_covers": "Insurance covers"
   }
 }
