@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, ReactNode 
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
+import { offlineManager } from '@/services/offline/OfflineManager';
 
 type AppRole =
   | 'customer'
@@ -151,6 +152,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (_event === 'SIGNED_IN' || _event === 'SIGNED_OUT' || _event === 'USER_UPDATED') {
           void loadRoles(session?.user ?? null);
+          // Auto-cache critical data for offline access on sign-in
+          if (_event === 'SIGNED_IN' && session?.user) {
+            offlineManager.init();
+            offlineManager.cacheAll(session.user.id).catch(() => {});
+          }
         }
       }
     );
@@ -166,6 +172,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(data.session?.user ?? null);
 
         await loadRoles(data.session?.user ?? null);
+
+        // Cache offline data for returning users
+        if (data.session?.user) {
+          offlineManager.init();
+          offlineManager.cacheAll(data.session.user.id).catch(() => {});
+        }
       } catch (err) {
         console.error("Session load error:", err);
       } finally {

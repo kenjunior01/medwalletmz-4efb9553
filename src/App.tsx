@@ -15,6 +15,7 @@ import { LoadingScreen } from "@/components/layout/LoadingScreen";
 import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
 import { OAuthBrokerRedirect } from "@/components/auth/OAuthBrokerRedirect";
 import { PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
+import { OfflineIndicator } from "@/components/offline";
 
 // =========================================================================
 // CODE-SPLITTING COM React.lazy
@@ -433,7 +434,8 @@ const App = () => (
                 </Routes>
                 </Suspense>
                 </OAuthCallbackHandler>
-                {/* Componentes PWA globais (toast update) */}
+                {/* Componentes PWA globais (offline indicator + update toast) */}
+                <OfflineIndicator />
                 <PWAUpdateToast />
               </BrowserRouter>
             </TooltipProvider>
