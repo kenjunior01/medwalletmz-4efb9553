@@ -1,27 +1,55 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCountry } from '@/contexts/CountryContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MessageCircle, Stethoscope, FileText, X, Calendar } from 'lucide-react';
+import {
+  ArrowLeft, MessageCircle, Stethoscope, FileText, X, Calendar as CalIcon,
+  CalendarDays, List,
+} from 'lucide-react';
 import { toast } from 'sonner';
+import { ConsultationCalendar } from '@/components/calendar';
+import type { Appointment } from '@/components/calendar';
+import { format, parseISO } from 'date-fns';
+
+type ViewMode = 'calendar' | 'list';
 
 const statusColor: Record<string, string> = {
   scheduled: 'bg-primary/20 text-primary',
+  confirmed: 'bg-primary/20 text-primary',
   in_progress: 'bg-secondary/20 text-secondary',
   completed: 'bg-pharmacy/20 text-pharmacy',
   cancelled: 'bg-destructive/20 text-destructive',
   no_show: 'bg-muted text-muted-foreground',
 };
 
+const STATUS_MAP: Record<string, Appointment['status']> = {
+  scheduled: 'upcoming',
+  confirmed: 'upcoming',
+  in_progress: 'upcoming',
+  completed: 'completed',
+  cancelled: 'cancelled',
+  no_show: 'cancelled',
+};
+
+const TYPE_MAP: Record<string, Appointment['type']> = {
+  video: 'video',
+  chat: 'chat',
+  in_person: 'in-person',
+  'in-person': 'in-person',
+};
+
 export default function MyConsultations() {
   const { user } = useAuth();
+  const { country, t } = useCountry();
   const navigate = useNavigate();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('calendar');
 
   useEffect(() => {
     if (!user) return;
@@ -45,6 +73,26 @@ export default function MyConsultations() {
       setLoading(false);
     })();
   }, [user]);
+
+  // Convert Supabase consultations → Appointment[] for the calendar
+  const calendarAppointments: Appointment[] = useMemo(() => {
+    return items
+      .filter((c) => c.scheduled_at)
+      .map((c) => {
+        const dt = parseISO(c.scheduled_at);
+        const endDate = new Date(dt.getTime() + (c.duration_minutes || 30) * 60_000);
+        return {
+          id: c.id,
+          date: format(dt, 'yyyy-MM-dd'),
+          startTime: format(dt, 'HH:mm'),
+          endTime: format(endDate, 'HH:mm'),
+          doctorName: c.doctor_name || 'Médico',
+          specialty: c.doctor_specialty?.name || 'Consulta',
+          status: STATUS_MAP[c.status] || 'upcoming',
+          type: TYPE_MAP[c.consultation_type || c.type] || 'chat',
+        };
+      });
+  }, [items]);
 
   const cancelConsultation = async (c: any) => {
     if (!confirm('Cancelar esta consulta? O lembrete será removido.')) return;
@@ -73,17 +121,48 @@ export default function MyConsultations() {
     if (dp?.id) navigate(`/health/book/${dp.id}`);
   };
 
+  const handleAppointmentClick = useCallback((appt: Appointment) => {
+    navigate(`/health/consultation/${appt.id}`);
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-4 flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
-        <h1 className="font-bold flex-1">Minhas consultas</h1>
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="font-bold flex-1">{t('my_consultations.title') || 'Minhas consultas'}</h1>
+
+        {/* View toggle */}
+        <div className="flex items-center rounded-lg bg-muted p-0.5">
+          <button
+            onClick={() => setViewMode('calendar')}
+            className={`p-1.5 rounded-md transition-all ${
+              viewMode === 'calendar' ? 'bg-card shadow-sm' : 'text-muted-foreground'
+            }`}
+            title={t('calendar.title') || 'Calendário'}
+          >
+            <CalendarDays className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`p-1.5 rounded-md transition-all ${
+              viewMode === 'list' ? 'bg-card shadow-sm' : 'text-muted-foreground'
+            }`}
+            title="Lista"
+          >
+            <List className="h-4 w-4" />
+          </button>
+        </div>
+
         <Button variant="outline" size="sm" onClick={() => navigate('/health/prescriptions')}>
           <FileText className="h-4 w-4 mr-1" /> Receitas
         </Button>
       </header>
+
       <div className="p-4 space-y-3">
-        {loading && <p className="text-muted-foreground">A carregar...</p>}
+        {loading && <p className="text-muted-foreground">{t('common.loading') || 'A carregar...'}</p>}
+
         {!loading && items.length === 0 && (
           <div className="text-center py-12">
             <Stethoscope className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
@@ -91,12 +170,23 @@ export default function MyConsultations() {
             <Button onClick={() => navigate('/health/doctors')}>Encontrar médico</Button>
           </div>
         )}
-        {items.map((c) => {
+
+        {!loading && items.length > 0 && viewMode === 'calendar' && (
+          <ConsultationCalendar
+            appointments={calendarAppointments}
+            defaultView="month"
+          />
+        )}
+
+        {!loading && items.length > 0 && viewMode === 'list' && items.map((c) => {
           const canModify = ['scheduled', 'confirmed'].includes(c.status) && new Date(c.scheduled_at) > new Date();
           return (
             <Card key={c.id}>
               <CardContent className="p-4 space-y-3">
-                <div className="flex gap-3 items-center cursor-pointer" onClick={() => navigate(`/health/consultation/${c.id}`)}>
+                <div
+                  className="flex gap-3 items-center cursor-pointer"
+                  onClick={() => navigate(`/health/consultation/${c.id}`)}
+                >
                   <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-pharmacy to-primary flex items-center justify-center text-pharmacy-foreground font-bold">
                     {c.doctor_name?.[0] || 'M'}
                   </div>
@@ -118,7 +208,7 @@ export default function MyConsultations() {
                   <div className="flex gap-2 pt-2 border-t">
                     <Button size="sm" variant="outline" className="flex-1" disabled={busy === c.id}
                       onClick={(e) => { e.stopPropagation(); rescheduleConsultation(c); }}>
-                      <Calendar className="h-3 w-3 mr-1" /> Alterar
+                      <CalIcon className="h-3 w-3 mr-1" /> Alterar
                     </Button>
                     <Button size="sm" variant="outline" className="flex-1 text-destructive hover:text-destructive" disabled={busy === c.id}
                       onClick={(e) => { e.stopPropagation(); cancelConsultation(c); }}>

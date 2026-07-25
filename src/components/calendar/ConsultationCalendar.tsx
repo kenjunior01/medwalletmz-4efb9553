@@ -84,101 +84,7 @@ type CalendarView = 'day' | 'week' | 'month';
 
 const HOURS = Array.from({ length: 11 }, (_, i) => i + 8); // 08–18
 
-// ─── Mock data (ready for Supabase) ────────────────────────────────────────
-
-const today = new Date();
-const MOCK_APPOINTMENTS: Appointment[] = [
-  {
-    id: '1',
-    date: format(today, 'yyyy-MM-dd'),
-    startTime: '09:00',
-    endTime: '09:30',
-    doctorName: 'Ana Machava',
-    specialty: 'General Practice',
-    status: 'upcoming',
-    type: 'video',
-  },
-  {
-    id: '2',
-    date: format(today, 'yyyy-MM-dd'),
-    startTime: '11:00',
-    endTime: '11:45',
-    doctorName: 'Carlos Mondlane',
-    specialty: 'Cardiology',
-    status: 'upcoming',
-    type: 'in-person',
-  },
-  {
-    id: '3',
-    date: format(addDays(today, 1), 'yyyy-MM-dd'),
-    startTime: '10:00',
-    endTime: '10:30',
-    doctorName: 'Fatima Ngovene',
-    specialty: 'Pediatrics',
-    status: 'upcoming',
-    type: 'chat',
-  },
-  {
-    id: '4',
-    date: format(subDays(today, 1), 'yyyy-MM-dd'),
-    startTime: '14:00',
-    endTime: '14:30',
-    doctorName: 'João Sitoe',
-    specialty: 'Dermatology',
-    status: 'completed',
-    type: 'video',
-  },
-  {
-    id: '5',
-    date: format(subDays(today, 3), 'yyyy-MM-dd'),
-    startTime: '08:00',
-    endTime: '08:30',
-    doctorName: 'Maria Tembe',
-    specialty: 'Gynecology',
-    status: 'completed',
-    type: 'in-person',
-  },
-  {
-    id: '6',
-    date: format(subDays(today, 5), 'yyyy-MM-dd'),
-    startTime: '15:00',
-    endTime: '15:30',
-    doctorName: 'Pedro Cossa',
-    specialty: 'Orthopedics',
-    status: 'cancelled',
-    type: 'chat',
-  },
-  {
-    id: '7',
-    date: format(addDays(today, 3), 'yyyy-MM-dd'),
-    startTime: '09:30',
-    endTime: '10:00',
-    doctorName: 'Luis Nhaca',
-    specialty: 'Neurology',
-    status: 'upcoming',
-    type: 'video',
-  },
-  {
-    id: '8',
-    date: format(addDays(today, 5), 'yyyy-MM-dd'),
-    startTime: '13:00',
-    endTime: '13:45',
-    doctorName: 'Rosa Mabunda',
-    specialty: 'Ophthalmology',
-    status: 'upcoming',
-    type: 'in-person',
-  },
-  {
-    id: '9',
-    date: format(today, 'yyyy-MM-dd'),
-    startTime: '16:00',
-    endTime: '16:30',
-    doctorName: 'Teresa Macamo',
-    specialty: 'Psychiatry',
-    status: 'upcoming',
-    type: 'chat',
-  },
-];
+// ─── Empty fallback (real data comes from Supabase via props) ──────────────
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -261,9 +167,9 @@ export function ConsultationCalendar({
   const [view, setView] = useState<CalendarView>(defaultView);
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  // Appointments data (external or mock)
+  // Appointments data (external or empty)
   const appointments = useMemo<Appointment[]>(
-    () => externalAppointments ?? MOCK_APPOINTMENTS,
+    () => externalAppointments ?? [],
     [externalAppointments]
   );
 
