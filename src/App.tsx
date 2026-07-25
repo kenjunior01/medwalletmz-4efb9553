@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { CountryProvider } from "@/contexts/CountryContext";
+import { ProvinceProvider } from "@/themes";
 import { LocationProvider } from "@/contexts/LocationContext";
 import { DataSaverProvider } from "@/contexts/DataSaverContext";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -213,6 +214,7 @@ const App = () => (
     <AuthProvider>
       <LocationProvider>
         <CountryProvider>
+          <ProvinceProvider>
           <CartProvider>
             <DataSaverProvider>
               <TooltipProvider>
@@ -437,6 +439,7 @@ const App = () => (
             </TooltipProvider>
           </DataSaverProvider>
         </CartProvider>
+      </ProvinceProvider>
       </CountryProvider>
     </LocationProvider>
   </AuthProvider>

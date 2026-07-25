@@ -62,3 +62,7 @@ export const REGION_META: Record<string, { label: string; flag: string; descript
 
 export type { RegionTheme };
 export { type RegionID } from './types';
+
+// Province-level theming system (Mozambique)
+export { ProvinceProvider, useProvince } from './ProvinceThemeProvider';
+export { provinces, getProvinceTheme, getProvinceThemeOrDefault, PROVINCE_STORAGE_KEY, type ProvinceTheme } from './provinces';
