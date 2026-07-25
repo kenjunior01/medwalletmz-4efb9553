@@ -59,7 +59,7 @@ export default function StreakTracker() {
             cy={RADIUS}
             r={RADIUS - STROKE / 2}
             fill="none"
-            stroke={theme.colors.primary}15}
+            stroke={`${theme.colors.primary}15`}
             strokeWidth={STROKE}
           />
           <motion.circle
