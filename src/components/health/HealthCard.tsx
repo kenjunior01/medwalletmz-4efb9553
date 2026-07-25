@@ -295,7 +295,7 @@ export function HealthCard({ patient = MOCK_PATIENT, className }: HealthCardProp
         <InfoRow
           icon={<Shield className="h-3.5 w-3.5" />}
           label={t('healthWallet.vaccination_record')}
-          value={t('healthWallet.last_updated')}: {patient.vaccinationLastUpdate}
+          value={`${t('healthWallet.last_updated')}: ${patient.vaccinationLastUpdate}`}
           color={theme.colors.primary}
         />
       </div>
