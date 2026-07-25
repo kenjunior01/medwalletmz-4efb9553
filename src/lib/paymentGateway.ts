@@ -79,17 +79,21 @@ class ManualGateway implements PaymentGateway {
   async initiate(request: PaymentRequest): Promise<PaymentResult> {
     const ref = generateRef('PAY');
     // Log the payment intent to Supabase for admin confirmation
-    await supabase.from('payment_transactions' as any).insert({
-      reference: ref,
-      amount: request.amount,
-      currency: request.currency,
-      payment_method: request.paymentMethodId,
-      country_id: request.countryId,
-      user_id: request.userId || null,
-      status: 'pending',
-      description: request.description || null,
-      phone: request.phone || null,
-    }).then(() => {}).catch(() => {});
+    try {
+      await (supabase as any).from('payment_transactions').insert({
+        reference: ref,
+        amount: request.amount,
+        currency: request.currency,
+        payment_method: request.paymentMethodId,
+        country_id: request.countryId,
+        user_id: request.userId || null,
+        status: 'pending',
+        description: request.description || null,
+        phone: request.phone || null,
+      });
+    } catch {
+      // Manual payment remains available even if audit logging fails.
+    }
 
     return {
       success: true,
@@ -100,15 +104,16 @@ class ManualGateway implements PaymentGateway {
   }
 
   async checkStatus(transactionId: string): Promise<PaymentResult> {
-    const { data } = await supabase.from('payment_transactions' as any)
+    const { data } = await (supabase as any).from('payment_transactions')
       .select('status')
       .eq('reference', transactionId)
       .maybeSingle();
+    const row = data as { status?: string } | null;
     return {
-      success: data?.status === 'confirmed',
+      success: row?.status === 'confirmed',
       transactionId,
-      status: (data?.status === 'confirmed' ? 'completed' : data?.status === 'rejected' ? 'failed' : 'pending') as PaymentResult['status'],
-      message: data?.status === 'confirmed' ? 'Pagamento confirmado' : 'Aguardando confirmação',
+      status: (row?.status === 'confirmed' ? 'completed' : row?.status === 'rejected' ? 'failed' : 'pending') as PaymentResult['status'],
+      message: row?.status === 'confirmed' ? 'Pagamento confirmado' : 'Aguardando confirmação',
     };
   }
 }
@@ -317,15 +322,16 @@ class WalletGateway implements PaymentGateway {
   }
 
   async checkStatus(transactionId: string): Promise<PaymentResult> {
-    const { data } = await supabase.from('wallet_transactions' as any)
+    const { data } = await (supabase as any).from('wallet_transactions')
       .select('status')
       .eq('reference', transactionId)
       .maybeSingle();
+    const row = data as { status?: string } | null;
     return {
-      success: data?.status === 'completed',
+      success: row?.status === 'completed',
       transactionId,
-      status: data?.status === 'completed' ? 'completed' : 'failed',
-      message: data?.status === 'completed' ? 'Pagamento completo' : 'Falha no pagamento',
+      status: row?.status === 'completed' ? 'completed' : 'failed',
+      message: row?.status === 'completed' ? 'Pagamento completo' : 'Falha no pagamento',
     };
   }
 }

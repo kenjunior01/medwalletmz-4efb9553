@@ -10,12 +10,14 @@ interface LogoUploadProps {
   description?: string;
   value?: string | null;
   onUploaded: (url: string) => void;
+  bucket?: string;
+  folder?: string;
 }
 
 /**
  * Uploads a logo/image to the public `logos` bucket and returns the public URL.
  */
-export function LogoUpload({ label, description, value, onUploaded }: LogoUploadProps) {
+export function LogoUpload({ label, description, value, onUploaded, bucket = 'logos', folder }: LogoUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -25,10 +27,11 @@ export function LogoUpload({ label, description, value, onUploaded }: LogoUpload
       const { data: { user } } = await supabase.auth.getUser();
       const uid = user?.id ?? 'anon';
       const ext = file.name.split('.').pop() || 'png';
-      const path = `${uid}/logo-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from('logos').upload(path, file, { upsert: true });
+      const prefix = folder ? `${folder.replace(/^\/+|\/+$/g, '')}/` : `${uid}/`;
+      const path = `${prefix}logo-${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
       if (error) throw error;
-      const { data: pub } = supabase.storage.from('logos').getPublicUrl(path);
+      const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
       onUploaded(pub.publicUrl);
       toast.success('Logotipo carregado');
     } catch (e: any) {

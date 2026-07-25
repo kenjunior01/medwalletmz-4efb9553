@@ -18,16 +18,16 @@ export function useProvinceHealth() {
       if (!province) return null;
       try {
         const [{ count: doctors }, { count: pharmacies }, { count: clinics }] = await Promise.all([
-          supabase
+          (supabase as any)
             .from('profiles')
             .select('*', { count: 'exact', head: true })
             .eq('province', province.id)
             .eq('role', 'doctor'),
-          supabase
+          (supabase as any)
             .from('stores')
             .select('*', { count: 'exact', head: true })
             .eq('province', province.id),
-          supabase
+          (supabase as any)
             .from('clinics')
             .select('*', { count: 'exact', head: true })
             .eq('province', province.id),

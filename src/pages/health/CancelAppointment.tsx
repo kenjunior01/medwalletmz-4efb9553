@@ -74,7 +74,7 @@ export default function CancelAppointment() {
     queryFn: async (): Promise<Appointment | null> => {
       if (!id) return null;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('appointments')
         .select('*')
         .eq('id', id)
@@ -84,8 +84,9 @@ export default function CancelAppointment() {
       if (!data) return null;
 
       // Fetch doctor profile info
-      const doctorName = await fetchDoctorName(data.doctor_id);
-      return { ...data, doctor_name: doctorName } as Appointment;
+      const row = data as Partial<Appointment> & Record<string, any>;
+      const doctorName = await fetchDoctorName(row.doctor_id ?? '');
+      return { ...row, doctor_name: doctorName } as Appointment;
     },
     enabled: !!id,
     retry: 1,
@@ -103,7 +104,7 @@ export default function CancelAppointment() {
   // Cancel mutation
   const cancelMutation = useMutation({
     mutationFn: async ({ appointmentId, cancellationReason }: { appointmentId: string; cancellationReason: string }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('appointments')
         .update({
           status: 'cancelled',
