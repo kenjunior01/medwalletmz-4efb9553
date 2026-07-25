@@ -544,10 +544,3 @@ class NotificationService {
 // ---------------------------------------------------------------------------
 
 export const notificationService = NotificationService.getInstance();
-
-export type {
-  NotificationPayload,
-  NotificationCategory,
-  NotificationPermissionStatus,
-  NotificationTapHandler,
-};

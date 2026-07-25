@@ -144,4 +144,4 @@ export function getCountryCoverage(): Record<string, { providers: string[]; curr
 }
 
 // Re-export types for convenience
-export type { PaymentProvider, PaymentRequest, PaymentResponse, PaymentVerification, RefundRequest, RefundResponse, BalanceResponse, PaymentMethod };
+export type { PaymentProvider, PaymentRequest, PaymentResponse, PaymentVerification, RefundRequest, RefundResponse, BalanceResponse, PaymentMethod } from './types';

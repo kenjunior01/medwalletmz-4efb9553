@@ -75,7 +75,30 @@ export default function PharmacyProfile() {
       .eq('store_type', 'pharmacy')
       .maybeSingle();
     if (!p) { setLoading(false); return; }
-    setProfile(p as PharmacyProfile);
+    setProfile({
+      id: p.id,
+      user_id: (p as any).user_id || p.id,
+      name: (p as any).name || '',
+      description: (p as any).description || '',
+      phone: (p as any).phone || '',
+      email: (p as any).email || '',
+      address: (p as any).address || '',
+      city: (p as any).city || '',
+      country_code: (p as any).country_code || '',
+      is_active: (p as any).is_active ?? true,
+      is_verified: (p as any).is_verified ?? false,
+      license_number: (p as any).license_number || '',
+      license_type: (p as any).license_type || '',
+      rating_avg: (p as any).rating_avg,
+      total_products: (p as any).total_products,
+      total_orders: (p as any).total_orders,
+      monthly_revenue: (p as any).monthly_revenue,
+      delivery_radius_km: (p as any).delivery_radius_km,
+      accepts_insurance: (p as any).accepts_insurance ?? false,
+      payment_methods: (p as any).payment_methods || [],
+      operating_hours: (p as any).operating_hours || '',
+      created_at: (p as any).created_at || '',
+    });
     setEditForm({});
 
     const startMonth = new Date();
@@ -91,8 +114,8 @@ export default function PharmacyProfile() {
 
     setStats({
       pendingOrders: pendingCount || 0,
-      monthlyRevenue: p.monthly_revenue || 0,
-      totalProducts: p.total_products || 0,
+      monthlyRevenue: (p as any).monthly_revenue || 0,
+      totalProducts: (p as any).total_products || 0,
     });
     setLoading(false);
   };
@@ -158,7 +181,7 @@ export default function PharmacyProfile() {
       <main className="p-4 space-y-5 max-w-2xl mx-auto">
         {/* Hero */}
         <PanelShell className="p-6">
-          <LayeredOrbs variant="pharmacy" />
+          <LayeredOrbs variant="ocean" />
           <div className="flex items-start gap-4">
             <div className="relative">
               <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-pharmacy to-pharmacy/60 flex items-center justify-center overflow-hidden">

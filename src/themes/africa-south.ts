@@ -28,7 +28,7 @@ export const mz: RegionTheme = {
     shape: 'circle', pattern: 'fireflies',
   },
   logo: { primary: '#009739', secondary: '#FFD100', accent: '#D40000', glow: '#00973940' },
-  pattern: { type: 'stripes', opacity: 0.04, color: '#009739' },
+  pattern: { type: 'lines', opacity: 0.04, color: '#009739' },
   symbol: '🌿',
 };
 

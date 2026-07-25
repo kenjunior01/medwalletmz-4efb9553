@@ -192,7 +192,7 @@ class OfflineManager {
       case 'create': {
         const { error } = await supabase
           .from(item.table)
-          .insert(item.data);
+          .insert(item.data as any);
         return { error: error ? new Error(error.message) : null };
       }
       case 'update': {
@@ -201,7 +201,7 @@ class OfflineManager {
         delete payload.id;
         const { error } = await supabase
           .from(item.table)
-          .update(payload)
+          .update(payload as any)
           .eq('id', pk);
         return { error: error ? new Error(error.message) : null };
       }
@@ -210,7 +210,7 @@ class OfflineManager {
         const { error } = await supabase
           .from(item.table)
           .delete()
-          .eq('id', pk);
+          .eq('id', pk as any);
         return { error: error ? new Error(error.message) : null };
       }
       default:
@@ -268,7 +268,7 @@ class OfflineManager {
         .maybeSingle();
 
       if (data) {
-        safeSetItem(STORAGE_KEYS.wallet, data.balance ?? 0);
+        safeSetItem(STORAGE_KEYS.wallet, (data as any).balance ?? 0);
         console.log('[OfflineManager] Wallet balance cached');
       }
     } catch (err) {

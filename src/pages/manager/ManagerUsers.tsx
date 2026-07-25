@@ -73,7 +73,7 @@ export default function ManagerUsers() {
   const toggleUserActive = async (userId: string, isActive: boolean) => {
     await supabase
       .from('profiles')
-      .update({ is_active: !isActive })
+      .update({ is_active: !isActive } as any)
       .eq('id', userId);
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_active: !isActive } : u));
   };
