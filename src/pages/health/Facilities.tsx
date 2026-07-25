@@ -8,19 +8,47 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Hospital, Building2, FlaskConical, MapPin, Phone, CheckCircle2, Globe } from "lucide-react";
+import { Hospital, Building2, FlaskConical, MapPin, Phone, CheckCircle2, Globe, Clock, Filter, Navigation, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/ui/safe-image";
 import { GoogleMap, type GMarker } from "@/components/maps/GoogleMap";
 import { haversineKm } from "@/lib/googleRoutes";
 import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from "@/lib/healthRoutes";
-import { Navigation } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const TYPES = [
   { key: "clinic", label: "Clínicas", icon: Building2 },
   { key: "hospital", label: "Hospitais", icon: Hospital },
   { key: "laboratory", label: "Laboratórios", icon: FlaskConical },
 ] as const;
+
+const SPECIALTIES = [
+  { key: "all", label: "Todas" },
+  { key: "general", label: "Geral" },
+  { key: "cardiology", label: "Cardiologia" },
+  { key: "pediatrics", label: "Pediatria" },
+  { key: "gynecology", label: "Ginecologia" },
+  { key: "dermatology", label: "Dermatologia" },
+  { key: "orthopedics", label: "Ortopedia" },
+  { key: "neurology", label: "Neurologia" },
+  { key: "ophthalmology", label: "Oftalmologia" },
+  { key: "psychiatry", label: "Psiquiatria" },
+  { key: "dental", label: "Odontologia" },
+] as const;
+
+/** Check if a clinic is currently open based on operating_hours */
+function isOpenNow(operatingHours: string | null | undefined): boolean | null {
+  if (!operatingHours) return null;
+  const match = operatingHours.match(/(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+  const now = new Date();
+  const day = now.getDay();
+  if (day === 0 || day === 6) return false;
+  const openMins = parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+  const closeMins = parseInt(match[3], 10) * 60 + parseInt(match[4], 10);
+  const currentMins = now.getHours() * 60 + now.getMinutes();
+  return currentMins >= openMins && currentMins < closeMins;
+}
 
 export default function Facilities() {
   const nav = useNavigate();
@@ -32,6 +60,8 @@ export default function Facilities() {
   const [onlyMyCity, setOnlyMyCity] = useState<boolean>(() => localStorage.getItem("filter_only_my_city") !== "0");
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [specialty, setSpecialty] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => { localStorage.setItem("filter_only_my_city", onlyMyCity ? "1" : "0"); }, [onlyMyCity]);
   useEffect(() => { setSp({ type: tab }, { replace: true }); }, [tab]);
@@ -41,23 +71,32 @@ export default function Facilities() {
       setLoading(true);
       let q = supabase.from("clinics").select("*").eq("is_active", true).eq("type", tab);
       if (onlyMyCity && city) q = q.eq("city", city);
+      if (specialty !== "all") q = q.or(`specialties.ilike.%${specialty}%,medical_specialties.ilike.%${specialty}%`);
       const { data } = await q.order("is_verified", { ascending: false }).limit(100);
       setItems(data || []);
       setLoading(false);
     })();
-  }, [tab, city, onlyMyCity]);
+  }, [tab, city, onlyMyCity, specialty]);
 
   const meta = TYPES.find(t => t.key === tab)!;
 
-  // Ordena por distância se tivermos localização
+  // Sort by distance if we have GPS location
   const withDist = items.map((c: any) => ({
     ...c,
     _dist: (userLoc?.lat && c.latitude && c.longitude)
       ? haversineKm({ lat: userLoc.lat, lng: userLoc.lng }, { lat: c.latitude, lng: c.longitude })
       : null,
+    _open: isOpenNow(c.operating_hours),
   })).sort((a, b) => (a._dist ?? 9999) - (b._dist ?? 9999));
 
-  const markers: GMarker[] = withDist
+  // Filter by search
+  const searched = withDist.filter((c: any) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return c.name?.toLowerCase().includes(q) || c.address?.toLowerCase().includes(q) || c.city?.toLowerCase().includes(q);
+  });
+
+  const markers: GMarker[] = searched
     .filter(c => c.latitude && c.longitude)
     .slice(0, 40)
     .map(c => ({
@@ -114,11 +153,40 @@ export default function Facilities() {
           </div>
         )}
 
+        {/* Search bar + Specialty filters */}
+        <div className="flex flex-col gap-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Pesquisar por nome, endereço..."
+              className="pl-9"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+            <Filter className="h-4 w-4 shrink-0 mt-2 text-muted-foreground" />
+            {SPECIALTIES.map(s => (
+              <button
+                key={s.key}
+                onClick={() => setSpecialty(s.key)}
+                className={`px-3 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all ${
+                  specialty === s.key
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {TYPES.map(t => (
           <TabsContent key={t.key} value={t.key} className="mt-4">
             {loading ? (
               <div className="grid gap-3 md:grid-cols-2">{[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>
-            ) : withDist.length === 0 ? (
+            ) : searched.length === 0 ? (
               <div className="bento-card p-8 text-center text-muted-foreground">
                 <t.icon className="h-10 w-10 mx-auto mb-2 opacity-40" />
                 <p className="font-semibold">
@@ -137,7 +205,7 @@ export default function Facilities() {
                       variant="outline"
                       size="sm"
                       className="rounded-2xl border-primary/20 text-primary hover:bg-primary/5 font-bold"
-                      onClick={() => nav(tab === 'laboratory' ? '/lab/register' : '/clinic/register')}
+                      onClick={() => nav(tab === "laboratory" ? "/lab/register" : "/clinic/register")}
                     >
                       Registar {t.label.slice(0, -1)} na MedWallet
                     </Button>
@@ -146,7 +214,7 @@ export default function Facilities() {
               </div>
             ) : (
               <div className="grid gap-3 md:grid-cols-2">
-                {withDist.map((c: any) => (
+                {searched.map((c: any) => (
                   <div key={c.id} className="bento-card p-4 hover:shadow-medium transition-all">
                     <button onClick={() => nav(`/health/facilities/${c.id}`)} className="w-full text-left">
                       <div className="flex items-start gap-3">
@@ -175,6 +243,12 @@ export default function Facilities() {
                               </span>
                             )}
                             {c.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{c.phone}</span>}
+                            {c._open === true && (
+                              <span className="flex items-center gap-1 text-emerald font-semibold"><Clock className="h-3 w-3" />Aberto</span>
+                            )}
+                            {c._open === false && (
+                              <span className="flex items-center gap-1 text-destructive font-semibold"><Clock className="h-3 w-3" />Fechado</span>
+                            )}
                             <Badge variant="outline" className="h-4 text-[9px]">{t.label.slice(0, -1)}</Badge>
                           </div>
                         </div>
