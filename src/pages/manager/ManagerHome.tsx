@@ -87,14 +87,14 @@ export default function ManagerHome() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const [usersRes, doctorsRes, storesRes, clinicsRes, ordersRes, ordersPrevRes, activeUsersRes, revenueRes] = await Promise.all([
-      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId),
-      supabase.from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-      supabase.from('stores').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-      supabase.from('clinics').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startMonth.toISOString()),
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
-      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
-      supabase.from('orders').select('total').eq('country_code', countryCode).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
+      (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId),
+      (supabase as any).from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
+      (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
+      (supabase as any).from('clinics').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
+      (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startMonth.toISOString()),
+      (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
+      (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
+      (supabase as any).from('orders').select('total').eq('country_code', countryCode).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
     ]);
 
     const totalRevenue = (revenueRes.data || []).reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
@@ -119,14 +119,14 @@ export default function ManagerHome() {
   const loadPendingVerifications = async () => {
     if (!managedCountryId) return;
     // Load pending verifications for this region
-    const { data: doctors } = await supabase
+    const { data: doctors } = await (supabase as any)
       .from('doctor_profiles')
       .select('id, full_name, created_at')
       .eq('country_code', countryCode)
       .eq('is_verified', false)
       .limit(10);
 
-    const { data: stores } = await supabase
+    const { data: stores } = await (supabase as any)
       .from('stores')
       .select('id, name, created_at')
       .eq('country_code', countryCode)
@@ -151,7 +151,7 @@ export default function ManagerHome() {
     if (!user) return;
     // Load regional manager permissions/restrictions
     // These come from the user_roles table or a manager_permissions table
-    const { data: perms } = await supabase
+    const { data: perms } = await (supabase as any)
       .from('manager_permissions')
       .select('*')
       .eq('user_id', user.id)
@@ -173,7 +173,7 @@ export default function ManagerHome() {
 
   const handleApprove = async (item: PendingVerification, approve: boolean) => {
     const table = item.type === 'doctor' ? 'doctor_profiles' : 'stores';
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from(table)
       .update({ is_verified: approve })
       .eq('id', item.id);

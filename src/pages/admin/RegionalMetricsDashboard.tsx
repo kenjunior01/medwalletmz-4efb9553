@@ -178,17 +178,17 @@ export default function RegionalMetricsDashboard() {
     await Promise.all(countryIds.map(async (cc) => {
       try {
         const [usersRes, activeUsersRes, doctorsRes, storesRes, clinicsRes, ordersRes, ordersPrevRes, revenueRes, pendingDocsRes, pendingStoresRes, managersRes] = await Promise.all([
-          supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', cc),
-          supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', cc).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
-          supabase.from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', cc),
+          (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', cc),
+          (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', cc).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
+          (supabase as any).from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', cc),
           (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_code', cc),
           (supabase as any).from('clinics').select('id', { count: 'exact', head: true }).eq('country_code', cc),
           (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', cc).gte('created_at', startMonth.toISOString()),
           (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', cc).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
           (supabase as any).from('orders').select('total').eq('country_code', cc).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
-          supabase.from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', cc).eq('is_verified', false),
+          (supabase as any).from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', cc).eq('is_verified', false),
           (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_code', cc).eq('is_verified', false),
-          supabase.from('country_management').select('id', { count: 'exact', head: true }).eq('country_id', cc),
+          (supabase as any).from('country_management').select('id', { count: 'exact', head: true }).eq('country_id', cc),
         ]);
 
         const totalRevenue = (revenueRes.data || []).reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);

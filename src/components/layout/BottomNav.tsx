@@ -2,7 +2,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { bottomNavByRole, sidebarByRole } from "@/config/navigation";
 import { usePrimaryRole } from "@/hooks/usePrimaryRole";
-import { Menu, X, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope, Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutDashboard, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Menu, X, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope, Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutDashboard, ShieldCheck, CheckCircle2, Plus } from "lucide-react";
 import { useState, useMemo } from "react";
 import {
   Sheet,

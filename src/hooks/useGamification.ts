@@ -47,7 +47,7 @@ interface GamificationRow {
   experience_points: number;
  current_level: number;
   streak_days: number;
- last_activity_at: string | null;
+  last_activity_at?: string | null;
 }
 
 interface UserChallengeRow {
@@ -60,7 +60,8 @@ interface UserChallengeRow {
     title: string;
     description: string;
     icon: string;
-    type: string;
+    type?: string;
+    challenge_type?: string;
     target_value: number;
     joy_coins_reward: number;
     category: string;
@@ -133,7 +134,7 @@ export function useGamification() {
         .select('*')
         .eq('user_id', user.id)
         .single();
-      return data as GamificationRow | null;
+      return data as unknown as GamificationRow | null;
     },
     enabled: !!user,
   });
@@ -146,7 +147,7 @@ export function useGamification() {
         .from('user_challenges')
         .select('*, challenge:challenges(*)')
         .eq('user_id', user.id);
-      return (data ?? []) as UserChallengeRow[];
+      return (data ?? []) as unknown as UserChallengeRow[];
     },
     enabled: !!user,
   });
@@ -155,12 +156,12 @@ export function useGamification() {
     queryKey: ['user-achievements', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('userachievements')
         .select('*, achievement:achievements(*)')
         .eq('user_id', user.id)
         .order('unlocked_at', { ascending: false });
-      return (data ?? []) as UserAchievementRow[];
+      return (data ?? []) as unknown as UserAchievementRow[];
     },
     enabled: !!user,
   });
@@ -188,9 +189,9 @@ export function useGamification() {
   const challenges: Challenge[] = userChallenges.length > 0
     ? userChallenges.map((uc) => ({
         id: uc.challenge_id,
-        type: mapChallengeType(uc.challenge?.type ?? ''),
-        titleKey: `gamification.challenges.${mapChallengeType(uc.challenge?.type ?? '')}.title`,
-        descriptionKey: `gamification.challenges.${mapChallengeType(uc.challenge?.type ?? '')}.description`,
+        type: mapChallengeType(uc.challenge?.type ?? uc.challenge?.challenge_type ?? ''),
+        titleKey: `gamification.challenges.${mapChallengeType(uc.challenge?.type ?? uc.challenge?.challenge_type ?? '')}.title`,
+        descriptionKey: `gamification.challenges.${mapChallengeType(uc.challenge?.type ?? uc.challenge?.challenge_type ?? '')}.description`,
         icon: uc.challenge?.icon ?? 'target',
         target: uc.challenge?.target_value ?? 1,
         current: uc.current_value ?? 0,
@@ -231,7 +232,7 @@ export function useGamification() {
   const claimReward = useMutation({
     mutationFn: async (challengeId: string) => {
       if (!user) throw new Error('Not authenticated');
-      const { data, error } = await supabase.rpc('claim_challenge_reward', {
+      const { data, error } = await (supabase as any).rpc('claim_challenge_reward', {
         p_user_id: user.id,
         p_challenge_id: challengeId,
       });
@@ -247,14 +248,14 @@ export function useGamification() {
   const checkStreak = useCallback(async () => {
     if (!user) return false;
     const today = new Date().toISOString().split('T')[0];
-    const { data: todayRecord } = await supabase
+    const { data: todayRecord } = await (supabase as any)
       .from('streak_log')
       .select('id')
       .eq('user_id', user.id)
       .eq('activity_date', today)
       .single();
     if (todayRecord) return true;
-    const { error: insertError } = await supabase
+    const { error: insertError } = await (supabase as any)
       .from('streak_log')
       .insert({ user_id: user.id, activity_date: today });
     if (insertError) {

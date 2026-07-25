@@ -6,6 +6,7 @@
  * Responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop.
  */
 import { motion } from 'framer-motion';
+import type { CSSProperties } from 'react';
 import { useProvince } from '@/themes/ProvinceThemeProvider';
 import type { ProvinceTheme } from '@/themes/provinces';
 import { cn } from '@/lib/utils';
@@ -85,10 +86,8 @@ export function ProvinceSelector({
               )}
               style={{
                 background: p.gradients.hero,
-                ringColor: isActive ? p.colors.primary : undefined,
-                // @ts-expect-error ring color override
-                ['--tw-ring-color' as string]: isActive ? p.colors.primary : undefined,
-              }}
+                '--tw-ring-color': isActive ? p.colors.primary : undefined,
+              } as CSSProperties}
             >
               {/* Gradient overlay for readability */}
               <div

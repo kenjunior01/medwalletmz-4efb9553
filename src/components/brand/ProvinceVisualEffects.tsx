@@ -35,9 +35,11 @@ const intensityMap = {
   high: { opacity: 0.7, scale: 1.2, symbolCount: 3 },
 } as const;
 
+type IntensityConfig = (typeof intensityMap)[keyof typeof intensityMap];
+
 // ── Gradient Overlay ─────────────────────────────────────────────────
 
-function ProvinceGradientOverlay({ province, intensity }: { province: ProvinceTheme; intensity: typeof intensityMap.medium }) {
+function ProvinceGradientOverlay({ province, intensity }: { province: ProvinceTheme; intensity: IntensityConfig }) {
   return (
     <div
       aria-hidden="true"
@@ -53,7 +55,7 @@ function ProvinceGradientOverlay({ province, intensity }: { province: ProvinceTh
 
 // ── Floating Cultural Symbols ─────────────────────────────────────────────────
 
-function FloatingCulturalSymbols({ province, count, intensity }: { province: ProvinceTheme; count: number; intensity: typeof intensityMap.medium }) {
+function FloatingCulturalSymbols({ province, count, intensity }: { province: ProvinceTheme; count: number; intensity: IntensityConfig }) {
   const symbols = useMemo(() => {
     const positions = [
       { x: '12%', y: '18%', delay: 0, size: 28 },
@@ -97,7 +99,7 @@ function FloatingCulturalSymbols({ province, count, intensity }: { province: Pro
 
 // ── Province Glow Orb ─────────────────────────────────────────────────
 
-function ProvinceGlowOrb({ province, intensity }: { province: ProvinceTheme; intensity: typeof intensityMap.medium }) {
+function ProvinceGlowOrb({ province, intensity }: { province: ProvinceTheme; intensity: IntensityConfig }) {
   return (
     <div
       aria-hidden="true"
@@ -313,7 +315,7 @@ const PATTERN_COMPONENTS: Record<
   stripes: StripesPattern,
 };
 
-function DecorativePattern({ province, intensity }: { province: ProvinceTheme; intensity: typeof intensityMap.medium }) {
+function DecorativePattern({ province, intensity }: { province: ProvinceTheme; intensity: IntensityConfig }) {
   const patternOpacity = intensity.opacity * 0.15;
   const PatternComponent = PATTERN_COMPONENTS[province.pattern];
 

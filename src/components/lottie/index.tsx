@@ -4,6 +4,7 @@
  * Includes health-themed presets from LottieFiles CDN.
  */
 
+import { useEffect, useState } from 'react';
 import Lottie from 'lottie-react';
 
 // Free health-related Lottie animation URLs
@@ -43,6 +44,7 @@ export function LottieAnimation({
 }: LottieAnimationProps) {
   let resolvedLoop = loopProp;
   let resolvedSrc: string | undefined;
+  const [remoteAnimation, setRemoteAnimation] = useState<object | null>(null);
 
   if (typeof src === 'string' && src in PRESETS) {
     const preset = PRESETS[src as LottiePreset];
@@ -52,13 +54,30 @@ export function LottieAnimation({
     resolvedSrc = src;
   }
 
-  if (!animationData && !resolvedSrc) return null;
+  useEffect(() => {
+    if (!resolvedSrc || animationData) return;
+    let cancelled = false;
+    fetch(resolvedSrc)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (!cancelled && json) setRemoteAnimation(json);
+      })
+      .catch(() => {
+        if (!cancelled) setRemoteAnimation(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [animationData, resolvedSrc]);
+
+  const data = animationData ?? remoteAnimation;
+
+  if (!data && !resolvedSrc) return null;
 
   return (
     <div className={className} style={{ width, height, ...style }}>
       <Lottie
-        animationData={animationData}
-        path={animationData ? undefined : resolvedSrc}
+        animationData={data ?? { v: '5.7.4', fr: 30, ip: 0, op: 1, w: 1, h: 1, layers: [] }}
         loop={resolvedLoop ?? true}
         autoplay={autoplay}
         style={{ width: '100%', height: '100%' }}

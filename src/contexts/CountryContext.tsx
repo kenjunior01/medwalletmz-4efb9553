@@ -521,7 +521,7 @@ export const REGIONS = [
 export function getCountriesByRegion(countries: Country[]) {
   return REGIONS.map(r => ({
     ...r,
-    items: countries.filter(c => r.countries.includes(c.id)),
+    items: countries.filter(c => (r.countries as readonly string[]).includes(c.id)),
   })).filter(r => r.items.length > 0);
 }
 

@@ -64,7 +64,7 @@ export default function InstitutionProfile() {
 
   useEffect(() => {
     if (!user) { navigate('/auth'); return; }
-    if (!hasRole('clinic') && !hasRole('hospital') && !hasRole('institution')) {
+    if (!hasRole('clinic') && !hasRole('hospital')) {
       navigate('/auth'); return;
     }
     loadProfile();
@@ -72,19 +72,31 @@ export default function InstitutionProfile() {
 
   const loadProfile = async () => {
     if (!user) return;
-    const { data: p } = await supabase
+    const { data: p } = await (supabase as any)
       .from('clinics')
       .select('*')
       .eq('user_id', user.id)
       .maybeSingle();
     if (!p) { setLoading(false); return; }
-    setProfile(p as InstitutionProfile);
+    const row = p as Partial<InstitutionProfile> & Record<string, any>;
+    setProfile({
+      ...row,
+      user_id: row.user_id ?? user.id,
+      institution_type: row.institution_type ?? row.type ?? 'clinic',
+      country_code: row.country_code ?? row.country_id ?? country?.id ?? 'MZ',
+      license_number: row.license_number ?? '',
+      license_type: row.license_type ?? '',
+      accepts_insurance: row.accepts_insurance ?? false,
+      operating_hours: row.operating_hours ?? '',
+      emergency: row.emergency ?? false,
+      created_at: row.created_at ?? new Date().toISOString(),
+    } as InstitutionProfile);
     setEditForm({});
 
     setStats({
-      totalDoctors: p.total_doctors || 0,
-      totalPatients: p.total_patients || 0,
-      monthlyRevenue: p.monthly_revenue || 0,
+      totalDoctors: row.total_doctors || 0,
+      totalPatients: row.total_patients || 0,
+      monthlyRevenue: row.monthly_revenue || 0,
     });
     setLoading(false);
   };
@@ -151,7 +163,7 @@ export default function InstitutionProfile() {
       <main className="p-4 space-y-5 max-w-2xl mx-auto">
         {/* Hero */}
         <PanelShell className="p-6">
-          <LayeredOrbs variant="default" />
+          <LayeredOrbs variant="warm" />
           <div className="flex items-start gap-4">
             <div className="relative">
               <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-teal-500 to-primary/60 flex items-center justify-center overflow-hidden">

@@ -78,7 +78,7 @@ export default function DoctorProfile() {
       setLoading(false);
       return;
     }
-    setProfile(p as DoctorProfile);
+    setProfile(p as unknown as DoctorProfile);
     setEditForm({});
 
     // Load stats

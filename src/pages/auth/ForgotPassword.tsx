@@ -12,6 +12,7 @@ import { Loader2, Mail, ArrowLeft, KeyRound, CheckCircle2, AlertCircle } from 'l
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const tr = (text: string) => t(text) || text;
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,13 +62,10 @@ export default function ForgotPassword() {
               <KeyRound className="h-7 w-7 text-primary" />
             </div>
             <CardTitle className="text-2xl font-bold tracking-tight">
-              {t('Recuperar Senha', 'Recuperar Senha')}
+              {tr('Recuperar Senha')}
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              {t(
-                'Insira o seu email e enviaremos um link para redefinir a sua senha.',
-                'Insira o seu email e enviaremos um link para redefinir a sua senha.'
-              )}
+              {tr('Insira o seu email e enviaremos um link para redefinir a sua senha.')}
             </CardDescription>
           </CardHeader>
 
@@ -79,13 +77,10 @@ export default function ForgotPassword() {
                 </div>
                 <div className="space-y-1">
                   <p className="font-semibold text-foreground">
-                    {t('Email enviado!', 'Email enviado!')}
+                    {tr('Email enviado!')}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {t(
-                      'Verifique o seu email para um link de redefinição de senha.',
-                      'Verifique o seu email para um link de redefinição de senha.'
-                    )}
+                    {tr('Verifique o seu email para um link de redefinição de senha.')}
                   </p>
                 </div>
               </div>
@@ -120,12 +115,12 @@ export default function ForgotPassword() {
                   {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      {t('A enviar...', 'A enviar...')}
+                      {tr('A enviar...')}
                     </>
                   ) : (
                     <>
                       <Mail className="h-4 w-4 mr-2" />
-                      {t('Enviar link de redefinição', 'Enviar link de redefinição')}
+                      {tr('Enviar link de redefinição')}
                     </>
                   )}
                 </Button>
@@ -141,13 +136,13 @@ export default function ForgotPassword() {
               className="text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              {t('Voltar ao Login', 'Voltar ao Login')}
+              {tr('Voltar ao Login')}
             </Button>
           </CardFooter>
         </Card>
 
         <p className="mt-6 text-xs text-muted-foreground">
-          {t('MedWallet MZ — Plataforma de Saúde Digital', 'MedWallet MZ — Plataforma de Saúde Digital')}
+          {tr('MedWallet MZ — Plataforma de Saúde Digital')}
         </p>
       </div>
     </>
