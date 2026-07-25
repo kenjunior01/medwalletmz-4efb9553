@@ -185,7 +185,7 @@ export default function Auth() {
   const handleGoogle = async () => {
     setLoading(true);
     try {
-      const { error } = await signInWithGoogle(referralCode);
+      const { error } = await signInWithGoogle(referralCode, nextPath);
       if (error) {
         console.error("Google Auth Error:", error);
         toast.error("Erro no Login Google", {

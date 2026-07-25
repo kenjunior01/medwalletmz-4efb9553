@@ -182,17 +182,21 @@ export default function Triage() {
     setLoading(true);
     setResult(null);
     try {
-      // CAMADA 0: Edge Function Supabase (primária)
-      const { data, error } = await supabase.functions.invoke('ai-triage', {
+      // CAMADA 0: Lovable AI via função cloud (primária), com timeout para nunca travar a UI.
+      const invokeTriage = supabase.functions.invoke('ai-triage', {
         body: { symptoms, age: age ? Number(age) : null, duration, country: countryCode },
       });
+      const timeout = new Promise<never>((_, reject) => {
+        window.setTimeout(() => reject(new Error('A triagem cloud demorou demasiado.')), 25000);
+      });
+      const { data, error } = await Promise.race([invokeTriage, timeout]);
 
       let triageData: TriageResult | null = null;
 
       if (error || !data || data.error) {
         // CAMADA FALLBACK: Gemini browser + regras locais (em src/lib/triageFallback.ts)
         console.warn('Edge Function ai-triage falhou, usando fallback local:', error || data?.error);
-        toast.info("IA cloud indisponível — a usar modo local (Gemini browser + regras clínicas)", {
+        toast.info("Lovable AI indisponível — a usar modo local seguro", {
           icon: <Sparkles className="h-4 w-4" />,
         });
         triageData = (await triageLocalFallback(

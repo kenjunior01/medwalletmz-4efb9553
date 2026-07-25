@@ -4,6 +4,17 @@ import { toast } from "sonner";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const sanitizeNextPath = (value: string | null) => {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/';
+  return value;
+};
+
+const consumePendingNextPath = () => {
+  const next = sanitizeNextPath(window.localStorage.getItem('pending_auth_next'));
+  window.localStorage.removeItem('pending_auth_next');
+  return next;
+};
+
 /**
  * OAuthCallbackHandler
  *
@@ -38,11 +49,6 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
     const search = window.location.search || '';
     const fullPath = window.location.pathname + hash + search;
 
-    // Debug: loga tudo sobre a URL atual para diagnosticar problemas OAuth
-    console.log('[OAuthCallbackHandler] URL atual:', window.location.href);
-    console.log('[OAuthCallbackHandler] hash:', hash);
-    console.log('[OAuthCallbackHandler] search:', search);
-
     // Helper: extrair params do hash (formato: #key=value&key2=value2)
     const parseHashParams = (hashStr: string): Record<string, string> => {
       if (!hashStr || !hashStr.startsWith('#')) return {};
@@ -75,14 +81,6 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
     const hasErrorCode = !!allParams.error_code;
     const hasErrorDescription = !!allParams.error_description;
 
-    console.log('[OAuthCallbackHandler] params detectados:', {
-      hasAccessToken,
-      hasError,
-      hasErrorCode,
-      hasErrorDescription,
-      keys: Object.keys(allParams),
-    });
-
     // ────────────────────────────────────────────────────────────────────────
     // CASO 1: Erro OAuth no URL
     //   Ex: #error=access_denied&error_description=...
@@ -91,8 +89,6 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
     if (hasError || hasErrorCode) {
       const errorCode = allParams.error || allParams.error_code || 'unknown_error';
       const errorDesc = allParams.error_description || allParams.error_message || 'Erro desconhecido no login.';
-
-      console.error('[OAuthCallbackHandler] Erro OAuth detectado:', errorCode, errorDesc);
 
       // Mensagens amigáveis em português para erros comuns
       const friendlyMessages: Record<string, string> = {
@@ -139,79 +135,47 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
     //   3. Se demorar demasiado, mostramos erro
     // ────────────────────────────────────────────────────────────────────────
     if (hasAccessToken) {
-      console.log('[OAuthCallbackHandler] Tokens OAuth detectados no URL. Aguardando Supabase processar...');
-
       setOauthState('processing');
 
-      // Listener para detectar quando o Supabase terminar de processar
-      let timeoutId: ReturnType<typeof setTimeout> | null = null;
-      let processed = false;
+      let cancelled = false;
+      (async () => {
+        try {
+          const accessToken = allParams.access_token;
+          const refreshToken = allParams.refresh_token;
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        console.log('[OAuthCallbackHandler] Auth event:', event, 'session?', !!session);
-
-        if (event === 'SIGNED_IN' && session && !processed) {
-          processed = true;
-          console.log('[OAuthCallbackHandler] Sessão criada com sucesso! user:', session.user.id);
-
-          // Limpa o hash (segurança — tokens não devem ficar visíveis)
-          try {
-            if (window.history && window.history.replaceState) {
-              window.history.replaceState(null, '', window.location.pathname);
-            }
-          } catch (e) {
-            console.warn('[OAuthCallbackHandler] Não foi possível limpar o hash:', e);
+          if (accessToken && refreshToken) {
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            if (error) throw error;
+          } else {
+            const { data, error } = await supabase.auth.getSession();
+            if (error) throw error;
+            if (!data.session) throw new Error('Sessão Google não foi criada.');
           }
 
+          if (cancelled) return;
+          const next = consumePendingNextPath();
+          window.history.replaceState(null, '', next);
           setOauthState('idle');
-
-          toast.success('Login efetuado com sucesso!', {
-            description: `Bem-vindo, ${session.user.email}`,
-          });
-
-          if (timeoutId) clearTimeout(timeoutId);
-          subscription.unsubscribe();
-        }
-
-        if (event === 'SIGNED_OUT' && !processed) {
-          // SIGNED_OUT antes de SIGNED_IN = falha
-          console.warn('[OAuthCallbackHandler] Recebido SIGNED_OUT em vez de SIGNED_IN');
-        }
-      });
-
-      // Timeout: se após 15s o Supabase não processou, mostra erro
-      timeoutId = setTimeout(() => {
-        if (!processed) {
-          console.error('[OAuthCallbackHandler] Timeout: Supabase não processou os tokens após 15s');
-
+          toast.success('Login Google concluído');
+          window.dispatchEvent(new Event('medwallet:oauth-complete'));
+        } catch (e) {
+          if (cancelled) return;
+          const message = e instanceof Error ? e.message : String(e);
           setOauthState('error');
-          setErrorMessage(
-            'O login Google demorou demasiado a processar. Isto pode dever-se a uma configuração incorreta do Supabase. ' +
-            'Tenta novamente ou usa e-mail/password.'
-          );
-
-          toast.error('Timeout no login Google', {
+          setErrorMessage(message || 'Não foi possível finalizar o login Google.');
+          toast.error('Falha no login Google', {
             description: 'Tenta novamente ou usa e-mail/password.',
             duration: 8000,
           });
-
-          // Limpa o hash mesmo em caso de erro
-          try {
-            if (window.history && window.history.replaceState) {
-              window.history.replaceState(null, '', window.location.pathname);
-            }
-          } catch (e) {
-            console.warn(e);
-          }
-
-          subscription.unsubscribe();
+          window.history.replaceState(null, '', window.location.pathname);
         }
-      }, 15000);
+      })();
 
-      // Cleanup se componente desmontar
       return () => {
-        if (timeoutId) clearTimeout(timeoutId);
-        subscription.unsubscribe();
+        cancelled = true;
       };
     }
 
@@ -222,9 +186,7 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
     // Log só se houver algo suspeito no URL (ex: ?code= sem access_token)
     if (allParams.code && !hasAccessToken) {
       console.warn(
-        '[OAuthCallbackHandler] URL tem ?code= mas sem access_token. ' +
-        'Isto pode indicar que o broker Lovable não trocou o code por tokens. ' +
-        'URL:', fullPath
+        '[OAuthCallbackHandler] URL tem ?code= mas sem access_token. URL:', fullPath
       );
     }
   }, []);

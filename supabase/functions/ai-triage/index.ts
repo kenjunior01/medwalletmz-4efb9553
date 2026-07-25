@@ -2,7 +2,7 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 // =====================================================================
 // AI TRIAGE — PRIORIDADE MÁXIMA: LOVABLE AI GATEWAY
-// 1. Lovable AI Gateway (google/gemini-3-flash-preview) — PRIMÁRIA
+// 1. Lovable AI Gateway (google/gemini-3.6-flash) — PRIMÁRIA
 // 2. Motor local de regras clínicas — fallback de emergência
 // =====================================================================
 
@@ -332,43 +332,19 @@ Adapta ao contexto local: ${config.health_system}. Em emergência recomenda ${co
 
     const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' },
+      headers: {
+        'Lovable-API-Key': KEY,
+        'X-Lovable-AIG-SDK': 'manual-edge-fetch',
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        model: 'google/gemini-3-flash-preview',
-        messages: [{ role: 'system', content: system }, { role: 'user', content: userMsg }],
-        tools: [{
-          type: 'function',
-          function: {
-            name: 'triage_result',
-            description: 'Resultado de triagem',
-            parameters: {
-              type: 'object',
-              properties: {
-                severity: { type: 'string', enum: ['baixa', 'moderada', 'alta', 'emergência'] },
-                recommendation: { type: 'string' },
-                suggested_specialty: { type: 'string' },
-                red_flags: { type: 'array', items: { type: 'string' } },
-                self_care: { type: 'array', items: { type: 'string' } },
-                possible_causes: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      name: { type: 'string' },
-                      likelihood: { type: 'string', enum: ['baixa', 'média', 'alta'] },
-                    },
-                    required: ['name'],
-                    additionalProperties: false,
-                  },
-                },
-                when_to_seek_help: { type: 'string' },
-              },
-              required: ['severity', 'recommendation', 'suggested_specialty'],
-              additionalProperties: false,
-            },
-          },
-        }],
-        tool_choice: { type: 'function', function: { name: 'triage_result' } },
+        model: 'google/gemini-3.6-flash',
+        messages: [
+          { role: 'system', content: `${system}\n\nDevolve APENAS JSON válido, sem markdown, sem explicação fora do JSON.` },
+          { role: 'user', content: userMsg },
+        ],
+        temperature: 0.2,
+        max_tokens: 900,
       }),
     });
 
@@ -379,10 +355,16 @@ Adapta ao contexto local: ${config.health_system}. Em emergência recomenda ${co
     }
 
     const data = await aiRes.json();
-    const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
-    const parsed = args ? JSON.parse(args) : null;
-    if (!parsed) {
-      console.error('Lovable AI: sem tool_call na resposta', JSON.stringify(data).slice(0, 500));
+    const content = data.choices?.[0]?.message?.content;
+    const text = typeof content === 'string'
+      ? content
+      : Array.isArray(content)
+        ? content.map((part: any) => part?.text || '').join('\n')
+        : '';
+    const jsonText = text.trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+    const parsed = jsonText ? JSON.parse(jsonText) : null;
+    if (!parsed?.severity || !parsed?.recommendation || !parsed?.suggested_specialty) {
+      console.error('Lovable AI: resposta inválida', JSON.stringify(data).slice(0, 500));
       return null;
     }
     return { ...parsed, _provider: 'lovable' };

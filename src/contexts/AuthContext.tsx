@@ -18,7 +18,7 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string) => Promise<{ error: Error | null; user: User | null }>;
   signIn: (email: string, password: string, referralCode?: string) => Promise<{ error: Error | null; user: User | null }>;
-  signInWithGoogle: (referralCode?: string) => Promise<{ error: Error | null }>;
+  signInWithGoogle: (referralCode?: string, nextPath?: string | null) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
   refreshRoles: () => Promise<void>;
@@ -210,9 +210,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error as Error | null, user: data.user as User | null };
   };
 
-  const signInWithGoogle = async (referralCode?: string) => {
+  const signInWithGoogle = async (referralCode?: string, nextPath?: string | null) => {
     if (referralCode) {
       localStorage.setItem('pending_referral_code', referralCode);
+    }
+    if (nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//')) {
+      localStorage.setItem('pending_auth_next', nextPath);
+    } else {
+      localStorage.removeItem('pending_auth_next');
     }
     // Usa o broker OAuth da Lovable Cloud em vez de supabase.auth.signInWithOAuth directo.
     // O broker da Lovable (https://oauth.lovable.app) trata do redirect URI / callback,
@@ -220,7 +225,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Após o redirect, o broker devolve tokens que são aplicados via supabase.auth.setSession().
     try {
       const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: `${window.location.origin}/`,
+        redirect_uri: window.location.origin,
+        extraParams: { prompt: 'select_account' },
       });
       if (result.redirected) {
         // Página está a redirecionar para o Google via broker Lovable
