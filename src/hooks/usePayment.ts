@@ -83,7 +83,7 @@ export function usePayment(): UsePaymentReturn {
         status: 'failed',
         message: msg,
         timestamp: new Date().toISOString(),
-      };
+      } as PaymentResponse;
     } finally {
       setLoading(false);
     }

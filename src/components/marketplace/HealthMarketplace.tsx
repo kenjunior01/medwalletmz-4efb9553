@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCountry } from '@/contexts/CountryContext';
-import { getTheme } from '@/themes';
-import { formatCurrency } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +33,21 @@ type CategoryFilter = 'all' | HealthPackage['category'];
 // ── Coupon codes ────────────────────────────────────────────────────────────
 const COUPONS: Record<string, number> = {
   SAUDE10: 10, BEM20: 20, MAPUTO15: 15, MEDWALLET25: 25,
+};
+
+const formatCurrency = (value: number, currency: string) =>
+  new Intl.NumberFormat('pt-MZ', { style: 'currency', currency }).format(value);
+
+const theme = {
+  primary: 'hsl(var(--primary))',
+  text: 'hsl(var(--foreground))',
+  muted: 'hsl(var(--muted-foreground))',
+  border: 'hsl(var(--border))',
+  success: 'hsl(var(--success))',
+  surface: 'hsl(var(--muted))',
+  card: 'hsl(var(--card))',
+  error: 'hsl(var(--destructive))',
+  secondaryText: 'hsl(var(--muted-foreground))',
 };
 
 // ── 12 mock packages (MZN 500–3000 across 6 categories) ────────────────────
@@ -107,7 +120,6 @@ const cardVariants = {
 // ── Component ──────────────────────────────────────────────────────────────
 export function HealthMarketplace() {
   const { t } = useCountry();
-  const theme = getTheme();
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<CategoryFilter>('all');
@@ -121,7 +133,7 @@ export function HealthMarketplace() {
     const discount = COUPONS[couponCode.trim().toUpperCase()];
     if (discount) {
       setCouponDiscount(discount);
-      toast.success(t('mp.couponApplied', { discount }));
+      toast.success(t('mp.couponApplied', { discount: String(discount) }));
     } else {
       setCouponDiscount(0);
       toast.error(t('mp.couponInvalid'));
@@ -216,8 +228,8 @@ export function HealthMarketplace() {
       {couponDiscount > 0 && (
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
           <Badge className="gap-1 px-3 py-1 text-sm"
-            style={{ background: theme.success, color: '#fff' }}>
-            <Tag size={14} />{t('mp.activeCoupon', { discount: couponDiscount })}
+            style={{ background: theme.success, color: 'hsl(var(--primary-foreground))' }}>
+            <Tag size={14} />{t('mp.activeCoupon', { discount: String(couponDiscount) })}
           </Badge>
         </motion.div>
       )}
@@ -231,7 +243,7 @@ export function HealthMarketplace() {
               className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
               style={{
                 background: active ? theme.primary : theme.surface,
-                color: active ? '#fff' : theme.text,
+                color: active ? 'hsl(var(--primary-foreground))' : theme.text,
                 border: `1px solid ${active ? theme.primary : theme.border}`,
               }}>
               {t(cat.labelKey)}
@@ -272,7 +284,7 @@ export function HealthMarketplace() {
                     <div className="flex items-center gap-2">
                       {pkg.badge && (
                         <Badge className="text-[11px]"
-                          style={{ background: theme.primary, color: '#fff' }}>
+                          style={{ background: theme.primary, color: 'hsl(var(--primary-foreground))' }}>
                           {t(pkg.badge)}
                         </Badge>
                       )}
@@ -313,7 +325,7 @@ export function HealthMarketplace() {
                       {pkg.rating} ({pkg.reviewsCount})
                     </span>
                     <span className="flex items-center gap-1">
-                      <Clock size={14} />{t('mp.validDays', { days: pkg.validDays })}
+                      <Clock size={14} />{t('mp.validDays', { days: String(pkg.validDays) })}
                     </span>
                   </div>
 
@@ -334,7 +346,7 @@ export function HealthMarketplace() {
                       onClick={() =>
                         toast.success(t('mp.reservationSuccess', { name: t(pkg.nameKey) }))}
                       className="font-semibold rounded-full px-5"
-                      style={{ background: theme.primary, color: '#fff' }}>
+                      style={{ background: theme.primary, color: 'hsl(var(--primary-foreground))' }}>
                       {t('mp.reservePackage')}
                     </Button>
                   </div>
