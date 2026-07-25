@@ -1,17 +1,39 @@
 /**
  * Google Cloud Text-to-Speech Utility
+ *
+ * Supports multilingual TTS via locale-aware voice selection.
+ * Falls back to browser SpeechSynthesis if API key is unavailable or the call fails.
  */
+
+import { getSpeechLocale } from '@/lib/speechLocale';
 
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-export async function speakText(text: string, languageCode: string = 'pt-PT') {
+/**
+ * Speaks the given text aloud in the specified locale.
+ *
+ * @param text  — The text to synthesize
+ * @param locale — App locale code (e.g. 'pt', 'en', 'fr', 'sw', 'hi', 'pt-BR', etc.)
+ */
+export async function speakText(text: string, locale: string = 'pt') {
+  const { tts, voice } = getSpeechLocale(locale);
+
   if (!API_KEY || API_KEY.includes('your_')) {
     console.warn("Google API Key not configured for TTS, falling back to browser SpeechSynthesis");
-    fallbackSpeak(text, languageCode);
+    fallbackSpeak(text, tts);
     return;
   }
 
   try {
+    const voiceParams: { languageCode: string; ssmlGender: string; name?: string } = {
+      languageCode: tts,
+      ssmlGender: 'FEMALE',
+    };
+    // Use Neural2 voice if available for this language
+    if (voice) {
+      voiceParams.name = voice;
+    }
+
     const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${API_KEY}`, {
       method: 'POST',
       headers: {
@@ -19,12 +41,7 @@ export async function speakText(text: string, languageCode: string = 'pt-PT') {
       },
       body: JSON.stringify({
         input: { text },
-        voice: {
-          languageCode,
-          ssmlGender: 'FEMALE',
-          // Try to use a high-quality Neural2 voice if possible
-          name: languageCode === 'pt-PT' ? 'pt-PT-Neural2-A' : 'pt-BR-Neural2-A'
-        },
+        voice: voiceParams,
         audioConfig: { audioEncoding: 'MP3' },
       }),
     });
@@ -40,7 +57,7 @@ export async function speakText(text: string, languageCode: string = 'pt-PT') {
     await audio.play();
   } catch (error) {
     console.error("Google TTS failed, falling back to browser:", error);
-    fallbackSpeak(text, languageCode);
+    fallbackSpeak(text, tts);
   }
 }
 

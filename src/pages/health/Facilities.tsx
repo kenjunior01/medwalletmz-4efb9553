@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/contexts/LocationContext";
+import { useCountry } from '@/contexts/CountryContext';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -53,6 +54,7 @@ function isOpenNow(operatingHours: string | null | undefined): boolean | null {
 export default function Facilities() {
   const nav = useNavigate();
   const { city, coordinates } = useLocation();
+  const { t } = useCountry();
   const userLoc = coordinates ? { lat: coordinates.latitude, lng: coordinates.longitude } : null;
   const [sp, setSp] = useSearchParams();
   const initial = (sp.get("type") as any) || "clinic";
@@ -162,9 +164,10 @@ export default function Facilities() {
               className="pl-9"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
+              aria-label={t('health.search_facilities')}
             />
           </div>
-          <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+          <div className="flex gap-1.5 overflow-x-auto no-scrollbar" role="tablist" aria-label={t('health.filter_by_specialty')}>
             <Filter className="h-4 w-4 shrink-0 mt-2 text-muted-foreground" />
             {SPECIALTIES.map(s => (
               <button

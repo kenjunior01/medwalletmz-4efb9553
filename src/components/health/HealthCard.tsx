@@ -22,25 +22,23 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
-// ─── Mock Patient Data ─────────────────────────────────────────────
-const MOCK_PATIENT = {
-  fullName: 'Ana Maria Tembe',
-  dateOfBirth: '1992-03-15',
-  medicalId: 'MZ-4827-9103',
-  bloodType: 'O+' as const,
-  province: 'Maputo',
-  emergencyContact: '+258 84 312 7654',
-  allergies: ['Penicillin', 'Latex', 'Peanuts'],
-  currentMedications: ['Metformin 500mg', 'Lisinopril 10mg', 'Vitamin D3'],
-  chronicConditions: ['Type 2 Diabetes', 'Hypertension'],
-  vaccinationLastUpdate: '2025-11-20',
-};
-
-type BloodType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+// ─── Patient Data Interface ───────────────────────────────────────
+interface PatientData {
+  fullName: string;
+  dateOfBirth: string;
+  medicalId: string;
+  bloodType: string;
+  province?: string;
+  emergencyContact: string;
+  allergies: string[];
+  currentMedications: string[];
+  chronicConditions: string[];
+  vaccinationLastUpdate?: string;
+}
 
 // ─── Props ─────────────────────────────────────────────────────────
 interface HealthCardProps {
-  patient?: typeof MOCK_PATIENT;
+  patient?: PatientData;
   className?: string;
 }
 
@@ -57,11 +55,28 @@ const springTransition = {
 };
 
 // ─── Component ─────────────────────────────────────────────────────
-export function HealthCard({ patient = MOCK_PATIENT, className }: HealthCardProps) {
+export function HealthCard({ patient, className }: HealthCardProps) {
   const { t, country } = useCountry();
   const [isFlipped, setIsFlipped] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const theme = getTheme(country?.id || 'MZ');
+
+  // ─── Placeholder when no patient data is provided ──────────────
+  if (!patient) {
+    return (
+      <div className={cn('flex flex-col items-center gap-3', className)}>
+        <div
+          className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-muted p-8"
+          style={{ aspectRatio: '1.586 / 1' }}
+        >
+          <Shield className="mb-3 h-10 w-10 text-muted-foreground/40" />
+          <p className="text-sm font-semibold text-muted-foreground">
+            {t('healthWallet.no_profile')}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Generate QR code from patient data
   const generateQR = useCallback(async () => {
@@ -100,7 +115,7 @@ export function HealthCard({ patient = MOCK_PATIENT, className }: HealthCardProp
   };
 
   // Blood type badge colour
-  const bloodColor = (bt: BloodType) => {
+  const bloodColor = (bt: string) => {
     if (bt.startsWith('O')) return 'bg-red-500 text-white';
     if (bt.startsWith('A')) return 'bg-blue-500 text-white';
     if (bt.startsWith('B')) return 'bg-amber-500 text-white';
@@ -193,7 +208,7 @@ export function HealthCard({ patient = MOCK_PATIENT, className }: HealthCardProp
 
           <div className="mt-auto flex items-center gap-1.5 text-[10px] text-white/60">
             <Heart className="h-3 w-3" />
-            {patient.province}, Moçambique
+            {patient.province ? `${patient.province}, Moçambique` : 'Moçambique'}
           </div>
         </div>
 
@@ -220,7 +235,9 @@ export function HealthCard({ patient = MOCK_PATIENT, className }: HealthCardProp
       <div className="relative z-10 mt-3 flex items-center justify-between border-t border-white/10 pt-2">
         <p className="text-[8px] text-white/40">{t('healthWallet.subtitle')}</p>
         <p className="text-[8px] text-white/40">
-          {t('healthWallet.last_updated')}: {patient.vaccinationLastUpdate}
+          {patient.vaccinationLastUpdate
+            ? `${t('healthWallet.last_updated')}: ${patient.vaccinationLastUpdate}`
+            : t('healthWallet.last_updated')}
         </p>
       </div>
     </div>
@@ -292,12 +309,14 @@ export function HealthCard({ patient = MOCK_PATIENT, className }: HealthCardProp
         />
 
         {/* Vaccination Status */}
-        <InfoRow
-          icon={<Shield className="h-3.5 w-3.5" />}
-          label={t('healthWallet.vaccination_record')}
-          value={`${t('healthWallet.last_updated')}: ${patient.vaccinationLastUpdate}`}
-          color={theme.colors.primary}
-        />
+        {patient.vaccinationLastUpdate && (
+          <InfoRow
+            icon={<Shield className="h-3.5 w-3.5" />}
+            label={t('healthWallet.vaccination_record')}
+            value={`${t('healthWallet.last_updated')}: ${patient.vaccinationLastUpdate}`}
+            color={theme.colors.primary}
+          />
+        )}
       </div>
 
       {/* Action buttons */}

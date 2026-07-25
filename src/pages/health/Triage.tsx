@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { speakText } from '@/lib/googleTTS';
 import { triageLocalFallback } from '@/lib/triageFallback';
+import { getSpeechLocale } from '@/lib/speechLocale';
 
 interface TriageResult {
   severity: string;
@@ -43,7 +44,7 @@ const sevColor: Record<string, string> = {
 export default function Triage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { t } = useCountry();
+  const { t, locale } = useCountry();
   const { coordinates, calculateDistance, countryCode } = useLocation();
   const [symptoms, setSymptoms] = useState('');
   const [age, setAge] = useState('');
@@ -81,30 +82,31 @@ export default function Triage() {
       }
     } else {
       setIsRecording(true);
-      toast.info("A ouvir...", { description: "Descreva os seus sintomas em voz alta." });
+      const speechLocale = getSpeechLocale(locale);
+      toast.info(t('health.listening'), { description: t('health.listening_description') });
 
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        toast.error("O seu navegador não suporta reconhecimento de voz.");
+        toast.error(t('health.stt_not_supported'));
         setIsRecording(false);
         return;
       }
 
       const recognition = new SpeechRecognition();
-      recognition.lang = countryCode === 'BR' ? 'pt-BR' : 'pt-PT';
+      recognition.lang = speechLocale.stt;
       recognition.continuous = false;
       recognition.interimResults = false;
 
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         setSymptoms(prev => prev ? prev + " " + transcript : transcript);
-        toast.success("Áudio transcrito com sucesso!");
+        toast.success(t('health.audio_transcribed'));
       };
 
       recognition.onerror = (event: any) => {
         console.error("Erro no reconhecimento de voz:", event.error);
         setIsRecording(false);
-        toast.error("Erro ao capturar áudio: " + event.error);
+        toast.error(t('health.audio_error') + event.error);
       };
 
       recognition.onend = () => {
@@ -247,8 +249,8 @@ export default function Triage() {
 
   const speakRecommendation = async () => {
     if (!result) return;
-    toast.info("A gerar áudio via Cloud Text-to-Speech...", { icon: <Volume2 className="h-4 w-4" /> });
-    await speakText(result.recommendation, countryCode === 'BR' ? 'pt-BR' : 'pt-PT');
+    toast.info(t('health.generating_audio'), { icon: <Volume2 className="h-4 w-4" /> });
+    await speakText(result.recommendation, locale);
   };
 
   return (
@@ -289,6 +291,8 @@ export default function Triage() {
               <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t('health.symptoms_label')}</Label>
               <button
                 onClick={toggleRecording}
+                aria-label={isRecording ? t('health.stop_recording') : t('health.start_recording')}
+                aria-pressed={isRecording}
                 className={cn(
                   "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-[10px] font-black uppercase tracking-tighter",
                   isRecording ? "bg-destructive text-white animate-pulse" : "bg-primary/10 text-primary"
@@ -356,6 +360,8 @@ export default function Triage() {
             className="w-full h-14 rounded-2xl font-black text-lg shadow-premium group"
             onClick={run}
             disabled={loading || isRecording}
+            aria-label={t('health.analyze_symptoms')}
+            aria-busy={loading}
           >
             {loading ? (
               <Loader2 className="h-6 w-6 animate-spin" />

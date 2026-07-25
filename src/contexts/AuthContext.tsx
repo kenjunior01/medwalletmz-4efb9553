@@ -3,6 +3,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { offlineManager } from '@/services/offline/OfflineManager';
+import { identifyUser, resetAnalytics } from '@/services/analytics';
 
 type AppRole =
   | 'customer'
@@ -156,6 +157,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (_event === 'SIGNED_IN' && session?.user) {
             offlineManager.init();
             offlineManager.cacheAll(session.user.id).catch(() => {});
+            // Analytics: identify user on sign-in
+            identifyUser(session.user.id, {
+              email: session.user.email,
+              country_id: session.user.user_metadata?.country_id,
+            }).catch(() => {});
           }
         }
       }
@@ -267,6 +273,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    // Analytics: reset identity on sign-out
+    resetAnalytics().catch(() => {});
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);

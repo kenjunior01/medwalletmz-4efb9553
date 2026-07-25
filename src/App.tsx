@@ -16,6 +16,7 @@ import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
 import { OAuthBrokerRedirect } from "@/components/auth/OAuthBrokerRedirect";
 import { PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
 import { OfflineIndicator } from "@/components/offline";
+import { PageViewTracker } from "@/services/PageViewTracker";
 
 // =========================================================================
 // CODE-SPLITTING COM React.lazy
@@ -222,6 +223,7 @@ const App = () => (
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
+                <PageViewTracker />
                 <OAuthCallbackHandler>
                 <Suspense fallback={<LoadingScreen />}>
                 <Routes>
