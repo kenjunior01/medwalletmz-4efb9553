@@ -15,7 +15,9 @@
         "@capacitor/splash-screen": "^7.0.0",
         "@capacitor/status-bar": "^7.0.0",
         "@daily-co/daily-js": "^0.91.0",
+        "@gsap/react": "^2.1.2",
         "@hookform/resolvers": "^3.9.0",
+        "@lottiefiles/react-lottie-player": "^3.6.0",
         "@lovable.dev/cloud-auth-js": "^1.1.2",
         "@lovable.dev/mcp-js": "^0.20.0",
         "@number-flow/react": "^0.6.1",
@@ -48,17 +50,22 @@
         "@radix-ui/react-tooltip": "^1.1.3",
         "@supabase/supabase-js": "^2.46.1",
         "@tanstack/react-query": "^5.60.2",
+        "@tsparticles/react": "^4.3.2",
+        "@tsparticles/slim": "^4.3.2",
         "@types/leaflet": "^1.9.14",
+        "canvas-confetti": "^1.9.4",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "cmdk": "^1.0.0",
         "date-fns": "^4.1.0",
         "embla-carousel-react": "^8.3.1",
         "framer-motion": "^11.11.11",
+        "gsap": "^3.15.0",
         "input-otp": "^1.2.4",
         "jspdf": "^4.2.1",
         "jspdf-autotable": "^5.0.8",
         "leaflet": "^1.9.4",
+        "lottie-react": "^2.4.1",
         "lucide-react": "^0.460.0",
         "next-themes": "^0.3.0",
         "qrcode": "^1.5.4",
@@ -406,6 +413,8 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
 
+    "@gsap/react": ["@gsap/react@2.1.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@gsap/react/-/react-2.1.2.tgz", { "peerDependencies": { "gsap": "^3.12.5", "react": ">=17" } }, "sha512-JqliybO1837UcgH2hVOM4VO+38APk3ECNrsuSM4MuXp+rbf+/2IG2K1YJiqfTcXQHH7XlA0m3ykniFYstfq0Iw=="],
+
     "@hono/node-server": ["@hono/node-server@1.19.14", "", { "peerDependencies": { "hono": "^4" } }, "sha512-GwtvgtXxnWsucXvbQXkRgqksiH2Qed37H9xHZocE5sA3N8O8O8/8FA3uclQXxXVzc9XBZuEOMK7+r02FmSpHtw=="],
 
     "@hookform/resolvers": ["@hookform/resolvers@3.10.0", "", { "peerDependencies": { "react-hook-form": "^7.0.0" } }, "sha512-79Dv+3mDF7i+2ajj7SkypSKHhl1cbln1OGavqrsF7p6mbUv11xpqpacPsGDCTRvCSjEEIez2ef1NveSVL3b0Ag=="],
@@ -453,6 +462,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
+
+    "@lottiefiles/react-lottie-player": ["@lottiefiles/react-lottie-player@3.6.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@lottiefiles/react-lottie-player/-/react-lottie-player-3.6.0.tgz", { "dependencies": { "lottie-web": "^5.12.2" }, "peerDependencies": { "react": "16 - 19" } }, "sha512-WK5TriLJT93VF3w4IjSVyveiedraZCnDhKzCPhpbeLgQeMi6zufxa3dXNc4HmAFRXq+LULPAy+Idv1rAfkReMA=="],
 
     "@lovable.dev/cloud-auth-js": ["@lovable.dev/cloud-auth-js@1.1.2", "", {}, "sha512-xz8ocewsgwkp8giau272/eWWU3XrchCg5uba4yQPPYtevHTXaVU3sD+fO1JjyPBHacVcOcwhmgUiU9TKHt63cg=="],
 
@@ -714,6 +725,88 @@
 
     "@testing-library/react": ["@testing-library/react@16.3.2", "", { "dependencies": { "@babel/runtime": "^7.12.5" }, "peerDependencies": { "@testing-library/dom": "^10.0.0", "@types/react": "^18.0.0 || ^19.0.0", "@types/react-dom": "^18.0.0 || ^19.0.0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-XU5/SytQM+ykqMnAnvB2umaJNIOsLF3PVv//1Ew4CTcpz0/BRyy/af40qqrt7SjKpDdT1saBMc42CUok5gaw+g=="],
 
+    "@tsparticles/animation-utils": ["@tsparticles/animation-utils@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/animation-utils/-/animation-utils-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-x4i/F24myZsk/qJEkREbOpzoWJtAbW8cL0Pan0Y5SdmKkG0dyLHw/fTG2uttIA3eeXhPH8JN648pSZMvbNJItw=="],
+
+    "@tsparticles/basic": ["@tsparticles/basic@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/basic/-/basic-4.3.2.tgz", { "dependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-blend": "4.3.2", "@tsparticles/plugin-hex-color": "4.3.2", "@tsparticles/plugin-hsl-color": "4.3.2", "@tsparticles/plugin-move": "4.3.2", "@tsparticles/plugin-rgb-color": "4.3.2", "@tsparticles/shape-circle": "4.3.2", "@tsparticles/updater-opacity": "4.3.2", "@tsparticles/updater-out-modes": "4.3.2", "@tsparticles/updater-paint": "4.3.2", "@tsparticles/updater-size": "4.3.2" } }, "sha512-8XTjwZqrxdfT1WUBvhjip1uksdeYBG0k0mr87vebIs7EwCSO//Rau1XYrHE69mSBwYvIqEhLNcwAixHbypG44Q=="],
+
+    "@tsparticles/canvas-utils": ["@tsparticles/canvas-utils@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/canvas-utils/-/canvas-utils-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-SN0O1sFhaCH5NfkZK9KawY9dK8YhiDqwPbqv7/Y9/oKmdreXQ2GSkaPOHOGmVDAkl3LYTI8Ip/JfNZaJ1GxDJQ=="],
+
+    "@tsparticles/engine": ["@tsparticles/engine@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/engine/-/engine-4.3.2.tgz", {}, "sha512-k4U7uahhxt7bPjEPHu+qrJXjHRysy/QMN+2/KK4d0/V7CElt5/oeR+H9QB95Osy/PtUCCi6EH/LS7k0443qlJA=="],
+
+    "@tsparticles/interaction-external-attract": ["@tsparticles/interaction-external-attract@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-attract/-/interaction-external-attract-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-dMODX9wNrro+E4mjooFSpA9GsGTecqaNzBaSxHY4wUd4Vqlwms3nGfcLs8mr5C6oOz9+i8ADClN30HbcK1n6hw=="],
+
+    "@tsparticles/interaction-external-bounce": ["@tsparticles/interaction-external-bounce@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-bounce/-/interaction-external-bounce-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-xRa4HT1TZ2T+TdAr3Y6P99hDC3vfvz04QPFr7QaZxnkZDpqeXSzT3VdWa4+PhWnV8s+VzmDI4MWqk5b6dfyq4w=="],
+
+    "@tsparticles/interaction-external-bubble": ["@tsparticles/interaction-external-bubble@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-bubble/-/interaction-external-bubble-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-DkFnv+ydwe/ZFsex7S1fmBfaDNFXIZCbBxEmYWylKkiWcm1yTe5A5YzqkEdQZC7tglppf3Jdou9cQXzwoD5HrA=="],
+
+    "@tsparticles/interaction-external-connect": ["@tsparticles/interaction-external-connect@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-connect/-/interaction-external-connect-4.3.2.tgz", { "dependencies": { "@tsparticles/canvas-utils": "4.3.2" }, "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-hZI01JrXCJLVO4l8jq5nB/6U+ghE7SjOoqbUqR8sM/PiNA6jQupibweyhvK8R/4Rh+soAYZHZ1uBFxXwpXOb5A=="],
+
+    "@tsparticles/interaction-external-destroy": ["@tsparticles/interaction-external-destroy@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-destroy/-/interaction-external-destroy-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-HNb4zbZQwMIurFGT/TeyJ2NVlIrBRgVuc93mRIWIA1vOdFZMEkkE1mgP55sOii/vASp/UAB+dXaaJP37gaC46w=="],
+
+    "@tsparticles/interaction-external-grab": ["@tsparticles/interaction-external-grab@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-grab/-/interaction-external-grab-4.3.2.tgz", { "dependencies": { "@tsparticles/canvas-utils": "4.3.2" }, "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-WITZJ4u36yPEcnVljpfWhMc8aJn07Zz8Eq7u5umERBTKF0QdLrMWseM3HgSv7AOV04fp86CDciVLOa2Ivdwcrw=="],
+
+    "@tsparticles/interaction-external-parallax": ["@tsparticles/interaction-external-parallax@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-parallax/-/interaction-external-parallax-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-sdP7OI7pMbKfvI819M9Ini3Lm8/OR3Lt3jXWb7gP8bDUxZ0zbWa5gmkZjWwyW8bFzBMssjSY1J1GhkZzTMv6Yg=="],
+
+    "@tsparticles/interaction-external-pause": ["@tsparticles/interaction-external-pause@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-pause/-/interaction-external-pause-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-nuIoXWAFb1wVNk29iiGJHjN6XaPlUJjsLsF1Tl9QhKAlXvrXk08zZsU7QVJ4bzMhyQ94IZdzNAVPd4cvOhVrHQ=="],
+
+    "@tsparticles/interaction-external-push": ["@tsparticles/interaction-external-push@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-push/-/interaction-external-push-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-2buFHr/73pdHMXaFPUFjdY0STWysvEGJpSYSAwmvt58WHVbM1z2XwBMpozQwRe15UNDw3H5ddeiVkIKuqwjZlQ=="],
+
+    "@tsparticles/interaction-external-remove": ["@tsparticles/interaction-external-remove@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-remove/-/interaction-external-remove-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-iJW2VuguF+cIUEHnrdFcVWTZMJnZ7j0q74Jut3FQy4XyGTzD2P8UCswbfpnZHQssGIPMupp7bHNIXOOchLTrtw=="],
+
+    "@tsparticles/interaction-external-repulse": ["@tsparticles/interaction-external-repulse@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-repulse/-/interaction-external-repulse-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-o0RyOjQROCqpJzjaMcNFew9afvJdKJB94E5XYoJCYK6Pwhp0BFMariXe91/yTdguIYrjUwJMQ5bvyBejP4Ygzw=="],
+
+    "@tsparticles/interaction-external-slow": ["@tsparticles/interaction-external-slow@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-external-slow/-/interaction-external-slow-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-wMdbZ6xD0QQJ1W077iJvHyCJ2kKHpE4+/xu0B7ffTHesn6vYv4K+CWUVvBTwVC5sJVq4Q2Av974qOfxIhMY7ZQ=="],
+
+    "@tsparticles/interaction-particles-attract": ["@tsparticles/interaction-particles-attract@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-particles-attract/-/interaction-particles-attract-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-X2GUryt0e5tkeQmIAt7QDqiq3OtNXE72QrM2a+T8E3T0Cvq9/UqrOtlCm6VKlel9OV2NAUi3BH84oCvOcqfYFg=="],
+
+    "@tsparticles/interaction-particles-collisions": ["@tsparticles/interaction-particles-collisions@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-particles-collisions/-/interaction-particles-collisions-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-dLBgNXAdRJN2bFTYPEK3lvSeJFWOT1gv22aGOBatPPxLZ+mH5w3oH8LE2noa7tBpiyG4tVEzMzZUIdp57SemPg=="],
+
+    "@tsparticles/interaction-particles-links": ["@tsparticles/interaction-particles-links@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/interaction-particles-links/-/interaction-particles-links-4.3.2.tgz", { "dependencies": { "@tsparticles/canvas-utils": "4.3.2" }, "peerDependencies": { "@tsparticles/engine": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2" } }, "sha512-h0bZcpj2tFItovtzCMyHCqu2Fhz+/N9oXQctvmD9sf7C7eya26ZsISEgPqqFIAvdwLYhmQTk5fns4d/6Y7yRWg=="],
+
+    "@tsparticles/plugin-blend": ["@tsparticles/plugin-blend@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/plugin-blend/-/plugin-blend-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-5iUDwzvcOtiaFvsbL3y+UzneGrlNwITB8HlNCfjp675wrg9xh7ILHa3/ZYHii1qC8gkKNva0w2N+wET9n+XWBQ=="],
+
+    "@tsparticles/plugin-easing-quad": ["@tsparticles/plugin-easing-quad@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/plugin-easing-quad/-/plugin-easing-quad-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-yrh6KSD+UEY8aW3hnfzVL84neUwCZ1ZqU/cj5jTHDQ7zFbYu8QA6zhR30kYHI645VmCaMjp+zuZ2ii6rwXsVIQ=="],
+
+    "@tsparticles/plugin-hex-color": ["@tsparticles/plugin-hex-color@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/plugin-hex-color/-/plugin-hex-color-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-uRNSHx/d3hByVYAwPHKKoKxy7s0QujhNUpsgDuL92JODKCjCFm8SudbkW3STSXVznhY5bCcu4iAF+7zKVgVXCg=="],
+
+    "@tsparticles/plugin-hsl-color": ["@tsparticles/plugin-hsl-color@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/plugin-hsl-color/-/plugin-hsl-color-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-kvRux8WnToyy9Dr8ROYvNDnE0HPW5h7x3wBROOghlazGYvYPO4nJBFvcmvvISRF6Ghsm9bzY255Qun2vACv2tA=="],
+
+    "@tsparticles/plugin-interactivity": ["@tsparticles/plugin-interactivity@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/plugin-interactivity/-/plugin-interactivity-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-GIOiyrSn2Zf+cWxLPeUeYG4qjSeGzDcocbSiLcAaPPjZ5J+D0LOBsrrb6qvqMvUj0qCkjKF4cIf7OgznhkdZkw=="],
+
+    "@tsparticles/plugin-move": ["@tsparticles/plugin-move@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/plugin-move/-/plugin-move-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-8nSDxWhxVWl9JzX/fSZwz5ZVzEMMFJLF3vizjfag2zE+jc4Nidfs9ZOPrD4yxpKSfZiv1ZwJpoOhT2ch4sVTug=="],
+
+    "@tsparticles/plugin-rgb-color": ["@tsparticles/plugin-rgb-color@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/plugin-rgb-color/-/plugin-rgb-color-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-/4xZBlEWqqG7VscJzC2VimA62fxDboe4XO1+m8LeM2ytxrhEpNk14TeBJt+zCc8jBkFjpKOdmTZ0VYyuK4FtDQ=="],
+
+    "@tsparticles/react": ["@tsparticles/react@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/react/-/react-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2", "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-aCTqFkGBnT1BitrlmyjkR+FNQ+RKuO8UfhadLfW51YSHwTdR0erB1ZFab+wCout1SWGIR7mirRWfjwewxiDMeA=="],
+
+    "@tsparticles/shape-circle": ["@tsparticles/shape-circle@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/shape-circle/-/shape-circle-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-IOStpEafsK9vIZsXtrO1zpqF3pW5ydstD8db4omioAnoYFfKwbgyfkQz9l4pDnJy8636RbnQNVbYGlyxKuJ0cw=="],
+
+    "@tsparticles/shape-emoji": ["@tsparticles/shape-emoji@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/shape-emoji/-/shape-emoji-4.3.2.tgz", { "dependencies": { "@tsparticles/canvas-utils": "4.3.2" }, "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-et8OLZpt1fJsBBEhb0NHp++MeMF3Q3VZq1JMzdaI6i1rCm8h8yfEbi96Izz+e1OFYKpY/qZfyVxrLnW33VYFJg=="],
+
+    "@tsparticles/shape-image": ["@tsparticles/shape-image@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/shape-image/-/shape-image-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-EtKkH7DMI+2rcF9n5VCJWKcyI/jX+B/OfucM/9MThG5qApqLBzfZvxRQRFG2agZKIHByGmXtfZyou4y2XPuq9g=="],
+
+    "@tsparticles/shape-line": ["@tsparticles/shape-line@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/shape-line/-/shape-line-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-ph8q+9vx8BxYb1JToPde6v0Vejfg+hPGEWYhD5J5orrLcxqjmGimbRd+ycFV+fgHcmFDzfzlVUtiR7U+F3mgNg=="],
+
+    "@tsparticles/shape-polygon": ["@tsparticles/shape-polygon@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/shape-polygon/-/shape-polygon-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-ebpHYQlk0khRXFtG1WWQIQSIedb23OEICWuhTAmh87lVkFkNeU5synyS6UqxSOXda098BiRnO++P69Sfq12E5w=="],
+
+    "@tsparticles/shape-square": ["@tsparticles/shape-square@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/shape-square/-/shape-square-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-U3q5TdvDclXSAM6ott4evZaWt00o+mEmO0RUsIGZR4W0DdaaZTa0zmeitQnM/wJnkwpXUqVWF3H88FS1MOy9ag=="],
+
+    "@tsparticles/shape-star": ["@tsparticles/shape-star@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/shape-star/-/shape-star-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-i8AquyuaJ3GH3qsWIepVbsdxCM0Tl0ZFSmJni8AC+ly2Py7+Ig/uJpxM9oC5YkNdcAU6vosMgAS3xUobVQDvsg=="],
+
+    "@tsparticles/slim": ["@tsparticles/slim@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/slim/-/slim-4.3.2.tgz", { "dependencies": { "@tsparticles/basic": "4.3.2", "@tsparticles/engine": "4.3.2", "@tsparticles/interaction-external-attract": "4.3.2", "@tsparticles/interaction-external-bounce": "4.3.2", "@tsparticles/interaction-external-bubble": "4.3.2", "@tsparticles/interaction-external-connect": "4.3.2", "@tsparticles/interaction-external-destroy": "4.3.2", "@tsparticles/interaction-external-grab": "4.3.2", "@tsparticles/interaction-external-parallax": "4.3.2", "@tsparticles/interaction-external-pause": "4.3.2", "@tsparticles/interaction-external-push": "4.3.2", "@tsparticles/interaction-external-remove": "4.3.2", "@tsparticles/interaction-external-repulse": "4.3.2", "@tsparticles/interaction-external-slow": "4.3.2", "@tsparticles/interaction-particles-attract": "4.3.2", "@tsparticles/interaction-particles-collisions": "4.3.2", "@tsparticles/interaction-particles-links": "4.3.2", "@tsparticles/plugin-easing-quad": "4.3.2", "@tsparticles/plugin-interactivity": "4.3.2", "@tsparticles/shape-emoji": "4.3.2", "@tsparticles/shape-image": "4.3.2", "@tsparticles/shape-line": "4.3.2", "@tsparticles/shape-polygon": "4.3.2", "@tsparticles/shape-square": "4.3.2", "@tsparticles/shape-star": "4.3.2", "@tsparticles/updater-life": "4.3.2", "@tsparticles/updater-paint": "4.3.2", "@tsparticles/updater-rotate": "4.3.2" } }, "sha512-VDCC1xod/Ak9Pn+OD/5AT6y3ccPR3n+EHQBZJKin81yYE/+POfNZ+tDSg/cMmrNBW6MFobKVJpp2kO0AoYFvrw=="],
+
+    "@tsparticles/updater-life": ["@tsparticles/updater-life@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/updater-life/-/updater-life-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-RL3803nFKsCsGQavLSZyEiFWhto9R4+QQ/tsqt8PNmHOC7nmI96ZVGVXDknaSuCM4OwuwrDawIdrZUv6OSEFSQ=="],
+
+    "@tsparticles/updater-opacity": ["@tsparticles/updater-opacity@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/updater-opacity/-/updater-opacity-4.3.2.tgz", { "dependencies": { "@tsparticles/animation-utils": "4.3.2" }, "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-Mw4WN/E+ZQQkL683/oyLkebDMpSpbqDRgx2GhMqWOQNTDby5RYG6wSrq0cGtg0aLZmkoYDYLz5Al7wjPfX0/LA=="],
+
+    "@tsparticles/updater-out-modes": ["@tsparticles/updater-out-modes@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/updater-out-modes/-/updater-out-modes-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-lGiYbrFGaAmBakCrEf3Xq5W+LzDkvfINav0MGxCe/acf7u3yvjOUkVH0Co1zc/ju43nU5U2ZO88Anqk4xKtoPA=="],
+
+    "@tsparticles/updater-paint": ["@tsparticles/updater-paint@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/updater-paint/-/updater-paint-4.3.2.tgz", { "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-cp020EtLL0zjsILL1w07r8n8wmwzziuHwtQ0GqGaGq+SikrdoK6yT/sXbyAylJqDypNaloVy3NZMq4wNQtxLOg=="],
+
+    "@tsparticles/updater-rotate": ["@tsparticles/updater-rotate@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/updater-rotate/-/updater-rotate-4.3.2.tgz", { "dependencies": { "@tsparticles/animation-utils": "4.3.2" }, "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-vDp7sg+FQQ9NRY6Nh2Joccd5oqmv6W1Y0L56AWrxjc6wk29IRuVeRo1QuoqRLzqq/xLJBhsbkyKXZG0wiE8Blg=="],
+
+    "@tsparticles/updater-size": ["@tsparticles/updater-size@4.3.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@tsparticles/updater-size/-/updater-size-4.3.2.tgz", { "dependencies": { "@tsparticles/animation-utils": "4.3.2" }, "peerDependencies": { "@tsparticles/engine": "4.3.2" } }, "sha512-U7YtYqH0MvALOS4Nr33soOFJ63n8qS9Xujl9BcNZnbmRBf4xgOnTC1TztMvGO19GANTBwq4QKsKQiwFlwAk4qw=="],
+
     "@types/aria-query": ["@types/aria-query@5.0.4", "", {}, "sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw=="],
 
     "@types/d3-array": ["@types/d3-array@3.2.1", "", {}, "sha512-Y2Jn2idRrLzUfAKV2LyRImR+y4oa2AntrgID95SHJxuMUrkNXmanDSed71sRNZysveJVt1hLLemQZIady0FpEg=="],
@@ -909,6 +1002,8 @@
     "camelcase-css": ["camelcase-css@2.0.1", "", {}, "sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA=="],
 
     "caniuse-lite": ["caniuse-lite@1.0.30001765", "", {}, "sha512-LWcNtSyZrakjECqmpP4qdg0MMGdN368D7X8XvvAqOcqMv0RxnlqVKZl2V6/mBR68oYMxOZPLw/gO7DuisMHUvQ=="],
+
+    "canvas-confetti": ["canvas-confetti@1.9.4", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/canvas-confetti/-/canvas-confetti-1.9.4.tgz", {}, "sha512-yxQbJkAVrFXWNbTUjPqjF7G+g6pDotOUHGbkZq2NELZUMDpiJ85rIEazVb8GTaAptNW2miJAXbs1BtioA251Pw=="],
 
     "canvg": ["canvg@3.0.11", "", { "dependencies": { "@babel/runtime": "^7.12.5", "@types/raf": "^3.4.0", "core-js": "^3.8.3", "raf": "^3.4.1", "regenerator-runtime": "^0.13.7", "rgbcolor": "^1.0.1", "stackblur-canvas": "^2.0.0", "svg-pathdata": "^6.0.3" } }, "sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA=="],
 
@@ -1230,6 +1325,8 @@
 
     "graphemer": ["graphemer@1.4.0", "", {}, "sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag=="],
 
+    "gsap": ["gsap@3.15.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/gsap/-/gsap-3.15.0.tgz", {}, "sha512-dMW4CWBTUK1AEEDeZc1g4xpPGIrSf9fJF960qbTZmN/QwZIWY5wgliS6JWl9/25fpTGJrMRtSjGtOmPnfjZB+A=="],
+
     "has-bigints": ["has-bigints@1.1.0", "", {}, "sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg=="],
 
     "has-flag": ["has-flag@4.0.0", "", {}, "sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ=="],
@@ -1427,6 +1524,10 @@
     "lodash.sortby": ["lodash.sortby@4.7.0", "", {}, "sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA=="],
 
     "loose-envify": ["loose-envify@1.4.0", "", { "dependencies": { "js-tokens": "^3.0.0 || ^4.0.0" }, "bin": "cli.js" }, "sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q=="],
+
+    "lottie-react": ["lottie-react@2.4.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/lottie-react/-/lottie-react-2.4.1.tgz", { "dependencies": { "lottie-web": "^5.10.2" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-LQrH7jlkigIIv++wIyrOYFLHSKQpEY4zehPicL9bQsrt1rnoKRYCYgpCUe5maqylNtacy58/sQDZTkwMcTRxZw=="],
+
+    "lottie-web": ["lottie-web@5.13.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/lottie-web/-/lottie-web-5.13.0.tgz", {}, "sha512-+gfBXl6sxXMPe8tKQm7qzLnUy5DUPJPKIyRHwtpCpyUEYjHYRJC/5gjUvdkuO2c3JllrPtHXH5UJJK8LRYl5yQ=="],
 
     "loupe": ["loupe@3.2.1", "", {}, "sha512-CdzqowRJCeLU72bHvWqwRBBlLcMEtIvGrlvef74kMnV2AolS9Y8xUv1I0U/MNAWMhBlKIoyuEgoJ0t/bbwHbLQ=="],
 
