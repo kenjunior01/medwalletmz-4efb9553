@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -6,30 +6,41 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, Phone, ArrowLeft, Sparkles, Heart, Pill, Stethoscope, Activity, ShieldCheck, ChevronRight, Zap, Globe, Star } from 'lucide-react';
+import { Loader2, Mail, Lock, User, Phone, ArrowLeft, Sparkles, Heart, Pill, Stethoscope, Activity, ShieldCheck, ChevronRight, Zap, Globe, Star, CheckCircle2, AlertCircle } from 'lucide-react';
 import { z } from 'zod';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Spotlight, SplitText, GradientText, FloatingParticles, MagneticWrapper, ShimmerButton, TextMorph } from '@/components/ui/premium';
+import { Skeleton } from '@/components/ui/skeleton';
+import { UserTypeSelector } from '@/components/auth/UserTypeSelector';
 
-const emailSchema = z.string().email('Email inválido');
-const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
+// Factory para schemas de validação com mensagens traduzidas
+const makeEmailSchema = (t: (k: string) => string) => z.string().email(t('auth.validation_invalid_email'));
+const makePasswordSchema = (t: (k: string) => string) => z.string().min(6, t('auth.validation_password_min'));
 
 // Phone validation — aceita formatos MZ (+258 84/85/86/87 XXX XXXX) e BR (+55)
-const phoneSchema = z.string()
-  .min(9, 'Telefone deve ter pelo menos 9 dígitos')
+const makePhoneSchema = (t: (k: string) => string) => z.string()
+  .min(9, t('auth.validation_phone_min'))
   .refine((v) => {
     const digits = v.replace(/\D/g, '');
-    // MZ: 258 + 9 dígitos (84/85/86/87) ou 9 dígitos diretos
-    // BR: 55 + DDD + 9 dígitos
-    // Outros: pelo menos 9 dígitos
     if (digits.length === 9) return /^(84|85|86|87)\d{7}$/.test(digits);
     if (digits.length === 12 && digits.startsWith('258')) return /^258(84|85|86|87)\d{7}$/.test(digits);
-    if (digits.length >= 10) return true; // permissivo para outros países
+    if (digits.length >= 10) return true;
     return false;
-  }, 'Número de celular inválido (ex: 84 XXX XXXX para MZ)');
+  }, t('auth.validation_phone_invalid'));
+
+// Avalia força da senha: 0=fraca, 1=média, 2=forte
+function getPasswordStrength(pwd: string): 0 | 1 | 2 {
+  if (!pwd) return 0;
+  let score = 0;
+  if (pwd.length >= 8) score++;
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+  if (/\d/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
+  if (pwd.length >= 12) score++;
+  return score >= 3 ? 2 : score >= 1 ? 1 : 0;
+}
 
 const normalizePhone = (v: string) => {
   const digits = v.replace(/\D/g, '');
@@ -138,7 +149,42 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
+  const [userType, setUserType] = useState<'patient' | 'rider' | 'worker' | 'health_technician' | 'promoter' | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Rate limiting state
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const cooldownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Password strength (0=fraca, 1=média, 2=forte)
+  const passwordStrength = useMemo(() => tab === 'register' ? getPasswordStrength(password) : 0, [tab, password]);
+
+  // Schemas memoizados com traduções
+  const emailSchema = useMemo(() => makeEmailSchema(t), [t]);
+  const passwordSchema = useMemo(() => makePasswordSchema(t), [t]);
+  const phoneSchema = useMemo(() => makePhoneSchema(t), [t]);
+
+  const startCooldown = useCallback((seconds: number) => {
+    setCooldownRemaining(seconds);
+    if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+    cooldownTimerRef.current = setInterval(() => {
+      setCooldownRemaining(prev => {
+        if (prev <= 1) {
+          if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+          setFailedAttempts(0);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+    };
+  }, []);
   const referralCode = useMemo(() => new URLSearchParams(location.search).get('ref')?.trim() || '', [location.search]);
   const initialTab = useMemo(() => new URLSearchParams(location.search).get('tab'), [location.search]);
   const nextPath = useMemo(() => new URLSearchParams(location.search).get('next'), [location.search]);
@@ -183,20 +229,21 @@ export default function Auth() {
 
   const GOOGLE_AUTH_ENABLED = true;
   const handleGoogle = async () => {
+    if (cooldownRemaining > 0) return;
     setLoading(true);
     try {
       const { error } = await signInWithGoogle(referralCode, nextPath);
       if (error) {
         console.error("Google Auth Error:", error);
-        toast.error("Erro no Login Google", {
+        toast.error(t('auth.error_google_title'), {
           description: error.message.includes('configuration')
-            ? "O app não está configurado corretamente no Google Cloud. Verifique o Client ID."
-            : "Tente novamente ou use e-mail e senha.",
+            ? t('auth.error_google_config')
+            : t('auth.error_google_retry'),
         });
         setLoading(false);
       }
     } catch (err) {
-      toast.error("Erro inesperado no login");
+      toast.error(t('auth.error_unexpected_login'));
       setLoading(false);
     }
   };
@@ -221,7 +268,10 @@ export default function Auth() {
       if (e instanceof z.ZodError) newErrors.password = e.issues[0].message;
     }
     if (tab === 'register' && !fullName.trim()) {
-      newErrors.fullName = 'Nome é obrigatório';
+      newErrors.fullName = t('auth.validation_name_required');
+    }
+    if (tab === 'register' && !userType) {
+      newErrors.userType = t('userType.validation_required');
     }
     if (tab === 'register') {
       try {
@@ -234,15 +284,45 @@ export default function Auth() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Validação em tempo real para limpar erros quando o utilizador corrige
+  const validateField = (field: 'email' | 'password' | 'fullName' | 'phone', value: string) => {
+    if (!errors[field]) return;
+    let valid = true;
+    try {
+      if (field === 'email') emailSchema.parse(value);
+      if (field === 'password') passwordSchema.parse(value);
+      if (field === 'fullName') valid = !!value.trim();
+      if (field === 'phone') phoneSchema.parse(value);
+    } catch {
+      valid = false;
+    }
+    if (valid) {
+      setErrors(prev => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (cooldownRemaining > 0) return;
     if (!validateForm()) return;
     setLoading(true);
     try {
       const { error, user: signedIn } = await signIn(email, password, referralCode);
       if (error) {
         toast.error(error.message.includes('Invalid login credentials') ? t('auth.invalid_credentials') : t('common.error'));
+        // Rate limit: após 3 falhas, inicia cooldown de 30s
+        const next = failedAttempts + 1;
+        setFailedAttempts(next);
+        if (next >= 3) {
+          startCooldown(30);
+          toast.error(t('auth.rate_limit_warning'), { description: t('auth.rate_limit_desc') });
+        }
       } else {
+        setFailedAttempts(0);
         toast.success(t('auth.welcome_back'));
         if (mode === 'professional' || nextPath) {
           navigate(nextPath || '/register');
@@ -262,13 +342,23 @@ export default function Auth() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const { error } = await signUp(email, password, fullName, referralCode, country?.id, normalizePhone(phone));
+      const { error } = await signUp(email, password, fullName, referralCode, country?.id, normalizePhone(phone), userType ?? undefined);
       if (error) {
         toast.error(error.message.includes('already registered') ? t('auth.email_registered') : t('common.error'));
       } else {
         toast.success(t('auth.account_created'));
-        // Redireciona para o destino previsto (ex: /register?role=doctor) ou para o wizard.
-        navigate(nextPath || '/register');
+        // Redirect based on selected user type
+        if (userType === 'rider') {
+          navigate('/health/riders');
+        } else if (userType === 'worker') {
+          navigate('/health/workers/profile');
+        } else if (userType === 'health_technician') {
+          navigate('/health/workers/profile');
+        } else if (userType === 'promoter') {
+          navigate('/referrals');
+        } else {
+          navigate(nextPath || '/register');
+        }
       }
     } catch (err) {
       toast.error(t('common.error'));
@@ -279,18 +369,34 @@ export default function Auth() {
 
   if (authLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+      <div
+        className="flex flex-col items-center justify-center min-h-screen bg-background px-6"
+        role="status"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <span className="sr-only">{t('auth.checking_session_aria')}</span>
         <motion.div
           animate={{ rotate: 360, scale: [1, 1.2, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="relative"
+          aria-hidden="true"
         >
           <div className="h-16 w-16 rounded-3xl bg-primary/20 flex items-center justify-center">
             <Loader2 className="h-8 w-8 text-primary animate-spin" />
           </div>
           <Sparkles className="absolute -top-2 -right-2 text-secondary h-6 w-6 animate-pulse" />
         </motion.div>
-        <p className="mt-4 font-black text-primary animate-pulse tracking-widest uppercase text-xs">{t('common.loading')}</p>
+        <p className="mt-4 font-black text-primary animate-pulse tracking-widest uppercase text-xs">{t('auth.checking_session')}</p>
+        {/* Skeleton espelha o layout do card de auth para sensação de continuidade */}
+        <div className="mt-8 w-full max-w-md" aria-hidden="true">
+          <div className="rounded-[2rem] border bg-card p-8 space-y-4">
+            <Skeleton className="h-12 w-full rounded-2xl" />
+            <Skeleton className="h-14 w-full rounded-2xl" />
+            <Skeleton className="h-14 w-full rounded-2xl" />
+            <Skeleton className="h-14 w-full rounded-2xl" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -310,12 +416,13 @@ export default function Auth() {
           variant="ghost"
           size="icon"
           onClick={() => navigate('/')}
-          className="rounded-2xl bg-white/50 dark:bg-card/50 backdrop-blur-md hover:bg-white/70 dark:hover:bg-card/70 transition-all shadow-sm group"
+          aria-label={t('auth.back_aria')}
+          className="rounded-2xl bg-white/50 dark:bg-card/50 backdrop-blur-md hover:bg-white/70 dark:hover:bg-card/70 transition-all shadow-sm group min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
         </Button>
-        <div className="flex items-center gap-2 bg-white/50 dark:bg-card/50 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm">
-          <Globe className="h-4 w-4 text-secondary" />
+        <div className="flex items-center gap-2 bg-white/50 dark:bg-card/50 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm min-h-[44px]">
+          <Globe className="h-4 w-4 text-secondary" aria-hidden="true" />
           <span className="text-[10px] font-black uppercase tracking-wider">{country?.name || 'MedWallet'}</span>
         </div>
       </motion.div>
@@ -351,10 +458,15 @@ export default function Auth() {
               <GradientText>Wallet</GradientText>
             </h1>
             <p className="text-muted-foreground font-bold flex items-center justify-center gap-2 uppercase tracking-[0.2em] text-[10px]">
-              A tua revolução na saúde <Star className="h-3 w-3 text-gold fill-gold" />
+              {t('auth.tagline')} <Star className="h-3 w-3 text-gold fill-gold" aria-hidden="true" />
             </p>
             <div className="flex items-center justify-center mt-2">
-              <TextMorph words={['Saúde', 'Farmácia', 'Bem-estar', 'Consultas']} className="text-xs font-bold text-primary/60 uppercase tracking-[0.3em]" />
+              <TextMorph words={[
+                t('auth.text_morph_health'),
+                t('auth.text_morph_pharmacy'),
+                t('auth.text_morph_wellness'),
+                t('auth.text_morph_consult')
+              ]} className="text-xs font-bold text-primary/60 uppercase tracking-[0.3em]" />
             </div>
           </div>
 
@@ -394,14 +506,15 @@ export default function Auth() {
                       <>
                         <ShimmerButton
                           onClick={handleGoogle}
-                          disabled={loading}
-                          className="w-full h-12 rounded-2xl font-black mb-4 flex items-center justify-center gap-3 border-2 border-white/30"
+                          disabled={loading || cooldownRemaining > 0}
+                          aria-label={t('auth.continue_with_google')}
+                          className="w-full h-12 rounded-2xl font-black mb-4 flex items-center justify-center gap-3 border-2 border-white/30 min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
-                          <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2 14-5.4l-6.5-5.3C29.5 34.9 26.9 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.5 5.3C41.7 35.1 44 30 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
-                          Continuar com Google
+                          <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2 14-5.4l-6.5-5.3C29.5 34.9 26.9 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.5 5.3C41.7 35.1 44 30 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
+                          {t('auth.continue_with_google')}
                         </ShimmerButton>
-                        <div className="mb-6 flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-muted-foreground">
-                          <span className="flex-1 h-px bg-border" /> ou <span className="flex-1 h-px bg-border" />
+                        <div className="mb-6 flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-muted-foreground" role="separator" aria-orientation="horizontal">
+                          <span className="flex-1 h-px bg-border" aria-hidden="true" /> {t('auth.or_divider')} <span className="flex-1 h-px bg-border" aria-hidden="true" />
                         </div>
                       </>
                     )}
@@ -527,6 +640,9 @@ export default function Auth() {
                           </div>
                           {errors.password && <p className="text-[10px] text-destructive font-black ml-2 uppercase animate-bounce-in">{errors.password}</p>}
                         </div>
+
+                        <UserTypeSelector value={userType} onChange={(ut) => { setUserType(ut); if (errors.userType) setErrors(prev => { const c = { ...prev }; delete c.userType; return c; }); }} />
+                        {errors.userType && <p className="text-[10px] text-destructive font-black ml-2 uppercase animate-bounce-in">{errors.userType}</p>}
 
                         <MagneticWrapper className="w-full">
                           <Button

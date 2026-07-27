@@ -85,7 +85,7 @@ export function OfflineBanner() {
             {/* Dismiss button */}
             <button
               onClick={dismiss}
-              aria-label="Close banner"
+              aria-label="Close"
               className="absolute right-3 top-3 rounded-full p-1 bg-white/10 hover:bg-white/20 transition-colors"
             >
               <X className="h-3.5 w-3.5 text-amber-200" />

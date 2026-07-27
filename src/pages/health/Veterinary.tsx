@@ -13,9 +13,11 @@ import {
   ShieldCheck,
   Calendar
 } from "lucide-react";
+import { useCountry } from "@/contexts/CountryContext";
 
 export default function Veterinary() {
   const navigate = useNavigate();
+  const { t } = useCountry();
 
   const vets = [
     {
@@ -46,7 +48,7 @@ export default function Veterinary() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg font-bold flex-1">Saúde Veterinária</h1>
+        <h1 className="text-lg font-bold flex-1">{t('veterinary.title')}</h1>
         <PawPrint className="h-6 w-6 text-primary" />
       </header>
 
@@ -55,20 +57,20 @@ export default function Veterinary() {
           <ShieldCheck className="h-5 w-5 text-primary" />
         </div>
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-primary">MedWallet Pet & Agro</p>
-          <p className="text-[10px] text-muted-foreground">Clínicas e médicos verificados para todos os animais.</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-primary">{t('veterinary.subtitle')}</p>
+          <p className="text-[10px] text-muted-foreground">{t('veterinary.subtitle_desc')}</p>
         </div>
       </div>
 
       <div className="p-4">
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input className="pl-10" placeholder="Buscar clínica, médico ou especialidade..." />
+          <Input className="pl-10" placeholder={t('veterinary.search_placeholder')} />
         </div>
 
         <div className="space-y-4">
           <h2 className="font-semibold text-sm flex items-center gap-2">
-            <MapPin className="h-4 w-4" /> Próximos de ti
+            <MapPin className="h-4 w-4" /> {t('veterinary.nearby')}
           </h2>
 
           {vets.map((vet) => (
@@ -78,21 +80,21 @@ export default function Veterinary() {
                 <div className="flex-1 p-3 min-w-0">
                   <div className="flex justify-between items-start">
                     <h3 className="font-bold text-sm truncate">{vet.name}</h3>
-                    {vet.verified && <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none h-4 px-1">Verificado</Badge>}
+                    {vet.verified && <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none h-4 px-1">{t('veterinary.verified')}</Badge>}
                   </div>
                   <p className="text-xs text-muted-foreground mb-1">{vet.specialty}</p>
                   <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-2">
                     <span className="flex items-center gap-0.5 text-yellow-600 font-bold">
                       <Star className="h-3 w-3 fill-current" /> {vet.rating}
                     </span>
-                    <span>({vet.reviews} avaliações)</span>
+                    <span>({vet.reviews} {t('veterinary.reviews')})</span>
                   </div>
                   <div className="flex gap-2">
                     <Button size="sm" className="h-7 text-[10px] flex-1">
-                      <Calendar className="h-3 w-3 mr-1" /> Agendar
+                      <Calendar className="h-3 w-3 mr-1" /> {t('veterinary.schedule')}
                     </Button>
                     <Button size="sm" variant="outline" className="h-7 text-[10px] flex-1">
-                      Detalhes
+                      {t('veterinary.details')}
                     </Button>
                   </div>
                 </div>

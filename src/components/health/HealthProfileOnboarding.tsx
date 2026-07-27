@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
   ShieldCheck, ChevronRight, X, Check, Sparkles,
@@ -56,6 +57,7 @@ const ALLERGIES_OPTIONS = [
 
 export function HealthProfileOnboarding() {
   const { user } = useAuth();
+  const { t } = useCountry();
   const [step, setStep] = useState(0);
   const [show, setShow] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -191,7 +193,7 @@ export function HealthProfileOnboarding() {
 
   const handleFinish = async () => {
     await persistProfile({ completed: true });
-    toast.success("Perfil de saúde atualizado! O Meddy vai personalizar as recomendações para ti.");
+    toast.success(t('onboarding.profile_updated'));
     setShow(false);
   };
 
@@ -232,7 +234,7 @@ export function HealthProfileOnboarding() {
               variant="ghost"
               size="icon"
               onClick={handleSkip}
-              aria-label="Fechar"
+              aria-label={t('common.close')}
               className="h-9 w-9 rounded-full hover:bg-muted"
             >
               <X className="h-5 w-5" />
@@ -243,11 +245,11 @@ export function HealthProfileOnboarding() {
           <div className="mb-6">
             <div className="flex items-center gap-2 text-primary font-bold mb-2">
               <ShieldCheck className="h-5 w-5" />
-              <span className="text-sm">Personalização do Meddy</span>
+              <span className="text-sm">{t('onboarding.personalization_title')}</span>
             </div>
             <Progress value={progressPct} className="h-2" />
             <p className="text-[10px] text-muted-foreground mt-1">
-              Passo {step + 1} de 4 · Leva menos de 1 minuto
+              {t('onboarding.step_progress', { step: String(step + 1) })}
             </p>
           </div>
 
@@ -264,16 +266,15 @@ export function HealthProfileOnboarding() {
                 <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                   <Sparkles className="h-10 w-10 text-primary" />
                 </div>
-                <h2 className="text-2xl font-black">Olá! Vamos personalizar a tua saúde?</h2>
+                <h2 className="text-2xl font-black">{t('onboarding.welcome_title')}</h2>
                 <p className="text-sm text-muted-foreground">
-                  Estes dados ajudam o Meddy a dar-te recomendações adequadas ao teu perfil.
-                  São privados e ficam guardados com segurança.
+                  {t('onboarding.welcome_desc')}
                 </p>
                 <Button className="w-full rounded-2xl h-12 font-bold" onClick={() => setStep(1)}>
-                  Começar <ChevronRight className="ml-2 h-4 w-4" />
+                  {t('onboarding.start')} <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button variant="ghost" className="w-full text-xs text-muted-foreground" onClick={handleLater}>
-                  Mais tarde
+                  {t('onboarding.later')}
                 </Button>
               </motion.div>
             )}
@@ -288,9 +289,9 @@ export function HealthProfileOnboarding() {
                 className="space-y-4"
               >
                 <div>
-                  <h3 className="font-black text-xl mb-1">Tens algum problema de saúde?</h3>
+                  <h3 className="font-black text-xl mb-1">{t('onboarding.conditions_title')}</h3>
                   <p className="text-xs text-muted-foreground">
-                    Seleciona tudo o que se aplica a ti. Podes mudar depois nas definições.
+                    {t('onboarding.conditions_desc')}
                   </p>
                 </div>
 
@@ -336,19 +337,19 @@ export function HealthProfileOnboarding() {
                   )}>
                     {data.none && <Check className="h-3.5 w-3.5 text-white" />}
                   </div>
-                  <span className="font-bold text-sm">Nenhuma — sou saudável</span>
+                  <span className="font-bold text-sm">{t('onboarding.none_healthy')}</span>
                 </button>
 
                 <div className="flex gap-2">
                   <Button variant="outline" className="flex-1 rounded-2xl h-11" onClick={() => setStep(0)}>
-                    Voltar
+                    {t('common.back')}
                   </Button>
                   <Button
                     className="flex-1 rounded-2xl h-11 font-bold"
                     onClick={() => setStep(2)}
                     disabled={!data.none && data.chronic_conditions.length === 0}
                   >
-                    Próximo <ChevronRight className="ml-2 h-4 w-4" />
+                    {t('onboarding.next')} <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </motion.div>
@@ -364,9 +365,9 @@ export function HealthProfileOnboarding() {
                 className="space-y-4"
               >
                 <div>
-                  <h3 className="font-black text-xl mb-1">Qual é o teu tipo de sangue?</h3>
+                  <h3 className="font-black text-xl mb-1">{t('onboarding.blood_title')}</h3>
                   <p className="text-xs text-muted-foreground">
-                    Essencial para emergências e doações. Se não sabes, podes saltar.
+                    {t('onboarding.blood_desc')}
                   </p>
                 </div>
 
@@ -397,16 +398,16 @@ export function HealthProfileOnboarding() {
                   )}
                 >
                   {!data.blood_type
-                    ? "Não sei o meu tipo de sangue (vai aparecer como desconhecido)"
-                    : "Limpar seleção"}
+                    ? t('onboarding.blood_unknown')
+                    : t('onboarding.blood_clear')}
                 </button>
 
                 <div className="flex gap-2">
                   <Button variant="outline" className="flex-1 rounded-2xl h-11" onClick={() => setStep(1)}>
-                    Voltar
+                    {t('common.back')}
                   </Button>
                   <Button className="flex-1 rounded-2xl h-11 font-bold" onClick={() => setStep(3)}>
-                    Próximo <ChevronRight className="ml-2 h-4 w-4" />
+                    {t('onboarding.next')} <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </motion.div>
@@ -422,9 +423,9 @@ export function HealthProfileOnboarding() {
                 className="space-y-4"
               >
                 <div>
-                  <h3 className="font-black text-xl mb-1">Tens alguma alergia?</h3>
+                  <h3 className="font-black text-xl mb-1">{t('onboarding.allergies_title')}</h3>
                   <p className="text-xs text-muted-foreground">
-                    Importante para prescrições seguras e recomendações de medicamentos.
+                    {t('onboarding.allergies_desc')}
                   </p>
                 </div>
 
@@ -453,15 +454,15 @@ export function HealthProfileOnboarding() {
                   onClick={() => setStep(4)}
                   className="w-full text-xs py-2 rounded-lg text-muted-foreground hover:text-foreground"
                 >
-                  Não tenho alergias conhecidas
+                  {t('onboarding.no_allergies')}
                 </button>
 
                 <Button className="w-full rounded-2xl h-12 font-bold" onClick={handleFinish}>
-                  <ShieldCheck className="mr-2 h-4 w-4" /> Finalizar Perfil
+                  <ShieldCheck className="mr-2 h-4 w-4" /> {t('onboarding.finish_profile')}
                 </Button>
                 <div className="flex gap-2">
                   <Button variant="outline" className="flex-1 rounded-2xl h-11" onClick={() => setStep(2)}>
-                    Voltar
+                    {t('common.back')}
                   </Button>
                 </div>
               </motion.div>

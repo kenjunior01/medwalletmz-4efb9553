@@ -123,12 +123,12 @@ export default function Favorites() {
           size="icon"
           className="shrink-0"
           onClick={() => navigate(-1)}
-          aria-label="Voltar"
+          aria-label={t('favorites.back')}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <Heart className="h-5 w-5 text-rose-500 fill-rose-500" />
-        <h1 className="text-lg font-semibold">Favoritos</h1>
+        <h1 className="text-lg font-semibold">{t('favorites.title')}</h1>
       </header>
 
       <main className="px-4 pt-4 space-y-6">
@@ -139,11 +139,10 @@ export default function Favorites() {
               <Heart className="h-10 w-10 text-muted-foreground" />
             </div>
             <p className="text-lg font-medium text-muted-foreground">
-              Ainda não tens favoritos
+              {t('favorites.empty_title')}
             </p>
             <p className="mt-1 text-sm text-muted-foreground/70 max-w-xs">
-              Toca no ícone de coração em farmácias, médicos, clínicas ou
-              hospitais para guardares aqui os teus preferidos.
+              {t('favorites.empty_desc')}
             </p>
           </div>
         )}

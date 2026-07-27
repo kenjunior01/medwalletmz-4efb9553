@@ -77,7 +77,7 @@ export function A11yProvider({ children }: A11yProviderProps) {
         );
         if (openDialog) {
           const closeBtn = openDialog.querySelector<HTMLElement>(
-            'button[aria-label="Close"], button[aria-label="Fechar"]',
+            'button[aria-label="Close"], button[aria-label="Fechar"], button[aria-label="Cerrar"]',
           );
           closeBtn?.click();
         }

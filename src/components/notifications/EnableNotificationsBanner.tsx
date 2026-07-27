@@ -3,9 +3,11 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Bell, X } from 'lucide-react';
 import { useState } from 'react';
+import { useCountry } from '@/contexts/CountryContext';
 
 export function EnableNotificationsBanner() {
   const { permission, request } = useNotifications();
+  const { t } = useCountry();
   const [dismissed, setDismissed] = useState(
     typeof window !== 'undefined' && localStorage.getItem('notif-banner-dismissed') === '1'
   );
@@ -19,10 +21,10 @@ export function EnableNotificationsBanner() {
           <Bell className="h-5 w-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold">Ativar notificações</p>
-          <p className="text-xs text-muted-foreground">Receba alertas de consultas, receitas e entregas.</p>
+          <p className="text-sm font-semibold">{t('enableNotifications.title')}</p>
+          <p className="text-xs text-muted-foreground">{t('enableNotifications.description')}</p>
         </div>
-        <Button size="sm" onClick={request}>Ativar</Button>
+        <Button size="sm" onClick={request}>{t('enableNotifications.activate')}</Button>
         <button
           onClick={() => { localStorage.setItem('notif-banner-dismissed', '1'); setDismissed(true); }}
           className="text-muted-foreground hover:text-foreground"

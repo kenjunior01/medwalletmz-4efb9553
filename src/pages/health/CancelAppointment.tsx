@@ -29,19 +29,19 @@ const statusVariant: Record<string, 'default' | 'secondary' | 'destructive' | 'o
 };
 
 const statusLabel: Record<string, string> = {
-  scheduled: 'Agendada',
-  confirmed: 'Confirmada',
-  in_progress: 'Em andamento',
-  completed: 'Concluída',
-  cancelled: 'Cancelada',
-  no_show: 'Não compareceu',
+  scheduled: 'cancelAppointment.status_scheduled',
+  confirmed: 'cancelAppointment.status_confirmed',
+  in_progress: 'cancelAppointment.status_in_progress',
+  completed: 'cancelAppointment.status_completed',
+  cancelled: 'cancelAppointment.status_cancelled',
+  no_show: 'cancelAppointment.status_no_show',
 };
 
 const typeLabel: Record<string, string> = {
-  in_person: 'Presencial',
-  video: 'Vídeo consulta',
-  emergency: 'Emergência',
-  follow_up: 'Retorno',
+  in_person: 'cancelAppointment.type_in_person',
+  video: 'cancelAppointment.type_video',
+  emergency: 'cancelAppointment.type_emergency',
+  follow_up: 'cancelAppointment.type_follow_up',
 };
 
 interface Appointment {
@@ -122,20 +122,20 @@ export default function CancelAppointment() {
         .eq('consultation_id', appointmentId);
     },
     onSuccess: () => {
-      toast.success('Consulta cancelada com sucesso');
+      toast.success(t('cancelAppointment.success'));
       queryClient.invalidateQueries({ queryKey: ['appointment', id] });
       queryClient.invalidateQueries({ queryKey: ['appointments'] });
       queryClient.invalidateQueries({ queryKey: ['consultations'] });
       navigate('/health/consultations');
     },
     onError: (error: any) => {
-      toast.error('Erro ao cancelar: ' + (error?.message || 'Tente novamente'));
+      toast.error(t('cancelAppointment.error_cancel', { message: error?.message || '' }));
     },
   });
 
   const handleOpenDialog = () => {
     if (reason.trim().length < 10) {
-      toast.error('Informe pelo menos 10 caracteres no motivo do cancelamento');
+      toast.error(t('cancelAppointment.min_chars_error'));
       return;
     }
     setShowDialog(true);
@@ -192,7 +192,7 @@ export default function CancelAppointment() {
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="font-bold flex-1">Cancelar consulta</h1>
+          <h1 className="font-bold flex-1">{t('cancelAppointment.title')}</h1>
         </header>
         <main className="p-4">
           <Card>
@@ -200,12 +200,12 @@ export default function CancelAppointment() {
               <div className="rounded-full bg-destructive/10 p-4">
                 <AlertTriangle className="h-8 w-8 text-destructive" />
               </div>
-              <h2 className="text-lg font-semibold">Consulta não encontrada</h2>
+              <h2 className="text-lg font-semibold">{t('cancelAppointment.not_found')}</h2>
               <p className="text-sm text-muted-foreground max-w-xs">
-                Não foi possível encontrar a consulta. Verifique o link ou tente novamente.
+                {t('cancelAppointment.not_found_desc')}
               </p>
               <Button onClick={() => navigate('/health/consultations')}>
-                Ver minhas consultas
+                {t('cancelAppointment.view_appointments')}
               </Button>
             </CardContent>
           </Card>
@@ -224,7 +224,7 @@ export default function CancelAppointment() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="font-bold flex-1">Cancelar consulta</h1>
+        <h1 className="font-bold flex-1">{t('cancelAppointment.title')}</h1>
       </header>
 
       <main className="p-4 space-y-4">
@@ -256,14 +256,14 @@ export default function CancelAppointment() {
               {appointment.type && (
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>Tipo: {typeLabel[appointment.type] || appointment.type}</span>
+                  <span>Tipo: {t(typeLabel[appointment.type] || appointment.type)}</span>
                 </div>
               )}
             </div>
 
             {appointment.reason && (
               <div className="border-t pt-3">
-                <p className="text-xs text-muted-foreground mb-1">Motivo da consulta</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('cancelAppointment.reason_label')}</p>
                 <p className="text-sm">{appointment.reason}</p>
               </div>
             )}
@@ -286,14 +286,14 @@ export default function CancelAppointment() {
                 </label>
                 <Textarea
                   id="cancel-reason"
-                  placeholder="Informe o motivo do cancelamento (mínimo 10 caracteres)…"
+                  placeholder={t('cancelAppointment.cancellation_placeholder')}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   rows={4}
                   className="resize-none"
                 />
                 <p className="text-xs text-muted-foreground text-right">
-                  {reason.trim().length}/10 caracteres mínimos
+                  {reason.trim().length}/10 {t('cancelAppointment.min_chars', { count: reason.trim().length.toString() })}
                 </p>
               </CardContent>
             </Card>
@@ -306,7 +306,7 @@ export default function CancelAppointment() {
               onClick={handleOpenDialog}
             >
               <AlertTriangle className="h-4 w-4 mr-2" />
-              Cancelar consulta
+              {t('cancelAppointment.cancel_button')}
             </Button>
           </>
         )}

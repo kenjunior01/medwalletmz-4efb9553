@@ -1,8 +1,10 @@
 import { Search, Mic } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useCountry } from "@/contexts/CountryContext";
 
 export function SearchBar() {
   const navigate = useNavigate();
+  const { t } = useCountry();
 
   return (
     <div
@@ -16,7 +18,7 @@ export function SearchBar() {
           </div>
           <div className="flex-1">
             <span className="text-muted-foreground text-sm">
-              Pesquisar restaurantes, produtos...
+              {t('searchBar.placeholder')}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">

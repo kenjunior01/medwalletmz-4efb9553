@@ -25,6 +25,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { useCountry } from '@/contexts/CountryContext';
 
 const DISMISS_KEY = 'mz_free_patient_dismissed_until';
 const DISMISS_DAYS = 7;
@@ -33,6 +34,7 @@ export function FreeTrialBanner() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { roles } = useUserRoles();
+  const { t } = useCountry();
   const [dismissed, setDismissed] = useState(false);
 
   // Verifica dismiss
@@ -82,7 +84,7 @@ export function FreeTrialBanner() {
       >
         <button
           onClick={dismiss}
-          aria-label="Fechar"
+          aria-label={t('freeTrialBanner.close')}
           className="absolute right-2 top-2 rounded-full p-1 bg-white/20 hover:bg-white/30 z-10"
         >
           <X className="h-3 w-3" />
@@ -96,13 +98,13 @@ export function FreeTrialBanner() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-sm flex items-center gap-1.5 flex-wrap">
-                  Pacientes grátis para sempre
+                  {t('freeTrialBanner.patients_free')}
                   <span className="bg-white text-emerald-700 text-[9px] font-black rounded-full px-1.5 py-0.5">
-                    SEM CARTÃO
+                    {t('freeTrialBanner.no_card')}
                   </span>
                 </div>
                 <div className="text-xs text-white/80 mt-0.5">
-                  Triagem IA ilimitada · consultas · lembretes · registos
+                  {t('freeTrialBanner.free_features')}
                 </div>
               </div>
               <Button
@@ -111,7 +113,7 @@ export function FreeTrialBanner() {
                 onClick={handleCta}
                 className="bg-white text-emerald-700 hover:bg-emerald-50 shrink-0"
               >
-                Criar conta <ArrowRight className="ml-1 h-3 w-3" />
+                {t('freeTrialBanner.create_account')} <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
             </div>
           ) : (
@@ -122,10 +124,10 @@ export function FreeTrialBanner() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-sm">
-                  Activa o teu Plano Pro
+                  {t('freeTrialBanner.activate_pro')}
                 </div>
                 <div className="text-xs text-white/80 mt-0.5">
-                  Acede a milhares de pacientes · a partir de 250 MZN/mês
+                  {t('freeTrialBanner.pro_desc')}
                 </div>
               </div>
               <Button
@@ -134,7 +136,7 @@ export function FreeTrialBanner() {
                 onClick={handleCta}
                 className="bg-white text-blue-700 hover:bg-blue-50 shrink-0"
               >
-                Ver planos <ArrowRight className="ml-1 h-3 w-3" />
+                {t('freeTrialBanner.view_plans')} <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
             </div>
           )}
@@ -142,7 +144,7 @@ export function FreeTrialBanner() {
         {!user && (
           <div className="px-4 pb-2 flex items-center gap-1.5 text-[10px] text-white/70">
             <Heart className="h-3 w-3 fill-white/70" />
-            <span>Pacientes atraem profissionais — juntos construímos saúde para Moçambique</span>
+            <span>{t('freeTrialBanner.tagline')}</span>
           </div>
         )}
       </Card>

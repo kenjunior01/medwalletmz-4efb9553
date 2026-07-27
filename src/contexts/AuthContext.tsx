@@ -30,7 +30,7 @@ interface AuthContextType {
   roles: AppRole[];
   userRoles: UserRole[];
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string) => Promise<{ error: Error | null; user: User | null }>;
+  signUp: (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string, userType?: 'patient' | 'rider' | 'worker' | 'health_technician' | 'promoter') => Promise<{ error: Error | null; user: User | null }>;
   signIn: (email: string, password: string, referralCode?: string) => Promise<{ error: Error | null; user: User | null }>;
   signInWithGoogle: (referralCode?: string, nextPath?: string | null) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -197,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string) => {
+  const signUp = async (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string, userType?: 'patient' | 'rider' | 'worker' | 'health_technician' | 'promoter') => {
     const redirectUrl = `${window.location.origin}/`;
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -207,18 +207,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: {
           full_name: fullName,
           country_id: countryId || 'MZ',
-          phone: phone || null
+          phone: phone || null,
+          user_type: userType || 'patient',
         }
       },
     });
 
-    // Atualizar perfil com telefone imediatamente após signup
+    // Atualizar perfil com telefone + user_type imediatamente após signup
     if (!error && data.user) {
       try {
         await supabase.from('profiles').update({
           phone: phone || null,
           full_name: fullName,
+          user_type: userType || 'patient',
         }).eq('user_id', data.user.id);
+        // Persistir também na tabela user_types (RPC falhará graceful se não existir)
+        if (userType && userType !== 'patient') {
+          try {
+            await supabase.rpc('set_user_primary_type', {
+              p_user_id: data.user.id,
+              p_type: userType,
+            });
+          } catch (e) {
+            // Fallback: insere diretamente
+            await supabase.from('user_types').upsert({
+              user_id: data.user.id,
+              user_type: userType,
+              is_primary: true,
+            });
+          }
+        }
       } catch (e) {
         console.warn('Profile update after signup failed (will retry later):', e);
       }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
+import { useDataSaver } from '@/contexts/DataSaverContext';
 import { Sparkles } from 'lucide-react';
 
 type Item = { id: number; slug: string; title: string; file: any };
@@ -9,6 +10,7 @@ type Item = { id: number; slug: string; title: string; file: any };
 export function KlipyBanner({ query }: { query?: string }) {
   const { user } = useAuth();
   const { country, t } = useCountry();
+  const { enabled: dataSaverEnabled } = useDataSaver();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,6 +18,13 @@ export function KlipyBanner({ query }: { query?: string }) {
   const countryQuery = country?.name ? `${country.name.toLowerCase()} healthcare` : 'africa doctor';
 
   useEffect(() => {
+    // Skip fetching GIFs entirely when data-saver is on (saves ~1-2MB per page load on 3G)
+    if (dataSaverEnabled) {
+      setLoading(false);
+      setItems([]);
+      return;
+    }
+
     let cancelled = false;
     (async () => {
       // Mescla termo pedido + termos locais para devolver conteúdo mais relevante.
@@ -34,9 +43,10 @@ export function KlipyBanner({ query }: { query?: string }) {
       setLoading(false);
     })();
     return () => { cancelled = true; };
-  }, [query, user?.id, countryQuery]);
+  }, [query, user?.id, countryQuery, dataSaverEnabled]);
 
-  if (!loading && items.length === 0) return null;
+  // Hide entirely if data-saver is on OR no items
+  if (dataSaverEnabled || (!loading && items.length === 0)) return null;
 
   return (
     <section className="px-4 mt-6">

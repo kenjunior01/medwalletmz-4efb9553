@@ -2,7 +2,8 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { bottomNavByRole, sidebarByRole } from "@/config/navigation";
 import { usePrimaryRole } from "@/hooks/usePrimaryRole";
-import { Menu, X, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope, Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutDashboard, ShieldCheck, CheckCircle2, Plus } from "lucide-react";
+import { useUserType } from "@/hooks/useUserType";
+import { Menu, X, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope, Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutDashboard, ShieldCheck, CheckCircle2, Plus, Home, Bike, Heart, Users, Megaphone, Gift, Wallet } from "lucide-react";
 import { useState, useMemo } from "react";
 import {
   Sheet,
@@ -50,8 +51,40 @@ export function BottomNav() {
   const navItems = bottomNavByRole[role] ?? bottomNavByRole.customer;
   const allItems = sidebarByRole[role] ?? sidebarByRole.customer;
 
+  const { userType } = useUserType();
+
+  // Override bottom nav for specific user types
+  const TYPE_NAV: Record<string, typeof navItems> = {
+    rider: [
+      { path: '/', icon: Home, label: 'common.home', highlight: false },
+      { path: '/health/riders', icon: Bike, label: 'healthRiders.title', highlight: true },
+      { path: '/health/maps', icon: MapPin, label: 'mapsPremium.title', highlight: false },
+      { path: '/wallet', icon: Wallet, label: 'home.wallet_card', highlight: false },
+    ],
+    worker: [
+      { path: '/', icon: Home, label: 'common.home', highlight: false },
+      { path: '/health/workers/profile', icon: Stethoscope, label: 'healthWorkers.myProfile', highlight: true },
+      { path: '/health/workers', icon: Briefcase, label: 'healthWorkers.marketplace', highlight: false },
+      { path: '/wallet', icon: Wallet, label: 'home.wallet_card', highlight: false },
+    ],
+    health_technician: [
+      { path: '/', icon: Home, label: 'common.home', highlight: false },
+      { path: '/health/workers/profile', icon: Heart, label: 'healthWorkers.myProfile', highlight: true },
+      { path: '/health/circles', icon: Users, label: 'supportCircles.title', highlight: false },
+      { path: '/wallet', icon: Wallet, label: 'home.wallet_card', highlight: false },
+    ],
+    promoter: [
+      { path: '/', icon: Home, label: 'common.home', highlight: false },
+      { path: '/referrals', icon: Megaphone, label: 'referrals.title', highlight: true },
+      { path: '/rewards', icon: Gift, label: 'rewards.title', highlight: false },
+      { path: '/wallet', icon: Wallet, label: 'home.wallet_card', highlight: false },
+    ],
+  };
+
+  const finalNavItems = userType && TYPE_NAV[userType] ? TYPE_NAV[userType] : navItems;
+
   // Filter out items already in bottom nav to avoid duplicates in "More"
-  const bottomPaths = new Set(navItems.map(i => i.path));
+  const bottomPaths = new Set(finalNavItems.map(i => i.path));
   const moreItems = allItems.filter(i => !bottomPaths.has(i.path));
 
   // Group moreItems by group
@@ -71,7 +104,7 @@ export function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/70 border-t border-border/50 safe-area-bottom shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
       <div className="flex items-end justify-around py-1.5 px-1 relative max-w-md mx-auto">
-        {navItems.slice(0, 4).map(({ path, icon: Icon, label, highlight }) => {
+        {finalNavItems.slice(0, 4).map(({ path, icon: Icon, label, highlight }) => {
           const isActive = location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
           const translatedLabel = t(label);
           if (highlight) {

@@ -176,8 +176,8 @@ export function PersonalizedForYou() {
     <section className="px-4 mt-5">
       <div className="flex items-center gap-2 mb-2">
         <Sparkles className="h-4 w-4 text-secondary" />
-        <h2 className="text-sm font-bold">Para ti</h2>
-        <span className="text-[10px] text-muted-foreground">baseado na tua actividade</span>
+        <h2 className="text-sm font-bold">{t('health.for_you')}</h2>
+        <span className="text-[10px] text-muted-foreground">{t('health.based_on_activity')}</span>
       </div>
       <Card
         onClick={onClick}

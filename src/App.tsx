@@ -91,6 +91,15 @@ const InstitutionProfile = lazy(() => import("./pages/clinic/InstitutionProfile"
 const MyPrescriptions = lazy(() => import("./pages/health/MyPrescriptions"));
 const PrescriptionDetail = lazy(() => import("./pages/health/PrescriptionDetail"));
 const VerifyPrescription = lazy(() => import("./pages/health/VerifyPrescription"));
+const HealthJournal = lazy(() => import("./pages/health/HealthJournal"));
+const VisionScanner = lazy(() => import("./pages/health/VisionScanner"));
+const FamilyHub = lazy(() => import("./pages/health/FamilyHub"));
+const VoiceJournal = lazy(() => import("./pages/health/VoiceJournal"));
+const MapsPremium = lazy(() => import("./pages/health/MapsPremium"));
+const SupportCircles = lazy(() => import("./pages/health/SupportCircles"));
+const HealthRidersNetwork = lazy(() => import("./pages/health/HealthRidersNetwork"));
+const HealthWorkerMarketplace = lazy(() => import("./pages/health/HealthWorkerMarketplace"));
+const HealthWorkerProfile = lazy(() => import("./pages/health/HealthWorkerProfile"));
 const HealthPlans = lazy(() => import("./pages/health/HealthPlans"));
 const Subscribe = lazy(() => import("./pages/subscribe/Subscribe"));
 const SubscribePlans = lazy(() => import("./pages/subscribe/SubscribePlans"));
@@ -127,6 +136,11 @@ const CountrySettings = lazy(() => import("./pages/admin/CountrySettings"));
 const CountryDashboard = lazy(() => import("./pages/admin/CountryDashboard"));
 const RegionalOnboarding = lazy(() => import("./pages/admin/RegionalOnboarding"));
 const RegionalManagerDashboard = lazy(() => import("./pages/admin/RegionalManagerDashboard"));
+const RegionalCEODashboard = lazy(() => import("./pages/admin/RegionalCEODashboard"));
+const RegionalContentCMS = lazy(() => import("./pages/admin/RegionalContentCMS"));
+const GlobalRanking = lazy(() => import("./pages/admin/GlobalRanking"));
+const CountryOnboardingWizard = lazy(() => import("./pages/admin/CountryOnboarding"));
+const AdminVerificationWorkflow = lazy(() => import("./pages/admin/AdminVerificationWorkflow"));
 const RegionalMetrics = lazy(() => import("./pages/admin/RegionalMetricsDashboard"));
 const ComplianceCommandCenter = lazy(() => import("./pages/admin/ComplianceCommandCenter"));
 const PartnerVerification = lazy(() => import("./pages/admin/PartnerVerification"));
@@ -252,6 +266,15 @@ const App = () => (
                     <Route path="/health/profile" element={<HealthProfile />} />
                     <Route path="/health/prescriptions" element={<MyPrescriptions />} />
                     <Route path="/health/prescription/:id" element={<PrescriptionDetail />} />
+                    <Route path="/health/journal" element={<HealthJournal />} />
+                    <Route path="/health/scanner" element={<VisionScanner />} />
+                    <Route path="/health/family" element={<FamilyHub />} />
+                    <Route path="/health/voice-journal" element={<VoiceJournal />} />
+                    <Route path="/health/maps" element={<MapsPremium />} />
+                    <Route path="/health/circles" element={<SupportCircles />} />
+                    <Route path="/health/riders" element={<HealthRidersNetwork />} />
+                    <Route path="/health/workers" element={<HealthWorkerMarketplace />} />
+                    <Route path="/health/workers/profile" element={<HealthWorkerProfile />} />
                     <Route path="/health/plans" element={<HealthPlans />} />
                     <Route path="/subscribe" element={<SubscribePlans />} />
                     <Route path="/subscribe/:planId" element={<Subscribe />} />
@@ -367,6 +390,31 @@ const App = () => (
                     <Route path="mz-verticals/malaria" element={<MalariaWorkflowPage />} />
                     <Route path="mz-verticals/maternal" element={<MaternalHealthPage />} />
                     <Route path="google-cloud" element={<GoogleCloudHub />} />
+                    <Route path="regional-ceo" element={
+                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
+                        <RegionalCEODashboard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="regional-content" element={
+                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
+                        <RegionalContentCMS />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="global-ranking" element={
+                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
+                        <GlobalRanking />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="country-onboarding" element={
+                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo']}>
+                        <CountryOnboardingWizard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="verification-workflow" element={
+                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
+                        <AdminVerificationWorkflow />
+                      </ProtectedRoute>
+                    } />
                   </Route>
 
                   {/* Regional Manager Routes — protegido ao nível da rota + guard interno */}

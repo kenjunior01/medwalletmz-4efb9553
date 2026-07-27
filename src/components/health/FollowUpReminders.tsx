@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCountry } from '@/contexts/CountryContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -25,6 +26,7 @@ interface Slot {
 
 export function FollowUpReminders() {
   const { user } = useAuth();
+  const { t } = useCountry();
   const navigate = useNavigate();
   const [items, setItems] = useState<FU[]>([]);
   const [open, setOpen] = useState(false);
@@ -87,7 +89,7 @@ export function FollowUpReminders() {
           scheduled_at: slot.starts_at,
           status: 'scheduled',
           consultation_type: 'chat',
-          reason: 'Acompanhamento pós-consulta',
+          reason: t('health.post_consultation_followup'),
         })
         .select('id')
         .single();
@@ -110,23 +112,23 @@ export function FollowUpReminders() {
         scheduled_at: slot.starts_at,
       });
       if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-        new Notification('Consulta confirmada', {
-          body: `Marcada para ${new Date(slot.starts_at).toLocaleString('pt-PT')}. Receberás lembrete 1h antes.`,
+        new Notification(t('health.new_consultation_booked'), {
+          body: t('health.consultation_reminder_body', { date: new Date(slot.starts_at).toLocaleString(undefined) }),
           icon: '/icon.svg',
         });
       }
-      toast.success('Nova consulta agendada!');
+      toast.success(t('health.new_consultation_booked'));
       setOpen(false);
       setItems(prev => prev.filter(i => i.id !== active.id));
       navigate(`/health/consultation/${consult.id}`);
     } catch (e: any) {
-      toast.error(e.message || 'Erro ao agendar');
+      toast.error(e.message || t('health.booking_error'));
     } finally { setBooking(null); }
   };
 
   const cancelRebooked = async (f: FU) => {
     if (!f.rebooked_consultation_id) return;
-    if (!confirm('Cancelar a consulta reagendada e remover o lembrete?')) return;
+    if (!confirm(t('health.cancel_rebooked_confirm'))) return;
     await supabase.from('consultations').update({ status: 'cancelled' }).eq('id', f.rebooked_consultation_id);
     await supabase.from('consultation_reminders').update({ status: 'cancelled' })
       .eq('consultation_id', f.rebooked_consultation_id).is('sent_at', null);
@@ -134,7 +136,7 @@ export function FollowUpReminders() {
       .eq('consultation_id', f.rebooked_consultation_id);
     await supabase.from('consultation_followups').update({ rebooked_consultation_id: null, rebooked_at: null }).eq('id', f.id);
     setItems(prev => prev.map(i => i.id === f.id ? { ...i, rebooked_consultation_id: null } : i));
-    toast.success('Reagendamento cancelado');
+    toast.success(t('health.reschedule_cancelled'));
   };
 
   if (items.length === 0) return null;
@@ -142,7 +144,7 @@ export function FollowUpReminders() {
   return (
     <section className="px-4">
       <h2 className="font-bold text-lg mb-2 flex items-center gap-2">
-        <Bell className="h-4 w-4 text-pharmacy" /> Acompanhamento
+        <Bell className="h-4 w-4 text-pharmacy" /> {t('health.follow_up_title')}
       </h2>
       <div className="space-y-2">
         {items.map(f => (
@@ -151,7 +153,7 @@ export function FollowUpReminders() {
               <div className="flex-1">
                 <p className="text-sm font-medium">{f.message}</p>
                 <p className="text-[11px] text-muted-foreground mt-1">
-                  Lembrete de {new Date(f.due_at).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
+                  {t('health.reminder_of')} {new Date(f.due_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
                 </p>
               </div>
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => dismiss(f.id)}>
@@ -160,12 +162,12 @@ export function FollowUpReminders() {
             </div>
             <div className="flex gap-2 mt-2">
               <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate(`/health/consultation/${f.consultation_id}`)}>
-                Abrir
+                {t('health.open')}
               </Button>
               {f.rebooked_consultation_id ? (
                 <>
                   <Button size="sm" variant="outline" className="flex-1" onClick={() => openRebook(f)}>
-                    <Calendar className="h-3 w-3 mr-1" /> Alterar
+                    <Calendar className="h-3 w-3 mr-1" /> {t('health.change')}
                   </Button>
                   <Button size="sm" variant="outline" className="text-destructive" onClick={() => cancelRebooked(f)}>
                     <X className="h-3 w-3" />
@@ -173,7 +175,7 @@ export function FollowUpReminders() {
                 </>
               ) : (
                 <Button size="sm" className="flex-1" onClick={() => openRebook(f)}>
-                  <Calendar className="h-3 w-3 mr-1" /> Reagendar
+                  <Calendar className="h-3 w-3 mr-1" /> {t('health.reschedule')}
                 </Button>
               )}
             </div>
@@ -184,19 +186,19 @@ export function FollowUpReminders() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Escolhe um horário</DialogTitle>
+            <DialogTitle>{t('health.choose_time')}</DialogTitle>
           </DialogHeader>
           {loading ? (
             <div className="py-6 flex justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>
           ) : slots.length === 0 ? (
             <div className="py-6 text-center space-y-3">
-              <p className="text-sm text-muted-foreground">Sem horários disponíveis para este médico.</p>
+              <p className="text-sm text-muted-foreground">{t('health.no_slots_available')}</p>
               <Button variant="outline" className="w-full" onClick={async () => {
                 if (!active) return;
                 const { data: dp } = await supabase.from('doctor_profiles').select('id').eq('user_id', active.doctor_id).maybeSingle();
                 setOpen(false);
                 if (dp?.id) navigate(`/health/book/${dp.id}`);
-              }}>Ver agenda completa</Button>
+              }}>{t('health.view_full_schedule')}</Button>
             </div>
           ) : (
             <div className="space-y-2 max-h-72 overflow-y-auto">
@@ -211,9 +213,9 @@ export function FollowUpReminders() {
                     onClick={() => bookSlot(s)}
                   >
                     <span className="text-sm">
-                      {d.toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: 'short' })}
+                      {d.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'short' })}
                       {' • '}
-                      {d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                      {d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                     </span>
                     {booking === s.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4 text-pharmacy" />}
                   </Button>

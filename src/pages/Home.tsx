@@ -14,22 +14,26 @@ import { PersonalizedForYou } from "@/components/health/PersonalizedForYou";
 import { AirQualityWidget } from "@/components/home/AirQualityWidget";
 import { ReferralBanner } from "@/components/referrals/ReferralBanner";
 import { MeddyWelcomeCard } from "@/components/mascot/MeddyWelcomeCard";
+import { MeddyChat } from "@/components/meddy/MeddyChat";
 import { MorningGreeting } from "@/components/health/MorningGreeting";
 import { HealthProfileOnboarding } from "@/components/health/HealthProfileOnboarding";
 import { PillTracker } from "@/components/health/PillTracker";
 import { EmergencySOS } from "@/components/health/EmergencySOS";
 import { RoleHero } from "@/components/home/RoleHero";
+import { UserTypeHero } from "@/components/home/UserTypeHero";
+import { RoleBasedHome } from "@/components/home/RoleBasedHome";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRole";
+import { useUserType } from "@/hooks/useUserType";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
 import { useCountry } from "@/contexts/CountryContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FloatingParticles, NumberTicker, GradientText, MagneticWrapper, PulseRing } from "@/components/ui/premium";
-import { LottieEmptyState } from "@/components/lottie";
+import { FloatingParticles, NumberTicker, GradientText, MagneticWrapper, PulseRing, ShimmerCard } from "@/components/ui/premium";
+import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Fragment, useState } from "react";
 import { toast } from "sonner";
@@ -39,7 +43,8 @@ export default function Home() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { roles } = useUserRoles();
-  const { wallet } = useWallet();
+  const { userType } = useUserType();
+  const { wallet, loading: walletLoading } = useWallet();
   const { country, t } = useCountry();
 
   const greet = () => {
@@ -53,7 +58,7 @@ export default function Home() {
   const isAdmin = roles.includes('admin');
   const showRoleHero = isProvider || isAdmin;
 
-  const { data: profile } = useQuery<any>({
+  const { data: profile, isPending: profileLoading } = useQuery<any>({
     queryKey: ['profile-name', user?.id],
     enabled: !!user,
     queryFn: async () => {
@@ -62,7 +67,7 @@ export default function Home() {
     },
   });
 
-  const { data: upcoming } = useQuery<any>({
+  const { data: upcoming, isPending: upcomingLoading } = useQuery<any>({
     queryKey: ['upcoming-c', user?.id],
     enabled: !!user,
     queryFn: async () => {
@@ -98,22 +103,23 @@ export default function Home() {
 
   const firstName = profile?.full_name?.split(' ')[0] || (user ? t('common.friend') : t('common.visitor'));
   const [isListening, setIsListening] = useState(false);
+  const [activeTab, setActiveTab] = useState<'today' | 'discover'>(user ? 'today' : 'discover');
 
   const startVoiceSearch = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      toast.error("O seu navegador não suporta reconhecimento de voz.");
+      toast.error(t('home.voice_not_supported'));
       return;
     }
 
     setIsListening(true);
-    toast.info("A ouvir sintomas...", {
-      description: "Podes falar agora. A usar Cloud Speech-to-Text via navegador.",
+    toast.info(t('home.voice_listening'), {
+      description: t('home.voice_listening_desc'),
       icon: <Mic className="h-4 w-4 text-primary animate-pulse" />,
     });
 
     const recognition = new SpeechRecognition();
-    recognition.lang = country?.id === 'BR' ? 'pt-BR' : 'pt-PT';
+    recognition.lang = country?.id === 'MZ' ? 'pt-MZ' : country?.id === 'BR' ? 'pt-BR' : 'pt-PT';
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
@@ -123,7 +129,7 @@ export default function Home() {
 
     recognition.onerror = () => {
       setIsListening(false);
-      toast.error("Erro ao ouvir. Tente novamente.");
+      toast.error(t('home.voice_error'));
     };
 
     recognition.onend = () => {
@@ -141,11 +147,22 @@ export default function Home() {
         path="/"
       />
 
+      {/* ============ OVERLAYS / MODALS (always visible, outside tab system) ============ */}
       <HealthProfileOnboarding />
       <MorningGreeting />
       <EmergencySOS />
 
-      <div className="animate-fade-in space-y-6">
+      {/* ============ ROLE-BASED HOME (non-patient types get their own experience) ============ */}
+      {userType && userType !== 'patient' ? (
+        <div className="animate-fade-in min-h-screen bg-slate-950 pt-4">
+          <RoleBasedHome />
+          <MeddyChat />
+        </div>
+      ) : (
+        <div className="animate-fade-in space-y-6">
+        {/* ============ USER TYPE HERO (personalizado por tipo) ============ */}
+        <UserTypeHero />
+
         {/* ============ HERO SECTION ============ */}
         {showRoleHero ? (
           <RoleHero roles={roles as any} name={firstName !== 'visitante' ? firstName : undefined} />
@@ -162,7 +179,7 @@ export default function Home() {
               <FloatingParticles count={12} className="opacity-50" />
               <div className="relative z-10">
                 <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] opacity-80 mb-2">
-                  <Sparkles className="h-3.5 w-3.5" /> {greet()}{user ? `, ${firstName}` : ''}
+                  <Sparkles className="h-3.5 w-3.5" /> {greet()}{user ? `, ${profileLoading ? <Skeleton className="inline-block h-4 w-20 bg-white/20" /> : firstName}` : ''}
                 </div>
                 <h1 className="text-4xl font-black leading-none tracking-tight">
                   {t('home.hero_title').split(' ').map((word, i, arr) =>
@@ -185,7 +202,8 @@ export default function Home() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="bg-white/10 border-white/30 text-white hover:bg-white/20 font-bold rounded-2xl backdrop-blur-sm"
+                    aria-label={t('home.voice_listening')}
+                    className="bg-white/10 border-white/30 text-white hover:bg-white/20 font-bold rounded-2xl backdrop-blur-sm min-w-[44px] min-h-[44px]"
                     onClick={startVoiceSearch}
                   >
                     <Mic className={cn("h-5 w-5", isListening && "animate-pulse text-secondary")} />
@@ -197,268 +215,361 @@ export default function Home() {
           </section>
         )}
 
-        {/* ============ ENABLE NOTIFICATIONS BANNER (apenas se ainda não ativou) ============ */}
+        {/* ============ MEDDY WELCOME CARD (logged-in patients only) ============ */}
+        {user && !isProvider && !isAdmin && <MeddyWelcomeCard />}
+
+        {/* ============ ENABLE NOTIFICATIONS BANNER (outside tabs) ============ */}
         <EnableNotificationsBanner />
 
         {/* Onboarding leve para visitantes/pacientes: mostrar como registar como profissional */}
         {!isProvider && !isAdmin && <VisitorProOnboarding />}
 
-        {/* ============ FREE TRIAL BANNER (alavanca de adopção) ============ */}
+        {/* ============ FREE TRIAL BANNER (outside tabs) ============ */}
         <section className="px-4">
           <FreeTrialBanner />
         </section>
 
-        {/* ============ QUICK PILLARS (The 5 Main Actions) ============ */}
-        <section className="px-4">
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-            {[
-              { icon: Pill, label: t('home.pharmacy'), bgClass: 'bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/30', textClass: 'text-emerald-500', to: '/pharmacy' },
-              { icon: Stethoscope, label: t('home.clinics'), bgClass: 'bg-primary/5 border-primary/10 hover:border-primary/30', textClass: 'text-primary', to: '/health/facilities?type=clinic' },
-              { icon: PawPrint, label: t('home.veterinary'), bgClass: 'bg-amber-500/5 border-amber-500/10 hover:border-amber-500/30', textClass: 'text-amber-500', to: '/health/veterinary' },
-              { icon: Building2, label: t('home.hospitals'), bgClass: 'bg-destructive/5 border-destructive/10 hover:border-destructive/30', textClass: 'text-destructive', to: '/health/facilities?type=hospital' },
-              { icon: FlaskConical, label: t('home.laboratories'), bgClass: 'bg-secondary/5 border-secondary/10 hover:border-secondary/30', textClass: 'text-secondary', to: '/health/facilities?type=laboratory' },
-            ].map(c => (
-              <button key={c.label} onClick={() => navigate(c.to)} className="group flex flex-col items-center gap-2 no-tap-target">
-                <MagneticWrapper>
-                  <div className={cn(
-                    "h-14 w-full rounded-2xl flex flex-col items-center justify-center transition-all group-hover:scale-105 active:scale-95 shadow-sm border-2",
-                    c.bgClass
-                  )}>
-                    <c.icon className={cn("h-6 w-6", c.textClass)} />
-                  </div>
-                </MagneticWrapper>
-                <span className="text-[10px] font-black text-center leading-tight text-foreground/80">{c.label}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* ============ WALLET & UPCOMING ============ */}
-        <section className="px-4 grid grid-cols-2 gap-4">
-          {user && (
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/wallet')}
-              className="bento-card p-5 bg-gradient-to-br from-primary to-primary/80 text-white flex flex-col justify-between h-40"
-            >
-              <div>
-                <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">{t('home.wallet_card')}</p>
-                <div className="flex items-baseline gap-1 mt-1">
-                  <NumberTicker value={Number(wallet?.balance ?? 0)} className="text-3xl font-black" prefix="" suffix="" />
-                  <span className="text-xs font-bold opacity-80">{country?.currency_code || 'MZN'}</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] opacity-60">{t('wallet.secure_instant')}</span>
-                <div className="relative">
-                  <PulseRing color="rgba(255,255,255,0.6)" />
-                  <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur">
-                    <Plus className="h-4 w-4" />
-                  </div>
-                </div>
-              </div>
-            </motion.button>
-          )}
-
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={() => navigate(upcoming ? `/health/consultation/${upcoming.id}` : '/health/doctors')}
-            className={cn(
-              "bento-card p-5 flex flex-col justify-between h-40 border-2",
-              upcoming ? "bg-secondary/5 border-secondary/20" : "bg-muted/30 border-transparent"
-            )}
+        {/* ============ TAB SWITCHER (Today / Discover) ============ */}
+        <div className="px-4">
+          <div
+            role="tablist"
+            aria-label="Secções principais"
+            className="flex gap-2 bg-muted/50 p-1 rounded-2xl"
           >
-            <div>
-              <p className={cn("text-[10px] uppercase font-bold tracking-widest", upcoming ? "text-secondary" : "text-muted-foreground")}>
-                {upcoming ? t('health.upcoming_consultation') : t('health.new_consultation')}
-              </p>
-              {upcoming ? (
-                <div className="mt-2">
-                  <p className="text-lg font-black leading-tight">
-                    {new Date(upcoming.scheduled_at).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                  <p className="text-xs font-bold text-muted-foreground">
-                    {new Date(upcoming.scheduled_at).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
-                  </p>
-                </div>
-              ) : (
-                <div className="mt-2">
-                  <p className="text-lg font-black leading-tight">{t('health.book_now')}</p>
-                  <p className="text-xs font-medium text-muted-foreground">{t('health.under_2_min')}</p>
-                </div>
+            <button
+              role="tab"
+              aria-selected={activeTab === 'today'}
+              aria-controls="today-panel"
+              id="today-tab"
+              onClick={() => setActiveTab('today')}
+              className={cn(
+                'flex-1 py-3 min-h-[44px] rounded-xl font-black text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+                activeTab === 'today'
+                  ? 'bg-primary text-white shadow-md'
+                  : 'bg-transparent text-muted-foreground hover:bg-muted/80'
               )}
-            </div>
-            <div className={cn("h-8 w-8 rounded-full flex items-center justify-center shadow-sm", upcoming ? "bg-secondary text-white" : "bg-white text-muted-foreground border")}>
-              <Calendar className="h-4 w-4" />
-            </div>
-          </motion.button>
-        </section>
-
-        {/* ============ URGENT BANNER ============ */}
-        <section className="px-4">
-          <button
-            onClick={() => navigate('/health/triage')}
-            className="w-full bg-primary text-white p-6 rounded-[2rem] shadow-premium relative overflow-hidden text-left group active:scale-95 transition-transform"
-          >
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="max-w-[70%]">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge className="bg-secondary text-white border-0 font-bold uppercase tracking-widest text-[9px]">{t('health.urgent')}</Badge>
-                  <h2 className="text-2xl font-black"><GradientText>{t('health.meddy_now')}</GradientText></h2>
-                </div>
-                <p className="text-white/80 text-xs font-bold leading-relaxed">
-                  {t('health.meddy_now_desc')}
-                </p>
-              </div>
-              <div className="h-14 w-14 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:bg-white/20 transition-colors">
-                <ShieldCheck className="h-7 w-7 text-secondary" />
-              </div>
-            </div>
-            <div className="absolute -right-10 -bottom-10 h-40 w-40 bg-secondary/10 rounded-full blur-3xl" />
-          </button>
-        </section>
-
-        <AirQualityWidget />
-
-        <PillTracker />
-
-        <FollowUpReminders />
-
-        <NearbyProvidersWidget />
-
-        <PersonalizedForYou />
-
-        {/* ============ PLANS PREMIUM MZ (upsell) ============ */}
-        <section className="px-4">
-          <div className="bento-card p-5 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent border-amber-500/20 relative overflow-hidden">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
-            <div className="relative flex items-start gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0 shadow-glow">
-                <Crown className="h-6 w-6 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-black text-base">Planos Premium MZ</p>
-                  <Badge className="bg-amber-500/20 text-amber-700 border-0 text-[10px] font-black">Desde 199 MZN/mês</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground font-medium mt-1.5 leading-relaxed">
-                  Consultas grátis, descontos em farmácia, SOS obstétrico 24/7, refills ARV/TB ilimitados.
-                </p>
-                <div className="flex gap-2 mt-3 flex-wrap">
-                  <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30">
-                    <Baby className="h-3 w-3" /> Grávida 299
-                  </Badge>
-                  <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30">
-                    <HeartPulse className="h-3 w-3" /> Crónico 249
-                  </Badge>
-                  <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30">
-                    <Crown className="h-3 w-3" /> Premium 499
-                  </Badge>
-                </div>
-                <Button
-                  size="sm"
-                  className="mt-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black rounded-xl h-9"
-                  onClick={() => navigate('/planos')}
-                >
-                  Ver planos <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
-                </Button>
-              </div>
-            </div>
+            >
+              {t('home.tab_today')}
+            </button>
+            <button
+              role="tab"
+              aria-selected={activeTab === 'discover'}
+              aria-controls="discover-panel"
+              id="discover-tab"
+              onClick={() => setActiveTab('discover')}
+              className={cn(
+                'flex-1 py-3 min-h-[44px] rounded-xl font-black text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+                activeTab === 'discover'
+                  ? 'bg-primary text-white shadow-md'
+                  : 'bg-transparent text-muted-foreground hover:bg-muted/80'
+              )}
+            >
+              {t('home.tab_discover')}
+            </button>
           </div>
-        </section>
+        </div>
 
-        {/* ============ EDUCATIONAL & HELP ============ */}
-        <section className="px-4 grid grid-cols-2 gap-4">
-          <button
-            onClick={() => navigate('/health/education')}
-            className="bento-card p-4 bg-amber-500/5 border-amber-500/20 text-left space-y-3"
-          >
-            <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-              <BookOpen className="h-5 w-5 text-amber-600" />
-            </div>
-            <div>
-              <p className="font-black text-sm">{t('health.health_education')}</p>
-              <p className="text-[10px] text-muted-foreground font-medium">Guias locais</p>
-            </div>
-          </button>
+        {/* ============ TAB CONTENT ============ */}
+        <AnimatePresence mode="wait">
+          {activeTab === 'today' ? (
+            <motion.div
+              key="today"
+              role="tabpanel"
+              id="today-panel"
+              aria-labelledby="today-tab"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              {/* WALLET & UPCOMING CONSULTATION */}
+              <section className="px-4 grid grid-cols-2 gap-4">
+                {user ? (
+                  walletLoading ? (
+                    <ShimmerCard className="h-40 bg-gradient-to-br from-primary/20 to-primary/5" lines={2} />
+                  ) : (
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => navigate('/wallet')}
+                      aria-label={`${t('home.wallet_card')} - ${wallet?.balance ?? 0} ${country?.currency_code || 'MZN'}`}
+                      className="bento-card p-5 bg-gradient-to-br from-primary to-primary/80 text-white flex flex-col justify-between h-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    >
+                      <div>
+                        <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">{t('home.wallet_card')}</p>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <NumberTicker value={Number(wallet?.balance ?? 0)} className="text-3xl font-black" prefix="" suffix="" />
+                          <span className="text-xs font-bold opacity-80">{country?.currency_code || 'MZN'}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] opacity-60">{t('wallet.secure_instant')}</span>
+                        <div className="relative">
+                          <PulseRing color="rgba(255,255,255,0.6)" />
+                          <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur">
+                            <Plus className="h-4 w-4" />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.button>
+                  )
+                ) : null}
 
-          <button
-            onClick={() => navigate('/help')}
-            className="bento-card p-4 bg-blue-500/5 border-blue-500/20 text-left space-y-3"
-          >
-            <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-              <MessageCircle className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="font-black text-sm">{t('health.help_payment', { method: country?.config?.payment_methods?.[0]?.name || 'M-Pesa' })}</p>
-              <p className="text-[10px] text-muted-foreground font-medium">{t('health.support_24h')}</p>
-            </div>
-          </button>
-        </section>
-
-        <ReferralBanner />
-
-        <KlipyBanner query={`${country?.name || 'mozambique'} healthcare`} />
-
-        {/* ============ BECOME A PROVIDER ============ */}
-        <section className="px-4">
-          <div className="bento-card p-6 bg-gradient-to-br from-slate-900 to-primary text-white relative overflow-hidden">
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <Badge className="bg-gold text-gold-foreground border-0 font-black">{t('home.for_professionals')}</Badge>
-              </div>
-              <h3 className="text-2xl font-black leading-tight">{t('health.grow_with_medwallet')}</h3>
-              <p className="text-xs opacity-70 mt-2 font-medium">{t('health.provider_desc')}</p>
-
-              <div className="grid grid-cols-2 gap-2 mt-5">
-                {[
-                  { label: t('common.doctor'), icon: Stethoscope, to: "/doctor/register", role: 'doctor' },
-                  { label: t('common.pharmacy'), icon: Pill, to: "/store/register", role: 'store_owner' },
-                  { label: t('home.clinics'), icon: Building2, to: "/clinic/register", role: 'clinic' },
-                  { label: t('home.laboratories'), icon: FlaskConical, to: "/lab/register", role: 'laboratory' },
-                ].filter(b => !roles.includes(b.role as any)).map(b => (
-                  <Button key={b.label} variant="secondary" size="sm" className="bg-white/10 hover:bg-white/20 border-white/10 text-white font-bold h-10 rounded-xl" onClick={() => navigate(b.to)}>
-                    <b.icon className="h-3.5 w-3.5 mr-1.5" /> {b.label}
-                  </Button>
-                ))}
-                {roles.length > 0 && roles.some(r => ['doctor', 'store_owner', 'clinic', 'laboratory', 'driver'].includes(r)) && (
-                   <Button variant="secondary" size="sm" className="col-span-2 bg-secondary/20 hover:bg-secondary/30 border-secondary/20 text-white font-bold h-10 rounded-xl" onClick={() => {
-                     if (roles.includes('doctor')) navigate('/doctor/dashboard');
-                     else if (roles.includes('store_owner')) navigate('/store/dashboard');
-                     else if (roles.includes('clinic')) navigate('/clinic/dashboard');
-                     else if (roles.includes('driver')) navigate('/driver/dashboard');
-                   }}>
-                     Ir para o meu Painel Profissional <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
-                   </Button>
+                {upcomingLoading && user ? (
+                  <ShimmerCard className="h-40" lines={2} />
+                ) : (
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate(upcoming ? `/health/consultation/${upcoming.id}` : '/health/doctors')}
+                    aria-label={upcoming ? t('health.upcoming_consultation') : t('health.new_consultation')}
+                    className={cn(
+                      'bento-card p-5 flex flex-col justify-between h-40 border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+                      upcoming ? 'bg-secondary/5 border-secondary/20' : 'bg-muted/30 border-transparent'
+                    )}
+                  >
+                    <div>
+                      <p className={cn('text-[10px] uppercase font-bold tracking-widest', upcoming ? 'text-secondary' : 'text-muted-foreground')}>
+                        {upcoming ? t('health.upcoming_consultation') : t('health.new_consultation')}
+                      </p>
+                      {upcoming ? (
+                        <div className="mt-2">
+                          <p className="text-lg font-black leading-tight">
+                            {new Date(upcoming.scheduled_at).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                          <p className="text-xs font-bold text-muted-foreground">
+                            {new Date(upcoming.scheduled_at).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="mt-2">
+                          <p className="text-lg font-black leading-tight">{t('health.book_now')}</p>
+                          <p className="text-xs font-medium text-muted-foreground">{t('health.under_2_min')}</p>
+                        </div>
+                      )}
+                    </div>
+                    <div className={cn('h-8 w-8 rounded-full flex items-center justify-center shadow-sm', upcoming ? 'bg-secondary text-white' : 'bg-white text-muted-foreground border')}>
+                      <Calendar className="h-4 w-4" />
+                    </div>
+                  </motion.button>
                 )}
-              </div>
-            </div>
-            <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-secondary/10 rounded-full blur-[100px]" />
-          </div>
-        </section>
+              </section>
 
-        {/* ============ SUGGEST A PLACE ============ */}
-        <section className="px-4 mb-6">
-          <button
-            onClick={() => navigate('/suggest-place')}
-            className="w-full bento-card p-5 text-left bg-gold/5 border-gold/20 relative overflow-hidden group"
-          >
-            <div className="relative flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-gold flex items-center justify-center shrink-0 shadow-glow">
-                <MapPinPlus className="h-6 w-6 text-gold-foreground" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="font-black text-base">{t('health.suggest_place')}</p>
-                  <Badge className="bg-gold text-gold-foreground border-0 text-[10px] font-black">+{country?.config?.registration_defaults?.reward_amount || 25} {country?.currency_code || 'MZN'}</Badge>
+              {/* URGENT BANNER — Meddy Agora */}
+              <section className="px-4">
+                <button
+                  onClick={() => navigate('/health/triage')}
+                  aria-label={`${t('health.urgent')} - ${t('health.meddy_now')}`}
+                  className="w-full bg-primary text-white p-6 rounded-[2rem] shadow-premium relative overflow-hidden text-left group active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
+                >
+                  <div className="relative z-10 flex items-center justify-between">
+                    <div className="max-w-[70%]">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge className="bg-secondary text-white border-0 font-bold uppercase tracking-widest text-[9px]">{t('health.urgent')}</Badge>
+                        <h2 className="text-2xl font-black"><GradientText>{t('health.meddy_now')}</GradientText></h2>
+                      </div>
+                      <p className="text-white/80 text-xs font-bold leading-relaxed">
+                        {t('health.meddy_now_desc')}
+                      </p>
+                    </div>
+                    <div className="h-14 w-14 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:bg-white/20 transition-colors">
+                      <ShieldCheck className="h-7 w-7 text-secondary" aria-hidden="true" />
+                    </div>
+                  </div>
+                  <div className="absolute -right-10 -bottom-10 h-40 w-40 bg-secondary/10 rounded-full blur-3xl" />
+                </button>
+              </section>
+
+              <AirQualityWidget />
+
+              <PillTracker />
+
+              <FollowUpReminders />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="discover"
+              role="tabpanel"
+              id="discover-panel"
+              aria-labelledby="discover-tab"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-6"
+            >
+              {/* QUICK PILLARS (The 5 Main Actions) */}
+              <section className="px-4">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                  {[
+                    { icon: Pill, label: t('home.pharmacy'), bgClass: 'bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/30', textClass: 'text-emerald-500', to: '/pharmacy' },
+                    { icon: Stethoscope, label: t('home.clinics'), bgClass: 'bg-primary/5 border-primary/10 hover:border-primary/30', textClass: 'text-primary', to: '/health/facilities?type=clinic' },
+                    { icon: PawPrint, label: t('home.veterinary'), bgClass: 'bg-amber-500/5 border-amber-500/10 hover:border-amber-500/30', textClass: 'text-amber-500', to: '/health/veterinary' },
+                    { icon: Building2, label: t('home.hospitals'), bgClass: 'bg-destructive/5 border-destructive/10 hover:border-destructive/30', textClass: 'text-destructive', to: '/health/facilities?type=hospital' },
+                    { icon: FlaskConical, label: t('home.laboratories'), bgClass: 'bg-secondary/5 border-secondary/10 hover:border-secondary/30', textClass: 'text-secondary', to: '/health/facilities?type=laboratory' },
+                  ].map(c => (
+                    <button
+                      key={c.label}
+                      onClick={() => navigate(c.to)}
+                      aria-label={c.label}
+                      className="group flex flex-col items-center gap-2 no-tap-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl"
+                    >
+                      <MagneticWrapper>
+                        <div className={cn(
+                          'h-14 w-full min-h-[44px] rounded-2xl flex flex-col items-center justify-center transition-all group-hover:scale-105 active:scale-95 shadow-sm border-2',
+                          c.bgClass
+                        )}>
+                          <c.icon className={cn('h-6 w-6', c.textClass)} aria-hidden="true" />
+                        </div>
+                      </MagneticWrapper>
+                      <span className="text-[11px] font-black text-center leading-tight text-foreground/80">{c.label}</span>
+                    </button>
+                  ))}
                 </div>
-                <p className="text-xs text-muted-foreground font-medium mt-0.5">{t('health.map_health_country', { country: country?.name || 'Moçambique' })}</p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-gold group-hover:translate-x-1 transition" />
-            </div>
-          </button>
-        </section>
+              </section>
+
+              <NearbyProvidersWidget />
+
+              <PersonalizedForYou />
+
+              {/* PLANS PREMIUM MZ (upsell) */}
+              <section className="px-4">
+                <div className="bento-card p-5 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent border-amber-500/20 relative overflow-hidden">
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
+                  <div className="relative flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0 shadow-glow">
+                      <Crown className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-black text-base">{t('home.plans_premium_title')}</p>
+                        <Badge className="bg-amber-500/20 text-amber-700 border-0 text-[10px] font-black">{t('home.plans_premium_from')}</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground font-medium mt-1.5 leading-relaxed">
+                        {t('home.plans_premium_desc')}
+                      </p>
+                      <div className="flex gap-2 mt-3 flex-wrap">
+                        <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30">
+                          <Baby className="h-3 w-3" /> {t('home.plans_pregnant')}
+                        </Badge>
+                        <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30">
+                          <HeartPulse className="h-3 w-3" /> {t('home.plans_chronic')}
+                        </Badge>
+                        <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30">
+                          <Crown className="h-3 w-3" /> {t('home.plans_premium')}
+                        </Badge>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="mt-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black rounded-xl h-9"
+                        onClick={() => navigate('/planos')}
+                      >
+                        {t('home.plans_see_plans')} <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* EDUCATIONAL & HELP */}
+              <section className="px-4 grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => navigate('/health/education')}
+                  aria-label={t('health.health_education')}
+                  className="bento-card p-4 bg-amber-500/5 border-amber-500/20 text-left space-y-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+                >
+                  <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                    <BookOpen className="h-5 w-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="font-black text-sm">{t('health.health_education')}</p>
+                    <p className="text-[10px] text-muted-foreground font-medium">{t('home.education_local_guides')}</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => navigate('/help')}
+                  aria-label={t('health.help_payment', { method: country?.config?.payment_methods?.[0]?.name || 'M-Pesa' })}
+                  className="bento-card p-4 bg-blue-500/5 border-blue-500/20 text-left space-y-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                >
+                  <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                    <MessageCircle className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-black text-sm">{t('health.help_payment', { method: country?.config?.payment_methods?.[0]?.name || 'M-Pesa' })}</p>
+                    <p className="text-[10px] text-muted-foreground font-medium">{t('health.support_24h')}</p>
+                  </div>
+                </button>
+              </section>
+
+              <ReferralBanner />
+
+              <KlipyBanner query={`${country?.name || 'mozambique'} healthcare`} />
+
+              {/* BECOME A PROVIDER */}
+              <section className="px-4">
+                <div className="bento-card p-6 bg-gradient-to-br from-slate-900 to-primary text-white relative overflow-hidden">
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge className="bg-gold text-gold-foreground border-0 font-black">{t('home.for_professionals')}</Badge>
+                    </div>
+                    <h3 className="text-2xl font-black leading-tight">{t('health.grow_with_medwallet')}</h3>
+                    <p className="text-xs opacity-70 mt-2 font-medium">{t('health.provider_desc')}</p>
+
+                    <div className="grid grid-cols-2 gap-2 mt-5">
+                      {[
+                        { label: t('common.doctor'), icon: Stethoscope, to: '/doctor/register', role: 'doctor' },
+                        { label: t('common.pharmacy'), icon: Pill, to: '/store/register', role: 'store_owner' },
+                        { label: t('home.clinics'), icon: Building2, to: '/clinic/register', role: 'clinic' },
+                        { label: t('home.laboratories'), icon: FlaskConical, to: '/lab/register', role: 'laboratory' },
+                      ].filter(b => !roles.includes(b.role as any)).map(b => (
+                        <Button key={b.label} variant="secondary" size="sm" className="bg-white/10 hover:bg-white/20 border-white/10 text-white font-bold h-10 rounded-xl" onClick={() => navigate(b.to)}>
+                          <b.icon className="h-3.5 w-3.5 mr-1.5" /> {b.label}
+                        </Button>
+                      ))}
+                      {roles.length > 0 && roles.some(r => ['doctor', 'store_owner', 'clinic', 'laboratory', 'driver'].includes(r)) && (
+                         <Button variant="secondary" size="sm" className="col-span-2 bg-secondary/20 hover:bg-secondary/30 border-secondary/20 text-white font-bold h-10 rounded-xl" onClick={() => {
+                           if (roles.includes('doctor')) navigate('/doctor/dashboard');
+                           else if (roles.includes('store_owner')) navigate('/store/dashboard');
+                           else if (roles.includes('clinic')) navigate('/clinic/dashboard');
+                           else if (roles.includes('driver')) navigate('/driver/dashboard');
+                         }}>
+                           {t('home.go_to_panel')} <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                         </Button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-secondary/10 rounded-full blur-[100px]" />
+                </div>
+              </section>
+
+              {/* SUGGEST A PLACE */}
+              <section className="px-4 mb-6">
+                <button
+                  onClick={() => navigate('/suggest-place')}
+                  aria-label={`${t('health.suggest_place')} - +${country?.config?.registration_defaults?.reward_amount || 25} ${country?.currency_code || 'MZN'}`}
+                  className="w-full bento-card p-5 text-left bg-gold/5 border-gold/20 relative overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+                >
+                  <div className="relative flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-gold flex items-center justify-center shrink-0 shadow-glow">
+                      <MapPinPlus className="h-6 w-6 text-gold-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-black text-base">{t('health.suggest_place')}</p>
+                        <Badge className="bg-gold text-gold-foreground border-0 text-[10px] font-black">+{country?.config?.registration_defaults?.reward_amount || 25} {country?.currency_code || 'MZN'}</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground font-medium mt-0.5">{t('health.map_health_country', { country: country?.name || 'Moçambique' })}</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-gold group-hover:translate-x-1 transition" />
+                  </div>
+                </button>
+              </section>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <MeddyChat />
       </div>
+      )}
     </>
   );
 }

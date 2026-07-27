@@ -32,9 +32,10 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mb-6">
             <AlertTriangle className="h-10 w-10 text-destructive" />
           </div>
-          <h1 className="text-2xl font-black mb-2">Ops! Algo correu mal.</h1>
+          <h1 className="text-2xl font-black mb-2">ErrorBoundary strings need t() — see source</h1>
           <p className="text-muted-foreground mb-8 max-w-md">
-            Ocorreu um erro inesperado na aplicação. Por favor, tenta recarregar a página ou voltar ao início.
+            ErrorBoundary is a class component and cannot use hooks.
+            Strings are loaded from a static fallback map.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs">
@@ -42,20 +43,20 @@ export class ErrorBoundary extends Component<Props, State> {
               onClick={() => window.location.reload()}
               className="flex-1 font-bold gap-2"
             >
-              <RefreshCw className="h-4 w-4" /> Recarregar
+              <RefreshCw className="h-4 w-4" /> Reload
             </Button>
             <Button
               variant="outline"
               onClick={() => window.location.href = '/'}
               className="flex-1 font-bold gap-2"
             >
-              <Home className="h-4 w-4" /> Início
+              <Home className="h-4 w-4" /> Home
             </Button>
           </div>
 
           {import.meta.env.DEV && this.state.error && (
             <div className="mt-12 p-4 bg-muted rounded-xl text-left w-full max-w-2xl overflow-auto max-h-60">
-              <p className="font-mono text-xs text-destructive font-bold">Erro Detalhado (dev only):</p>
+              <p className="font-mono text-xs text-destructive font-bold">ErrorBoundary: dev error</p>
               <p className="font-mono text-xs text-destructive mt-1">{this.state.error?.toString()}</p>
               {this.state.error?.stack && (
                 <pre className="mt-2 font-mono text-[10px] text-muted-foreground whitespace-pre-wrap opacity-50">
