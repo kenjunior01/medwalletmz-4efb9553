@@ -271,7 +271,7 @@ export default function RegistrationWizard() {
             onboarding_completed: true,
             country_id: country?.id || 'MZ',
             full_name: formData.fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
-          });
+          }, { onConflict: 'user_id' });
         } catch (e) { /* non-blocking */ }
       }
       navigate('/');
@@ -301,7 +301,7 @@ export default function RegistrationWizard() {
         country_id: country?.id || 'MZ',
         default_city: formData.city,
         onboarding_completed: true,
-      });
+      }, { onConflict: 'user_id' });
 
       // 2. Role specific logic
       if (selectedRole === 'doctor' || selectedRole === 'veterinary') {
@@ -321,7 +321,7 @@ export default function RegistrationWizard() {
           license_url: formData.licenseUrl || null,
         }, { onConflict: 'user_id' });
         if (dErr) throw dErr;
-        await supabase.from('user_roles').upsert({ user_id: user.id, role: selectedRole, country_id: country?.id || 'MZ' });
+        await supabase.from('user_roles').upsert({ user_id: user.id, role: selectedRole, country_id: country?.id || 'MZ' }, { onConflict: 'user_id,role,country_id' });
         await refreshRoles();
         navigate(selectedRole === 'doctor' ? '/doctor/dashboard' : '/health/veterinary');
       }
@@ -340,7 +340,7 @@ export default function RegistrationWizard() {
           is_active: true
         }).select().single();
         if (sErr) throw sErr;
-        await supabase.from('user_roles').upsert({ user_id: user.id, role: 'store_owner', country_id: country?.id || 'MZ' });
+        await supabase.from('user_roles').upsert({ user_id: user.id, role: 'store_owner', country_id: country?.id || 'MZ' }, { onConflict: 'user_id,role,country_id' });
         await refreshRoles();
         navigate('/store/dashboard');
       }
@@ -360,7 +360,7 @@ export default function RegistrationWizard() {
           is_active: false // Needs verification
         });
         if (cErr) throw cErr;
-        await supabase.from('user_roles').upsert({ user_id: user.id, role: 'clinic', country_id: country?.id || 'MZ' });
+        await supabase.from('user_roles').upsert({ user_id: user.id, role: 'clinic', country_id: country?.id || 'MZ' }, { onConflict: 'user_id,role,country_id' });
         await refreshRoles();
         navigate(selectedRole === 'laboratory' ? '/lab/dashboard' : '/clinic/dashboard');
       }
@@ -377,7 +377,7 @@ export default function RegistrationWizard() {
           is_active: false
         });
         if (iErr) throw iErr;
-        await supabase.from('user_roles').upsert({ user_id: user.id, role: 'insurance', country_id: country?.id || 'MZ' });
+        await supabase.from('user_roles').upsert({ user_id: user.id, role: 'insurance', country_id: country?.id || 'MZ' }, { onConflict: 'user_id,role,country_id' });
         await refreshRoles();
         navigate('/insurance/dashboard');
       }
@@ -392,9 +392,9 @@ export default function RegistrationWizard() {
           onboarding_completed: true,
           country_id: country?.id || 'MZ',
           full_name: formData.fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
-        });
+        }, { onConflict: 'user_id' });
         if (pErr) throw pErr;
-        await supabase.from('user_roles').upsert({ user_id: user.id, role: 'driver', country_id: country?.id || 'MZ' });
+        await supabase.from('user_roles').upsert({ user_id: user.id, role: 'driver', country_id: country?.id || 'MZ' }, { onConflict: 'user_id,role,country_id' });
         await refreshRoles();
         navigate('/driver/dashboard');
       }

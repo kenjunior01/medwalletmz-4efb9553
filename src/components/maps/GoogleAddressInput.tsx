@@ -22,7 +22,7 @@ export function GoogleAddressInput({ value, onChange, placeholder, label = "Ende
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    const apiKey = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
     if (!apiKey) return;
 
     if (window.google?.maps?.places) {
@@ -90,7 +90,7 @@ export function GoogleAddressInput({ value, onChange, placeholder, label = "Ende
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+        const apiKey = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
 
         try {
           const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}&language=pt&region=MZ`);

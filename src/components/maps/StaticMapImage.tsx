@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function StaticMapImage({ origin, destination, width = 600, height = 300, zoom = 14, className }: Props) {
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const apiKey = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
 
   const url = useMemo(() => {
     if (!apiKey) return '';

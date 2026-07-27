@@ -358,7 +358,7 @@ async function testPlaces(): Promise<ServiceResult> {
 
 async function testGeocoding(): Promise<ServiceResult> {
   try {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=Maputo,Mozambique&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=Maputo,Mozambique&key=${(import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY)}`;
     const res = await fetch(url);
     const json = await res.json();
     if (json.status === 'OK' && json.results?.[0]) {
@@ -403,7 +403,7 @@ async function testVision(): Promise<ServiceResult> {
 async function testTTS(): Promise<ServiceResult> {
   try {
     // Não reproduzir som automaticamente para não incomodar, apenas verificar
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    const apiKey = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
     if (apiKey && !apiKey.includes('your_')) {
       // Verificar que o endpoint responde
       const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`, {
@@ -428,7 +428,7 @@ async function testTTS(): Promise<ServiceResult> {
 
 async function testTranslate(): Promise<ServiceResult> {
   try {
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    const apiKey = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
     if (!apiKey) return { status: 'simulated', message: 'Translation API indisponível sem chave.' };
     const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
     const res = await fetch(url, {

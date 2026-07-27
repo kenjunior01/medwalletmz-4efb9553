@@ -67,7 +67,7 @@ export async function fetchRouteDistance(
   } catch (_) { /* swallow */ }
 
   // 2) Chamar Google Maps Routes API (v2)
-  const apiKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY;
+  const apiKey = ((import.meta as any).env?.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY);
   if (!apiKey) {
     const mapboxToken = (import.meta as any).env?.VITE_MAPBOX_TOKEN;
     if (mapboxToken) return fetchMapboxRoute(origin, dest, mapboxToken);
