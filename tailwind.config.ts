@@ -140,6 +140,30 @@ export default {
           "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--primary) / 0.4)" },
           "50%": { boxShadow: "0 0 20px 8px hsl(var(--primary) / 0.1)" },
         },
+        "aurora-drift": {
+          "0%, 100%": { transform: "translate3d(0,0,0) rotate(0deg) scale(1)" },
+          "50%": { transform: "translate3d(6%, 4%, 0) rotate(40deg) scale(1.08)" },
+        },
+        "aurora-drift-alt": {
+          "0%, 100%": { transform: "translate3d(0,0,0) rotate(0deg) scale(1)" },
+          "50%": { transform: "translate3d(-5%, -3%, 0) rotate(-30deg) scale(1.1)" },
+        },
+        "aurora-pulse": {
+          "0%, 100%": { transform: "scale(1)", opacity: "0.9" },
+          "50%": { transform: "scale(1.15)", opacity: "0.6" },
+        },
+        "beam-drift": {
+          "0%": { transform: "translateX(-30%) rotate(12deg)" },
+          "100%": { transform: "translateX(30%) rotate(12deg)" },
+        },
+        "beam-drift-slow": {
+          "0%": { transform: "translateX(30%) rotate(-6deg)" },
+          "100%": { transform: "translateX(-30%) rotate(-6deg)" },
+        },
+        "star-twinkle": {
+          "0%, 100%": { opacity: "0.15", transform: "scale(1)" },
+          "50%": { opacity: "0.9", transform: "scale(1.4)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
