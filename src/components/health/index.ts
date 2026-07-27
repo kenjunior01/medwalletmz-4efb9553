@@ -7,3 +7,4 @@ export { default as DispatchRadar } from './DispatchRadar';
 export { MorningGreeting } from './MorningGreeting';
 export { PersonalizedForYou } from './PersonalizedForYou';
 export { HealthProfileOnboarding } from './HealthProfileOnboarding';
+export { EcosystemFlow } from './EcosystemFlow';

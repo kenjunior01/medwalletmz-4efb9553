@@ -44,3 +44,9 @@ export function useUserType() {
 
   return { userType, setUserType, loading, reload: load };
 }
+
+/** Quick type guards */
+export function isPatient(type: UserType) { return type === 'patient'; }
+export function isHealthWorker(type: UserType) { return type === 'health_worker'; }
+export function isRider(type: UserType) { return type === 'rider'; }
+export function isPromoter(type: UserType) { return type === 'promoter'; }

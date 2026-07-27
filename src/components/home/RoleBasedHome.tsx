@@ -33,8 +33,7 @@ export function RoleBasedHome() {
 
   switch (userType) {
     case 'rider': return <RiderHome />;
-    case 'worker': return <WorkerHome />;
-    case 'health_technician': return <TechnicianHome />;
+    case 'health_worker': return <WorkerHome />;
     case 'promoter': return <PromoterHome />;
     default: return null;
   }
@@ -355,129 +354,6 @@ function WorkerHome() {
         <ActionButton icon={Stethoscope} label={t('roleHome.worker.myProfile') ?? 'Meu perfil'} to="/health/workers/profile" delay={0.35} />
         <ActionButton icon={Briefcase} label={t('roleHome.worker.marketplace') ?? 'Marketplace'} to="/health/workers" delay={0.4} />
         <ActionButton icon={Wallet} label={t('roleHome.worker.wallet') ?? 'Carteira'} to="/wallet" delay={0.45} />
-      </div>
-    </div>
-  );
-}
-
-/* ============================================================
-   TECHNICIAN HOME
-   ============================================================ */
-
-function TechnicianHome() {
-  const { t, country } = useCountry();
-  const { user } = useAuth();
-
-  const { data: sessions } = useQuery({
-    queryKey: ['tech-sessions-home', user?.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('health_worker_bookings' as any)
-        .select('id, status, service_type, scheduled_date, customer_name')
-        .eq('worker_id', user!.id)
-        .in('service_type', ['caregiver_session', 'home_visit'])
-        .order('scheduled_date')
-        .limit(5);
-      return data || [];
-    },
-    enabled: !!user,
-  });
-
-  return (
-    <div className="px-4 space-y-4 pb-24">
-      {/* Hero */}
-      <motion.section
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-rose-900 via-pink-950 to-rose-900 p-6 text-white"
-      >
-        <div className="absolute inset-0 opacity-20" aria-hidden>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-rose-400/30 rounded-full blur-3xl" />
-        </div>
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] uppercase tracking-wider font-bold bg-rose-400/20 text-rose-300 px-2 py-0.5 rounded-full">
-              {t('roleHome.technician.badge') ?? 'Técnico de Saúde'}
-            </span>
-          </div>
-          <h2 className="text-2xl font-black leading-tight">
-            {t('roleHome.technician.title') ?? 'Sessões de cuidado'}
-          </h2>
-          <p className="text-sm text-white/70 mt-1">
-            {t('roleHome.technician.subtitle') ?? 'Acompanha pacientes no domicílio com profissionalismo'}
-          </p>
-        </div>
-      </motion.section>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        <StatCard
-          label={t('roleHome.technician.sessionsToday') ?? 'Sessões hoje'}
-          value={String(sessions?.filter((s: any) => s.status === 'in_progress').length ?? 0)}
-          icon={Heart}
-          color="text-rose-400"
-          delay={0.1}
-        />
-        <StatCard
-          label={t('roleHome.technician.pendingVisits') ?? 'Visitas pendentes'}
-          value={String(sessions?.filter((s: any) => s.status === 'confirmed').length ?? 0)}
-          icon={Home}
-          color="text-pink-400"
-          delay={0.15}
-        />
-        <StatCard
-          label={t('roleHome.technician.earnings') ?? 'Ganhos'}
-          value={country?.currency_code || 'MZN'}
-          icon={TrendingUp}
-          color="text-emerald-400"
-          delay={0.2}
-        />
-      </div>
-
-      {/* Sessions list */}
-      <div className="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-          <h3 className="text-sm font-bold text-white">{t('roleHome.technician.schedule') ?? 'Agenda de hoje'}</h3>
-          <Link to="/health/workers/profile" className="text-[11px] text-rose-400 font-medium">
-            {t('common.view_all') ?? 'Ver tudo'} →
-          </Link>
-        </div>
-        {!sessions || sessions.length === 0 ? (
-          <div className="p-6 text-center text-sm text-slate-500">
-            <Heart className="w-8 h-8 mx-auto mb-2 text-slate-600" />
-            {t('roleHome.noData') ?? 'Sem sessões agendadas'}
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-800">
-            {sessions.slice(0, 3).map((s: any, i: number) => (
-              <motion.div
-                key={s.id}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.25 + i * 0.05 }}
-                className="px-4 py-3 flex items-center gap-3"
-              >
-                <div className="h-10 w-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-rose-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{s.customer_name ?? s.service_type}</p>
-                  <p className="text-xs text-slate-400">
-                    {s.scheduled_date ? new Date(s.scheduled_date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Quick Actions */}
-      <div className="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden divide-y divide-slate-800">
-        <ActionButton icon={Calendar} label={t('roleHome.technician.viewSessions') ?? 'Ver sessões'} to="/health/workers/profile" delay={0.3} highlight />
-        <ActionButton icon={Home} label={t('roleHome.technician.homeVisits') ?? 'Visitas ao domicílio'} to="/health/workers/profile" delay={0.35} />
-        <ActionButton icon={Users} label={t('roleHome.technician.circles') ?? 'Círculos de apoio'} to="/health/circles" delay={0.4} />
-        <ActionButton icon={Wallet} label={t('roleHome.technician.wallet') ?? 'Carteira'} to="/wallet" delay={0.45} />
       </div>
     </div>
   );

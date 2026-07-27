@@ -130,9 +130,9 @@ const CONFIG: Record<string, HeroConfig> = {
       { label: 'Avaliação', value: '5.0★' },
     ],
   },
-  worker: {
+  health_worker: {
     icon: Stethoscope,
-    badge: 'Profissional',
+    badge: 'Profissional de Saúde',
     title: 'Tens reservas por confirmar',
     subtitle: 'Vê pedidos de consulta e visita ao domicílio',
     gradient: 'from-purple-600 to-fuchsia-600',
@@ -146,19 +146,6 @@ const CONFIG: Record<string, HeroConfig> = {
       { label: 'Pendentes', value: '0' },
       { label: 'Hoje', value: '0 MT' },
       { label: 'Avaliação', value: '5.0★' },
-    ],
-  },
-  health_technician: {
-    icon: Heart,
-    badge: 'Técnico de Saúde',
-    title: 'Sessões de cuidado',
-    subtitle: 'Acompanha pacientes no domicílio com profissionalismo',
-    gradient: 'from-rose-600 to-pink-600',
-    online: true,
-    actions: [
-      { label: 'Sessões', to: '/health/workers/profile', emoji: '🩹' },
-      { label: 'Visitas', to: '/health/workers/profile', emoji: '🏠' },
-      { label: 'Ganhos', to: '/health/workers/profile', emoji: '💰' },
     ],
   },
   promoter: {

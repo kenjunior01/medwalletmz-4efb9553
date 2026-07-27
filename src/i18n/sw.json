@@ -2514,23 +2514,17 @@
       "cta": "Ganhar por entrega, flexível, com mota",
       "features": "Ganhos por entrega · Bónus 5★ · Pago diário"
     },
-    "worker": {
-      "label": "Profissional de Saúde",
-      "description": "Sou médico, enfermeiro, parteira, APE, curandeiro...",
-      "cta": "Receber reservas e ganhar por consulta",
-      "features": "Perfil verificado · Reservas · 80% por sessão"
-    },
-    "health_technician": {
-      "label": "Técnico de Saúde",
-      "description": "Sou enfermeiro(a), técnico(a) de enfermagem ou técnico(a) de saúde",
-      "cta": "Sessões pagas, visitas ao domicílio",
-      "features": "Sessões · Visitas · 80% por sessão"
-    },
     "promoter": {
       "label": "Promotor de Saúde",
       "description": "Quero convidar amigos e ganhar recompostas",
       "cta": "Link de convite, ganhos por conversão",
       "features": "Link pessoal · Recompensas · Saldo por amigo"
+    },
+    "health_worker": {
+      "label": "Mtaalamu wa Afya",
+      "description": "Nina daktari, muuguzi, mtaalamu wa uuguzi, mtaalamu wa afya, mkunga, CHW, mganga wa jadi...",
+      "cta": "Pokea mapango na pata kiasi kwa kila ushauri au kikao",
+      "features": "Wasifu thibitishwa · Ushauri · Ziara · 80% kwa kikao"
     }
   },
   "adminVerification": {
@@ -2623,20 +2617,6 @@
       "wallet": "Carteira",
       "goToProfile": "Ir para o perfil"
     },
-    "technician": {
-      "badge": "Técnico de Saúde",
-      "title": "Sessões de cuidado",
-      "subtitle": "Acompanha pacientes no domicílio com profissionalismo",
-      "sessionsToday": "Sessões hoje",
-      "pendingVisits": "Visitas pendentes",
-      "earnings": "Ganhos",
-      "schedule": "Agenda de hoje",
-      "viewSessions": "Ver sessões",
-      "homeVisits": "Visitas ao domicílio",
-      "circles": "Círculos de apoio",
-      "wallet": "Carteira",
-      "goToProfile": "Ir para o perfil"
-    },
     "promoter": {
       "badge": "Promotor de Saúde",
       "title": "Convida e ganha",
@@ -2653,5 +2633,35 @@
       "wallet": "Carteira",
       "goToReferrals": "Ir para convites"
     }
+  },
+  "ecosystem": {
+    "title": "Mfumo wa Afya",
+    "subtitle": "Wote wako pamoja kwa afya yako",
+    "patient": {
+      "rideToAppointment": "Nenda kuliko na Rider",
+      "rideToAppointmentDesc": "Unahitaji kwenda kwenye ziara? Health Rider atakuchukua hadi nyumbani.",
+      "requestDelivery": "Omba usambazaji wa dawa",
+      "requestDeliveryDesc": "Daktari ametuma agizo? Omba usambazaji hadi nyumbani.",
+      "findWorker": "Tafuta Mtaalamu",
+      "findWorkerDesc": "Tafuta madaktari, wauguzi na wataalamu wa afya karibu na wewe."
+    },
+    "rider": {
+      "ecosystemDeliveries": "Usambazaji wa mfumo",
+      "ecosystemDeliveriesDesc": "Usambazaji unaozalishwa na ushauri na mapango ya wagonjwa.",
+      "viewAvailable": "Tazama usambazaji uliopo",
+      "viewAvailableDesc": "Tazama usambazaji wote uliopo tayari kukubaliwa."
+    },
+    "health_worker": {
+      "requestRider": "Omba Rider kwa usambazaji",
+      "requestRiderDesc": "Unahitaji kusambaza agizo au sampuli kwa mgonjwa?",
+      "viewBookings": "Tazama mapango yaliyopokelewa",
+      "viewBookingsDesc": "Simamia ushauri na ziara zako za nyumbani."
+    },
+    "promoter": {
+      "referPatient": "Rejea mgonjwa + Rider",
+      "referPatientDesc": "Rejea mgonjwa kwa mtaalamu pamoja na usafiri."
+    },
+    "goAction": "Nenda",
+    "viewAction": "Tazama"
   }
 }

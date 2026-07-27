@@ -2,11 +2,11 @@
  * User Types Service
  *
  * User types selected at registration:
- *   - patient   → default, someone seeking healthcare
- *   - rider     → courier (Health Riders Network)
- *   - worker    → health professional (Health Worker Marketplace)
- *   - health_technician → health technician / nurse (paid sessions)
- *   - promoter  → community health promoter (referrals + outreach)
+ *   - patient       → someone seeking healthcare (default)
+ *   - health_worker → ALL health professionals: médicos, enfermeiros, técnicos de enfermagem,
+ *                     técnicos de saúde, parteiras, APEs, curandeiros tradicionais
+ *   - rider         → courier / Health Rider (deliveries)
+ *   - promoter      → community health promoter (referrals + outreach)
  *
  * Stored in: profiles.user_type (denormalized, fast read)
  *            user_types (full history)
@@ -16,7 +16,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-export type UserType = 'patient' | 'rider' | 'worker' | 'health_technician' | 'promoter';
+export type UserType = 'patient' | 'health_worker' | 'rider' | 'promoter';
 
 export interface UserTypeOption {
   id: UserType;
@@ -43,6 +43,17 @@ export const USER_TYPES: UserTypeOption[] = [
     border: 'border-blue-200',
   },
   {
+    id: 'health_worker',
+    labelKey: 'userType.health_worker.label',
+    emoji: '🩺',
+    descriptionKey: 'userType.health_worker.description',
+    ctaKey: 'userType.health_worker.cta',
+    featuresKey: 'userType.health_worker.features',
+    color: 'text-purple-700',
+    bg: 'from-purple-50 to-fuchsia-50',
+    border: 'border-purple-200',
+  },
+  {
     id: 'rider',
     labelKey: 'userType.rider.label',
     emoji: '🛵',
@@ -52,28 +63,6 @@ export const USER_TYPES: UserTypeOption[] = [
     color: 'text-emerald-700',
     bg: 'from-emerald-50 to-teal-50',
     border: 'border-emerald-200',
-  },
-  {
-    id: 'worker',
-    labelKey: 'userType.worker.label',
-    emoji: '🩺',
-    descriptionKey: 'userType.worker.description',
-    ctaKey: 'userType.worker.cta',
-    featuresKey: 'userType.worker.features',
-    color: 'text-purple-700',
-    bg: 'from-purple-50 to-fuchsia-50',
-    border: 'border-purple-200',
-  },
-  {
-    id: 'health_technician',
-    labelKey: 'userType.health_technician.label',
-    emoji: '🩹',
-    descriptionKey: 'userType.health_technician.description',
-    ctaKey: 'userType.health_technician.cta',
-    featuresKey: 'userType.health_technician.features',
-    color: 'text-rose-700',
-    bg: 'from-rose-50 to-pink-50',
-    border: 'border-rose-200',
   },
   {
     id: 'promoter',

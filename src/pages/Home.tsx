@@ -11,6 +11,7 @@ import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
 import { VisitorProOnboarding } from "@/components/onboarding/VisitorProOnboarding";
 import { KlipyBanner } from "@/components/klipy/KlipyBanner";
 import { PersonalizedForYou } from "@/components/health/PersonalizedForYou";
+import { EcosystemFlow } from "@/components/health/EcosystemFlow";
 import { AirQualityWidget } from "@/components/home/AirQualityWidget";
 import { ReferralBanner } from "@/components/referrals/ReferralBanner";
 import { MeddyWelcomeCard } from "@/components/mascot/MeddyWelcomeCard";
@@ -430,6 +431,9 @@ export default function Home() {
               <NearbyProvidersWidget />
 
               <PersonalizedForYou />
+
+              {/* ECOSYSTEM INTERCONNECTION — sintonia between user types */}
+              {user && <EcosystemFlow />}
 
               {/* PLANS PREMIUM MZ (upsell) */}
               <section className="px-4">

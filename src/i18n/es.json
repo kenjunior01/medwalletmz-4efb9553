@@ -2514,23 +2514,17 @@
       "cta": "Ganhar por entrega, flexível, com mota",
       "features": "Ganhos por entrega · Bónus 5★ · Pago diário"
     },
-    "worker": {
-      "label": "Profissional de Saúde",
-      "description": "Sou médico, enfermeiro, parteira, APE, curandeiro...",
-      "cta": "Receber reservas e ganhar por consulta",
-      "features": "Perfil verificado · Reservas · 80% por sessão"
-    },
-    "health_technician": {
-      "label": "Técnico de Saúde",
-      "description": "Sou enfermeiro(a), técnico(a) de enfermagem ou técnico(a) de saúde",
-      "cta": "Sessões pagas, visitas ao domicílio",
-      "features": "Sessões · Visitas · 80% por sessão"
-    },
     "promoter": {
       "label": "Promotor de Saúde",
       "description": "Quero convidar amigos e ganhar recompostas",
       "cta": "Link de convite, ganhos por conversão",
       "features": "Link pessoal · Recompensas · Saldo por amigo"
+    },
+    "health_worker": {
+      "label": "Profesional de Salud",
+      "description": "Soy médico, enfermero, técnico de enfermería, técnico de salud, partera, ACS, curandero tradicional...",
+      "cta": "Recibir reservas y ganar por consulta o sesión",
+      "features": "Perfil verificado · Consultas · Visitas · 80% por sesión"
     }
   },
   "adminVerification": {
@@ -2623,20 +2617,6 @@
       "wallet": "Carteira",
       "goToProfile": "Ir para o perfil"
     },
-    "technician": {
-      "badge": "Técnico de Saúde",
-      "title": "Sessões de cuidado",
-      "subtitle": "Acompanha pacientes no domicílio com profissionalismo",
-      "sessionsToday": "Sessões hoje",
-      "pendingVisits": "Visitas pendentes",
-      "earnings": "Ganhos",
-      "schedule": "Agenda de hoje",
-      "viewSessions": "Ver sessões",
-      "homeVisits": "Visitas ao domicílio",
-      "circles": "Círculos de apoio",
-      "wallet": "Carteira",
-      "goToProfile": "Ir para o perfil"
-    },
     "promoter": {
       "badge": "Promotor de Saúde",
       "title": "Convida e ganha",
@@ -2653,5 +2633,35 @@
       "wallet": "Carteira",
       "goToReferrals": "Ir para convites"
     }
+  },
+  "ecosystem": {
+    "title": "Ecosistema de Salud",
+    "subtitle": "Todos conectados para tu salud",
+    "patient": {
+      "rideToAppointment": "Ir a la cita con Rider",
+      "rideToAppointmentDesc": "¿Necesitas ir a una consulta? Un Health Rider te lleva puerta a puerta.",
+      "requestDelivery": "Solicitar entrega de medicamentos",
+      "requestDeliveryDesc": "¿El médico envió una receta? Solicita entrega a domicilio.",
+      "findWorker": "Encontrar un Profesional",
+      "findWorkerDesc": "Busca médicos, enfermeros y técnicos de salud cerca de ti."
+    },
+    "rider": {
+      "ecosystemDeliveries": "Entregas del ecosistema",
+      "ecosystemDeliveriesDesc": "Entregas generadas por consultas y reservas de pacientes.",
+      "viewAvailable": "Ver entregas disponibles",
+      "viewAvailableDesc": "Consulta todas las entregas listas para aceptar."
+    },
+    "health_worker": {
+      "requestRider": "Solicitar Rider para entrega",
+      "requestRiderDesc": "¿Necesitas entregar recetas o muestras al paciente?",
+      "viewBookings": "Ver reservas recibidas",
+      "viewBookingsDesc": "Gestiona tus consultas y visitas a domicilio."
+    },
+    "promoter": {
+      "referPatient": "Referir paciente + Rider",
+      "referPatientDesc": "Referir un paciente a un profesional con transporte incluido."
+    },
+    "goAction": "Ir",
+    "viewAction": "Ver"
   }
 }

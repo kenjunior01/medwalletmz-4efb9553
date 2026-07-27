@@ -2514,23 +2514,17 @@
       "cta": "Ganhar por entrega, flexível, com mota",
       "features": "Ganhos por entrega · Bónus 5★ · Pago diário"
     },
-    "worker": {
-      "label": "Profissional de Saúde",
-      "description": "Sou médico, enfermeiro, parteira, APE, curandeiro...",
-      "cta": "Receber reservas e ganhar por consulta",
-      "features": "Perfil verificado · Reservas · 80% por sessão"
-    },
-    "health_technician": {
-      "label": "Técnico de Saúde",
-      "description": "Sou enfermeiro(a), técnico(a) de enfermagem ou técnico(a) de saúde",
-      "cta": "Sessões pagas, visitas ao domicílio",
-      "features": "Sessões · Visitas · 80% por sessão"
-    },
     "promoter": {
       "label": "Promotor de Saúde",
       "description": "Quero convidar amigos e ganhar recompostas",
       "cta": "Link de convite, ganhos por conversão",
       "features": "Link pessoal · Recompensas · Saldo por amigo"
+    },
+    "health_worker": {
+      "label": "የጤና ባለሙያ",
+      "description": "ዶክተር፣ ነርስ፣ የማጠቢያ ሰራተኛ፣ የጤና ሰራተኛ፣ እማማ፣ CHW፣ ባህላዊ መድሃኒት ነኝ...",
+      "cta": "ቦታ ተቀብሮ እና በአካል ጉዳይ ወይም ሰሰም ገንዘብ አግኝ",
+      "features": "የተረጋገጠ መገለጫ · አካል ጉዳይ · ግብር · በሰሰም 80%"
     }
   },
   "adminVerification": {
@@ -2623,20 +2617,6 @@
       "wallet": "Carteira",
       "goToProfile": "Ir para o perfil"
     },
-    "technician": {
-      "badge": "Técnico de Saúde",
-      "title": "Sessões de cuidado",
-      "subtitle": "Acompanha pacientes no domicílio com profissionalismo",
-      "sessionsToday": "Sessões hoje",
-      "pendingVisits": "Visitas pendentes",
-      "earnings": "Ganhos",
-      "schedule": "Agenda de hoje",
-      "viewSessions": "Ver sessões",
-      "homeVisits": "Visitas ao domicílio",
-      "circles": "Círculos de apoio",
-      "wallet": "Carteira",
-      "goToProfile": "Ir para o perfil"
-    },
     "promoter": {
       "badge": "Promotor de Saúde",
       "title": "Convida e ganha",
@@ -2653,5 +2633,35 @@
       "wallet": "Carteira",
       "goToReferrals": "Ir para convites"
     }
+  },
+  "ecosystem": {
+    "title": "የጤና ስርአተ ምድር",
+    "subtitle": "ሁሉም ለጤናዎ ተገናኝተዋል",
+    "patient": {
+      "rideToAppointment": "ከራይደር ጋር ወደ ቀጠሮ ሂድ",
+      "rideToAppointmentDesc": "ወደ ቀጠሮ መሄድ ይፈልግዎታል? ሄልዝ ራይደር እስከ በር ይወስዎታል።",
+      "requestDelivery": "የመድኃኒት ምርት ማስረክ ጠይቅ",
+      "requestDeliveryDesc": "ዶክተር ፍቃድ ላክልዎታል? ወደ ቤት ማስረክ ጠይቅ።",
+      "findWorker": "ባለሙያ ፈልግ",
+      "findWorkerDesc": "አቅራቢያዎ አጠገብ ያሉትን ዶክተሮች፣ ነርሶች እና የጤና ሰራተኞች ፈልግ።"
+    },
+    "rider": {
+      "ecosystemDeliveries": "የስርአተ ምድር ማስረኮች",
+      "ecosystemDeliveriesDesc": "በተሻሻሉ አካል ጉዳይ እና ቦታ በመያዝ የተፈጠሩ ማስረኮች።",
+      "viewAvailable": "የቀረቡ ማስረኮች ርእስ",
+      "viewAvailableDesc": "ለመቀበል ዝግጁ ያሉትን ማስረኮች ሁሉ ርእስ።"
+    },
+    "health_worker": {
+      "requestRider": "ለማስረክ ራይደር ጠይቅ",
+      "requestRiderDesc": "ፍቃድ ወይም ናምፕላዎችን ለተሻሻለው ማስረክ ይፈልግዎታል?",
+      "viewBookings": "የተቀበሙ ቦታዎች ርእስ",
+      "viewBookingsDesc": "የአካል ጉዳይዎን እና የቤት ግብርዎን ያስተዳድሩ።"
+    },
+    "promoter": {
+      "referPatient": "ተሻሻለውን + ራይደር ምርጫ",
+      "referPatientDesc": "ተሻሻለውን ከትራንስፖርት ጋር ወደ ባለሙያ ምርጫ።"
+    },
+    "goAction": "ሂድ",
+    "viewAction": "ርእስ"
   }
 }

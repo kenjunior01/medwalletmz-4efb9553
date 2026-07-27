@@ -30,7 +30,7 @@ interface AuthContextType {
   roles: AppRole[];
   userRoles: UserRole[];
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string, userType?: 'patient' | 'rider' | 'worker' | 'health_technician' | 'promoter') => Promise<{ error: Error | null; user: User | null }>;
+  signUp: (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string, userType?: 'patient' | 'health_worker' | 'rider' | 'promoter') => Promise<{ error: Error | null; user: User | null }>;
   signIn: (email: string, password: string, referralCode?: string) => Promise<{ error: Error | null; user: User | null }>;
   signInWithGoogle: (referralCode?: string, nextPath?: string | null) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -197,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string, userType?: 'patient' | 'rider' | 'worker' | 'health_technician' | 'promoter') => {
+  const signUp = async (email: string, password: string, fullName: string, referralCode?: string, countryId?: string, phone?: string, userType?: 'patient' | 'health_worker' | 'rider' | 'promoter') => {
     const redirectUrl = `${window.location.origin}/`;
     const { data, error } = await supabase.auth.signUp({
       email,

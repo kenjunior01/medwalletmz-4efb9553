@@ -61,16 +61,10 @@ export function BottomNav() {
       { path: '/health/maps', icon: MapPin, label: 'mapsPremium.title', highlight: false },
       { path: '/wallet', icon: Wallet, label: 'home.wallet_card', highlight: false },
     ],
-    worker: [
+    health_worker: [
       { path: '/', icon: Home, label: 'common.home', highlight: false },
       { path: '/health/workers/profile', icon: Stethoscope, label: 'healthWorkers.myProfile', highlight: true },
       { path: '/health/workers', icon: Briefcase, label: 'healthWorkers.marketplace', highlight: false },
-      { path: '/wallet', icon: Wallet, label: 'home.wallet_card', highlight: false },
-    ],
-    health_technician: [
-      { path: '/', icon: Home, label: 'common.home', highlight: false },
-      { path: '/health/workers/profile', icon: Heart, label: 'healthWorkers.myProfile', highlight: true },
-      { path: '/health/circles', icon: Users, label: 'supportCircles.title', highlight: false },
       { path: '/wallet', icon: Wallet, label: 'home.wallet_card', highlight: false },
     ],
     promoter: [

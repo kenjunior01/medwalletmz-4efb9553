@@ -149,7 +149,7 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [userType, setUserType] = useState<'patient' | 'rider' | 'worker' | 'health_technician' | 'promoter' | null>(null);
+  const [userType, setUserType] = useState<'patient' | 'health_worker' | 'rider' | 'promoter' | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Rate limiting state
@@ -350,9 +350,7 @@ export default function Auth() {
         // Redirect based on selected user type
         if (userType === 'rider') {
           navigate('/health/riders');
-        } else if (userType === 'worker') {
-          navigate('/health/workers/profile');
-        } else if (userType === 'health_technician') {
+        } else if (userType === 'health_worker') {
           navigate('/health/workers/profile');
         } else if (userType === 'promoter') {
           navigate('/referrals');

@@ -46,15 +46,6 @@ const WORKER_ITEMS: QuickItem[] = [
   { icon: Wallet, label: "Carteira", to: "/wallet" },
 ];
 
-const TECHNICIAN_ITEMS: QuickItem[] = [
-  { icon: Heart, label: "Meu Perfil", to: "/health/workers/profile" },
-  { icon: Calendar, label: "Sessões Agendadas", to: "/health/workers/profile" },
-  { icon: Home, label: "Visitas Domicílio", to: "/health/workers/profile" },
-  { icon: TrendingUp, label: "Ganhos", to: "/health/workers/profile" },
-  { icon: Users, label: "Círculos de Apoio", to: "/health/circles" },
-  { icon: Wallet, label: "Carteira", to: "/wallet" },
-];
-
 const PROMOTER_ITEMS: QuickItem[] = [
   { icon: Megaphone, label: "Meu Link de Convite", to: "/referrals" },
   { icon: Users, label: "Círculos de Apoio", to: "/health/circles" },
@@ -73,19 +64,12 @@ function getItemsFor(userType: string | undefined): { items: QuickItem[]; title:
         subtitle: "Gestão de entregas e ganhos",
         iconColor: "text-emerald-600",
       };
-    case 'worker':
+    case 'health_worker':
       return {
         items: WORKER_ITEMS,
         title: "Painel Profissional",
         subtitle: "Reservas, perfil e ganhos",
         iconColor: "text-purple-600",
-      };
-    case 'health_technician':
-      return {
-        items: TECHNICIAN_ITEMS,
-        title: "Painel Técnico",
-        subtitle: "Sessões e visitas",
-        iconColor: "text-rose-600",
       };
     case 'promoter':
       return {
@@ -107,8 +91,7 @@ function getItemsFor(userType: string | undefined): { items: QuickItem[]; title:
 const TYPE_BADGE: Record<string, { label: string; emoji: string; bg: string }> = {
   patient: { label: 'Paciente', emoji: '🧑', bg: 'bg-blue-100 text-blue-700' },
   rider: { label: 'Health Rider', emoji: '🛵', bg: 'bg-emerald-100 text-emerald-700' },
-  worker: { label: 'Profissional', emoji: '🩺', bg: 'bg-purple-100 text-purple-700' },
-  health_technician: { label: 'Técnico de Saúde', emoji: '🩹', bg: 'bg-rose-100 text-rose-700' },
+  health_worker: { label: 'Profissional de Saúde', emoji: '🩺', bg: 'bg-purple-100 text-purple-700' },
   promoter: { label: 'Promotor', emoji: '📢', bg: 'bg-amber-100 text-amber-700' },
 };
 
@@ -212,7 +195,7 @@ export function DesktopRail() {
       </div>
 
       {/* Referral card only for non-riders/workers (who already have a focus) */}
-      {userType !== 'rider' && userType !== 'worker' && userType !== 'health_technician' && (
+      {userType !== 'rider' && userType !== 'health_worker' && (
         <div className="bento-card p-4 bg-gradient-to-br from-gold/15 to-transparent border-gold/30">
           <Gift className="h-5 w-5 text-gold mb-2" />
           <p className="text-sm font-bold leading-tight">Convida amigos</p>
@@ -236,8 +219,7 @@ export function DesktopRail() {
 function t_label(userType: string | undefined): string {
   switch (userType) {
     case 'rider': return 'Modo Rider';
-    case 'worker': return 'Modo Profissional';
-    case 'health_technician': return 'Modo Técnico';
+    case 'health_worker': return 'Modo Profissional';
     case 'promoter': return 'Modo Promotor';
     default: return 'Modo Paciente';
   }

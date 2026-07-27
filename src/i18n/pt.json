@@ -2507,17 +2507,11 @@
       "cta": "Ganhar por entrega, flexível, com mota",
       "features": "Ganhos por entrega · Bónus 5★ · Pago diário"
     },
-    "worker": {
+    "health_worker": {
       "label": "Profissional de Saúde",
-      "description": "Sou médico, enfermeiro, parteira, APE, curandeiro...",
-      "cta": "Receber reservas e ganhar por consulta",
-      "features": "Perfil verificado · Reservas · 80% por sessão"
-    },
-    "health_technician": {
-      "label": "Técnico de Saúde",
-      "description": "Sou enfermeiro(a), técnico(a) de enfermagem ou técnico(a) de saúde",
-      "cta": "Sessões pagas, visitas ao domicílio",
-      "features": "Sessões · Visitas · 80% por sessão"
+      "description": "Sou médico, enfermeiro, técnico de enfermagem, técnico de saúde, parteira, APE, curandeiro tradicional...",
+      "cta": "Receber reservas e ganhar por consulta ou sessão",
+      "features": "Perfil verificado · Consultas · Visitas · 80% por sessão"
     },
     "promoter": {
       "label": "Promotor de Saúde",
@@ -2646,5 +2640,35 @@
     "yes": "Sim",
     "no": "Não",
     "reviewHint": "Verifica os documentos com atenção. A aprovação torna o perfil visível publicamente."
+  },
+  "ecosystem": {
+    "title": "Ecossistema de Saúde",
+    "subtitle": "Todos conectados para a tua saúde",
+    "patient": {
+      "rideToAppointment": "Ir à consulta com Rider",
+      "rideToAppointmentDesc": "Precisas de ir a uma consulta? Um Health Rider leva-te porta a porta.",
+      "requestDelivery": "Pedir entrega de medicamentos",
+      "requestDeliveryDesc": "Médico enviou receita? Pede entrega ao domicílio.",
+      "findWorker": "Encontrar Profissional",
+      "findWorkerDesc": "Procura médicos, enfermeiros e técnicos de saúde perto de ti."
+    },
+    "rider": {
+      "ecosystemDeliveries": "Entregas do ecossistema",
+      "ecosystemDeliveriesDesc": "Entregas geradas por consultas e reservas de pacientes.",
+      "viewAvailable": "Ver entregas disponíveis",
+      "viewAvailableDesc": "Consulta todas as entregas prontas para aceitar."
+    },
+    "health_worker": {
+      "requestRider": "Pedir Rider para entrega",
+      "requestRiderDesc": "Precisas de entregar receitas ou amostras ao paciente?",
+      "viewBookings": "Ver reservas recebidas",
+      "viewBookingsDesc": "Gestiona as tuas consultas e visitas ao domicílio."
+    },
+    "promoter": {
+      "referPatient": "Referir paciente + Rider",
+      "referPatientDesc": "Referir um paciente para um profissional com transporte incluído."
+    },
+    "goAction": "Ir",
+    "viewAction": "Ver"
   }
 }

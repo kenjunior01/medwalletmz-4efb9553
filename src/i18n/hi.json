@@ -2514,23 +2514,17 @@
       "cta": "Ganhar por entrega, flexível, com mota",
       "features": "Ganhos por entrega · Bónus 5★ · Pago diário"
     },
-    "worker": {
-      "label": "Profissional de Saúde",
-      "description": "Sou médico, enfermeiro, parteira, APE, curandeiro...",
-      "cta": "Receber reservas e ganhar por consulta",
-      "features": "Perfil verificado · Reservas · 80% por sessão"
-    },
-    "health_technician": {
-      "label": "Técnico de Saúde",
-      "description": "Sou enfermeiro(a), técnico(a) de enfermagem ou técnico(a) de saúde",
-      "cta": "Sessões pagas, visitas ao domicílio",
-      "features": "Sessões · Visitas · 80% por sessão"
-    },
     "promoter": {
       "label": "Promotor de Saúde",
       "description": "Quero convidar amigos e ganhar recompostas",
       "cta": "Link de convite, ganhos por conversão",
       "features": "Link pessoal · Recompensas · Saldo por amigo"
+    },
+    "health_worker": {
+      "label": "स्वास्थ्य पेशेवर",
+      "description": "मैं डॉक्टर, नर्स, नर्सिंग तकनीशियन, स्वास्थ्य तकनीशियन, दाई, CHW, पारंपरिक चिकित्सक हूं...",
+      "cta": "बुकिंग प्राप्त करें और प्रति कंसल्टेशन या सेशन कमाएं",
+      "features": "सत्यापित प्रोफ़ाइल · कंसल्टेशन · विज़िट · प्रति सेशन 80%"
     }
   },
   "adminVerification": {
@@ -2623,20 +2617,6 @@
       "wallet": "Carteira",
       "goToProfile": "Ir para o perfil"
     },
-    "technician": {
-      "badge": "Técnico de Saúde",
-      "title": "Sessões de cuidado",
-      "subtitle": "Acompanha pacientes no domicílio com profissionalismo",
-      "sessionsToday": "Sessões hoje",
-      "pendingVisits": "Visitas pendentes",
-      "earnings": "Ganhos",
-      "schedule": "Agenda de hoje",
-      "viewSessions": "Ver sessões",
-      "homeVisits": "Visitas ao domicílio",
-      "circles": "Círculos de apoio",
-      "wallet": "Carteira",
-      "goToProfile": "Ir para o perfil"
-    },
     "promoter": {
       "badge": "Promotor de Saúde",
       "title": "Convida e ganha",
@@ -2653,5 +2633,35 @@
       "wallet": "Carteira",
       "goToReferrals": "Ir para convites"
     }
+  },
+  "ecosystem": {
+    "title": "स्वास्थ्य पारिस्थितिकी",
+    "subtitle": "आपके स्वास्थ्य के लिए सभी जुड़े हुए हैं",
+    "patient": {
+      "rideToAppointment": "Rider के साथ अपॉइंटमेंट पर जाएं",
+      "rideToAppointmentDesc": "अपॉइंटमेंट पर जाना है? एक Health Rider आपको दर-से-दर ले जाएगा।",
+      "requestDelivery": "दवा डिलीवरी का अनुरोध करें",
+      "requestDeliveryDesc": "डॉक्टर ने प्रिस्क्रिप्शन भेजी? होम डिलीवरी का अनुरोध करें।",
+      "findWorker": "पेशेवर खोजें",
+      "findWorkerDesc": "अपने पास के डॉक्टर, नर्स और स्वास्थ्य तकनीशियन खोजें।"
+    },
+    "rider": {
+      "ecosystemDeliveries": "पारिस्थितिकी डिलीवरी",
+      "ecosystemDeliveriesDesc": "मरीजों की कंसल्टेशन और बुकिंग से बनी डिलीवरी।",
+      "viewAvailable": "उपलब्ध डिलीवरी देखें",
+      "viewAvailableDesc": "स्वीकार करने के लिए तैयार सभी डिलीवरी देखें।"
+    },
+    "health_worker": {
+      "requestRider": "डिलीवरी के लिए Rider अनुरोध करें",
+      "requestRiderDesc": "मरीज को प्रिस्क्रिप्शन या सैंपल डिलीवर करना है?",
+      "viewBookings": "प्राप्त बुकिंग देखें",
+      "viewBookingsDesc": "अपनी कंसल्टेशन और होम विज़िट प्रबंधित करें।"
+    },
+    "promoter": {
+      "referPatient": "मरीज + Rider रेफर करें",
+      "referPatientDesc": "मरीज को ट्रांसपोर्ट सहित पेशेवर को रेफर करें।"
+    },
+    "goAction": "जाएं",
+    "viewAction": "देखें"
   }
 }

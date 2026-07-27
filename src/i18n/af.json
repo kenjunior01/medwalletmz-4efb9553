@@ -2514,23 +2514,17 @@
       "cta": "Ganhar por entrega, flexível, com mota",
       "features": "Ganhos por entrega · Bónus 5★ · Pago diário"
     },
-    "worker": {
-      "label": "Profissional de Saúde",
-      "description": "Sou médico, enfermeiro, parteira, APE, curandeiro...",
-      "cta": "Receber reservas e ganhar por consulta",
-      "features": "Perfil verificado · Reservas · 80% por sessão"
-    },
-    "health_technician": {
-      "label": "Técnico de Saúde",
-      "description": "Sou enfermeiro(a), técnico(a) de enfermagem ou técnico(a) de saúde",
-      "cta": "Sessões pagas, visitas ao domicílio",
-      "features": "Sessões · Visitas · 80% por sessão"
-    },
     "promoter": {
       "label": "Promotor de Saúde",
       "description": "Quero convidar amigos e ganhar recompostas",
       "cta": "Link de convite, ganhos por conversão",
       "features": "Link pessoal · Recompensas · Saldo por amigo"
+    },
+    "health_worker": {
+      "label": "Gesondheidsprofessionele",
+      "description": "Ek is 'n dokter, verpleegster, verpleegtegnikus, gesondheidstegnikus, vroedvrou, CHW, tradisionele geneser...",
+      "cta": "Ontvang boekings en verdien per konsultasie of sessie",
+      "features": "Geverifieerde profiel · Konsultasies · Besoeke · 80% per sessie"
     }
   },
   "adminVerification": {
@@ -2623,20 +2617,6 @@
       "wallet": "Carteira",
       "goToProfile": "Ir para o perfil"
     },
-    "technician": {
-      "badge": "Técnico de Saúde",
-      "title": "Sessões de cuidado",
-      "subtitle": "Acompanha pacientes no domicílio com profissionalismo",
-      "sessionsToday": "Sessões hoje",
-      "pendingVisits": "Visitas pendentes",
-      "earnings": "Ganhos",
-      "schedule": "Agenda de hoje",
-      "viewSessions": "Ver sessões",
-      "homeVisits": "Visitas ao domicílio",
-      "circles": "Círculos de apoio",
-      "wallet": "Carteira",
-      "goToProfile": "Ir para o perfil"
-    },
     "promoter": {
       "badge": "Promotor de Saúde",
       "title": "Convida e ganha",
@@ -2653,5 +2633,35 @@
       "wallet": "Carteira",
       "goToReferrals": "Ir para convites"
     }
+  },
+  "ecosystem": {
+    "title": "Gesondheidsekosisteem",
+    "subtitle": "Almal verbind vir jou gesondheid",
+    "patient": {
+      "rideToAppointment": "Gaan na afspraak met Rider",
+      "rideToAppointmentDesc": "Moet jy na 'n afspraak? 'n Health Rider neem jou deur tot deur.",
+      "requestDelivery": "Versoek medisyne aflewering",
+      "requestDeliveryDesc": "Dokter het 'n voorskrif gestuur? Versoek tuis aflewering.",
+      "findWorker": "Vind 'n Professionele",
+      "findWorkerDesc": "Soek dokters, verpleegsters en gesondheidstegnici naby jou."
+    },
+    "rider": {
+      "ecosystemDeliveries": "Ekosisteem aflewerings",
+      "ecosystemDeliveriesDesc": "Aflewerings gegenereer deur pasiënt konsultasies en boekings.",
+      "viewAvailable": "Beskikbare aflewerings sien",
+      "viewAvailableDesc": "Sien alle aflewerings gereed om te aanvaar."
+    },
+    "health_worker": {
+      "requestRider": "Versoek Rider vir aflewering",
+      "requestRiderDesc": "Moet jy voorskrifte of monsters aan die pasiënt lewer?",
+      "viewBookings": "Sien ontvangste boekings",
+      "viewBookingsDesc": "Bestuur jou konsultasies en huisbesoeke."
+    },
+    "promoter": {
+      "referPatient": "Verwys pasiënt + Rider",
+      "referPatientDesc": "Verwys 'n pasiënt na 'n professionele met ingeslote vervoer."
+    },
+    "goAction": "Gaan",
+    "viewAction": "Sien"
   }
 }
