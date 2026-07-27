@@ -23,7 +23,7 @@
  * Por isso, os campos pedidos são always explicitamente listados em "fieldMask".
  */
 
-const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+const API_KEY = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY) as string | undefined;
 
 const PLACES_V1_BASE = "https://places.googleapis.com/v1";
 const GEOCODE_BASE = "https://maps.googleapis.com/maps/api/geocode/json";
