@@ -21,11 +21,10 @@ import {
   Phone, RefreshCw, ChevronRight, ChevronLeft, Award, Briefcase,
   Languages, MapPin, Clock, DollarSign, Stethoscope, Heart,
   Home, Video, Eye, Send, Building2, User, GraduationCap, Wallet,
-  Package, Bike, UserCircle,
 } from 'lucide-react';
 import { useCountry } from '@/contexts/CountryContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   HealthWorker, WorkerBooking, Profession, WorkerOnboardingStep, ServiceType, BookingStatus,
   PROFESSION_LABELS, SERVICE_TYPE_LABELS, BOOKING_STATUS_LABELS,
@@ -36,7 +35,6 @@ import {
   getWorkerEarningsSummary,
   computeBookingFee,
 } from '@/services/healthWorkers';
-import { cn } from '@/lib/utils';
 
 type View = 'onboarding' | 'dashboard';
 
@@ -79,17 +77,12 @@ export default function HealthWorkerProfile() {
   }
 
   return (
-    <div className={worker?.is_verified && view === 'dashboard' ? 'min-h-screen bg-slate-950 pb-24' : 'min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 pb-24'}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50">
       <div className="mx-auto max-w-5xl px-4 py-8">
         {/* Back to marketplace */}
         <Link
           to="/health/workers"
-          className={cn(
-            "inline-flex items-center gap-1.5 text-sm font-medium mb-4 transition-colors",
-            view === 'dashboard'
-              ? "text-slate-500 hover:text-slate-300"
-              : "text-slate-600 hover:text-slate-900"
-          )}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 mb-4"
         >
           <ChevronLeft className="h-4 w-4" />
           {t('healthWorkers.backToMarketplace')}
@@ -821,104 +814,131 @@ function DashboardView({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      {/* 1 ── Profile header */}
-      <div className="mb-6 flex flex-col items-center text-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-800 border-2 border-purple-500/40 text-4xl">
-          {PROFESSION_LABELS[worker.profession].emoji}
-        </div>
-        <h1 className="mt-3 text-xl font-bold text-white">{worker.full_name}</h1>
-        <p className="text-sm text-slate-400">{PROFESSION_LABELS[worker.profession].label}</p>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/20 px-2.5 py-0.5 text-xs font-medium text-purple-300">
-            <Star className="h-3 w-3 fill-purple-400 text-purple-400" />
-            {(worker.rating ?? 5).toFixed(1)}
-          </span>
-          {worker.is_verified && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
-              <ShieldCheck className="h-3 w-3" />
-              {t('healthWorkers.verified')}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* 2 ── Big availability toggle */}
-      <motion.button
-        whileTap={{ scale: 0.97 }}
-        onClick={toggleAvailable}
-        className={`w-full mb-6 rounded-2xl p-4 flex items-center justify-center gap-3 text-lg font-bold transition-all ${
+      {/* Hero: available toggle */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className={`mb-6 rounded-3xl p-6 sm:p-8 shadow-xl transition-colors ${
           worker.is_available
-            ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
-            : 'bg-slate-800 text-slate-500 border border-slate-700'
+            ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white'
+            : 'bg-gradient-to-r from-slate-500 to-slate-600 text-white'
         }`}
       >
-        {worker.is_available ? <Power className="h-6 w-6" /> : <PowerOff className="h-6 w-6" />}
-        {worker.is_available ? 'DISPONÍVEL' : 'INDISPONÍVEL'}
-      </motion.button>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur">
+              {worker.is_available ? <Power className="h-7 w-7" /> : <PowerOff className="h-7 w-7" />}
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold">
+                {worker.is_available ? t('healthWorkers.youAreAvailable') : t('healthWorkers.youAreOffline')}
+              </h1>
+              <p className="text-white/90 text-sm mt-0.5">
+                {PROFESSION_LABELS[worker.profession].emoji} {worker.full_name}
+              </p>
+              <div className="mt-2 flex items-center gap-3 text-xs">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 backdrop-blur">
+                  <Star className="h-3 w-3 fill-amber-300 text-amber-300" />
+                  {(worker.rating ?? 5).toFixed(1)}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 backdrop-blur">
+                  <Calendar className="h-3 w-3" />
+                  {worker.total_bookings ?? 0} {t('healthWorkers.bookingsCount')}
+                </span>
+                {worker.is_available && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 backdrop-blur">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse" />
+                    {t('healthWorkers.online')}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={toggleAvailable}
+            className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
+          >
+            {worker.is_available ? t('healthWorkers.goOffline') : t('healthWorkers.goOnline')}
+          </button>
+        </div>
+      </motion.div>
 
-      {/* 3 ── Earnings: 3 tiles (today / week / month) */}
-      <div className="mb-6 grid grid-cols-3 gap-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-          <div className="flex items-center gap-2">
-            <div className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400">
-              <TrendingUp className="h-4 w-4" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-500">{t('healthWorkers.today')}</span>
-          </div>
-          <p className="mt-2 text-xl font-bold text-white">
-            {(earnings?.today_earnings ?? 0).toLocaleString('pt-MZ')}
-            <span className="ml-1 text-[10px] font-medium text-slate-500">{worker.currency ?? 'MZN'}</span>
-          </p>
-          <p className="text-[11px] text-slate-500 mt-0.5">{(earnings?.today_count ?? 0)} {(earnings?.today_count ?? 0) === 1 ? 'reserva' : 'reservas'}</p>
-        </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-          <div className="flex items-center gap-2">
-            <div className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400">
-              <Calendar className="h-4 w-4" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-500">{t('healthWorkers.week')}</span>
-          </div>
-          <p className="mt-2 text-xl font-bold text-white">
-            {(earnings?.week_earnings ?? 0).toLocaleString('pt-MZ')}
-            <span className="ml-1 text-[10px] font-medium text-slate-500">{worker.currency ?? 'MZN'}</span>
-          </p>
-          <p className="text-[11px] text-slate-500 mt-0.5">{(earnings?.week_count ?? 0)} {(earnings?.week_count ?? 0) === 1 ? 'reserva' : 'reservas'}</p>
-        </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-          <div className="flex items-center gap-2">
-            <div className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400">
-              <Award className="h-4 w-4" />
-            </div>
-            <span className="text-[11px] font-medium text-slate-500">{t('healthWorkers.month')}</span>
-          </div>
-          <p className="mt-2 text-xl font-bold text-white">
-            {(earnings?.month_earnings ?? 0).toLocaleString('pt-MZ')}
-            <span className="ml-1 text-[10px] font-medium text-slate-500">{worker.currency ?? 'MZN'}</span>
-          </p>
-          <p className="text-[11px] text-slate-500 mt-0.5">{(earnings?.month_count ?? 0)} {(earnings?.month_count ?? 0) === 1 ? 'reserva' : 'reservas'}</p>
-        </div>
+      {/* Earnings tiles */}
+      <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <EarningsTile
+          label={t('healthWorkers.today')}
+          count={earnings?.today_count ?? 0}
+          amount={earnings?.today_earnings ?? 0}
+          currency={worker.currency ?? 'MZN'}
+          color="bg-emerald-50 text-emerald-900"
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+        <EarningsTile
+          label={t('healthWorkers.week')}
+          count={earnings?.week_count ?? 0}
+          amount={earnings?.week_earnings ?? 0}
+          currency={worker.currency ?? 'MZN'}
+          color="bg-blue-50 text-blue-900"
+          icon={<Calendar className="h-4 w-4" />}
+        />
+        <EarningsTile
+          label={t('healthWorkers.month')}
+          count={earnings?.month_count ?? 0}
+          amount={earnings?.month_earnings ?? 0}
+          currency={worker.currency ?? 'MZN'}
+          color="bg-purple-50 text-purple-900"
+          icon={<Award className="h-4 w-4" />}
+        />
+        <EarningsTile
+          label={t('healthWorkers.pendingPayout')}
+          count={0}
+          amount={earnings?.pending_payout ?? 0}
+          currency={worker.currency ?? 'MZN'}
+          color="bg-amber-50 text-amber-900"
+          icon={<Wallet className="h-4 w-4" />}
+          hideCount
+        />
       </div>
 
-      {/* 4 ── Incoming Requests */}
-      <div className="mb-6">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-300">{t('healthWorkers.tabIncoming')}</h2>
+      {/* Tabs */}
+      <div className="mb-4 inline-flex rounded-xl bg-slate-100 p-1" role="tablist">
+        <button
+          role="tab"
+          aria-selected={activeTab === 'incoming'}
+          onClick={() => setActiveTab('incoming')}
+          className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+            activeTab === 'incoming' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          {t('healthWorkers.tabIncoming')}
           {incoming.length > 0 && (
-            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-purple-600 px-1.5 text-[10px] font-bold text-white">
+            <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-xs font-semibold text-white">
               {incoming.length}
             </span>
           )}
-        </div>
+        </button>
+        <button
+          role="tab"
+          aria-selected={activeTab === 'history'}
+          onClick={() => setActiveTab('history')}
+          className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+            activeTab === 'history' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          {t('healthWorkers.tabHistory')}
+        </button>
+      </div>
 
-        {loading ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center" role="status" aria-busy aria-live="polite">
-            <RefreshCw className="mx-auto h-6 w-6 animate-spin text-purple-500" />
-            <p className="mt-2 text-sm text-slate-500">{t('healthWorkers.loading')}</p>
-          </div>
-        ) : incoming.length === 0 ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
-            <Calendar className="mx-auto h-8 w-8 text-slate-600" />
-            <p className="mt-2 text-sm text-slate-500">{t('healthWorkers.noIncomingBookings')}</p>
+      {loading ? (
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center" role="status" aria-busy aria-live="polite">
+          <RefreshCw className="mx-auto h-6 w-6 animate-spin text-blue-600" />
+          <p className="mt-2 text-sm text-slate-600">{t('healthWorkers.loading')}</p>
+        </div>
+      ) : activeTab === 'incoming' ? (
+        incoming.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+            <Calendar className="mx-auto h-8 w-8 text-slate-400" />
+            <p className="mt-2 text-sm text-slate-600">{t('healthWorkers.noIncomingBookings')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -930,60 +950,37 @@ function DashboardView({
               />
             ))}
           </div>
-        )}
-
-        {/* History (collapsible) */}
-        {history.length > 0 && (
-          <details className="mt-4">
-            <summary className="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors">
-              {t('healthWorkers.tabHistory')} ({history.length})
-            </summary>
-            <div className="mt-3 space-y-3">
-              {history.map((b, idx) => (
-                <WorkerBookingCard
-                  key={b.id ?? idx}
-                  booking={b}
-                  onAction={handleBookingAction}
-                />
-              ))}
-            </div>
-          </details>
-        )}
-      </div>
-
-      {/* 5 ── Quick Actions: 4-icon grid */}
-      <div className="mb-6 grid grid-cols-4 gap-3">
-        <Link to="/health/workers/profile" className="flex flex-col items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-slate-400 transition hover:border-purple-500/40 hover:text-purple-400">
-          <UserCircle className="h-5 w-5" />
-          <span className="text-[10px] font-medium">{t('healthWorkers.myProfile') ?? 'Meu Perfil'}</span>
-        </Link>
-        <Link to="/health/workers" className="flex flex-col items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-slate-400 transition hover:border-purple-500/40 hover:text-purple-400">
-          <Briefcase className="h-5 w-5" />
-          <span className="text-[10px] font-medium">{t('healthWorkers.marketplace') ?? 'Marketplace'}</span>
-        </Link>
-        <Link to="/health/riders" className="flex flex-col items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-slate-400 transition hover:border-purple-500/40 hover:text-purple-400">
-          <Bike className="h-5 w-5" />
-          <span className="text-[10px] font-medium">{t('ecosystem.health_worker.requestRider') ?? 'Pedir Rider'}</span>
-        </Link>
-        <Link to="/wallet" className="flex flex-col items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-slate-400 transition hover:border-purple-500/40 hover:text-purple-400">
-          <Wallet className="h-5 w-5" />
-          <span className="text-[10px] font-medium">{t('roleHome.worker.wallet') ?? 'Carteira'}</span>
-        </Link>
-      </div>
-
-      {/* 6 ── Trust Strip: 3 badges */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl bg-slate-900 border border-slate-800 p-3 text-center">
-          <ShieldCheck className="mx-auto h-5 w-5 text-purple-400" />
-          <p className="mt-1.5 text-[10px] font-medium text-slate-400">{t('healthWorkers.trustVerifiedWorker')}</p>
+        )
+      ) : history.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+          <Calendar className="mx-auto h-8 w-8 text-slate-400" />
+          <p className="mt-2 text-sm text-slate-600">{t('healthWorkers.noHistory')}</p>
         </div>
-        <div className="rounded-xl bg-slate-900 border border-slate-800 p-3 text-center">
-          <Wallet className="mx-auto h-5 w-5 text-purple-400" />
-          <p className="mt-1.5 text-[10px] font-medium text-slate-400">{t('healthWorkers.trustDailyPayout')}</p>
+      ) : (
+        <div className="space-y-3">
+          {history.map((b, idx) => (
+            <WorkerBookingCard
+              key={b.id ?? idx}
+              booking={b}
+              onAction={handleBookingAction}
+            />
+          ))}
         </div>
-        <div className="rounded-xl bg-slate-900 border border-slate-800 p-3 text-center">
-          <Award className="mx-auto h-5 w-5 text-purple-400" />
-          <p className="mt-1.5 text-[10px] font-medium text-slate-400">{t('healthWorkers.trustFiveStarBonus')}</p>
+      )}
+
+      {/* Trust strip */}
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="rounded-xl bg-emerald-50 p-3 text-xs text-emerald-800 flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 shrink-0" />
+          {t('healthWorkers.trustVerifiedWorker')}
+        </div>
+        <div className="rounded-xl bg-blue-50 p-3 text-xs text-blue-800 flex items-center gap-2">
+          <Wallet className="h-4 w-4 shrink-0" />
+          {t('healthWorkers.trustDailyPayout')}
+        </div>
+        <div className="rounded-xl bg-amber-50 p-3 text-xs text-amber-800 flex items-center gap-2">
+          <Award className="h-4 w-4 shrink-0" />
+          {t('healthWorkers.trustFiveStarBonus')}
         </div>
       </div>
     </motion.div>
@@ -996,14 +993,14 @@ function EarningsTile({
   label: string; count: number; amount: number; currency: string; color: string; icon: React.ReactNode; hideCount?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+    <div className={`rounded-2xl border border-slate-200 bg-white p-4`}>
       <div className="flex items-center gap-2">
-        <div className={`inline-flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400`}>
+        <div className={`inline-flex h-7 w-7 items-center justify-center rounded-lg ${color}`}>
           {icon}
         </div>
-        <span className="text-xs font-medium text-slate-500">{label}</span>
+        <span className="text-xs font-medium text-slate-600">{label}</span>
       </div>
-      <p className="mt-2 text-xl font-bold text-white">
+      <p className="mt-2 text-xl font-bold text-slate-900">
         {amount.toLocaleString('pt-MZ')}
         <span className="ml-1 text-xs font-medium text-slate-500">{currency}</span>
       </p>
@@ -1032,24 +1029,24 @@ function WorkerBookingCard({
     <motion.div
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-slate-800 bg-slate-900 p-4"
+      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/20 text-xl">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-xl">
           {svc.emoji}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <p className="font-semibold text-white text-sm truncate">{booking.customer_name}</p>
-            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium bg-slate-800 text-slate-300`}>
+            <p className="font-semibold text-slate-900 text-sm truncate">{booking.customer_name}</p>
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${status.color}`}>
               {status.label}
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-600 mt-0.5">
             {svc.label} · {scheduled.toLocaleString('pt-MZ', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
           </p>
           {booking.reason && (
-            <p className="text-xs text-slate-400 mt-1 italic">"{booking.reason}"</p>
+            <p className="text-xs text-slate-600 mt-1 italic">"{booking.reason}"</p>
           )}
           {booking.address && (
             <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
@@ -1058,7 +1055,7 @@ function WorkerBookingCard({
             </p>
           )}
           <div className="mt-2 flex items-center gap-3 text-xs">
-            <span className="font-bold text-purple-300">
+            <span className="font-bold text-emerald-700">
               +{booking.worker_earnings.toLocaleString('pt-MZ')} {booking.currency ?? 'MZN'}
             </span>
             <span className="text-slate-500">{booking.duration_minutes ?? 30} min</span>
@@ -1067,19 +1064,19 @@ function WorkerBookingCard({
       </div>
 
       {/* Action buttons */}
-      <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-800 pt-3">
+      <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-100 pt-3">
         {booking.status === 'requested' && (
           <>
             <button
               onClick={() => booking.id && onAction(booking.id, 'confirmed')}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-purple-700"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
               {t('healthWorkers.confirm')}
             </button>
             <button
               onClick={() => booking.id && onAction(booking.id, 'cancelled')}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:bg-slate-800"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50"
             >
               <X className="h-3.5 w-3.5" />
               {t('healthWorkers.reject')}
@@ -1098,18 +1095,18 @@ function WorkerBookingCard({
         {booking.status === 'in_progress' && (
           <button
             onClick={() => booking.id && onAction(booking.id, 'completed')}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-purple-700"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
             {t('healthWorkers.markCompleted')}
           </button>
         )}
         {booking.status === 'completed' && booking.rating && (
-          <div className="flex items-center gap-1 text-xs text-amber-400">
+          <div className="flex items-center gap-1 text-xs text-amber-700">
             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
             {booking.rating}/5
             {booking.rating_comment && (
-              <span className="ml-2 italic text-slate-500 truncate">"{booking.rating_comment}"</span>
+              <span className="ml-2 italic text-slate-600 truncate">"{booking.rating_comment}"</span>
             )}
           </div>
         )}
