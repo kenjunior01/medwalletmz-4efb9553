@@ -15,7 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   ArrowLeft, Store, Building2, Hospital, MapPin, Phone,
   Upload, Sparkles, Award, Loader2, CheckCircle2, Navigation, Globe,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 

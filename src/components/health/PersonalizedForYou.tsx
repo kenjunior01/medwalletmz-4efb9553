@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCountry } from "@/contexts/CountryContext";
-import { Sparkles, ArrowRight, Stethoscope, Pill, FileText, BookOpen, Video, Activity, ChevronRight, Gift, ShieldCheck, CloudRain } from "lucide-react";
+import { Sparkles, ArrowRight, Stethoscope, Pill, FileText, BookOpen, Video, Activity, ChevronRight, Gift, ShieldCheck, CloudRain } from "@/components/icons/lucide-compat";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";

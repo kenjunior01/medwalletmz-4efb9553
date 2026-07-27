@@ -30,7 +30,7 @@ import {
   Upload,
   X,
   XCircle,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';

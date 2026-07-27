@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShieldCheck, Loader2, AlertTriangle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Loader2, AlertTriangle, ArrowRight, CheckCircle2 } from "@/components/icons/lucide-compat";
 
 /**
  * /admin/bootstrap

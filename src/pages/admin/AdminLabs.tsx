@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { FlaskConical, CheckCircle2, XCircle, Pause, Upload, Download, Loader2 } from "lucide-react";
+import { FlaskConical, CheckCircle2, XCircle, Pause, Upload, Download, Loader2 } from "@/components/icons/lucide-compat";
 
 export default function AdminLabs() {
   const [labs, setLabs] = useState<any[]>([]);

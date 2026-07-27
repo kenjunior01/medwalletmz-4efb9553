@@ -6,7 +6,7 @@ import {
   X, Bell, Gift, Heart, Sparkles,
   Stethoscope, Zap, ArrowRight, ShieldCheck, Crown,
   ThermometerSun, Wind, AlertTriangle
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "@/contexts/LocationContext";

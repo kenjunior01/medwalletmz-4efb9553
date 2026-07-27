@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
   Package, CheckCircle, Star, Tag, Filter, Search, Heart, Clock, MapPin,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 
 // ── Types ──────────────────────────────────────────────────────────────────

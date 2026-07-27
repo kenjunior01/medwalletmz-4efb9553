@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 import { UniversalReviews } from '@/components/reviews/UniversalReviews';
 import { toast } from 'sonner';
-import { ArrowLeft, Star, Clock, MapPin, Plus, Minus, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Star, Clock, MapPin, Plus, Minus, MessageSquare } from "@/components/icons/lucide-compat";
 
 export default function StoreDetail() {
   const { id } = useParams<{ id: string }>();

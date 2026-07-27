@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { MapPin, Plus, Edit2, Trash2, Home, Briefcase, Star, Navigation } from 'lucide-react';
+import { MapPin, Plus, Edit2, Trash2, Home, Briefcase, Star, Navigation } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

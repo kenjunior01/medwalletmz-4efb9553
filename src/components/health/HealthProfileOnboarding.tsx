@@ -8,7 +8,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
   ShieldCheck, ChevronRight, X, Check, Sparkles,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { cn } from "@/lib/utils";
 import { toast } from 'sonner';
 

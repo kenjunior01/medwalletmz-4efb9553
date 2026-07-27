@@ -22,7 +22,7 @@ import {
   ClipboardList, TrendingUp, AlertTriangle, Plus, Search, Wifi,
   WifiOff, Crosshair, Wind, MessageCircle, Wallet, Loader2, Send,
   Thermometer, Navigation, Sparkles,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { useApeVisits, useCreateApeVisit } from "@/hooks/useMzVerticals";
 import { loadGoogleMaps } from "@/lib/googleMapsLoader";
 import { fetchEnvironmentalHealth, type EnvironmentalData } from "@/lib/googleEnvironmental";

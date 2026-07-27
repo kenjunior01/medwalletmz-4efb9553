@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { FlaskConical, MapPin, Phone, ArrowLeft, Plus, Minus, Check, CalendarClock } from "lucide-react";
+import { FlaskConical, MapPin, Phone, ArrowLeft, Plus, Minus, Check, CalendarClock } from "@/components/icons/lucide-compat";
 
 export default function LabDetail() {
   const { country } = useCountry();

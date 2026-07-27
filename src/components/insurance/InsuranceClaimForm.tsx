@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FileText, Loader2 } from 'lucide-react';
+import { FileText, Loader2 } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import type { ActivePlan } from '@/hooks/useMicroInsurance';
 

@@ -17,7 +17,7 @@ import {
   Baby, Heart, Activity, AlertTriangle, Calendar, Pill,
   Phone, Siren, Navigation, MessageCircle, Send, Loader2, Volume2,
   Clock, Route, MapPin, Sparkles,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { useMaternalProfiles } from "@/hooks/useMzVerticals";
 import { loadGoogleMaps } from "@/lib/googleMapsLoader";
 import { fetchRouteDistance, haversineKm, fmtDuration, type DistanceResult } from "@/lib/googleRoutes";

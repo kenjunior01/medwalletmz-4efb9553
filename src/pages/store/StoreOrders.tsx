@@ -17,7 +17,7 @@ import {
   User,
   MapPin,
   Phone
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 
 interface OrderItem {

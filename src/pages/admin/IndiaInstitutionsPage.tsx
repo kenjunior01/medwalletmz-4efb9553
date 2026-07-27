@@ -20,7 +20,7 @@ import {
   Building2, Hospital, Store, FlaskConical, MapPin, Phone, Globe,
   Star, ShieldCheck, Search, Navigation, Activity, TrendingUp, Users,
   Heart, Pill, Microscope,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { GoogleMap, type GMarker } from "@/components/maps/GoogleMap";
 import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
 import { useLocation } from "@/contexts/LocationContext";

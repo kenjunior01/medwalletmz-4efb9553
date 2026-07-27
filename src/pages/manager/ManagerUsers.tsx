@@ -12,7 +12,7 @@ import {
   Users, Search, Filter, ChevronRight, MoreVertical,
   Shield, Ban, CheckCircle, AlertCircle, Eye,
   Stethoscope, Store, Building2, UserCircle
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import {
   GlassCard, BentoCard, BentoGrid,
 } from '@/components/ui/design-system';

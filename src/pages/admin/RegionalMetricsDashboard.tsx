@@ -4,7 +4,7 @@ import {
   ChevronDown, ChevronUp, Layers, DollarSign, UserCheck, ShoppingCart,
   Stethoscope, Activity, BarChart3, Eye, Download, Filter, ArrowUpRight,
   ArrowDownRight, Target, Zap, Clock, Star as StarIcon
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Badge } from '@/components/ui/badge';
 import { Button } from "@/components/ui/button";
 import { REGIONS, getCountriesByRegion, useCountry } from "@/contexts/CountryContext";

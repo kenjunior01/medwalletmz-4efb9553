@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Save, Loader2 } from 'lucide-react';
+import { Save, Loader2 } from "@/components/icons/lucide-compat";
 import { useGlobalAdminGuard } from '@/hooks/useAdminGuard';
 
 const FIELDS = [

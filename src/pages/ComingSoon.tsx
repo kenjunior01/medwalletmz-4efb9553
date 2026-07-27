@@ -1,4 +1,4 @@
-import { Sparkles, ArrowLeft, BellRing } from "lucide-react";
+import { Sparkles, ArrowLeft, BellRing } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";

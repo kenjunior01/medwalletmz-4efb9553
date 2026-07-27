@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Plus, Trash2, FileSignature, Loader2, Snowflake, Pill } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, FileSignature, Loader2, Snowflake, Pill } from "@/components/icons/lucide-compat";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 

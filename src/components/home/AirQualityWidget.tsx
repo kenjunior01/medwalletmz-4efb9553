@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Wind, AlertCircle, CloudRain, ThermometerSun } from "lucide-react";
+import { Wind, AlertCircle, CloudRain, ThermometerSun } from "@/components/icons/lucide-compat";
 import { Card } from "@/components/ui/card";
 import { useLocation } from "@/contexts/LocationContext";
 import { Skeleton } from "@/components/ui/skeleton";

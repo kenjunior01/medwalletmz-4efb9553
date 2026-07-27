@@ -12,7 +12,7 @@
 
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CloudOff, ShieldCheck, X, FileText, Wallet } from 'lucide-react';
+import { CloudOff, ShieldCheck, X, FileText, Wallet } from "@/components/icons/lucide-compat";
 import { Card } from '@/components/ui/card';
 import { useTranslation } from '@/contexts/CountryContext';
 import { useOfflineMode } from '@/hooks/useOfflineMode';

@@ -14,7 +14,7 @@ import {
   ArrowLeft, Sparkles, AlertTriangle, Stethoscope,
   CheckCircle2, Mic, MicOff, Loader2, Volume2, ShieldCheck,
   HeartPulse, Lightbulb, Hospital, Pill, Building2, MapPin, Phone,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';

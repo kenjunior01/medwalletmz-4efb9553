@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe, LogIn } from 'lucide-react';
+import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe, LogIn } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';

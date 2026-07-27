@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, Edit } from "lucide-react";
+import { Plus, Trash2, Edit } from "@/components/icons/lucide-compat";
 
 const audiences = ["customer", "doctor", "clinic", "hospital", "lab", "pharmacy", "store_owner", "driver"];
 const periods = ["monthly", "quarterly", "yearly"];

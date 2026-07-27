@@ -4,7 +4,7 @@ import { Meddy, type MeddyRole, type MeddyState } from './Meddy';
 import { pickMeddyMessage, type MeddyMessage, type Context } from './MeddyMessages';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { X, Send, Sparkles, Minimize2, ChevronRight } from 'lucide-react';
+import { X, Send, Sparkles, Minimize2, ChevronRight } from "@/components/icons/lucide-compat";
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -359,7 +359,7 @@ import {
   Stethoscope, Calendar, Users, Wallet, Pill, Clipboard,
   Package, Truck, History, Map as MapIconLucide, Shield,
   Upload, BookOpen, MapPinPlus, Building2
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 
 function roleLabel(r: MeddyRole): string {
   return {

@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
 import { CouponInput } from '@/components/checkout/CouponInput';
 import { useCountry } from '@/contexts/CountryContext';
-import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake, Globe, Copy, ExternalLink, CheckCircle2, Receipt, CreditCard } from 'lucide-react';
+import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake, Globe, Copy, ExternalLink, CheckCircle2, Receipt, CreditCard } from "@/components/icons/lucide-compat";
 import { calculateTaxes } from '@/lib/taxEngine';
 
 interface AppliedCoupon {

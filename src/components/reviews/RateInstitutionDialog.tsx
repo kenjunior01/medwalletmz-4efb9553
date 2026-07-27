@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Star, Loader2 } from 'lucide-react';
+import { Star, Loader2 } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';

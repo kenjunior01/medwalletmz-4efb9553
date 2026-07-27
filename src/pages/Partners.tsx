@@ -4,7 +4,7 @@ import {
   ArrowLeft, Building2, Briefcase, Users, Stethoscope, Pill,
   ShieldCheck, Handshake, Sparkles, Send, Loader2, CheckCircle2,
   Mail, Phone, MapPin,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

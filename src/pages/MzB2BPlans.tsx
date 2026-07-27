@@ -16,7 +16,7 @@ import {
   Stethoscope, Pill, FlaskConical, Truck, Building2, Crown, Sparkles,
   Check, ArrowRight, Users, Calendar, FileText, BarChart3, Shield,
   Zap, Star, TrendingUp, Phone
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";

@@ -19,7 +19,7 @@ import {
 import {
   Send, Sparkles, Bot, User, Loader2, Globe2, ShieldCheck,
   AlertTriangle, TrendingUp, FileText,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 
 interface ChatMessage {
   role: 'user' | 'assistant';

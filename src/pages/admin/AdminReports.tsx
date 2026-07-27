@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, TrendingUp, ShoppingBag, Store, Users, Calendar, DollarSign } from "lucide-react";
+import { ArrowLeft, TrendingUp, ShoppingBag, Store, Users, Calendar, DollarSign } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Wallet, ArrowDownToLine, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Wallet, ArrowDownToLine, Clock, CheckCircle2, XCircle } from "@/components/icons/lucide-compat";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip,
   PieChart, Pie, Cell, Legend,

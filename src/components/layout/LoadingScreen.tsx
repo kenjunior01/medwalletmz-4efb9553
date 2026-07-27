@@ -1,4 +1,5 @@
-import { Loader2, HeartPulse } from 'lucide-react';
+import { Loader2, HeartPulse } from "@/components/icons/lucide-compat";
+import { MedWalletLogo } from "@/components/brand";
 
 /**
  * LoadingScreen — ecrã de carregamento branded para Suspense fallback.
@@ -17,10 +18,7 @@ export function LoadingScreen({ message = 'A carregar...' }: { message?: string 
       <div className="flex flex-col items-center gap-4">
         {/* Logo animado */}
         <div className="relative">
-          <div className="absolute inset-0 animate-ping rounded-full bg-emerald-500/20" />
-          <div className="relative h-16 w-16 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-            <HeartPulse className="h-8 w-8 text-white animate-pulse" />
-          </div>
+          <MedWalletLogo size={80} variant="icon" animated={true} showText={false} />
         </div>
 
         {/* Nome + Spinner */}

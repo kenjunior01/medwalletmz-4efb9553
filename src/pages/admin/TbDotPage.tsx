@@ -17,7 +17,7 @@ import {
   Activity, Clock, AlertTriangle, TrendingUp, Pill, CheckCircle,
   XCircle, Video, MapPin, ScanLine, MessageCircle, Send, Loader2, FileImage,
   Sparkles,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { useTbDotRecords, useLogTbDose } from "@/hooks/useMzVerticals";
 import { detectText } from "@/lib/googleVision";
 import { openWhatsApp, buildTbReminder } from "@/lib/whatsapp";

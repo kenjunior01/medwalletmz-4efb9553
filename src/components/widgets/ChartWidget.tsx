@@ -14,7 +14,7 @@ import {
   Pie,
   Cell
 } from 'recharts';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp } from "@/components/icons/lucide-compat";
 
 interface ChartData {
   name: string;

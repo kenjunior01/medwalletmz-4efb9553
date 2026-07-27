@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Flame } from 'lucide-react';
+import { Flame } from "@/components/icons/lucide-compat";
 import { useGamification, type StreakDay } from '@/hooks/useGamification';
 import { useCountry } from '@/contexts/CountryContext';
 import { getTheme } from '@/themes';

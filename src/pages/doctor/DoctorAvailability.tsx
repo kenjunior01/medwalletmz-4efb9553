@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, Trash2, CalendarClock } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, CalendarClock } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 
 interface Slot { id: string; starts_at: string; ends_at: string; is_booked: boolean }

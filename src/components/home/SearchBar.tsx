@@ -1,4 +1,4 @@
-import { Search, Mic } from "lucide-react";
+import { Search, Mic } from "@/components/icons/lucide-compat";
 import { useNavigate } from "react-router-dom";
 import { useCountry } from "@/contexts/CountryContext";
 

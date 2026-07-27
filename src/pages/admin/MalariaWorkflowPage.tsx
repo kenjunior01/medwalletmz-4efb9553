@@ -16,7 +16,7 @@ import {
   Activity, Pill, MapPin, TrendingUp, AlertTriangle, Plus,
   Search, Droplet, CheckCircle, Navigation, MessageCircle, Send, Loader2,
   Clock, Route, Sparkles,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { useMalariaCases, useCreateMalariaCase } from "@/hooks/useMzVerticals";
 import { loadGoogleMaps } from "@/lib/googleMapsLoader";
 import { fetchRouteDistance, haversineKm, fmtDuration, type DistanceResult } from "@/lib/googleRoutes";

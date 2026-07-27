@@ -1,4 +1,4 @@
-import { MessageCircle, X, Send, Phone, HelpCircle } from 'lucide-react';
+import { MessageCircle, X, Send, Phone, HelpCircle } from "@/components/icons/lucide-compat";
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

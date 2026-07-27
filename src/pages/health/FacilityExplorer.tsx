@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
-import { Building2, Pill, Stethoscope, Beaker, MapPin, Star } from 'lucide-react';
+import { Building2, Pill, Stethoscope, Beaker, MapPin, Star } from "@/components/icons/lucide-compat";
 import { Badge } from '@/components/ui/badge';
 import { SafeImage } from '@/components/ui/safe-image';
 import { useNavigate } from 'react-router-dom';

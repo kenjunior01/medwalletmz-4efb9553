@@ -27,7 +27,7 @@ import {
   BellOff,
   BellRing,
   Loader2,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { cn } from "@/lib/utils";
 
 type NotificationType = "consultation" | "order" | "prescription" | "reminder";

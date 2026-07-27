@@ -25,7 +25,7 @@ import {
   Globe,
   ShieldCheck,
   Bot,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardShell, type DashboardMenuItem } from '@/components/layout/DashboardShell';
 

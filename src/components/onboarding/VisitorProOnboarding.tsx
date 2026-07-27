@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stethoscope, X, Menu, ArrowRight, Sparkles } from 'lucide-react';
+import { Stethoscope, X, Menu, ArrowRight, Sparkles } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { usePopupCoordinator } from '@/components/layout/PopupCoordinator';
 import { useCountry } from '@/contexts/CountryContext';

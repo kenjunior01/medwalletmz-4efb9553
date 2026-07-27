@@ -1,4 +1,4 @@
-import { Gauge } from "lucide-react";
+import { Gauge } from "@/components/icons/lucide-compat";
 import { Switch } from "@/components/ui/switch";
 import { useDataSaver } from "@/contexts/DataSaverContext";
 import { useCountry } from "@/contexts/CountryContext";

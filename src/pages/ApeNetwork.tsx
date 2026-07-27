@@ -19,7 +19,7 @@ import { motion } from 'framer-motion';
 import {
   Users, MapPin, Award, Wallet, HeartHandshake,
   TrendingUp, ShieldCheck, ArrowRight, Phone, Sparkles
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

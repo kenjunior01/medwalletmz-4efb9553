@@ -11,7 +11,7 @@ import {
   Globe, Upload, CheckCircle2, AlertTriangle,
   ArrowLeft, Building2, Store, FlaskConical,
   Database, ShieldCheck, Zap, Network, ChevronRight
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';

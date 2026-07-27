@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon } from "@/components/icons/lucide-compat";
 
 interface CategoryItemProps {
   icon: LucideIcon;

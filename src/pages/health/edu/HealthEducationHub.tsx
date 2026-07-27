@@ -24,7 +24,7 @@ import {
   BookOpen, Bug, Baby, HeartPulse, Pill, Droplet, Brain,
   Stethoscope, AlertTriangle, Sparkles, Clock, ArrowRight,
   Languages, PlayCircle, Award, CheckCircle2, Search
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

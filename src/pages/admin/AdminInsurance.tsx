@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
-import { Shield, CheckCircle2, XCircle, MapPin, Mail, Phone, Globe } from "lucide-react";
+import { Shield, CheckCircle2, XCircle, MapPin, Mail, Phone, Globe } from "@/components/icons/lucide-compat";
 
 interface InsuranceCompany {
   id: string;

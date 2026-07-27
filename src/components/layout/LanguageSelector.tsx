@@ -1,6 +1,6 @@
 import { useCountry } from '@/contexts/CountryContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Globe } from 'lucide-react';
+import { Globe } from "@/components/icons/lucide-compat";
 
 export function LanguageSelector() {
   const { allCountries, country, setCountryById, locale, setLocale, t } = useCountry();

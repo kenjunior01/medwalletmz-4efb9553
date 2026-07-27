@@ -5,7 +5,7 @@ import { useCountry } from "@/contexts/CountryContext";
 import {
   Stethoscope, Pill, Building2, Truck, ShieldCheck, Users, Calendar,
   ClipboardList, TrendingUp, ArrowRight, Package, Activity,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import type { AppRole } from "@/hooks/useUserRole";
 
 type Cta = { label: string; icon: any; to: string; variant?: "default" | "secondary" };

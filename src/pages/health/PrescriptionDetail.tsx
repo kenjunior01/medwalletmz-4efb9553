@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, FileText, Pill, Zap, ShieldCheck, Download, CheckCircle2, Share2 } from 'lucide-react';
+import { ArrowLeft, FileText, Pill, Zap, ShieldCheck, Download, CheckCircle2, Share2 } from "@/components/icons/lucide-compat";
 import jsPDF from 'jspdf';
 import { toast } from 'sonner';
 import QRCode from 'qrcode';

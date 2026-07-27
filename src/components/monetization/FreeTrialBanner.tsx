@@ -21,7 +21,7 @@ import { useUserRoles } from '@/hooks/useUserRole';
 import { motion } from 'framer-motion';
 import {
   Gift, ArrowRight, X, Crown, Sparkles, Heart
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';

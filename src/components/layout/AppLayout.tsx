@@ -14,7 +14,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useDeviceType } from "@/hooks/useDeviceType";
 import { useCapacitor } from "@/hooks/useCapacitor";
 import { useCountry } from "@/contexts/CountryContext";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "@/components/icons/lucide-compat";
 import type { Context } from "@/components/mascot/MeddyMessages";
 
 /**

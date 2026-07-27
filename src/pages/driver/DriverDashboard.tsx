@@ -25,8 +25,8 @@ import {
   Map as MapIcon,
   Zap,
   ArrowRight
-} from 'lucide-react';
-import { Snowflake, ShieldCheck } from 'lucide-react';
+} from "@/components/icons/lucide-compat";
+import { Snowflake, ShieldCheck } from "@/components/icons/lucide-compat";
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { 

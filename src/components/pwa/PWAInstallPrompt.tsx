@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { Download, X, Smartphone, WifiOff } from 'lucide-react';
+import { Download, X, Smartphone, WifiOff } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';

@@ -14,7 +14,7 @@ import {
   ChevronRight, CheckCircle2, ShieldCheck, Sparkles, Heart,
   Info, Loader2, MapPin, Phone, Mail, FileText, Camera, Database,
   Bike, Car, PawPrint
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';

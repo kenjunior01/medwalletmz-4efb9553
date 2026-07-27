@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2, Shield, MapPin, X } from 'lucide-react';
+import { Loader2, Shield, MapPin, X } from "@/components/icons/lucide-compat";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from '@/contexts/LocationContext';
 import { useCountry } from '@/contexts/CountryContext';

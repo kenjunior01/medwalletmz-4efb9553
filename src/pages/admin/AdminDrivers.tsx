@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Search, Truck, Phone, MapPin, Calendar, CheckCircle, XCircle, Clock, Package, ShieldCheck, Snowflake, Globe } from 'lucide-react';
+import { Search, Truck, Phone, MapPin, Calendar, CheckCircle, XCircle, Clock, Package, ShieldCheck, Snowflake, Globe } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 
 interface Driver {

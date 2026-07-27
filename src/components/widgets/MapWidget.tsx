@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { MapPin } from 'lucide-react';
+import { MapPin } from "@/components/icons/lucide-compat";
 import { GoogleMap } from '@/components/maps/GoogleMap';
 
 interface MapLocation {

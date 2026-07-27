@@ -1,4 +1,4 @@
-import { Stethoscope, ArrowRight, FileText, Crown, Sparkles, FolderHeart, Gift, CalendarCheck, MessageCircle } from 'lucide-react';
+import { Stethoscope, ArrowRight, FileText, Crown, Sparkles, FolderHeart, Gift, CalendarCheck, MessageCircle } from "@/components/icons/lucide-compat";
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { useCountry } from '@/contexts/CountryContext';

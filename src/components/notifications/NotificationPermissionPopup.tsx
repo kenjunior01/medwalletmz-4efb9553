@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X, Check } from "lucide-react";
+import { Bell, X, Check } from "@/components/icons/lucide-compat";
 import { LottieAnimation } from "@/components/lottie";
 import { FloatingParticles, GradientText, ShimmerButton, SplitText } from "@/components/ui/premium";
 import { usePopupCoordinator } from "@/components/layout/PopupCoordinator";

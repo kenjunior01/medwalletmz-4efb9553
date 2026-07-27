@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sun, X, Bell, Coffee, Heart, ShieldCheck } from 'lucide-react';
+import { Sun, X, Bell, Coffee, Heart, ShieldCheck } from "@/components/icons/lucide-compat";
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';

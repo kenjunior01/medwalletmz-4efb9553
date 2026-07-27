@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { Megaphone, MapPin, Phone, CheckCircle2, XCircle, PauseCircle, Clock } from "lucide-react";
+import { Megaphone, MapPin, Phone, CheckCircle2, XCircle, PauseCircle, Clock } from "@/components/icons/lucide-compat";
 
 const STATUSES = [
   { key: "pending", label: "Pendentes", icon: Clock },

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { KeyRound, Loader2 } from 'lucide-react';
+import { KeyRound, Loader2 } from "@/components/icons/lucide-compat";
 
 export default function AdminChangePassword() {
   const [current, setCurrent] = useState('');

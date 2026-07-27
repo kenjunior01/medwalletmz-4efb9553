@@ -11,7 +11,7 @@ import {
   Droplet, AlertCircle, Calendar, MapPin, Plus, Heart, Users,
   Share2, Info, Zap, Award, ShieldCheck, ChevronRight, Activity,
   Gift, Star, CheckCircle2
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { toast } from "sonner";
 import { GoogleMap } from "@/components/maps/GoogleMap";
 import { useLocation } from "@/contexts/LocationContext";

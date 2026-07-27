@@ -22,7 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   Award, Search, Filter, ShieldCheck, Star, Activity, TrendingUp,
   CheckCircle2, XCircle, ArrowUpRight, ArrowDownRight, Phone,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 
 const PARTNER_TYPE_LABELS: Record<PartnerType, string> = {
   store: 'Farmácia',

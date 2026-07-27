@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { usePWA } from "@/hooks/usePWA";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw } from "@/components/icons/lucide-compat";
 import { toast } from "sonner";
 
 /**

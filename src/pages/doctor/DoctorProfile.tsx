@@ -16,7 +16,7 @@ import {
   Clock, Star, CheckCircle, AlertCircle, Pencil,
   Camera, Languages, GraduationCap, Briefcase,
   ShieldCheck, Banknote, Calendar
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import {
   PanelShell, NeuCard, BentoCard, BentoGrid, GlassCard,
   LayeredOrbs, StatusBadge,

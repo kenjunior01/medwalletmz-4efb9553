@@ -32,7 +32,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, LogOut, ChevronLeft, Sparkles } from "lucide-react";
+import { Menu, LogOut, ChevronLeft, Sparkles } from "@/components/icons/lucide-compat";
 import { cn } from "@/lib/utils";
 
 export interface DashboardMenuItem {

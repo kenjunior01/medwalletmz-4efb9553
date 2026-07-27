@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { TrendingUp, ShoppingBag, DollarSign, Star } from 'lucide-react';
+import { TrendingUp, ShoppingBag, DollarSign, Star } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 
 interface StoreContext {

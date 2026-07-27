@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from "@/components/icons/lucide-compat";
 import { useNavigate } from 'react-router-dom';
 
 export default function LegalDocs() {

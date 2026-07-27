@@ -7,7 +7,7 @@
  */
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Stethoscope, Building2, Pill } from 'lucide-react';
+import { X, Stethoscope, Building2, Pill } from "@/components/icons/lucide-compat";
 import { cn } from '@/lib/utils';
 import { useProvince } from '@/themes';
 import { useCountry } from '@/contexts/CountryContext';

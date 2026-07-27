@@ -7,7 +7,7 @@ import {
   Heart, Plus, Share2, MapPin, Phone, Hospital,
   ArrowLeft, Info, Loader2, CheckCircle2, AlertCircle,
   ShieldCheck, Award, HandHeart
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

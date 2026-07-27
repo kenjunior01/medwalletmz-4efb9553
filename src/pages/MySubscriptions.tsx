@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Crown } from 'lucide-react';
+import { ArrowLeft, Crown } from "@/components/icons/lucide-compat";
 import { format } from 'date-fns';
 import { useCountry } from '@/contexts/CountryContext';
 

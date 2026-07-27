@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Send, ShieldCheck, FileSignature, FileText, Video, Paperclip, CheckCircle2, Loader2, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Send, ShieldCheck, FileSignature, FileText, Video, Paperclip, CheckCircle2, Loader2, Image as ImageIcon } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { PostConsultationReview } from '@/components/health/PostConsultationReview';
 import { KlipyStickerPicker } from '@/components/klipy/KlipyStickerPicker';

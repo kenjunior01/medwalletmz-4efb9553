@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Globe, Users, CreditCard, TrendingUp, MapPin, ShieldCheck, Plus, Trash2, Mail } from 'lucide-react';
+import { Globe, Users, CreditCard, TrendingUp, MapPin, ShieldCheck, Plus, Trash2, Mail } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';

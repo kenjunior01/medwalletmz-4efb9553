@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Package, CheckCircle, Clock, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation, MapPin } from "lucide-react";
+import { ClipboardList, Package, CheckCircle, Clock, XCircle, Truck, ChefHat, RefreshCw, Star, Navigation, MapPin } from "@/components/icons/lucide-compat";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

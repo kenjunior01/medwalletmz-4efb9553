@@ -20,7 +20,7 @@ import {
   Palette,
   Save,
   RefreshCw
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 
 const defaultSettings = {
   platformName: 'MedWallet',

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Star, User } from 'lucide-react';
+import { Star, User } from "@/components/icons/lucide-compat";
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';

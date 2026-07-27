@@ -1,7 +1,7 @@
 import { useNotifications } from '@/hooks/useNotifications';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bell, X } from 'lucide-react';
+import { Bell, X } from "@/components/icons/lucide-compat";
 import { useState } from 'react';
 import { useCountry } from '@/contexts/CountryContext';
 

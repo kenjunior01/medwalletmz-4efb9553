@@ -23,7 +23,7 @@ import {
   Pill,
   Gift,
   Globe
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import {
   StatWidget,
   QuickActionWidget,

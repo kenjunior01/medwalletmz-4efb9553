@@ -21,7 +21,7 @@ import {
   Users,
   ExternalLink,
   Loader2,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import {
   getPlaceDetails,
   getPlaceDetailsByCoordinates,

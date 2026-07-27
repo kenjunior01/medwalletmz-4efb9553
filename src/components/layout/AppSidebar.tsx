@@ -10,7 +10,7 @@ import {
   Stethoscope, Building2, FlaskConical, Truck, Store,
   Briefcase, ChevronDown, ChevronUp, LayoutDashboard,
   Plus
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { useState, useMemo } from "react";
 
 /** Professional institution roles with their metadata */

@@ -1,4 +1,4 @@
-import { LucideIcon, Heart, Stethoscope, Pill, Truck, Building2, ShieldCheck, Sparkles } from "lucide-react";
+import { LucideIcon, Heart, Stethoscope, Pill, Truck, Building2, ShieldCheck, Sparkles } from "@/components/icons/lucide-compat";
 
 export type PulseRoleKey =
   | "patient" | "doctor" | "store_owner" | "driver" | "clinic" | "admin";

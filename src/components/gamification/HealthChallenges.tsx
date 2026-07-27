@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import {
   Trophy, Flame, Heart, MapPin, Star, Medal, Crown,
   Target, Award, Zap, Pill, Activity, CheckCircle,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { cn } from '@/lib/utils';
 
 // ── Types ──────────────────────────────────────────────────────────

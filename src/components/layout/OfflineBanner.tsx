@@ -1,4 +1,4 @@
-import { WifiOff } from "lucide-react";
+import { WifiOff } from "@/components/icons/lucide-compat";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 export function OfflineBanner() {

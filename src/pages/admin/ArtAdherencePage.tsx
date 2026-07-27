@@ -17,7 +17,7 @@ import {
   Activity, TrendingUp, Pill, AlertTriangle, Heart, Droplet,
   Calendar, MessageCircle, Volume2, Languages, Send, Loader2,
   Sparkles,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { useArtAdherenceLogs, type ArtAdherenceLog } from "@/hooks/useMzVerticals";
 import { openWhatsApp, buildArvReminder } from "@/lib/whatsapp";
 import { speakText } from "@/lib/googleTTS";

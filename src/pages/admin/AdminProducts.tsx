@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, Plus, Package, Pencil, Trash2, X, ImageIcon } from "lucide-react";
+import { ArrowLeft, Search, Plus, Package, Pencil, Trash2, X, ImageIcon } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

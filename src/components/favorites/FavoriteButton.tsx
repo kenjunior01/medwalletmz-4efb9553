@@ -1,4 +1,4 @@
-import { Heart } from 'lucide-react';
+import { Heart } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

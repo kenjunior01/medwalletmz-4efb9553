@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocation } from '@/contexts/LocationContext';
-import { MapPin, Stethoscope, Pill, Navigation, Loader2, Clock, Sparkles, Building2, Hospital } from 'lucide-react';
+import { MapPin, Stethoscope, Pill, Navigation, Loader2, Clock, Sparkles, Building2, Hospital } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { fetchRouteDistance, fmtDuration, haversineKm } from '@/lib/googleRoutes';

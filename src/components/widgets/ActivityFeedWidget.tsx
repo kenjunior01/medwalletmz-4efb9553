@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Activity, Clock } from 'lucide-react';
+import { Activity, Clock } from "@/components/icons/lucide-compat";
 
 interface ActivityItem {
   id: string;

@@ -25,7 +25,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Bell, Stethoscope, Package, FileText, Clock, CheckCheck, ChevronRight } from "lucide-react";
+import { Bell, Stethoscope, Package, FileText, Clock, CheckCheck, ChevronRight } from "@/components/icons/lucide-compat";
 import { cn } from "@/lib/utils";
 
 type NotificationType = "consultation" | "order" | "prescription" | "reminder";

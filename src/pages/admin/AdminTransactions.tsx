@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ArrowDownCircle, ArrowUpCircle, RefreshCw, Gift, Wallet as WalletIcon, Search, Plus, Minus, CheckCircle2 } from 'lucide-react';
+import { ArrowDownCircle, ArrowUpCircle, RefreshCw, Gift, Wallet as WalletIcon, Search, Plus, Minus, CheckCircle2 } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { useCountry } from '@/contexts/CountryContext';
 import { formatCurrency } from '@/lib/currency';

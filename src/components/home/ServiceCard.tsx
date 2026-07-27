@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon } from "@/components/icons/lucide-compat";
 
 interface ServiceCardProps {
   title: string;

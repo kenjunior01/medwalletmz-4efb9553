@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Shield, ArrowLeft } from 'lucide-react';
+import { Loader2, Shield, ArrowLeft } from "@/components/icons/lucide-compat";
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];

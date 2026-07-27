@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle2, Sparkles, ArrowLeft } from "lucide-react";
+import { CheckCircle2, Sparkles, ArrowLeft } from "@/components/icons/lucide-compat";
 import { useCountry, useTranslation } from "@/contexts/CountryContext";
 
 interface Plan {

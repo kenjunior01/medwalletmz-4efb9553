@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Palette, Percent, Globe, Save, Loader2, ArrowLeft, Image as ImageIcon, ShieldCheck } from 'lucide-react';
+import { Palette, Percent, Globe, Save, Loader2, ArrowLeft, Image as ImageIcon, ShieldCheck } from "@/components/icons/lucide-compat";
 import { Checkbox } from '@/components/ui/checkbox';
 import { useNavigate } from 'react-router-dom';
 import { useCountry } from '@/contexts/CountryContext';

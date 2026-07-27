@@ -19,7 +19,7 @@ import { Progress } from '@/components/ui/progress';
 import {
   Lock, Globe2, ExternalLink, AlertTriangle, CheckCircle2, XCircle,
   Building2, Scale, ShieldAlert, Filter,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 
 export default function RegulatoryFrameworks() {
   const { hasRole } = useAuth();

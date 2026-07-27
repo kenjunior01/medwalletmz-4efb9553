@@ -21,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   ShieldCheck, Zap, CheckCircle2, XCircle, Clock, DollarSign,
   Activity, TrendingUp, Filter,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 
 type StatusFilter = 'all' | 'pending' | 'auto_approved' | 'approved' | 'rejected' | 'paid';
 

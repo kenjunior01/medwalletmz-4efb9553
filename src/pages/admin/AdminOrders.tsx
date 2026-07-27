@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Search, Package, Clock, CheckCircle, Truck, XCircle } from 'lucide-react';
+import { Search, Package, Clock, CheckCircle, Truck, XCircle } from "@/components/icons/lucide-compat";
 
 const statusOptions = [
   { value: 'pending', label: 'Pendente', icon: Clock, color: 'text-yellow-600' },

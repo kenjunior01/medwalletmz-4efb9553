@@ -13,7 +13,7 @@ import {
   Store, User, Mail, Phone, MapPin, Clock, Star,
   CheckCircle, AlertCircle, Pencil, Camera, Package,
   Banknote, ShoppingBag, TrendingUp, Award, Globe
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import {
   PanelShell, NeuCard, BentoCard, BentoGrid, GlassCard,
   LayeredOrbs, StatusBadge,

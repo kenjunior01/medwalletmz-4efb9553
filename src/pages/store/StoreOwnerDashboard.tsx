@@ -13,7 +13,7 @@ import {
   Plus,
   Menu,
   ChevronLeft,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';

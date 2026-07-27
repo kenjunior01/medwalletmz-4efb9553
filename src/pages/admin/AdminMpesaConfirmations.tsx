@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { CheckCircle2, XCircle, ExternalLink, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, ExternalLink, Loader2 } from "@/components/icons/lucide-compat";
 
 export default function AdminMpesaConfirmations() {
   const [rows, setRows] = useState<any[]>([]);

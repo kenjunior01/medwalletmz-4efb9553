@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ArrowLeft, Eye, EyeOff, Loader2, KeyRound, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Loader2, KeyRound, CheckCircle2, ShieldCheck } from "@/components/icons/lucide-compat";
 
 export default function ChangePassword() {
   const navigate = useNavigate();

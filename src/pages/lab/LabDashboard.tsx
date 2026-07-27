@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Upload, ArrowLeft, Clock, CheckCircle2 } from 'lucide-react';
+import { FlaskConical, Upload, ArrowLeft, Clock, CheckCircle2 } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { useCountry } from '@/contexts/CountryContext';
 

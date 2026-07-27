@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Coins, Trophy, Flame, ChevronRight, Star, Gift } from "lucide-react";
+import { Coins, Trophy, Flame, ChevronRight, Star, Gift } from "@/components/icons/lucide-compat";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";

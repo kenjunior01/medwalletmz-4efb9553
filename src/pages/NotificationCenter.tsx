@@ -21,7 +21,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Bell, Stethoscope, Package, FileText, Clock, CheckCheck, ChevronRight,
   RefreshCw, BellOff, Inbox, ArrowLeft, Sparkles, Filter
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";

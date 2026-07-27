@@ -2,7 +2,7 @@ import { Seo } from "@/components/Seo";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Shield, MapPin, Plus, CheckCircle2, Globe, Sparkles, Smartphone, ChevronRight } from "lucide-react";
+import { Shield, MapPin, Plus, CheckCircle2, Globe, Sparkles, Smartphone, ChevronRight } from "@/components/icons/lucide-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "@/contexts/LocationContext";
 import { Button } from "@/components/ui/button";

@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Sparkles, Loader2, Send, Bot, User, AlertCircle,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import {
   geminiChat, isGeminiConfigured, simulateGeminiResponse,
   GEMINI_SYSTEM_PROMPTS, type GeminiMessage,

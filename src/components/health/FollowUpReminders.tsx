@@ -6,7 +6,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Bell, Calendar, X, Loader2, CheckCircle2 } from 'lucide-react';
+import { Bell, Calendar, X, Loader2, CheckCircle2 } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 
 interface FU {

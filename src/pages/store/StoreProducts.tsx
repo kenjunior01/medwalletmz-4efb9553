@@ -11,7 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Plus, Search, Edit2, Trash2, Package, Loader2 } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Package, Loader2 } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 
 interface Product {

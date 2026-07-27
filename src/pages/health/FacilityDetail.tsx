@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SafeImage } from '@/components/ui/safe-image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, CheckCircle2, MapPin, Phone, Navigation, Star, Clock, Calendar, Activity, ShieldCheck, Stethoscope } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MapPin, Phone, Navigation, Star, Clock, Calendar, Activity, ShieldCheck, Stethoscope } from "@/components/icons/lucide-compat";
 import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from '@/lib/healthRoutes';
 import { UniversalReviews } from '@/components/reviews/UniversalReviews';
 import { GoogleMapEmbed } from '@/components/maps/GoogleMapEmbed';

@@ -9,7 +9,7 @@ import {
   ShieldCheck, MapPin, ArrowRight, Download, BarChart3,
   ChevronRight, Zap, Activity, Droplet, HeartPulse, Baby,
   Wallet, Pill, CheckCircle, Clock
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";

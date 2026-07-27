@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Copy, Upload, CheckCircle2, Sparkles, Loader2, Phone, Hash, Wallet } from 'lucide-react';
+import { ArrowLeft, Copy, Upload, CheckCircle2, Sparkles, Loader2, Phone, Hash, Wallet } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { useCountry } from '@/contexts/CountryContext';
 import { fetchPlanBySlug, type MzPlan } from '@/lib/mzPlans';

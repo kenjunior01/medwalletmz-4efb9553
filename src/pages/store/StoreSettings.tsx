@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useCountry } from '@/contexts/CountryContext';
-import { Save, Loader2, Trash2, AlertTriangle } from 'lucide-react';
+import { Save, Loader2, Trash2, AlertTriangle } from "@/components/icons/lucide-compat";
 import {
   AlertDialog,
   AlertDialogAction,

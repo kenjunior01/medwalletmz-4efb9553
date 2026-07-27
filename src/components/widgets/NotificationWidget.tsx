@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Bell, Check, X, AlertTriangle, Info, CheckCircle } from 'lucide-react';
+import { Bell, Check, X, AlertTriangle, Info, CheckCircle } from "@/components/icons/lucide-compat";
 
 interface Notification {
   id: string;

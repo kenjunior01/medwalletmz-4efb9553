@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FlaskConical, MapPin, Phone, Search, Globe, ClipboardList, CheckCircle2 } from "lucide-react";
+import { FlaskConical, MapPin, Phone, Search, Globe, ClipboardList, CheckCircle2 } from "@/components/icons/lucide-compat";
 
 export default function Exams() {
   const nav = useNavigate();

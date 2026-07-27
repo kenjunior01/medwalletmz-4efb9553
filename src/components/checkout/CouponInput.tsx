@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Tag, X, Loader2, Check } from 'lucide-react';
+import { Tag, X, Loader2, Check } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 
 interface Coupon {

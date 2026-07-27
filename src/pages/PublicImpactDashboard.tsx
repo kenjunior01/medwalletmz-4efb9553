@@ -23,7 +23,7 @@ import NumberFlow from '@number-flow/react';
 import {
   Users, HeartPulse, Stethoscope, MapPin, BookOpen,
   TrendingUp, ShieldCheck, Activity, Award, Globe, Sparkles
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

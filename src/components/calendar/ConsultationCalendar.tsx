@@ -39,7 +39,7 @@ import {
   Video,
   MessageSquare,
   MapPin,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
 import { getTheme } from '@/themes';

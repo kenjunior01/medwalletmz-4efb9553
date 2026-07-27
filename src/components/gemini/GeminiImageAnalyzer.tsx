@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   ScanLine, Loader2, Sparkles, AlertCircle, Upload, ImageIcon,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import {
   geminiAnalyzeImage, isGeminiConfigured,
 } from "@/lib/gemini";

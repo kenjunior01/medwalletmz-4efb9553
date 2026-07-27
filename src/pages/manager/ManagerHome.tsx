@@ -14,7 +14,7 @@ import {
   Users, Store, Stethoscope, Building2, ShoppingBag, TrendingUp,
   ShieldCheck, MapPin, AlertTriangle, CheckCircle, Clock,
   DollarSign, BarChart3, Eye, Ban, ChevronRight, Activity
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import {
   BentoCard, BentoGrid, GlassCard, NeuCard, PanelShell,
 } from '@/components/ui/design-system';

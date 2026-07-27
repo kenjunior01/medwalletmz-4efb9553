@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import {
   Map, Navigation, MapPin, Search, Eye, Volume2, Languages, Wind,
   Truck, Sparkles, CheckCircle, XCircle, AlertCircle, RefreshCw,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { loadGoogleMaps } from '@/lib/googleMapsLoader';
 import { fetchRouteDistance, haversineKm } from '@/lib/googleRoutes';
 import { detectText } from '@/lib/googleVision';

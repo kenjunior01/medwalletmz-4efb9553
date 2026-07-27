@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Wallet, Plus, Search, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
+import { Wallet, Plus, Search, ArrowDownCircle, ArrowUpCircle } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 
 export default function AdminWallets() {

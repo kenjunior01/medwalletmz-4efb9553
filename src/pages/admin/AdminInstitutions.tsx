@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { Search, Edit, Star, MapPin, Phone, Building2, FlaskConical, Stethoscope, PawPrint } from 'lucide-react';
+import { Search, Edit, Star, MapPin, Phone, Building2, FlaskConical, Stethoscope, PawPrint } from "@/components/icons/lucide-compat";
 import { SafeImage } from '@/components/ui/safe-image';
 
 type EntityType = 'pharmacy' | 'hospital' | 'clinic' | 'laboratory' | 'veterinary';

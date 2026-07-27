@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, TrendingUp, Users, Wallet, Globe, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Users, Wallet, Globe, ArrowUpRight, ArrowDownRight } from "@/components/icons/lucide-compat";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useCountry } from '@/contexts/CountryContext';
 import { formatCurrency } from '@/lib/currency';

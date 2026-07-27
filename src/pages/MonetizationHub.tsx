@@ -19,7 +19,7 @@ import { supabase } from '@/integrations/supabase/client';
 import {
   ArrowLeft, Crown, Wallet as WalletIcon, Gift, Users, Coins, Sparkles,
   TrendingUp, ArrowRight, CheckCircle2, Clock, Loader2, Copy, Share2, Plus,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';

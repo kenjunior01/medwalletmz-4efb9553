@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { ArrowLeft, Calendar, Clock, User, AlertTriangle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, AlertTriangle, Loader2 } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { useTranslation } from '@/contexts/CountryContext';
 

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Search, Tag, Percent, Calendar, Layers, Download } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Tag, Percent, Calendar, Layers, Download } from "@/components/icons/lucide-compat";
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface CouponFormData {

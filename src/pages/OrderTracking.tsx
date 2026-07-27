@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Phone, MessageCircle, CheckCircle, Clock, ChefHat, Package, Truck, MapPin, Store, User, Navigation, Zap, Snowflake } from 'lucide-react';
+import { ArrowLeft, Phone, MessageCircle, CheckCircle, Clock, ChefHat, Package, Truck, MapPin, Store, User, Navigation, Zap, Snowflake } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

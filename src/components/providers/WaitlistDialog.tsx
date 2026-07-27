@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, CheckCircle2, Loader2, MapPin } from "lucide-react";
+import { Bell, CheckCircle2, Loader2, MapPin } from "@/components/icons/lucide-compat";
 import { toast } from "sonner";
 
 /**

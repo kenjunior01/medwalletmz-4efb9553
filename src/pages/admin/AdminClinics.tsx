@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Building2, CheckCircle2, XCircle, Pause, MapPin, Phone, Stethoscope } from "lucide-react";
+import { Building2, CheckCircle2, XCircle, Pause, MapPin, Phone, Stethoscope } from "@/components/icons/lucide-compat";
 import { useCountry } from "@/contexts/CountryContext";
 
 export default function AdminClinics() {

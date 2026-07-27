@@ -15,7 +15,7 @@ import {
   AlertCircle,
   Plus,
   ArrowRight
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { useNavigate } from 'react-router-dom';
 import { useCountry } from '@/contexts/CountryContext';
 import { 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pill, Plus, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Pill, Plus, Clock, CheckCircle2, AlertCircle } from "@/components/icons/lucide-compat";
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';

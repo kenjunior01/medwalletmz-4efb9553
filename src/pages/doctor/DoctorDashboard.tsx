@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Calendar, MessageCircle, DollarSign, Users, Stethoscope, CalendarClock } from 'lucide-react';
+import { Calendar, MessageCircle, DollarSign, Users, Stethoscope, CalendarClock } from "@/components/icons/lucide-compat";
 import NumberFlow from '@number-flow/react';
 import {
   PanelShell, NeuCard, BentoCard, BentoGrid, GlassCard,

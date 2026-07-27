@@ -1,7 +1,7 @@
 import { Seo } from "@/components/Seo";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation as useRouterLocation } from "react-router-dom";
-import { Search, Pill, Star, Clock, FileText, X, Zap, Globe } from "lucide-react";
+import { Search, Pill, Star, Clock, FileText, X, Zap, Globe } from "@/components/icons/lucide-compat";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ import { Tables } from "@/integrations/supabase/types";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { haversineKm } from "@/lib/googleRoutes";
-import { MapPin } from "lucide-react";
+import { MapPin } from "@/components/icons/lucide-compat";
 import { SafeImage } from "@/components/ui/safe-image";
 
 // Simplify type to avoid deep instantiation errors

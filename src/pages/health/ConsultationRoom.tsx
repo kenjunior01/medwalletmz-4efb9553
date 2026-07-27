@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Mic, MicOff, Video, VideoOff, ArrowLeft, PhoneCall, Loader2, Stethoscope, Clock } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, ArrowLeft, PhoneCall, Loader2, Stethoscope, Clock } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 
 type Consult = {

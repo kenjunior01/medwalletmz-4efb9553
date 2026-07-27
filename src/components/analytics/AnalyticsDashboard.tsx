@@ -10,7 +10,7 @@ import {
   ResponsiveContainer, AreaChart, Area,
   BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, Legend,
 } from 'recharts';
-import { Users, Wallet, Activity, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react';
+import { Users, Wallet, Activity, TrendingUp, ArrowUp, ArrowDown } from "@/components/icons/lucide-compat";
 import { cn } from '@/lib/utils';
 
 const userGrowthData = Array.from({ length: 30 }, (_, i) => ({

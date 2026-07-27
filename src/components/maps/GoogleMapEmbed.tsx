@@ -25,7 +25,7 @@
  */
 
 import { useMemo, useState } from "react";
-import { ExternalLink, Layers, MapPin, Navigation, Camera } from "lucide-react";
+import { ExternalLink, Layers, MapPin, Navigation, Camera } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 

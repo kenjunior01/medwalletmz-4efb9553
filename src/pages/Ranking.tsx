@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Star, Trophy, MapPin } from 'lucide-react';
+import { ArrowLeft, Star, Trophy, MapPin } from "@/components/icons/lucide-compat";
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from '@/contexts/CountryContext';
 

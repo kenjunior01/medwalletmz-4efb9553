@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Megaphone } from "lucide-react";
+import { Plus, Megaphone } from "@/components/icons/lucide-compat";
 
 const STATUS: Record<string, string> = { pending: "Pendente", approved: "Aprovado", rejected: "Rejeitado", expired: "Expirado" };
 

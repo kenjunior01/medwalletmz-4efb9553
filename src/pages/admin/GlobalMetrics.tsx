@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Globe, Users, ShoppingBag, TrendingUp, Stethoscope } from 'lucide-react';
+import { Globe, Users, ShoppingBag, TrendingUp, Stethoscope } from "@/components/icons/lucide-compat";
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCountry } from '@/contexts/CountryContext';
 import { useGlobalAdminGuard } from '@/hooks/useAdminGuard';

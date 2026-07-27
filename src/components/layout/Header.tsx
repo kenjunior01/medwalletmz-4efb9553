@@ -1,5 +1,6 @@
 import { useMemo, useEffect } from "react";
-import { MapPin, ChevronDown, Sparkles, Globe, Languages } from "lucide-react";
+import { MapPin, ChevronDown, Sparkles, Globe, Languages } from "@/components/icons/lucide-compat";
+import { MedWalletLogo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -124,12 +125,7 @@ export function Header() {
           <span className="text-[10px] text-muted-foreground flex items-center gap-1 leading-none">
             {greeting.emoji} {t(`header.greetings.${greeting.text.toLowerCase().replace(' ', '_')}`)}
           </span>
-          <div className="flex items-center gap-1 mt-0.5">
-            <Sparkles className="h-3.5 w-3.5 text-secondary" />
-            <span className="font-extrabold text-lg text-gradient-premium leading-none">
-              MedWallet
-            </span>
-          </div>
+          <MedWalletLogo size={120} variant="compact" animated={false} showText={false} className="h-8" />
         </div>
 
         {/* RIGHT: Actions */}

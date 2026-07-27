@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Smile, Loader2, Search } from 'lucide-react';
+import { Smile, Loader2, Search } from "@/components/icons/lucide-compat";
 
 interface Props {
   customerId: string;

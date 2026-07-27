@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Search, MapPin, Star, Store } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, MapPin, Star, Store } from "@/components/icons/lucide-compat";
 
 interface StoreFormData {
   name: string;

@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Video, Clock, Users, Loader2, ArrowLeft } from 'lucide-react';
+import { Video, Clock, Users, Loader2, ArrowLeft } from "@/components/icons/lucide-compat";
 import { useNavigate, Link } from 'react-router-dom';
 
 type Row = {

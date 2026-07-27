@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ShieldCheck, Scale, FileText } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Scale, FileText } from "@/components/icons/lucide-compat";
 
 export default function Legal() {
   const navigate = useNavigate();

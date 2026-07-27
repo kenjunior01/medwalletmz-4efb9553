@@ -20,7 +20,7 @@ import {
   BookOpen,
   Bell,
   Stethoscope,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Store, Hospital, MapPin, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { Building2, Store, Hospital, MapPin, Loader2, CheckCircle2, XCircle, Clock } from "@/components/icons/lucide-compat";
 import { useCountry } from "@/contexts/CountryContext";
 
 interface Proposal {

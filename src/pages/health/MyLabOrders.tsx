@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ClipboardList, FlaskConical, ArrowLeft, Download, Clock, CheckCircle2, Truck, XCircle } from "lucide-react";
+import { ClipboardList, FlaskConical, ArrowLeft, Download, Clock, CheckCircle2, Truck, XCircle } from "@/components/icons/lucide-compat";
 import { toast } from "sonner";
 
 const STATUS_META: Record<string, { label: string; icon: any; color: string }> = {

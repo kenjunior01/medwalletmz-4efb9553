@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Seo } from '@/components/Seo';
 import { useTranslation } from '@/contexts/CountryContext';
-import { Loader2, Mail, ArrowLeft, KeyRound, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft, KeyRound, CheckCircle2, AlertCircle } from "@/components/icons/lucide-compat";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();

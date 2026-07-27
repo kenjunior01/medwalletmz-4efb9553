@@ -12,7 +12,7 @@ import {
   ArrowLeft, BookOpen, Clock, Sparkles, ShieldCheck, AlertTriangle,
   ChevronRight, Share2, Search, Stethoscope, Heart, Brain, Baby,
   Activity, Apple, HeartPulse, Lock, ThumbsUp, Eye,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { toast } from "sonner";

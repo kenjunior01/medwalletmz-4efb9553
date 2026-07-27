@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Stethoscope, Star, Clock, CheckCircle2, ArrowLeft, Bell, Sparkles, Video, MessageCircle, MapPin } from 'lucide-react';
+import { Stethoscope, Star, Clock, CheckCircle2, ArrowLeft, Bell, Sparkles, Video, MessageCircle, MapPin } from "@/components/icons/lucide-compat";
 import { MagneticWrapper } from '@/components/ui/premium';
 import { LottieEmptyState } from '@/components/lottie';
 import WaitlistDialog from '@/components/providers/WaitlistDialog';

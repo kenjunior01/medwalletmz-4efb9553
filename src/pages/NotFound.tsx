@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { Home, Stethoscope, Pill, ClipboardList, ArrowLeft, Search, Compass } from "lucide-react";
+import { Home, Stethoscope, Pill, ClipboardList, ArrowLeft, Search, Compass } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 
 const suggestions = [

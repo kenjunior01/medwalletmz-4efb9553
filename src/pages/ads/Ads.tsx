@@ -6,7 +6,7 @@ import { useLocation } from "@/contexts/LocationContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Megaphone, Plus, MapPin, Phone, Eye, MessageSquare, Share2 } from "lucide-react";
+import { Megaphone, Plus, MapPin, Phone, Eye, MessageSquare, Share2 } from "@/components/icons/lucide-compat";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 

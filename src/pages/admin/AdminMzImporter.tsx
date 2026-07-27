@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Loader2, Download, AlertTriangle } from 'lucide-react';
+import { Loader2, Download, AlertTriangle } from "@/components/icons/lucide-compat";
 
 // Cidades por província (principais + algumas secundárias)
 // Cobertura máxima: todos os distritos + principais vilas das 11 províncias de Moçambique

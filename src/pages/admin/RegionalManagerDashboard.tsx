@@ -18,7 +18,7 @@ import {
   ChevronLeft,
   X,
   Globe,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';

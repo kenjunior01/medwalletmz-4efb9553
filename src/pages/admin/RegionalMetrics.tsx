@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import {
   Globe, MapPin, Users, Building2, TrendingUp, CreditCard,
   ChevronDown, ChevronUp, Layers,
-} from "lucide-react";
+} from "@/components/icons/lucide-compat";
 import { Badge } from "@/components/ui/badge";
 import { REGIONS, getCountriesByRegion, useCountry } from "@/contexts/CountryContext";
 import type { Country } from "@/contexts/CountryContext";

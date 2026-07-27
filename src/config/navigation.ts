@@ -1,8 +1,8 @@
 import {
   Home, Stethoscope, FileText, ClipboardList, User, Droplet, Pill, Building2, FlaskConical,
   Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video, Crown, TrendingUp, BookOpen, Globe, HeartHandshake,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+} from "@/components/icons/lucide-compat";
+import type { LucideIcon } from "@/components/icons/lucide-compat";
 
 export type NavItem = {
   path: string;

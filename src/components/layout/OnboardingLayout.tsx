@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Globe, Heart, Sparkles } from 'lucide-react';
+import { ArrowLeft, Globe, Heart, Sparkles } from "@/components/icons/lucide-compat";
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';

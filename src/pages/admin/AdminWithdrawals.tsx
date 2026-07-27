@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, ArrowDownToLine } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowDownToLine } from "@/components/icons/lucide-compat";
 import { useCountry } from "@/contexts/CountryContext";
 import { formatCurrency } from "@/lib/currency";
 

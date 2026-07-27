@@ -18,7 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   Activity, Search, Lock, ShieldCheck, Copy, Check, Link2,
   Filter,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 
 const SEVERITY_COLORS: Record<string, string> = {
   info: 'text-slate-400 border-slate-700 bg-slate-800/30',

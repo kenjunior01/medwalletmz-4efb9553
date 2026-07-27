@@ -13,7 +13,7 @@
 // =============================================================================
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { WifiOff, RefreshCw, Cloud, CloudOff } from 'lucide-react';
+import { WifiOff, RefreshCw, Cloud, CloudOff } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/contexts/CountryContext';
 import { useOfflineMode } from '@/hooks/useOfflineMode';

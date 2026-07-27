@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, AlertTriangle } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 
 /**

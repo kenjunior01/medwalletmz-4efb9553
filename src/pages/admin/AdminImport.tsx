@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Download, Upload, Sparkles, MapPin, Info, ArrowRight, History, Globe, PawPrint, Hospital, Store as StoreIcon, FlaskConical, Stethoscope, Check } from 'lucide-react';
+import { Download, Upload, Sparkles, MapPin, Info, ArrowRight, History, Globe, PawPrint, Hospital, Store as StoreIcon, FlaskConical, Stethoscope, Check } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import { normalizeImageUrl } from '@/lib/healthRoutes';
 import { useCountry } from '@/contexts/CountryContext';

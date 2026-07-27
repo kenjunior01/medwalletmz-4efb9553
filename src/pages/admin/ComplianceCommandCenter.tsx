@@ -12,7 +12,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import {
   ShieldCheck, Globe2, AlertTriangle, FileCheck2, Award,
   ChevronRight, Activity, Lock, TrendingUp, TrendingDown,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

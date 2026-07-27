@@ -22,7 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   FileCheck2, Search, AlertTriangle, Clock, CheckCircle2, XCircle,
   Calendar, Building2, FileText, ExternalLink, Filter,
-} from 'lucide-react';
+} from "@/components/icons/lucide-compat";
 
 type ExpiryFilter = 'all' | 'expired' | '30' | '60' | '90' | 'verified';
 

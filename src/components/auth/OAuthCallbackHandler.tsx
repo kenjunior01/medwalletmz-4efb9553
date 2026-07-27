@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2 } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 
 const sanitizeNextPath = (value: string | null) => {
