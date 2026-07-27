@@ -271,7 +271,7 @@ export default function RegistrationWizard() {
             onboarding_completed: true,
             country_id: country?.id || 'MZ',
             full_name: formData.fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
-          });
+          }, { onConflict: 'user_id' });
         } catch (e) { /* non-blocking */ }
       }
       navigate('/');
@@ -301,7 +301,7 @@ export default function RegistrationWizard() {
         country_id: country?.id || 'MZ',
         default_city: formData.city,
         onboarding_completed: true,
-      });
+      }, { onConflict: 'user_id' });
 
       // 2. Role specific logic
       if (selectedRole === 'doctor' || selectedRole === 'veterinary') {
@@ -392,7 +392,7 @@ export default function RegistrationWizard() {
           onboarding_completed: true,
           country_id: country?.id || 'MZ',
           full_name: formData.fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
-        });
+        }, { onConflict: 'user_id' });
         if (pErr) throw pErr;
         await supabase.from('user_roles').upsert({ user_id: user.id, role: 'driver', country_id: country?.id || 'MZ' }, { onConflict: 'user_id,role,country_id' });
         await refreshRoles();
