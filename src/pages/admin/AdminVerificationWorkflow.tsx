@@ -24,9 +24,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
-import {
-  PROFESSION_LABELS, VEHICLE_LABELS,
-} from '@/services/healthWorkers';
+import { PROFESSION_LABELS } from '@/services/healthWorkers';
+const VEHICLE_LABELS: Record<string, { label: string; emoji: string }> = {};
 import { VEHICLE_LABELS as RIDER_VEHICLE_LABELS } from '@/services/healthRiders';
 import {
   PendingVerification,
@@ -621,7 +620,7 @@ function DocumentLink({ label, url }: { label: string; url?: string }) {
       <FileText className="h-4 w-4 text-blue-600" />
       <div className="flex-1 min-w-0">
         <p className="text-xs font-medium text-slate-900">{label}</p>
-        <p className="text-[10px] text-blue-600 truncate">{t('adminVerification.openDocument')}</p>
+        <p className="text-[10px] text-blue-600 truncate">Abrir documento</p>
       </div>
       <ExternalLink className="h-3 w-3 text-slate-400" />
     </a>

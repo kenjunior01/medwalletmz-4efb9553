@@ -33,7 +33,7 @@ import {
 type View = 'list' | 'wizard';
 
 export default function CountryOnboardingWizard() {
-  const { t, user } = useCountry();
+  const { t, user } = useCountry() as any;
   const [view, setView] = useState<View>('list');
   const [items, setItems] = useState<OnboardingListItem[]>([]);
   const [loading, setLoading] = useState(true);

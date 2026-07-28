@@ -61,7 +61,7 @@ const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', ''];
 const RELATIONSHIPS: Relationship[] = ['parent', 'child', 'spouse', 'sibling', 'grandparent', 'other'];
 
 export default function FamilyHub() {
-  const { t, user } = useCountry();
+  const { t, user } = useCountry() as any;
   const [view, setView] = useState<View>('list');
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [loading, setLoading] = useState(true);

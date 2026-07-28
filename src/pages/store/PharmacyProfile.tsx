@@ -68,7 +68,7 @@ export default function PharmacyProfile() {
 
   const loadProfile = async () => {
     if (!user) return;
-    const { data: p } = await supabase
+    const { data: p } = await (supabase as any)
       .from('stores')
       .select('*')
       .eq('user_id', user.id)

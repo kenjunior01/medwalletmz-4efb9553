@@ -241,7 +241,7 @@ export default function RegionalCEODashboard() {
                   <Trophy className="h-10 w-10 mx-auto mb-2 text-amber-500" aria-hidden="true" />
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold">{t('regionalCEO.ranking_position')}</p>
                   <p className="text-4xl font-black my-1">#{ranking.rank}</p>
-                  <p className="text-xs text-muted-foreground">{t('regionalCEO.ranking_of', { total: 9 })}</p>
+                  <p className="text-xs text-muted-foreground">{t('regionalCEO.ranking_of', { total: '9' })}</p>
                   {ranking.badges?.length > 0 && (
                     <div className="flex flex-wrap gap-1 justify-center mt-3">
                       {ranking.badges.map((b, i) => (
@@ -289,8 +289,8 @@ export default function RegionalCEODashboard() {
                         <div className={cn(
                           'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
                           action.severity === 'critical' && 'bg-red-100 dark:bg-red-950/30 text-red-600',
-                          action.severity === 'warning' && 'bg-amber-100 dark:bg-amber-950/30 text-amber-600',
-                          action.severity === 'info' && 'bg-blue-100 dark:bg-blue-950/30 text-blue-600',
+                          (action.severity as any) === 'warning' && 'bg-amber-100 dark:bg-amber-950/30 text-amber-600',
+                          (action.severity as any) === 'info' && 'bg-blue-100 dark:bg-blue-950/30 text-blue-600',
                         )}>
                           <Icon className="h-4 w-4" aria-hidden="true" />
                         </div>
