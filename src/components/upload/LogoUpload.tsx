@@ -1,39 +1,36 @@
-import React, { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Upload } from '@/components/icons/lucide-compat';
+import { cn } from '@/lib/utils';
 
 interface LogoUploadProps {
-  onUpload: (file: File) => void;
-  accept?: string;
+  onFileSelect?: (file: File) => void;
   label?: string;
-  preview?: string;
+  accept?: string;
+  className?: string;
 }
 
-export function LogoUpload({ onUpload, accept = 'image/*', label = 'Carregar Logo', preview }: LogoUploadProps) {
+export function LogoUpload({ onFileSelect, label = 'Carregar logo', accept = 'image/*', className }: LogoUploadProps) {
+  const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreview(url);
+      onFileSelect?.(file);
+    }
+  };
+
   return (
-    <div
-      className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 cursor-pointer hover:border-primary/50 transition-colors"
-      onClick={() => inputRef.current?.click()}
-    >
+    <div className={cn("border-2 border-dashed border-border rounded-xl p-4 text-center hover:border-primary/50 transition-colors cursor-pointer", className)} onClick={() => inputRef.current?.click()}>
+      <input ref={inputRef} type="file" accept={accept} className="hidden" onChange={handleFile} />
       {preview ? (
-        <img src={preview} alt="Logo preview" className="h-16 w-16 rounded-lg object-cover" />
+        <img src={preview} alt="Preview" className="max-h-24 mx-auto rounded-lg object-contain" />
       ) : (
-        <Upload className="h-8 w-8 text-muted-foreground" />
+        <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
       )}
-      <span className="text-sm text-muted-foreground">{label}</span>
-      <input
-        ref={inputRef}
-        type="file"
-        accept={accept}
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) onUpload(file);
-        }}
-      />
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
     </div>
   );
 }
-
-export default LogoUpload;
