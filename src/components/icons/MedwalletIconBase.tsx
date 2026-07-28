@@ -5,7 +5,7 @@
  * Shared SVG defs: gradients, glow filters, stroke animations.
  * Theme-aware via CSS custom properties (--region-logo-primary, etc.)
  */
-import { forwardRef, type SVGProps } from 'react';
+import { forwardRef, useId, type SVGProps } from 'react';
 
 // ─── Public Types ─────────────────────────────────────────────
 export interface MWIconProps extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
@@ -33,12 +33,6 @@ export function parseSize(size?: number | string): { w: string; h: string } {
   if (typeof size === 'number') return { w: `${size}px`, h: `${size}px` };
   if (typeof size === 'string' && /^\d+(px|rem|em)$/.test(size)) return { w: size, h: size };
   return { w: '20px', h: '20px' };
-}
-
-// ─── SVG Unique ID counter (SSR-safe) ──────────────────────────
-let _uid = 0;
-function uid(prefix: string) {
-  return `${prefix}-${++_uid}`;
 }
 
 // ─── Shared Defs Component ─────────────────────────────────────
@@ -88,8 +82,17 @@ export function MWDefs({ id }: { id: string }) {
   );
 }
 
+// ─── Internal ID context ──────────────────────────────────────
+// MWDefsId lets createMWIcon pass a unique ID to both defs and paths.
+const MWDefsIdContext = React.createContext<string>('mw-0');
+export function useMWDefsId() { return React.useContext(MWDefsIdContext); }
+
 // ─── Base Wrapper ──────────────────────────────────────────────
-export const MWBase = forwardRef<SVGSVGElement, MWIconProps & { children: React.ReactNode }>(
+export const MWBase = forwardRef<SVGSVGElement, MWIconProps & {
+  children: React.ReactNode;
+  /** Internal: pre-generated ID for defs (so paths can reference them) */
+  _defsId?: string;
+}>(
   function MWBase(
     {
       size,
@@ -103,12 +106,13 @@ export const MWBase = forwardRef<SVGSVGElement, MWIconProps & { children: React.
       children,
       viewBox = '0 0 24 24',
       fill = 'none',
+      _defsId,
       ...rest
     },
     ref
   ) {
     const { w, h } = parseSize(size);
-    const id = uid('mw');
+    const id = _defsId || `mw-${useId()}`;
 
     return (
       <svg
@@ -173,6 +177,12 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   document.head.appendChild(s);
 }
 
+// ─── Global UID counter (for createMWIcon) ─────────────────────
+let _globalUid = 0;
+function nextUid() {
+  return `mw-${++_globalUid}`;
+}
+
 // ─── Utility: create icon component factory ───────────────────
 export function createMWIcon(
   /** SVG inner elements (paths, circles, etc.) */
@@ -187,7 +197,9 @@ export function createMWIcon(
     { glow: gl = true, gradient: gr = true, color, fill, stroke, ...rest },
     ref
   ) {
-    const id = uid('mw');
+    // Generate ONE unique ID for this icon instance
+    // Both defs and paths will use this same ID
+    const id = nextUid();
     return (
       <MWBase
         ref={ref}
@@ -196,6 +208,7 @@ export function createMWIcon(
         fill={fill ?? opts?.defaultFill ?? 'none'}
         stroke={stroke ?? color ?? opts?.defaultStroke ?? 'currentColor'}
         viewBox={opts?.viewBox}
+        _defsId={id}
         {...rest}
       >
         {paths(id, gl, gr)}
