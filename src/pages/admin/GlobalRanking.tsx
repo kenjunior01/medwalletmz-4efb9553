@@ -17,7 +17,7 @@ import {
   Trophy, TrendingUp, TrendingDown, Minus, Crown, Medal, Award,
   Activity, Pill, Stethoscope, Zap, RefreshCw, AlertTriangle, X,
   Users, Star, Heart, Sparkles, ChevronUp, ChevronDown, BarChart3,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import {
   RegionalRanking,

@@ -25,7 +25,7 @@ import {
   Globe, FlaskConical, LayoutDashboard, Briefcase, Key, CreditCard, Lock,
   BellRing, Palette, AlertCircle, RefreshCw, Loader2, IdCard, Heart,
   CheckCircle2, FileCheck2,
-} from "lucide-react";
+} from '@/components/icons/lucide-compat';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";

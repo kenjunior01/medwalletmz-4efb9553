@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   ArrowLeft, FileText, Pill, Search, RefreshCw, AlertCircle,
   Stethoscope, ShieldCheck, ChevronRight, Calendar, Clock,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCountry } from '@/contexts/CountryContext';
 import { cn } from '@/lib/utils';

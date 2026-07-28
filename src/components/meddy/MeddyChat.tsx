@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageCircle, X, Send, Sparkles, Phone, AlertTriangle,
   ChevronRight, Loader2, Heart, Calendar, Pill, Stethoscope,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';

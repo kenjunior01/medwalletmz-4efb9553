@@ -21,7 +21,7 @@ import {
   AlertTriangle, RefreshCw, Sparkles, Rocket, MapPin,
   Building2, Languages, Phone, Calendar, FileText, DollarSign,
   Shield, CheckCircle2, Clock, Trash2, Edit3,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import {
   CountryOnboarding, OnboardingStep, OnboardingListItem,

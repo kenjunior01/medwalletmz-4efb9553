@@ -18,7 +18,7 @@ import {
   Users, MessageCircle, Plus, ArrowLeft, Send, Heart, Shield, Lock,
   AlertTriangle, X, Sparkles, ChevronRight, Hash, Search, Globe,
   Phone, Flag, Trash2, Smile, UserCircle2,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import {
   SupportCircle, CircleMessage, ModerationResult,

@@ -21,7 +21,7 @@ import {
   X, Upload, ShieldCheck, Sparkles, Phone,
   RefreshCw, ChevronRight, Truck, ThermometerSnowflake, Signature,
   Award, Eye, Bike as Motorbike, MapPinned, Zap, Route,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import { useAuth } from '@/contexts/AuthContext';
 import {

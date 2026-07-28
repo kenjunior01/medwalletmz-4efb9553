@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, Phone, ArrowLeft, Sparkles, Heart, Pill, Stethoscope, Activity, ShieldCheck, ChevronRight, Zap, Globe, Star, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, Mail, Lock, User, Phone, ArrowLeft, Sparkles, Heart, Pill, Stethoscope, Activity, ShieldCheck, ChevronRight, Zap, Globe, Star, CheckCircle2, AlertCircle } from '@/components/icons/lucide-compat';
 import { z } from 'zod';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';

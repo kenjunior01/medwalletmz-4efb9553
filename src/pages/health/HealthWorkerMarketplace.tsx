@@ -19,7 +19,7 @@ import {
   Phone, X, Calendar, ChevronRight, CheckCircle2, AlertTriangle,
   RefreshCw, TrendingUp, Award, Heart, Stethoscope, Home, Video,
   FileText, ArrowRight, Filter, User, Briefcase, Send, Eye,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import { useAuth } from '@/contexts/AuthContext';
 import {

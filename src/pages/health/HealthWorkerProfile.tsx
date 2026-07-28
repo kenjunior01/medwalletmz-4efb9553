@@ -22,7 +22,7 @@ import {
   Languages, MapPin, Clock, DollarSign, Stethoscope, Heart,
   Home, Video, Eye, Send, Building2, User, GraduationCap, Wallet,
   Package, Bike, UserCircle,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';

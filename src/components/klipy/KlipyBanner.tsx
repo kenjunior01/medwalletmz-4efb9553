@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
 import { useDataSaver } from '@/contexts/DataSaverContext';
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from '@/components/icons/lucide-compat';
 
 type Item = { id: number; slug: string; title: string; file: any };
 

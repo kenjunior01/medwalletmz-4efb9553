@@ -20,7 +20,7 @@ import { NearbyHealthList } from "@/components/maps/PlaceDetailsWidgets";
 import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Locate, Building2, Hospital, Store, FlaskConical, Navigation } from "lucide-react";
+import { MapPin, Locate, Building2, Hospital, Store, FlaskConical, Navigation } from '@/components/icons/lucide-compat';
 import { useCountry } from "@/contexts/CountryContext";
 
 const RADIUS_OPTIONS = [

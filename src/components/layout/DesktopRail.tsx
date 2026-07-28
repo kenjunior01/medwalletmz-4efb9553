@@ -2,7 +2,7 @@ import {
   Wallet, MessageCircle, Gift, Sparkles, Calendar, ChevronRight,
   Heart, Mic, MapPin, Camera, Users, Bike, Trophy, Briefcase,
   Package, TrendingUp, Stethoscope, Home, Megaphone, UserCircle,
-} from "lucide-react";
+} from '@/components/icons/lucide-compat';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWallet } from "@/hooks/useWallet";

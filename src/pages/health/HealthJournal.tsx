@@ -11,7 +11,7 @@ import {
   ArrowLeft, SmilePlus, Flame, Moon, Zap, Heart, FileText,
   Sparkles, Loader2, CalendarDays, Activity, SkipForward, ChevronRight,
   RefreshCw, AlertCircle,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';

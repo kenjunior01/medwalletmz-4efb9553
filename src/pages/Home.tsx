@@ -3,7 +3,7 @@ import {
   Stethoscope, Sparkles, Pill, MessageCircle, ArrowRight,
   Plus, Calendar, ShieldCheck, Building2,
   BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse
-} from "lucide-react";
+} from '@/components/icons/lucide-compat';
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FreeTrialBanner } from "@/components/monetization/FreeTrialBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";

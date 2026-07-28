@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 import {
   Bike, TrendingUp, Power, Stethoscope, Heart, Megaphone,
   ChevronRight, Calendar, Wallet, Users,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useUserType } from '@/hooks/useUserType';
 import { useAuth } from '@/contexts/AuthContext';
 

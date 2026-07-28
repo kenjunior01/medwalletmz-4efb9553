@@ -21,7 +21,7 @@ import {
   TestTube, Baby, Filter, RefreshCw, AlertTriangle, X, Car, Footprints,
   ExternalLink, Crosshair, CheckCircle2, Circle, ChevronDown, ChevronUp,
   TrafficCone,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import {
   FacilityWithDistance, GeoPoint, RouteResult,

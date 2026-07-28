@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { bottomNavByRole, sidebarByRole } from "@/config/navigation";
 import { usePrimaryRole } from "@/hooks/usePrimaryRole";
 import { useUserType } from "@/hooks/useUserType";
-import { Menu, X, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope, Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutDashboard, ShieldCheck, CheckCircle2, Plus, Home, Bike, Heart, Users, Megaphone, Gift, Wallet } from "lucide-react";
+import { Menu, X, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope, Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutDashboard, ShieldCheck, CheckCircle2, Plus, Home, Bike, Heart, Users, Megaphone, Gift, Wallet } from '@/components/icons/lucide-compat';
 import { useState, useMemo } from "react";
 import {
   Sheet,

@@ -45,7 +45,7 @@ import {
   RefreshCw,
   AlertCircle,
   LifeBuoy,
-} from "lucide-react";
+} from '@/components/icons/lucide-compat';
 import { useCountry } from "@/contexts/CountryContext";
 import { toast } from "sonner";
 

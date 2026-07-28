@@ -43,7 +43,6 @@ export default defineConfig(({ mode }) => ({
           'vendor-react': ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
           'vendor-supabase': ['@supabase/supabase-js'],
           'vendor-ui': [
-            'lucide-react',
             'framer-motion',
             'class-variance-authority',
             'clsx',

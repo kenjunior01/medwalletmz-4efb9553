@@ -11,7 +11,7 @@ import {
   Pill, Activity, Trophy, Target, AlertCircle, Loader2,
   RefreshCw, Crown, TrendingUp, TrendingDown, ChevronRight,
   Sparkles, Flag, Globe,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

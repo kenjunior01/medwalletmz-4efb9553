@@ -18,7 +18,7 @@ import {
   Megaphone, Plus, Edit3, Trash2, Pin, PinOff, Power, PowerOff, Eye,
   MousePointer, AlertTriangle, X, Clock, Calendar, Globe, Tag,
   ChevronRight, Sparkles, ExternalLink, Image as ImageIcon, Save, Check,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import {
   RegionalContent, ContentType, ContentMetrics,

@@ -12,7 +12,7 @@ import {
   PawPrint,
   ShieldCheck,
   Calendar
-} from "lucide-react";
+} from '@/components/icons/lucide-compat';
 import { useCountry } from "@/contexts/CountryContext";
 
 export default function Veterinary() {

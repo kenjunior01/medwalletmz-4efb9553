@@ -18,7 +18,7 @@ import {
   Users, UserPlus, Heart, Pill, Clock, AlertTriangle, CheckCircle2,
   XCircle, ChevronRight, Phone, Calendar, Activity, ShieldCheck,
   Stethoscope, Syringe, Sparkles, Edit3, Trash2, X, Plus, Lock,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import {
   FamilyMember, FamilyMedicationLog, Relationship,

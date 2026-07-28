@@ -62,7 +62,7 @@ import {
   CalendarClock,
   Ban,
   CalendarCheck,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { toast } from 'sonner';
 import {
   format,

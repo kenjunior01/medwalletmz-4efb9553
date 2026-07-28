@@ -12,7 +12,7 @@ import {
   ArrowLeft, Calendar, Loader2, Wallet, AlertTriangle,
   Stethoscope, BadgeCheck, Clock, Video, MapPin, ChevronRight,
   CalendarCheck, Sparkles, ShieldCheck, AlertCircle, RefreshCw,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCountry } from '@/contexts/CountryContext';

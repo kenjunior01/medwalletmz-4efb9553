@@ -21,7 +21,7 @@ import {
   Bike, Stethoscope, MapPin, Languages, FileText, Phone,
   Calendar, Award, Clock, TrendingUp, Eye, Send, Filter,
   ChevronRight, ExternalLink, Star,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
 import { PROFESSION_LABELS } from '@/services/healthWorkers';

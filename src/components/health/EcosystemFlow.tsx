@@ -9,7 +9,7 @@ import {
   Route,
   Heart,
   Megaphone,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useUserType } from '@/hooks/useUserType';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';

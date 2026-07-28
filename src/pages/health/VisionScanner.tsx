@@ -10,7 +10,7 @@ import {
   ArrowLeft, Camera, Upload, Loader2, Sparkles, Pill,
   FlaskConical, FileText, Syringe, Stethoscope, RefreshCw,
   CheckCircle2, AlertCircle, ChevronRight, Image as ImageIcon,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

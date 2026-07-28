@@ -9,7 +9,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { Check, ChevronRight } from 'lucide-react';
+import { Check, ChevronRight } from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import { USER_TYPES, UserType } from '@/services/userTypes';
 

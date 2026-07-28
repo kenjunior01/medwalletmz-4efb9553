@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mic, MicOff, Square, Play, Pause, Trash2, Sparkles, AudioLines,
   AlertTriangle, X, Clock, Filter, RefreshCw, Volume2,
-} from 'lucide-react';
+} from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import {
   VoiceJournalEntry, DetectedMood, ProcessingStatus,
