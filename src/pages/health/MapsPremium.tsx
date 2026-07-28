@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { useCountry } from '@/contexts/CountryContext';
 import {
-  FacilityWithDistance, GeoPoint, RouteResult, FacilityType,
+  FacilityWithDistance, GeoPoint, RouteResult,
   computeDistances, getRoute, getCurrentLocation, getEmbedMapUrl,
   openInExternalMaps, reverseGeocode, isMapsConfigured, MOCK_FACILITIES,
 } from '@/services/mapsPremium';
@@ -487,7 +487,7 @@ function FacilityCard({ facility, selected, onSelect, index, t }: {
 /* ---------- Filter chip ---------- */
 
 function FilterChip({ active, onClick, label, icon, color, ...rest }: {
-  active: boolean; onClick: () => void; label: string; icon?: React.ReactNode; color?: string;
+  active: boolean; onClick: () => void; label: string; icon?: React.ReactNode; color?: string; role?: string;
 } & React.AriaAttributes) {
   return (
     <button

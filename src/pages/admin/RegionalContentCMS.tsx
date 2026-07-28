@@ -52,7 +52,7 @@ interface EditForm {
 const ACCENT_COLORS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
 
 export default function RegionalContentCMS() {
-  const { t, user } = useCountry();
+  const { t, user } = useCountry() as any;
   const [countryCode, setCountryCode] = useState('MZ');
   const [view, setView] = useState<View>('list');
   const [items, setItems] = useState<RegionalContent[]>([]);

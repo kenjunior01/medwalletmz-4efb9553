@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Hospital, Building2, FlaskConical, MapPin, CheckCircle2, Globe, Clock, Filter, Navigation, Search, ChevronDown, Phone, PhoneCall, X, Star, Shield, Map, List, RotateCcw, SlidersHorizontal, Clock3, TrendingUp, Zap } from "lucide-react";
+import { Hospital, Building2, FlaskConical, MapPin, CheckCircle2, Globe, Clock, Filter, Navigation, Search, ChevronDown, ChevronRight, Phone, PhoneCall, X, Star, Shield, Map, List, RotateCcw, SlidersHorizontal, Clock3, TrendingUp, Zap } from "lucide-react";
 import { SafeImage } from "@/components/ui/safe-image";
 import { GoogleMap, type GMarker } from "@/components/maps/GoogleMap";
 import { haversineKm } from "@/lib/googleRoutes";

@@ -32,7 +32,7 @@ type View = 'discover' | 'mine' | 'circle' | 'create';
 const AVATAR_COLORS = ['#3B82F6', '#EC4899', '#10B981', '#F59E0B', '#8B5CF6', '#06B6D4', '#EF4444', '#84CC16'];
 
 export default function SupportCircles() {
-  const { t, user, country } = useCountry();
+  const { t, user, country } = useCountry() as any;
   const [view, setView] = useState<View>('discover');
   const [circles, setCircles] = useState<SupportCircle[]>([]);
   const [loading, setLoading] = useState(true);

@@ -16,7 +16,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mic, MicOff, Square, Play, Pause, Trash2, Sparkles, AudioLines,
-  AlertTriangle, X, Clock, Filter, RefreshCw, Waveform, Volume2,
+  AlertTriangle, X, Clock, Filter, RefreshCw, Volume2,
 } from 'lucide-react';
 import { useCountry } from '@/contexts/CountryContext';
 import {
@@ -30,7 +30,8 @@ import {
 type Stage = 'idle' | 'recording' | 'uploading' | 'analyzing' | 'saved';
 
 export default function VoiceJournal() {
-  const { t, user, locale } = useCountry();
+  const Waveform = AudioLines;
+  const { t, user, locale } = useCountry() as any;
   const [stage, setStage] = useState<Stage>('idle');
   const [entries, setEntries] = useState<VoiceJournalEntry[]>([]);
   const [loading, setLoading] = useState(true);

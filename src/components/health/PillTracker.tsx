@@ -25,7 +25,7 @@ export function PillTracker() {
       const today = new Date().toISOString().split('T')[0];
 
       const [{ data: logs }, { data: rxData }] = await Promise.all([
-        supabase
+        (supabase as any)
           .from('medication_logs')
           .select('prescription_item_id, taken_at')
           .eq('user_id', user.id)
@@ -40,7 +40,7 @@ export function PillTracker() {
       ]);
 
       const takenIds = new Set(
-        (logs || []).map((l: { prescription_item_id: string }) => l.prescription_item_id)
+        (logs || []).map((l: any) => l.prescription_item_id)
       );
 
       const rows = (rxData || [])
@@ -65,7 +65,7 @@ export function PillTracker() {
     setMeds(prev => prev.map(m => (m.id === med.id ? { ...m, taken: newTaken } : m)));
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('medication_logs')
         .upsert(
           {

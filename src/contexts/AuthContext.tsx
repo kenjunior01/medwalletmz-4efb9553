@@ -224,13 +224,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Persistir também na tabela user_types (RPC falhará graceful se não existir)
         if (userType && userType !== 'patient') {
           try {
-            await supabase.rpc('set_user_primary_type', {
+            await (supabase as any).rpc('set_user_primary_type', {
               p_user_id: data.user.id,
               p_type: userType,
             });
           } catch (e) {
             // Fallback: insere diretamente
-            await supabase.from('user_types').upsert({
+            await (supabase as any).from('user_types').upsert({
               user_id: data.user.id,
               user_type: userType,
               is_primary: true,

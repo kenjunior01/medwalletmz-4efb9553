@@ -48,11 +48,12 @@ export default function GlobalRanking() {
       ]);
       setRankings(cur.length === 0 ? getMockRankings(period) : cur);
       setPreviousRankings(prev);
-      if (country?.code) {
-        const me = cur.find((r) => r.country_code === country.code) ??
-                   getMockRankings(period).find((r) => r.country_code === country.code);
+      const cc = (country as any)?.code ?? country?.id;
+      if (cc) {
+        const me = cur.find((r) => r.country_code === cc) ??
+                   getMockRankings(period).find((r) => r.country_code === cc);
         setMyCountry(me ?? null);
-        const hist = await getCountryRankingHistory(country.code).catch(() => []);
+        const hist = await getCountryRankingHistory(cc).catch(() => []);
         setHistory(hist);
       }
     } catch (e: any) {
@@ -60,7 +61,7 @@ export default function GlobalRanking() {
     } finally {
       setLoading(false);
     }
-  }, [period, country?.code, periods]);
+  }, [period, (country as any)?.code, country?.id, periods]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -135,7 +136,7 @@ export default function GlobalRanking() {
                     key={r.country_code}
                     ranking={r}
                     trend={trends.get(r.country_code) ?? 'same'}
-                    isMe={r.country_code === country?.code}
+                    isMe={r.country_code === ((country as any)?.code ?? country?.id)}
                     index={idx}
                     t={t}
                   />
