@@ -59,5 +59,22 @@
       "label": "MedWallet — Saúde, Farmácia e Veterinária"
     }
   ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        { "name": "prescriptions", "accept": ["image/*","application/pdf"] }
+      ]
+    }
+  },
+  "protocol_handlers": [
+    { "protocol": "tel", "url": "/call/%s" },
+    { "protocol": "mailto", "url": "/contact/%s" }
+  ],
   "prefer_related_applications": false
 }

@@ -14,7 +14,7 @@ import { MedWalletLogo } from "@/components/brand";
  */
 export function LoadingScreen({ message = 'A carregar...' }: { message?: string }) {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-emerald-50">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-emerald-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="flex flex-col items-center gap-4">
         {/* Logo animado */}
         <div className="relative">
@@ -23,10 +23,10 @@ export function LoadingScreen({ message = 'A carregar...' }: { message?: string 
 
         {/* Nome + Spinner */}
         <div className="flex flex-col items-center gap-2">
-          <h1 className="text-lg font-black text-emerald-700 tracking-tight">
+          <h1 className="text-lg font-black text-emerald-700 tracking-tight dark:text-white">
             MedWallet <span className="text-emerald-500">MZ</span>
           </h1>
-          <div className="flex items-center gap-2 text-sm text-emerald-600">
+          <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-gray-400">
             <Loader2 className="h-4 w-4 animate-spin" />
             <span>{message}</span>
           </div>

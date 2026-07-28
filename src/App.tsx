@@ -27,12 +27,11 @@ import { PageViewTracker } from "@/services/PageViewTracker";
 // melhorando drasticamente o tempo de carregamento em 3G/4G MZ.
 // =========================================================================
 
-// ---- Páginas críticas (carregadas imediatamente — não lazy) ----
-// Home e Auth são a primeira coisa que o utilizador vê; mantê-las no bundle
-// principal evita flash de loading no primeiro acesso.
-import Home from "./pages/Home";
-import Auth from "./pages/Auth";
-import RegistrationWizard from "./pages/RegistrationWizard";
+// ---- Páginas (lazy-loaded) ----
+const Home = lazy(() => import("./pages/Home"));
+const Landing = lazy(() => import("./pages/Landing"));
+const Auth = lazy(() => import("./pages/Auth"));
+const RegistrationWizard = lazy(() => import("./pages/RegistrationWizard"));
 import NotFound from "./pages/NotFound";
 
 // ---- Páginas principais (lazy-loaded) ----
@@ -323,6 +322,9 @@ const App = () => (
 
                   {/* Rota protegida: destrava o primeiro admin (bootstrap) */}
                   <Route path="/admin/bootstrap" element={<AdminBootstrap />} />
+
+                  {/* Landing — public marketing page, no layout */}
+                  <Route path="/landing" element={<Landing />} />
 
                   {/* Auth */}
                   <Route path="/auth" element={<Auth />} />

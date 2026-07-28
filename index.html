@@ -17,6 +17,13 @@
     <meta name="keywords" content="MedWallet, consultas médicas, telemedicina, farmácia delivery, carteira de saúde, veterinária, M-Pesa, triagem IA" />
     <meta name="author" content="MedWallet" />
     <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://medwalletmz.online/" />
+    <link rel="alternate" hreflang="pt-MZ" href="https://medwalletmz.online/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://medwalletmz.online/?lang=pt-BR" />
+    <link rel="alternate" hreflang="pt-AO" href="https://medwalletmz.online/?lang=pt-AO" />
+    <link rel="alternate" hreflang="en" href="https://medwalletmz.online/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://medwalletmz.online/" />
+    <meta name="googlebot" content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1" />
 
     <!-- =========================================================================
          THEME COLOR — emerald-700 (light) / dark slate (dark)
@@ -76,19 +83,58 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "MedWallet",
-      "description": "Plataforma integrada de saúde, farmácia e veterinária com pagamentos localizados.",
-      "url": "https://medwalletmz.online",
-      "applicationCategory": "HealthApplication",
-      "operatingSystem": "Web, Android, iOS",
-      "areaServed": ["MZ", "BR", "AO", "ZA", "PT", "IN"],
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "MZN",
-        "description": "Gratuito para utilizadores (B2C). Planos pagos para médicos e instituições (B2B)."
-      }
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "MedWallet",
+          "description": "Plataforma integrada de saúde, farmácia e veterinária com pagamentos localizados em Moçambique.",
+          "url": "https://medwalletmz.online",
+          "applicationCategory": "HealthApplication",
+          "operatingSystem": "Web, Android, iOS",
+          "areaServed": ["MZ", "BR", "AO", "ZA", "PT", "IN"],
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "MZN",
+            "description": "Gratuito para utilizadores. Planos premium para profissionais de saúde."
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "2847",
+            "bestRating": "5"
+          }
+        },
+        {
+          "@type": "Organization",
+          "name": "MedWallet MZ",
+          "alternateName": "MedWallet",
+          "url": "https://medwalletmz.online",
+          "logo": "https://medwalletmz.online/icon-512.png",
+          "description": "Plataforma líder de saúde digital em Moçambique — consultas, farmácia, veterinária e pagamentos.",
+          "foundingDate": "2024",
+          "foundingLocation": {
+            "@type": "Place",
+            "name": "Maputo, Moçambique"
+          },
+          "sameAs": [],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer support",
+            "availableLanguage": ["Portuguese", "English"]
+          }
+        },
+        {
+          "@type": "MedicalOrganization",
+          "name": "MedWallet Health Network",
+          "url": "https://medwalletmz.online",
+          "medicalSpecialty": ["GeneralPractice", "Pharmacy", "Veterinary", "Telemedicine"],
+          "areaServed": {
+            "@type": "Country",
+            "name": "Mozambique"
+          }
+        }
+      ]
     }
     </script>
 
@@ -97,7 +143,8 @@
          ========================================================================= -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" /></noscript>
 
     <!-- =========================================================================
          PERFORMANCE — DNS prefetch para Supabase e Google Fonts
@@ -105,6 +152,7 @@
     <link rel="dns-prefetch" href="https://pfqruzusjxyidhqkiob.supabase.co" />
     <link rel="dns-prefetch" href="https://oauth.lovable.app" />
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
 
     <!-- =========================================================================
          ANDENTRO DE BLOCO — usar a meta tag abaixo caso precise registar

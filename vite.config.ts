@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
     hmr: { overlay: false },
   },
   optimizeDeps: {
-    include: ["@number-flow/react", "react", "react-dom"],
+    include: ["@number-flow/react", "react", "react-dom", "framer-motion", "date-fns"],
   },
   resolve: {
     alias: {
@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => ({
     minify: 'esbuild',
     cssMinify: true,
     sourcemap: false,
-    chunkSizeWarningLimit: 2000,
+    chunkSizeWarningLimit: 800,
     commonjsOptions: {
       transformMixedEsModules: true,
     },
@@ -42,13 +42,21 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
           'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-motion': ['framer-motion'],
           'vendor-ui': [
-            'framer-motion',
             'class-variance-authority',
             'clsx',
             'tailwind-merge',
             'date-fns',
             'sonner',
+            'zod',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-slot',
           ],
         },
       }

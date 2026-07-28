@@ -4,14 +4,14 @@ import App from "./App";
 import "./index.css";
 import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { registerServiceWorkerHandlers } from "./lib/service-worker-enhancements";
 
 // Garantir que React está disponível globalmente se alguma lib antiga precisar
 if (typeof window !== 'undefined') {
   (window as any).React = React;
+  // Register enhanced SW handlers (background sync, connectivity)
+  registerServiceWorkerHandlers();
 }
-
-// Log para depuração na plataforma
-console.log("App inicializando...");
 
 // Captura erros globais antes mesmo do React carregar
 window.onerror = function(message, source, lineno, colno, error) {
@@ -36,7 +36,6 @@ if (!container) {
   console.error("Erro fatal: Elemento #root não encontrado no DOM.");
 } else {
   try {
-    console.log("Criando root do React...");
     const root = createRoot(container);
     root.render(
       <ErrorBoundary>
@@ -45,7 +44,6 @@ if (!container) {
         </HelmetProvider>
       </ErrorBoundary>
     );
-    console.log("Renderização inicial disparada.");
   } catch (error) {
     console.error("Erro durante a renderização inicial:", error);
     if (container) {
