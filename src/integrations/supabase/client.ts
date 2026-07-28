@@ -2,8 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://pfqruzusjjxyidhqkiob.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXJ1enVzamp4eWlkaHFraW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NTYwODMsImV4cCI6MjA5NzMzMjA4M30.zPcOEd5AKFg5KHa3xdhJPBFOphkWpf-huTvWh_V_f50";
 
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
   console.warn("Supabase credentials missing. Check your environment variables.");
@@ -15,20 +15,9 @@ if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
 // =============================================================================
 // CONFIGURAÇÃO CRÍTICA PARA OAUTH VIA LOVABLE CLOUD
 // =============================================================================
-// O broker OAuth da Lovable (https://oauth.lovable.app) devolve os tokens
-// no HASH da URL (#access_token=...&refresh_token=...&expires_in=3600) após
-// o redirect final para a app.
-//
-// Para o cliente Supabase detectar e processar estes tokens automaticamente:
-//   - detectSessionInUrl: true  → lê tokens do hash/query e faz setSession
-//   - flowType: 'implicit'     → usa o fluxo implicit (tokens no hash)
-//
-// Sem estas opções, após login Google o utilizador fica sem sessão ativa,
-// o que provoca erros em páginas protegidas.
-// =============================================================================
 export const supabase = createClient<Database>(
-  SUPABASE_URL || "https://placeholder-url.supabase.co",
-  SUPABASE_PUBLISHABLE_KEY || "placeholder-key",
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
   {
     auth: {
       storage: typeof window !== 'undefined' ? window.localStorage : undefined,
