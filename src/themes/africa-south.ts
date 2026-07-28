@@ -5,30 +5,30 @@
 import type { RegionTheme } from './types';
 
 // ── MOZAMBIQUE 🇲🇿 ─────────────────────────────────────────────────────────
-// Green (forest/land), Yellow (mineral wealth), Red (struggle/independence)
-// Pattern: Capulana-inspired geometric stripes
+// Premium Medical Fintech palette — Teal, Indigo, Violet, Amber
+// Trustworthy, modern, distinctive — NOT flag colors
 export const mz: RegionTheme = {
   id: 'MZ', name: 'Moçambique', flag: '🇲🇿', region: 'africa_south',
   colors: {
-    primary: '#009739', primaryLight: '#00C853', primaryDark: '#006B29',
-    secondary: '#FFD100', secondaryLight: '#FFE44D',
-    accent: '#D40000', accentLight: '#FF1744',
-    background: '#F4FAF4', surface: '#FFFFFF', text: '#1A2E1A', textMuted: '#5A7A5A',
+    primary: '#0D9488', primaryLight: '#2DD4BF', primaryDark: '#0F766E',
+    secondary: '#6366F1', secondaryLight: '#818CF8',
+    accent: '#F59E0B', accentLight: '#FBBF24',
+    background: '#F0FDFA', surface: '#FFFFFF', text: '#0F172A', textMuted: '#64748B',
   },
   gradients: {
-    hero: 'linear-gradient(135deg, #009739 0%, #FFD100 50%, #D40000 100%)',
-    heroSubtle: 'linear-gradient(135deg, #E8F5E9 0%, #FFFDE7 50%, #FFEBEE 100%)',
-    card: 'linear-gradient(145deg, #F1F8E9, #FFFFFF)',
-    accent: 'linear-gradient(135deg, #FFD100, #FFE44D)',
-    dark: 'linear-gradient(135deg, #004D25, #002A13)',
+    hero: 'linear-gradient(135deg, #0D9488 0%, #6366F1 50%, #2DD4BF 100%)',
+    heroSubtle: 'linear-gradient(135deg, #F0FDFA 0%, #EEF2FF 50%, #F0FDFA 100%)',
+    card: 'linear-gradient(145deg, #F0FDFA, #FFFFFF)',
+    accent: 'linear-gradient(135deg, #6366F1, #818CF8)',
+    dark: 'linear-gradient(135deg, #134E4A, #1E1B4B)',
   },
   particles: {
-    colors: ['#FFD100', '#00C853', '#D40000', '#FFFFFF'],
+    colors: ['#2DD4BF', '#6366F1', '#F59E0B', '#EC4899'],
     count: 30, speed: 0.8, size: 3, opacity: 0.6,
     shape: 'circle', pattern: 'fireflies',
   },
-  logo: { primary: '#009739', secondary: '#FFD100', accent: '#D40000', glow: '#00973940' },
-  pattern: { type: 'lines', opacity: 0.04, color: '#009739' },
+  logo: { primary: '#14B8A6', secondary: '#6366F1', accent: '#EC4899', glow: '#14B8A640' },
+  pattern: { type: 'lines', opacity: 0.04, color: '#0D9488' },
   symbol: '🌿',
 };
 

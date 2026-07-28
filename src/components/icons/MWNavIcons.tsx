@@ -859,53 +859,55 @@ export const MWVideo = createMWIcon(
 );
 
 // ═══════════════════════════════════════════════════════════════
-// 18. MWCrown — 5-point crown, star center, gem dots, heartbeat band
+// 18. MWCrown — Hexagonal Elite Shield with pulse wave center
+// Unique identity: premium shield badge, NOT a crown
 // ═══════════════════════════════════════════════════════════════
 export const MWCrown = createMWIcon(
   (id, glow, grad) => (
     <>
       <circle cx="12" cy="12" r="11" fill={`url(#${id}-radial)`} opacity="0.2" />
-      {/* Crown body — 5 points, background fill */}
+      {/* Hexagonal shield outer */}
       <path
-        d="M3 17L5 8L8 12L10.5 4L12 8L13.5 4L16 12L19 8L21 17Z"
+        d="M12 2 L19.5 6 L19.5 15 L12 22 L4.5 15 L4.5 6 Z"
         stroke={grad ? `url(#${id}-grad)` : 'currentColor'}
         strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
         fill={grad ? `url(#${id}-radial)` : 'none'}
-        opacity="0.2"
+        opacity={grad ? 0.15 : 0}
         filter={glow ? `url(#${id}-glow)` : undefined}
       />
-      {/* Crown body — stroke */}
+      {/* Hexagonal shield stroke */}
       <path
-        d="M3 17L5 8L8 12L10.5 4L12 8L13.5 4L16 12L19 8L21 17Z"
+        d="M12 2 L19.5 6 L19.5 15 L12 22 L4.5 15 L4.5 6 Z"
         stroke={grad ? `url(#${id}-grad)` : 'currentColor'}
         strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"
         filter={glow ? `url(#${id}-glow)` : undefined}
       />
-      {/* Base band */}
-      <line x1="3" y1="17" x2="21" y2="17" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="2" strokeLinecap="round" />
-      <line x1="3" y1="19" x2="21" y2="19" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
-      {/* Center point — star (Mozambique reference) */}
+      {/* Inner hexagon */}
       <path
-        d="M12 5L12.6 6.8L14.5 6.5L13.2 7.8L14 9.5L12 8.5L10 9.5L10.8 7.8L9.5 6.5L11.4 6.8Z"
+        d="M12 5 L16.5 7.5 L16.5 13.5 L12 16 L7.5 13.5 L7.5 7.5 Z"
+        stroke={grad ? `url(#${id}-grad)` : 'currentColor'}
+        strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round" fill="none"
+        opacity="0.4"
+      />
+      {/* Pulse/heartbeat wave at center */}
+      <polyline
+        points="7,10.5 9,10.5 10,8 11.2,13 12.5,9 13.5,10.5 17,10.5"
         stroke={grad ? `url(#${id}-accent)` : 'currentColor'}
-        strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"
-        fill={grad ? `url(#${id}-accent)` : 'none'}
+        strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"
+        filter={glow ? `url(#${id}-glow-strong)` : undefined}
+      />
+      {/* Top accent diamond */}
+      <path
+        d="M12 2.5 L12.8 3.8 L14 3.8 L13 4.7 L13.4 6 L12 5.2 L10.6 6 L11 4.7 L10 3.8 L11.2 3.8 Z"
+        fill={grad ? `url(#${id}-accent)` : 'currentColor'}
         filter={glow ? `url(#${id}-glow)` : undefined}
         opacity="0.9"
       />
-      {/* Gem dots at each point */}
-      <circle cx="5" cy="8" r="0.9" fill={grad ? `url(#${id}-accent)` : 'currentColor'} filter={glow ? `url(#${id}-glow)` : undefined} />
-      <circle cx="8" cy="12" r="0.9" fill={grad ? `url(#${id}-accent)` : 'currentColor'} filter={glow ? `url(#${id}-glow)` : undefined} />
-      <circle cx="12" cy="8" r="0.7" fill={grad ? `url(#${id}-accent)` : 'currentColor'} opacity="0.7" />
-      <circle cx="16" cy="12" r="0.9" fill={grad ? `url(#${id}-accent)` : 'currentColor'} filter={glow ? `url(#${id}-glow)` : undefined} />
-      <circle cx="19" cy="8" r="0.9" fill={grad ? `url(#${id}-accent)` : 'currentColor'} filter={glow ? `url(#${id}-glow)` : undefined} />
-      {/* Heartbeat line running along base band */}
-      <path
-        d="M4 18L6 18L6.8 16.5L7.8 19.5L8.8 17.5L9.5 18L12 18L14.5 18L15.2 17L16.2 19L17.2 17L18 18L20 18"
-        stroke={grad ? `url(#${id}-accent)` : 'currentColor'}
-        strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round" fill="none"
-        opacity="0.6"
-      />
+      {/* Corner accent dots */}
+      <circle cx="4.5" cy="6" r="1" fill={grad ? `url(#${id}-accent)` : 'currentColor'} opacity="0.6" filter={glow ? `url(#${id}-glow)` : undefined} />
+      <circle cx="19.5" cy="6" r="1" fill={grad ? `url(#${id}-accent)` : 'currentColor'} opacity="0.6" filter={glow ? `url(#${id}-glow)` : undefined} />
+      {/* Bottom signal arcs */}
+      <path d="M9 19 Q12 17.5 15 19" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.4" />
     </>
   )
 );

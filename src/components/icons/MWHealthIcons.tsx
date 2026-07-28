@@ -740,99 +740,100 @@ export const MWUserPlus = createMWIcon(
 );
 
 // ─── 23. MWTrophy ───────────────────────────────────────────────
-// Trophy cup with medical cross on face, ribbon, sparkles
+// Diamond achievement frame with inner glow and medical cross
+// Unique identity: geometric diamond, NOT a traditional trophy cup
 export const MWTrophy = createMWIcon(
   (id, glow, grad) => (
     <>
       <circle cx="12" cy="12" r="11" fill={`url(#${id}-radial)`} opacity="0.12" />
-      {/* Trophy cup body */}
+      {/* Diamond outer frame */}
       <path
-        d="M6 4 L18 4 L17 14 C16.5 16 14 17 12 17 C10 17 7.5 16 7 14 L6 4Z"
-        stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill={grad ? `url(#${id}-grad)` : 'currentColor'}
-        fillOpacity={grad ? 0.06 : 0}
+        d="M12 2 L20 8 L20 16 L12 22 L4 16 L4 8 Z"
+        stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+        fill={grad ? `url(#${id}-radial)` : 'none'}
+        opacity={grad ? 0.12 : 0}
         filter={glow ? `url(#${id}-glow)` : undefined}
       />
-      {/* Left handle */}
-      <path d="M6 6 C3.5 6 2.5 8.5 3 11 C3.5 13 5 14 6 13" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.4" strokeLinecap="round" fill="none" />
-      {/* Right handle */}
-      <path d="M18 6 C20.5 6 21.5 8.5 21 11 C20.5 13 19 14 18 13" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.4" strokeLinecap="round" fill="none" />
-      {/* Stem */}
-      <line x1="12" y1="17" x2="12" y2="19.5" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.4" strokeLinecap="round" />
-      {/* Base */}
-      <rect x="8" y="19.5" width="8" height="1.5" rx="0.75" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.2" fill="none" />
-      {/* Medical cross on trophy face */}
-      <line x1="12" y1="7.5" x2="12" y2="13" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.8" strokeLinecap="round" filter={glow ? `url(#${id}-glow)` : undefined} />
-      <line x1="9.5" y1="10.2" x2="14.5" y2="10.2" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.8" strokeLinecap="round" filter={glow ? `url(#${id}-glow)` : undefined} />
-      {/* Ribbon */}
-      <path d="M10 19.5 L9 22 L10 21 L11 22" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <path d="M14 19.5 L13 22 L14 21 L15 22" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      {/* Sparkle accents */}
-      <path d="M5 3 L4.6 3.8 L3.8 4 L4.6 4.2 L5 5 L5.4 4.2 L6.2 4 L5.4 3.8 Z" fill={`url(#${id}-accent)`} opacity="0.6" />
-      <circle cx="6" cy="4" r="0.8" fill={`url(#${id}-accent)`} />
+      {/* Diamond stroke */}
+      <path
+        d="M12 2 L20 8 L20 16 L12 22 L4 16 L4 8 Z"
+        stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+        fill="none"
+        filter={glow ? `url(#${id}-glow)` : undefined}
+      />
+      {/* Inner diamond */}
+      <path
+        d="M12 5.5 L17 9 L17 15 L12 18.5 L7 15 L7 9 Z"
+        stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round"
+        fill="none" opacity="0.35"
+      />
+      {/* Medical cross at center */}
+      <line x1="12" y1="8.5" x2="12" y2="15.5" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="2" strokeLinecap="round" filter={glow ? `url(#${id}-glow-strong)` : undefined} />
+      <line x1="9" y1="12" x2="15" y2="12" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="2" strokeLinecap="round" filter={glow ? `url(#${id}-glow-strong)` : undefined} />
+      {/* Horizontal decorative lines */}
+      <line x1="5" y1="8" x2="8" y2="8" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+      <line x1="5" y1="16" x2="8" y2="16" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+      <line x1="16" y1="8" x2="19" y2="8" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+      <line x1="16" y1="16" x2="19" y2="16" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+      {/* Top glow dot */}
+      <circle cx="12" cy="2" r="1.2" fill={grad ? `url(#${id}-accent)` : 'currentColor'} filter={glow ? `url(#${id}-glow-strong)` : undefined} opacity="0.8" />
     </>
   )
 );
 
 // ─── 24. MWMedal ─────────────────────────────────────────────────
-// Medal with cross center, gradient, ribbon, star accents
+// Circular badge with concentric rings, medical cross, pulse arcs
+// Unique identity: tech badge with signal arcs, NOT a traditional medal
 export const MWMedal = createMWIcon(
   (id, glow, grad) => (
     <>
       <circle cx="12" cy="12" r="11" fill={`url(#${id}-radial)`} opacity="0.12" />
-      {/* Ribbon top */}
-      <path d="M7 2 L5 9 L8 7 L12 9 L16 7 L19 9 L17 2 L12 4 Z" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <path d="M7 2 L12 4 L17 2" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill={grad ? `url(#${id}-accent)` : 'currentColor'} opacity={grad ? 0.15 : 0.1} />
-      {/* Medal circle */}
-      <circle cx="12" cy="15" r="6"
-        stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.6" fill="none"
+      {/* Outer ring */}
+      <circle cx="12" cy="13" r="8"
+        stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.8" fill="none"
         filter={glow ? `url(#${id}-glow)` : undefined}
       />
-      {/* Inner ring */}
-      <circle cx="12" cy="15" r="4.5" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="0.6" fill="none" opacity="0.25" />
+      {/* Middle ring */}
+      <circle cx="12" cy="13" r="5.5" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="0.8" fill="none" opacity="0.4" />
+      {/* Inner filled circle */}
+      <circle cx="12" cy="13" r="3" fill={grad ? `url(#${id}-radial)` : 'currentColor'} opacity={grad ? 0.3 : 0.1} />
       {/* Medical cross at center */}
-      <line x1="12" y1="13" x2="12" y2="17" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.6" strokeLinecap="round" filter={glow ? `url(#${id}-glow)` : undefined} />
-      <line x1="10" y1="15" x2="14" y2="15" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.6" strokeLinecap="round" filter={glow ? `url(#${id}-glow)` : undefined} />
-      {/* Star accents */}
-      <path d="M7.5 13 L7.3 13.6 L6.8 13.8 L7.3 14 L7.5 14.6 L7.7 14 L8.2 13.8 L7.7 13.6 Z" fill={`url(#${id}-accent)`} opacity="0.6" />
-      <path d="M16.5 16 L16.3 16.6 L15.8 16.8 L16.3 17 L16.5 17.6 L16.7 17 L17.2 16.8 L16.7 16.6 Z" fill={`url(#${id}-accent)`} opacity="0.5" />
-      <circle cx="12" cy="2" r="0.8" fill={`url(#${id}-accent)`} />
+      <line x1="12" y1="11" x2="12" y2="15" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.8" strokeLinecap="round" filter={glow ? `url(#${id}-glow)` : undefined} />
+      <line x1="10" y1="13" x2="14" y2="13" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.8" strokeLinecap="round" filter={glow ? `url(#${id}-glow)` : undefined} />
+      {/* Signal arcs radiating outward */}
+      <path d="M5 7 Q7 5.5 9 7" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.5" />
+      <path d="M15 7 Q17 5.5 19 7" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.5" />
+      <path d="M3.5 9 Q6 6.5 8.5 9" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="0.7" strokeLinecap="round" fill="none" opacity="0.3" />
+      <path d="M15.5 9 Q18 6.5 20.5 9" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="0.7" strokeLinecap="round" fill="none" opacity="0.3" />
+      {/* Bottom accent lines */}
+      <line x1="9" y1="21" x2="12" y2="23" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+      <line x1="12" y1="23" x2="15" y2="21" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
     </>
   )
 );
 
 // ─── 25. MWSparkles ──────────────────────────────────────────────
-// Three sparkles, largest with tiny medical cross, trails
+// Concentric signal waves with central pulse — unique identity
+// NOT generic sparkle stars; this is a medical signal/radar pulse
 export const MWSparkles = createMWIcon(
   (id, glow, grad) => (
     <>
-      <circle cx="12" cy="12" r="11" fill={`url(#${id}-radial)`} opacity="0.12" />
-      {/* Large sparkle (4-pointed star) with tiny cross */}
-      <path
-        d="M12 3 L11.2 9.5 L5 8 L11.2 12 L5 16 L11.2 14.5 L12 21 L12.8 14.5 L19 16 L12.8 12 L19 8 L12.8 9.5 Z"
-        stroke={grad ? `url(#${id}-grad)` : 'currentColor'}
-        strokeWidth="1" strokeLinejoin="round" fill={grad ? `url(#${id}-grad)` : 'currentColor'}
-        fillOpacity={grad ? 0.08 : 0.05}
-        filter={glow ? `url(#${id}-glow)` : undefined}
-      />
-      {/* Tiny medical cross at center of large sparkle */}
-      <line x1="12" y1="11" x2="12" y2="13" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" />
-      <line x1="11" y1="12" x2="13" y2="12" stroke={grad ? `url(#${id}-accent)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" />
-      {/* Medium sparkle */}
-      <path
-        d="M4 5 L3.5 7.5 L2 7 L3.5 8 L2 9 L3.5 8.5 L4 11 L4.5 8.5 L6 9 L4.5 8 L6 7 L4.5 7.5 Z"
-        stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="0.8" strokeLinejoin="round" fill={grad ? `url(#${id}-grad)` : 'currentColor'} fillOpacity={grad ? 0.1 : 0.05}
-      />
-      {/* Small sparkle */}
-      <path
-        d="M19 4 L18.7 5.5 L17.5 5 L18.7 5.5 L17.5 6 L18.7 5.7 L19 7 L19.3 5.7 L20.5 6 L19.3 5.5 L20.5 5 L19.3 5.5 Z"
-        stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="0.6" strokeLinejoin="round" fill={grad ? `url(#${id}-grad)` : 'currentColor'} fillOpacity={grad ? 0.08 : 0.04}
-      />
-      {/* Trail dots */}
-      <circle cx="2" cy="10" r="0.5" fill={`url(#${id}-accent)`} opacity="0.3" />
-      <circle cx="2.5" cy="12" r="0.4" fill={`url(#${id}-accent)`} opacity="0.2" />
-      <circle cx="20" cy="14" r="0.5" fill={`url(#${id}-accent)`} opacity="0.3" />
-      <circle cx="21" cy="16" r="0.4" fill={`url(#${id}-accent)`} opacity="0.2" />
-      <circle cx="12" cy="3" r="0.8" fill={`url(#${id}-accent)`} />
+      {/* Outer signal arc */}
+      <path d="M3 7 Q5 3 12 2 Q19 3 21 7" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.3" filter={glow ? `url(#${id}-glow)` : undefined} />
+      {/* Middle signal arc */}
+      <path d="M5 9 Q7 5.5 12 4.5 Q17 5.5 19 9" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.45" filter={glow ? `url(#${id}-glow)` : undefined} />
+      {/* Inner signal arc */}
+      <path d="M7 11 Q8.5 8.5 12 7.5 Q15.5 8.5 17 11" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.6" filter={glow ? `url(#${id}-glow)` : undefined} />
+      {/* Central pulse dot */}
+      <circle cx="12" cy="12" r="3" fill={grad ? `url(#${id}-radial)` : 'currentColor'} opacity={grad ? 0.3 : 0.1} />
+      <circle cx="12" cy="12" r="1.8" fill={grad ? `url(#${id}-accent)` : 'currentColor'} filter={glow ? `url(#${id}-glow-strong)` : undefined} opacity="0.9" />
+      {/* Medical cross in center */}
+      <line x1="12" y1="10.5" x2="12" y2="13.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="10.5" y1="12" x2="13.5" y2="12" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+      {/* Bottom signal waves */}
+      <path d="M7 15 Q8.5 17.5 12 18.5 Q15.5 17.5 17 15" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.6" />
+      <path d="M5 17 Q7 20 12 21 Q17 20 19 17" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.45" />
+      <path d="M3 19 Q5 22 12 22.5 Q19 22 21 19" stroke={grad ? `url(#${id}-grad)` : 'currentColor'} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.3" />
     </>
   )
 );

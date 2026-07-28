@@ -39,44 +39,52 @@ export function parseSize(size?: number | string): { w: string; h: string } {
 export function MWDefs({ id }: { id: string }) {
   return (
     <defs>
-      {/* Primary gradient — vertical */}
-      <linearGradient id={`${id}-grad`} x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="var(--region-logo-primary, #009739)" />
-        <stop offset="50%" stopColor="var(--region-logo-secondary, #FFD100)" />
-        <stop offset="100%" stopColor="var(--region-logo-primary, #009739)" />
+      {/* Primary gradient — teal → indigo (premium medical fintech) */}
+      <linearGradient id={`${id}-grad`} x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="var(--region-logo-primary, #14B8A6)" />
+        <stop offset="40%" stopColor="var(--region-logo-secondary, #6366F1)" />
+        <stop offset="100%" stopColor="var(--region-logo-primary, #14B8A6)" />
       </linearGradient>
-      {/* Diagonal accent gradient */}
+      {/* Diagonal accent gradient — teal → pink */}
       <linearGradient id={`${id}-accent`} x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="var(--region-logo-primary, #009739)" />
-        <stop offset="100%" stopColor="var(--region-logo-accent, #D40000)" />
+        <stop offset="0%" stopColor="var(--region-logo-primary, #14B8A6)" />
+        <stop offset="50%" stopColor="var(--region-logo-secondary, #6366F1)" />
+        <stop offset="100%" stopColor="var(--region-logo-accent, #EC4899)" />
       </linearGradient>
-      {/* Radial glow */}
+      {/* Warm accent gradient — amber highlight */}
+      <linearGradient id={`${id}-warm`} x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#F59E0B" />
+        <stop offset="100%" stopColor="#FBBF24" />
+      </linearGradient>
+      {/* Radial glow — teal aura */}
       <radialGradient id={`${id}-radial`} cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stopColor="var(--region-logo-glow, #00973940)" stopOpacity="0.6" />
-        <stop offset="100%" stopColor="var(--region-logo-glow, #00973940)" stopOpacity="0" />
+        <stop offset="0%" stopColor="var(--region-logo-glow, #14B8A640)" stopOpacity="0.5" />
+        <stop offset="50%" stopColor="var(--region-logo-secondary, #6366F1)" stopOpacity="0.12" />
+        <stop offset="100%" stopColor="var(--region-logo-glow, #14B8A640)" stopOpacity="0" />
       </radialGradient>
-      {/* Soft glow filter */}
+      {/* Soft glow filter — premium teal aura */}
       <filter id={`${id}-glow`} x="-30%" y="-30%" width="160%" height="160%">
-        <feGaussianBlur stdDeviation="1.2" result="blur" />
+        <feGaussianBlur stdDeviation="1.5" result="blur" />
         <feMerge>
           <feMergeNode in="blur" />
           <feMergeNode in="SourceGraphic" />
         </feMerge>
       </filter>
-      {/* Strong glow filter */}
+      {/* Strong glow filter — dual-layered indigo + teal */}
       <filter id={`${id}-glow-strong`} x="-40%" y="-40%" width="180%" height="180%">
-        <feGaussianBlur stdDeviation="2.5" result="blur" />
-        <feFlood floodColor="var(--region-logo-glow, #00973940)" result="color" />
-        <feComposite in="color" in2="blur" operator="in" result="shadow" />
+        <feGaussianBlur stdDeviation="2" result="blur" />
+        <feGaussianBlur stdDeviation="4" result="wideBlur" />
+        <feFlood floodColor="var(--region-logo-secondary, #6366F1)" floodOpacity="0.3" result="color" />
+        <feComposite in="color" in2="wideBlur" operator="in" result="shadow" />
         <feMerge>
           <feMergeNode in="shadow" />
           <feMergeNode in="blur" />
           <feMergeNode in="SourceGraphic" />
         </feMerge>
       </filter>
-      {/* Drop shadow */}
+      {/* Drop shadow — teal tinted */}
       <filter id={`${id}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="1" stdDeviation="1.5" floodColor="var(--region-logo-primary, #009739)" floodOpacity="0.3" />
+        <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="var(--region-logo-primary, #14B8A6)" floodOpacity="0.25" />
       </filter>
     </defs>
   );
@@ -156,8 +164,8 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
       50% { transform: translateY(-2px); }
     }
     @keyframes mw-glow-breathe {
-      0%, 100% { filter: brightness(1); }
-      50% { filter: brightness(1.3); }
+      0%, 100% { filter: brightness(1) drop-shadow(0 0 2px rgba(20,184,166,0.3)); }
+      50% { filter: brightness(1.25) drop-shadow(0 0 6px rgba(99,102,241,0.4)); }
     }
     @keyframes mw-shimmer {
       0% { stroke-dashoffset: 20; }
