@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Plus, Edit, Trash2, Search, MapPin, Star, Store } from "@/components/icons/lucide-compat";
+import { useAuth } from '@/contexts/AuthContext';
+import { useManagedCountry } from '@/hooks/useManagedCountry';
 
 interface StoreFormData {
   name: string;
@@ -36,6 +38,8 @@ const initialFormData: StoreFormData = {
 };
 
 export default function AdminStores() {
+  const { hasRole } = useAuth();
+  const { managedCountryId, isGlobalAdmin } = useManagedCountry();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -43,14 +47,19 @@ export default function AdminStores() {
   const [formData, setFormData] = useState<StoreFormData>(initialFormData);
 
   const { data: stores, isLoading } = useQuery({
-    queryKey: ['admin-stores', search],
+    queryKey: ['admin-stores', search, managedCountryId],
     queryFn: async () => {
       let query = supabase.from('stores').select('*').order('created_at', { ascending: false });
-      
+
+      // Country isolation: country_manager only sees own country
+      if (managedCountryId) {
+        query = query.eq('country_id', managedCountryId);
+      }
+
       if (search) {
         query = query.ilike('name', `%${search}%`);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data;

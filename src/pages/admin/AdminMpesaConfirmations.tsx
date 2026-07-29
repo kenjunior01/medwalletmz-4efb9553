@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { CheckCircle2, XCircle, ExternalLink, Loader2 } from "@/components/icons/lucide-compat";
+import { useManagedCountry } from '@/hooks/useManagedCountry';
 
 export default function AdminMpesaConfirmations() {
+  const { managedCountryId } = useManagedCountry();
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
@@ -21,7 +23,12 @@ export default function AdminMpesaConfirmations() {
       .select('*')
       .eq('status', 'pending')
       .order('created_at', { ascending: false });
-    setRows(data || []);
+
+    // Country isolation: country_manager only sees own country
+    const filtered = managedCountryId
+      ? (data || []).filter((r: any) => r.country_id === managedCountryId)
+      : (data || []);
+    setRows(filtered);
     setLoading(false);
   };
 

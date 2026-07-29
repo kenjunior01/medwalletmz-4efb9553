@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Search, Package, Clock, CheckCircle, Truck, XCircle } from "@/components/icons/lucide-compat";
+import { useManagedCountry } from '@/hooks/useManagedCountry';
 
 const statusOptions = [
   { value: 'pending', label: 'Pendente', icon: Clock, color: 'text-yellow-600' },
@@ -19,12 +20,13 @@ const statusOptions = [
 ];
 
 export default function AdminOrders() {
+  const { managedCountryId } = useManagedCountry();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const { data: orders, isLoading } = useQuery({
-    queryKey: ['admin-orders', search, statusFilter],
+    queryKey: ['admin-orders', search, statusFilter, managedCountryId],
     queryFn: async () => {
       let query = supabase
         .from('orders')
@@ -33,6 +35,11 @@ export default function AdminOrders() {
           stores (name, type)
         `)
         .order('created_at', { ascending: false });
+
+      // Country isolation: country_manager only sees own country
+      if (managedCountryId) {
+        query = query.eq('country_id', managedCountryId);
+      }
       
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter);

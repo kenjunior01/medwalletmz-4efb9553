@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { REGIONS, getCountriesByRegion, useCountry } from "@/contexts/CountryContext";
 import type { Country } from "@/contexts/CountryContext";
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useManagedCountry } from '@/hooks/useManagedCountry';
 
 // ====== TYPES ======
 
@@ -118,7 +120,17 @@ function aggregateRegionMetrics(countryMetricsMap: Record<string, CountryMetrics
 // ====== MAIN COMPONENT ======
 
 export default function RegionalMetricsDashboard() {
+  const { hasRole } = useAuth();
+  const { managedCountryId, isGlobalAdmin } = useManagedCountry();
   const { allCountries } = useCountry();
+
+  // Country isolation: if country_manager, only show their own country
+  const visibleCountries = useMemo(() => {
+    if (managedCountryId) {
+      return allCountries.filter(c => c.id === managedCountryId);
+    }
+    return allCountries;
+  }, [allCountries, managedCountryId]);
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null);
   const [selectedCountryId, setSelectedCountryId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
@@ -127,21 +139,21 @@ export default function RegionalMetricsDashboard() {
   const [loading, setLoading] = useState(true);
   const [weeklyActivity, setWeeklyActivity] = useState<number[]>([]);
 
-  const regionData = useMemo(() => getCountriesByRegion(allCountries), [allCountries]);
+  const regionData = useMemo(() => getCountriesByRegion(visibleCountries), [visibleCountries]);
   const selectedRegion = regionData.find((r) => r.id === selectedRegionId) ?? null;
   const selectedCountry = selectedRegion?.items.find(c => c.id === selectedCountryId) ?? null;
-  const totalCountries = allCountries.length;
-  const totalCities = allCountries.reduce((sum, c) => sum + (c.config?.cities?.length || 0), 0);
+  const totalCountries = visibleCountries.length;
+  const totalCities = visibleCountries.reduce((sum, c) => sum + (c.config?.cities?.length || 0), 0);
 
   // Load real metrics from Supabase
   useEffect(() => {
     loadAllMetrics();
-  }, [allCountries]);
+  }, [visibleCountries]);
 
   const loadAllMetrics = async () => {
     setLoading(true);
     const metricsMap: Record<string, CountryMetrics> = {};
-    const countryIds = allCountries.map(c => c.id);
+    const countryIds = visibleCountries.map(c => c.id);
     if (countryIds.length === 0) { setLoading(false); return; }
 
     const startMonth = new Date();
