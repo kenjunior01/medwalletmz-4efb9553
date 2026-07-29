@@ -14,7 +14,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
-type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager';
+type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager' | 'provincial_manager' | 'regional_ceo' | 'regional_manager' | 'hospital' | 'lab' | 'pharmacy' | 'veterinary' | 'insurance';
 
 interface UserWithRoles {
   id: string;

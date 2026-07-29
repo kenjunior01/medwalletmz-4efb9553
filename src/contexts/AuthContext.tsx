@@ -17,7 +17,10 @@ type AppRole =
   | 'pharmacy'
   | 'insurance'
   | 'veterinary'
-  | 'country_manager';
+  | 'country_manager'
+  | 'provincial_manager'
+  | 'regional_ceo'
+  | 'regional_manager';
 
 interface UserRole {
   role: AppRole;
