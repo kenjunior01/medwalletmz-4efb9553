@@ -14,8 +14,13 @@ import fr from '@/i18n/fr.json';
 import af from '@/i18n/af.json';
 import sw from '@/i18n/sw.json';
 import am from '@/i18n/am.json';
+import emk from '@/i18n/emk.json';
+import tsn from '@/i18n/tsn.json';
+import seh from '@/i18n/seh.json';
+import elo from '@/i18n/elo.json';
+import chw from '@/i18n/chw.json';
 
-const translations: Record<string, any> = { pt, 'pt-BR': ptBR, en, hi, es, fr, af, sw, am };
+const translations: Record<string, any> = { pt, 'pt-BR': ptBR, en, hi, es, fr, af, sw, am, emk, tsn, seh, elo, chw };
 
 export interface Country {
   id: string; // ISO Code e.g. 'MZ', 'BR'
@@ -41,7 +46,7 @@ export interface Country {
 const STATIC_COUNTRIES: Country[] = [
   {
     id: 'MZ', name: 'Moçambique', currency_code: 'MZN', currency_symbol: 'MT', phone_code: '258',
-    default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'hi', 'pt-BR'], timezone: 'Africa/Maputo',
+    default_locale: 'pt', supported_locales: ['pt', 'en', 'es', 'fr', 'af', 'sw', 'am', 'emk', 'tsn', 'seh', 'elo', 'chw', 'hi', 'pt-BR'], timezone: 'Africa/Maputo',
     region: 'africa_south', region_label: 'África Austral',
     branding_config: {
       primary_color: '#009739',   // Verde Moçambique

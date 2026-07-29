@@ -1,6 +1,7 @@
 import {
   Home, Stethoscope, FileText, ClipboardList, User, Droplet, Pill, Building2, FlaskConical,
   Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video, Crown, TrendingUp, BookOpen, Globe, HeartHandshake,
+  UserPlus, ShieldCheck, Share2, Radio, Route, Navigation,
 } from "@/components/icons/lucide-compat";
 import type { LucideIcon } from "@/components/icons/lucide-compat";
 
@@ -15,7 +16,7 @@ export type NavItem = {
 
 export type RoleKey =
   | "customer" | "doctor" | "clinic" | "hospital"
-  | "lab" | "store_owner" | "driver" | "admin" | "country_manager" | "insurance";
+  | "lab" | "store_owner" | "driver" | "admin" | "country_manager" | "provincial_manager" | "insurance";
 
 /** Primary 5 items for mobile BottomNav per role. */
 export const bottomNavByRole: Record<RoleKey, NavItem[]> = {
@@ -26,6 +27,13 @@ export const bottomNavByRole: Record<RoleKey, NavItem[]> = {
     { path: "/help", icon: MessageSquare, label: "nav.help" },
     { path: "/profile", icon: User, label: "nav.profile" },
     { path: "/", icon: Home, label: "nav.home" },
+  ],
+  provincial_manager: [
+    { path: "/regional", icon: LayoutDashboard, label: "nav.dashboard" },
+    { path: "/regional/orders", icon: Package, label: "Encomendas" },
+    { path: "/regional/users", icon: Users, label: "Utilizadores" },
+    { path: "/regional/analytics", icon: BarChart3, label: "Analytics" },
+    { path: "/profile", icon: User, label: "nav.profile" },
   ],
   country_manager: [
     { path: "/admin/country-dashboard", icon: LayoutDashboard, label: "nav.dashboard" },
@@ -78,10 +86,10 @@ export const bottomNavByRole: Record<RoleKey, NavItem[]> = {
   ],
   driver: [
     { path: "/driver/dashboard", icon: Truck, label: "nav.dashboard" },
-    { path: "/driver/history", icon: ClipboardList, label: "nav.history" },
-    { path: "/wallet", icon: Wallet, label: "nav.earnings" },
+    { path: "/driver/mode", icon: Radio, label: "Modo Rider" },
+    { path: "/driver/trips", icon: Route, label: "Entregas" },
+    { path: "/driver/earnings", icon: Wallet, label: "nav.earnings" },
     { path: "/profile", icon: User, label: "nav.profile" },
-    { path: "/help", icon: MessageSquare, label: "nav.help" },
   ],
   admin: [
     { path: "/admin", icon: LayoutDashboard, label: "nav.admin" },
@@ -161,9 +169,13 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/profile", icon: User, label: "nav.profile", group: "Conta" },
   ],
   driver: [
-    { path: "/driver/dashboard", icon: Truck, label: "nav.dashboard", group: "Entregas" },
-    { path: "/driver/history", icon: ClipboardList, label: "nav.history", group: "Entregas" },
-    { path: "/wallet", icon: Wallet, label: "nav.earnings", group: "Conta" },
+    { path: "/driver/dashboard", icon: Truck, label: "nav.dashboard", group: "Painel" },
+    { path: "/driver/mode", icon: Radio, label: "Modo Rider", group: "Trabalhar" },
+    { path: "/driver/active-trip", icon: Navigation, label: "Entrega Activa", group: "Trabalhar" },
+    { path: "/driver/trips", icon: Route, label: "Histórico de Entregas", group: "Trabalhar" },
+    { path: "/driver/earnings", icon: Wallet, label: "Ganhos", group: "Finanças" },
+    { path: "/driver/history", icon: ClipboardList, label: "Histórico Antigo", group: "Trabalhar" },
+    { path: "/wallet", icon: Wallet, label: "Carteira", group: "Finanças" },
     { path: "/profile", icon: User, label: "nav.profile", group: "Conta" },
   ],
   admin: [
@@ -176,21 +188,45 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/admin/insurance", icon: Shield, label: "nav.insurance", group: "Instituições" },
     { path: "/admin/mpesa-confirmations", icon: Wallet, label: "Confirmações M-Pesa", group: "Gestão" },
     { path: "/admin/users", icon: Users, label: "nav.users", group: "Gestão" },
+    { path: "/admin/assign-country-manager", icon: UserPlus, label: "Atribuir Gestor de País", group: "Gestão" },
+    { path: "/admin/country-permissions", icon: ShieldCheck, label: "Permissões de Gestores", group: "Gestão" },
+    { path: "/admin/assign-provincial-manager", icon: UserPlus, label: "Gestores Provinciais (MZ)", group: "Gestão" },
+    { path: "/admin/provincial-permissions", icon: ShieldCheck, label: "Permissões Provinciais (MZ)", group: "Gestão" },
     { path: "/admin/drivers", icon: Truck, label: "nav.drivers", group: "Gestão" },
     { path: "/admin/orders", icon: Package, label: "nav.orders", group: "Gestão" },
     { path: "/admin/transactions", icon: Wallet, label: "nav.financial", group: "Gestão" },
     { path: "/admin/monetization", icon: TrendingUp, label: "Monetização MZ", group: "Gestão" },
     { path: "/admin/subscriptions", icon: Shield, label: "nav.insurance", group: "Gestão" },
     { path: "/admin/subscription-plans", icon: Shield, label: "nav.insurance", group: "Gestão" },
+    { path: "/admin/campaign-links", icon: Share2, label: "Links de Campanha", group: "Gestão" },
     { path: "/admin/settings", icon: Settings, label: "nav.settings", group: "Sistema" },
     { path: "/profile", icon: User, label: "nav.profile", group: "Conta" },
   ],
   country_manager: [
-    { path: "/admin/country-dashboard", icon: LayoutDashboard, label: "nav.dashboard", group: "Região" },
-    { path: "/admin/curation", icon: Shield, label: "nav.approvals", group: "Região" },
-    { path: "/admin/mpesa-confirmations", icon: Wallet, label: "Confirmações M-Pesa", group: "Região" },
-    { path: "/admin/transactions", icon: Wallet, label: "nav.financial", group: "Região" },
-    { path: "/admin/country-settings", icon: Settings, label: "nav.settings", group: "Região" },
+    { path: "/admin/country-dashboard", icon: LayoutDashboard, label: "nav.dashboard", group: "País" },
+    { path: "/admin/curation", icon: Shield, label: "nav.approvals", group: "País" },
+    { path: "/admin/users", icon: Users, label: "nav.users", group: "País" },
+    { path: "/admin/institutions", icon: Building2, label: "Instituições", group: "País" },
+    { path: "/admin/mpesa-confirmations", icon: Wallet, label: "Pagamentos Móveis", group: "País" },
+    { path: "/admin/transactions", icon: Wallet, label: "nav.financial", group: "País" },
+    { path: "/admin/country-settings", icon: Settings, label: "nav.settings", group: "País" },
+    { path: "/admin/campaign-links", icon: Share2, label: "Campanhas", group: "País" },
+    { path: "/admin/assign-provincial-manager", icon: UserPlus, label: "Gestores Provinciais", group: "Moçambique" },
+    { path: "/admin/provincial-permissions", icon: ShieldCheck, label: "Permissões Provinciais", group: "Moçambique" },
+    { path: "/profile", icon: User, label: "nav.profile", group: "Conta" },
+  ],
+  provincial_manager: [
+    { path: "/regional", icon: LayoutDashboard, label: "nav.dashboard", group: "Painel" },
+    { path: "/regional/analytics", icon: BarChart3, label: "Analytics", group: "Painel" },
+    { path: "/regional/users", icon: Users, label: "Utilizadores", group: "Pessoas" },
+    { path: "/regional/team", icon: Stethoscope, label: "Profissionais de Saúde", group: "Pessoas" },
+    { path: "/regional/riders", icon: Truck, label: "Estafetas", group: "Pessoas" },
+    { path: "/regional/facilities", icon: Building2, label: "Instituições", group: "Operações" },
+    { path: "/regional/orders", icon: Package, label: "Encomendas", group: "Operações" },
+    { path: "/regional/earnings", icon: Wallet, label: "Finanças", group: "Operações" },
+    { path: "/regional/content", icon: FileText, label: "Conteúdo Provincial", group: "Operações" },
+    { path: "/regional/settings", icon: Settings, label: "Definições", group: "Sistema" },
+    { path: "/help", icon: MessageSquare, label: "nav.help", group: "Sistema" },
     { path: "/profile", icon: User, label: "nav.profile", group: "Conta" },
   ],
   insurance: [

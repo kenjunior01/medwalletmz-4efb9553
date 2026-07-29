@@ -16,6 +16,7 @@ import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
 import { OAuthBrokerRedirect } from "@/components/auth/OAuthBrokerRedirect";
 import { PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
 import { OfflineIndicator } from "@/components/offline";
+import { DeepLinkHandler } from "@/components/growth/DeepLinkHandler";
 import { PageViewTracker } from "@/services/PageViewTracker";
 
 // =========================================================================
@@ -73,6 +74,10 @@ const StoreReports = lazy(() => import("./pages/store/StoreReports"));
 // ---- Driver Pages ----
 const DriverDashboard = lazy(() => import("./pages/driver/DriverDashboard"));
 const DriverHistory = lazy(() => import("./pages/driver/DriverHistory"));
+const RiderMode = lazy(() => import("./pages/driver/RiderMode"));
+const ActiveTrip = lazy(() => import("./pages/driver/ActiveTrip"));
+const RiderTrips = lazy(() => import("./pages/driver/RiderTrips"));
+const RiderEarnings = lazy(() => import("./pages/driver/RiderEarnings"));
 
 // ---- Health Pages ----
 const Doctors = lazy(() => import("./pages/health/Doctors"));
@@ -190,16 +195,33 @@ const PublicImpactDashboard = lazy(() => import("./pages/PublicImpactDashboard")
 const ApeNetwork = lazy(() => import("./pages/ApeNetwork"));
 const Ranking = lazy(() => import("./pages/Ranking"));
 const AdminMpesaConfirmations = lazy(() => import("./pages/admin/AdminMpesaConfirmations"));
+const AssignCountryManager = lazy(() => import("./pages/admin/AssignCountryManager"));
+const ManageCountryPermissions = lazy(() => import("./pages/admin/ManageCountryPermissions"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 const ChangePassword = lazy(() => import("./pages/auth/ChangePassword"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const Withdraw = lazy(() => import("./pages/Withdraw"));
 const CancelAppointment = lazy(() => import("./pages/health/CancelAppointment"));
 const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute"));
+const CampaignLinks = lazy(() => import("./pages/admin/CampaignLinks"));
 
 // ---- Manager Pages (páginas EXCLUSIVAS do gestor regional) ----
 const ManagerHome = lazy(() => import("./pages/manager/ManagerHome"));
 const ManagerUsers = lazy(() => import("./pages/manager/ManagerUsers"));
+
+// ---- Provincial Manager Pages (páginas EXCLUSIVAS do gestor provincial — Moçambique) ----
+const ProvincialManagerDashboard = lazy(() => import("./pages/regional/RegionalManagerDashboard"));
+const ProvincialTeam = lazy(() => import("./pages/regional/RegionalTeam"));
+const ProvincialContent = lazy(() => import("./pages/regional/RegionalContent"));
+const ProvincialEarnings = lazy(() => import("./pages/regional/RegionalEarnings"));
+const ProvincialFacilities = lazy(() => import("./pages/regional/RegionalFacilities"));
+const ProvincialOrders = lazy(() => import("./pages/regional/RegionalOrders"));
+const ProvincialRiders = lazy(() => import("./pages/regional/RegionalRiders"));
+const ProvincialAnalytics = lazy(() => import("./pages/regional/RegionalAnalytics"));
+const ProvincialUsers = lazy(() => import("./pages/regional/RegionalUsers"));
+const ProvincialSettings = lazy(() => import("./pages/regional/RegionalSettings"));
+const AssignProvincialManager = lazy(() => import("./pages/admin/AssignRegionalManager"));
+const ManageProvincialPermissions = lazy(() => import("./pages/admin/ManageRegionalPermissions"));
 
 // =========================================================================
 // QueryClient com cache optimizado
@@ -362,6 +384,7 @@ const App = () => (
                     <Route path="monetization" element={<AdminMonetization />} />
                     <Route path="platform-settings" element={<AdminPlatformSettings />} />
                     <Route path="referrals" element={<AdminReferrals />} />
+                    <Route path="campaign-links" element={<CampaignLinks />} />
                     <Route path="transactions" element={<AdminTransactions />} />
                     <Route path="import" element={<AdminImport />} />
                     <Route path="curation" element={<AdminCuration />} />
@@ -417,6 +440,26 @@ const App = () => (
                         <AdminVerificationWorkflow />
                       </ProtectedRoute>
                     } />
+                    <Route path="assign-country-manager" element={
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager']}>
+                        <AssignCountryManager />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="country-permissions" element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <ManageCountryPermissions />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="assign-provincial-manager" element={
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager']}>
+                        <AssignProvincialManager />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="provincial-permissions" element={
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager']}>
+                        <ManageProvincialPermissions />
+                      </ProtectedRoute>
+                    } />
                   </Route>
 
                   {/* Regional Manager Routes — protegido ao nível da rota + guard interno */}
@@ -435,6 +478,22 @@ const App = () => (
                     <Route path="drivers" element={<AdminDrivers />} />
                     <Route path="reports" element={<AdminReports />} />
                     <Route path="metrics" element={<RegionalMetrics />} />
+                  </Route>
+
+                  {/* Provincial Manager Routes — Moçambique only */}
+                  <Route path="/regional" element={
+                    <Suspense fallback={<LoadingScreen />}><ProtectedRoute allowedRoles={['provincial_manager', 'country_manager', 'admin']}><ProvincialManagerDashboard /></ProtectedRoute></Suspense>
+                  }>
+                    <Route index element={<ProvincialManagerDashboard />} />
+                    <Route path="team" element={<ProvincialTeam />} />
+                    <Route path="content" element={<ProvincialContent />} />
+                    <Route path="earnings" element={<ProvincialEarnings />} />
+                    <Route path="facilities" element={<ProvincialFacilities />} />
+                    <Route path="orders" element={<ProvincialOrders />} />
+                    <Route path="riders" element={<ProvincialRiders />} />
+                    <Route path="analytics" element={<ProvincialAnalytics />} />
+                    <Route path="users" element={<ProvincialUsers />} />
+                    <Route path="settings" element={<ProvincialSettings />} />
                   </Route>
 
                   {/* Store Owner Routes — protegido ao nível da rota */}
@@ -456,6 +515,10 @@ const App = () => (
                   <Route path="/driver/register" element={<RegistrationWizard />} />
                   <Route path="/driver/dashboard" element={<ProtectedRoute allowedRoles={['driver']}><DriverDashboard /></ProtectedRoute>} />
                   <Route path="/driver/history" element={<ProtectedRoute allowedRoles={['driver']}><DriverHistory /></ProtectedRoute>} />
+                  <Route path="/driver/mode" element={<ProtectedRoute allowedRoles={['driver']}><RiderMode /></ProtectedRoute>} />
+                  <Route path="/driver/active-trip" element={<ProtectedRoute allowedRoles={['driver']}><ActiveTrip /></ProtectedRoute>} />
+                  <Route path="/driver/trips" element={<ProtectedRoute allowedRoles={['driver']}><RiderTrips /></ProtectedRoute>} />
+                  <Route path="/driver/earnings" element={<ProtectedRoute allowedRoles={['driver']}><RiderEarnings /></ProtectedRoute>} />
 
                   {/* Doctor Routes — protegido ao nível da rota */}
                   <Route path="/doctor/register" element={<RegistrationWizard />} />
@@ -489,6 +552,8 @@ const App = () => (
                 {/* Componentes PWA globais (offline indicator + update toast) */}
                 <OfflineIndicator />
                 <PWAUpdateToast />
+                {/* Deep link handler — checks URL params on every page load */}
+                <DeepLinkHandler />
               </BrowserRouter>
             </TooltipProvider>
           </DataSaverProvider>

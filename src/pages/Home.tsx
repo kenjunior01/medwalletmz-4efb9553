@@ -14,6 +14,7 @@ import { PersonalizedForYou } from "@/components/health/PersonalizedForYou";
 import { EcosystemFlow } from "@/components/health/EcosystemFlow";
 import { AirQualityWidget } from "@/components/home/AirQualityWidget";
 import { ReferralBanner } from "@/components/referrals/ReferralBanner";
+import { ViralShareSheet } from "@/components/growth/ViralShareSheet";
 import { MeddyWelcomeCard } from "@/components/mascot/MeddyWelcomeCard";
 import { MeddyChat } from "@/components/meddy/MeddyChat";
 import { MorningGreeting } from "@/components/health/MorningGreeting";
@@ -47,6 +48,7 @@ export default function Home() {
   const { userType } = useUserType();
   const { wallet, loading: walletLoading } = useWallet();
   const { country, t } = useCountry();
+  const [shareSheetOpen, setShareSheetOpen] = useState(false);
 
   const greet = () => {
     const h = new Date().getHours();
@@ -505,7 +507,8 @@ export default function Home() {
                 </button>
               </section>
 
-              <ReferralBanner />
+              <ReferralBanner onOpenShareSheet={() => setShareSheetOpen(true)} />
+              <ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} />
 
               <KlipyBanner query={`${country?.name || 'mozambique'} healthcare`} />
 

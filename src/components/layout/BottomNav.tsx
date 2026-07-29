@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils";
 import { bottomNavByRole, sidebarByRole } from "@/config/navigation";
 import { usePrimaryRole } from "@/hooks/usePrimaryRole";
 import { useUserType } from "@/hooks/useUserType";
-import { Menu, X, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope, Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutDashboard, ShieldCheck, CheckCircle2, Plus, Home, Bike, Heart, Users, Megaphone, Gift, Wallet } from '@/components/icons/lucide-compat';
-import { useState, useMemo } from "react";
+import { Menu, X, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope, Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutDashboard, ShieldCheck, CheckCircle2, Plus, Home, Bike, Heart, Users, Megaphone, Gift, Wallet, UserPlus } from '@/components/icons/lucide-compat';
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   Sheet,
   SheetContent,
@@ -13,11 +13,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
+import { BentoGrid, BentoCard } from "@/components/ui/design-system";
+import { ViralShareSheet } from '@/components/growth/ViralShareSheet';
 import { useCountry } from "@/contexts/CountryContext";
 import { useLocation as useAppLocation } from "@/contexts/LocationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { BentoGrid, BentoCard } from "@/components/ui/design-system";
+import { motion, AnimatePresence } from 'framer-motion';
 
 /** Professional institution roles with their metadata */
 const INSTITUTION_ROLES = [
@@ -47,6 +49,10 @@ export function BottomNav() {
   const { hasRole, user } = useAuth();
   const [open, setOpen] = useState(false);
   const [institutionsOpen, setInstitutionsOpen] = useState(true);
+  const [shareSheetOpen, setShareSheetOpen] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
 
   const navItems = bottomNavByRole[role] ?? bottomNavByRole.customer;
   const allItems = sidebarByRole[role] ?? sidebarByRole.customer;
@@ -95,10 +101,66 @@ export function BottomNav() {
     return INSTITUTION_ROLES.filter(ir => hasRole(ir.role));
   }, [user, hasRole]);
 
+  // Calculate the morphing pill position
+  const displayItems = finalNavItems.slice(0, 4);
+
+  useEffect(() => {
+    const idx = displayItems.findIndex(({ path }) => {
+      if (path === '/') return location.pathname === '/';
+      return location.pathname.startsWith(path);
+    });
+    if (idx >= 0) {
+      setActiveIndex(idx);
+      const navEl = navRef.current;
+      if (!navEl) return;
+      const buttons = navEl.querySelectorAll('[data-mw-nav-item]');
+      const btn = buttons[idx] as HTMLElement;
+      if (btn) {
+        const navRect = navEl.getBoundingClientRect();
+        const btnRect = btn.getBoundingClientRect();
+        setPillStyle({
+          left: btnRect.left - navRect.left + btnRect.width / 2 - 20,
+          width: 40,
+          opacity: 1,
+        });
+      }
+    }
+  }, [location.pathname, displayItems]);
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/70 border-t border-border/50 safe-area-bottom shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
-      <div className="flex items-end justify-around py-1.5 px-1 relative max-w-md mx-auto">
-        {finalNavItems.slice(0, 4).map(({ path, icon: Icon, label, highlight }) => {
+    <>
+    {/* Floating Invite Button */}
+    {user && (
+      <button
+        onClick={() => setShareSheetOpen(true)}
+        className="fixed bottom-20 right-3 z-40 h-14 w-14 rounded-full bg-gradient-to-br from-teal-500 to-indigo-600 text-white shadow-xl shadow-teal-500/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform mw-tap-bounce"
+        aria-label="Convida Amigos"
+      >
+        <UserPlus className="h-6 w-6" />
+      </button>
+    )}
+    <ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} />
+    <nav className="fixed bottom-0 left-0 right-0 z-40 mw-bottomnav bg-background/80 border-t border-border/30 safe-area-bottom relative">
+      {/* Glowing top edge shimmer line */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] mw-shimmer-line" />
+
+      {/* Gradient reflection at the bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background/40 to-transparent pointer-events-none" />
+
+      <div ref={navRef} className="flex items-end justify-around py-1.5 px-1 relative max-w-md mx-auto">
+        {/* Morphing glow pill indicator */}
+        <AnimatePresence>
+          {pillStyle.opacity > 0 && (
+            <motion.div
+              className="absolute top-0 h-[2px] rounded-full mw-shimmer-line"
+              animate={{ left: pillStyle.left, width: pillStyle.width, opacity: pillStyle.opacity }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              style={{ boxShadow: '0 0 12px var(--region-logo-primary, #0D9488)' }}
+            />
+          )}
+        </AnimatePresence>
+
+        {displayItems.map(({ path, icon: Icon, label, highlight }, idx) => {
           const isActive = location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
           const translatedLabel = t(label);
           if (highlight) {
@@ -106,12 +168,22 @@ export function BottomNav() {
               <NavLink
                 key={path}
                 to={path}
+                data-mw-nav-item
                 aria-label={translatedLabel}
-                className="flex flex-col items-center -mt-6 mx-1 mb-0.5 no-tap-target"
+                className="flex flex-col items-center -mt-6 mx-1 mb-0.5 no-tap-target relative"
               >
+                {/* Bubble particles behind active center item */}
+                {isActive && (
+                  <>
+                    <span className="mw-particle text-[10px]" style={{ top: -8, left: 4, animationDelay: '0s', color: 'var(--region-logo-primary, #0D9488)' }}>●</span>
+                    <span className="mw-particle text-[8px]" style={{ top: -4, right: 2, animationDelay: '1.5s', color: 'var(--region-logo-secondary, #6366F1)' }}>●</span>
+                    <span className="mw-particle text-[6px]" style={{ bottom: 4, left: 0, animationDelay: '3s', color: 'var(--region-logo-accent, #F59E0B)' }}>●</span>
+                  </>
+                )}
                 <div className={cn(
-                  "h-14 w-14 rounded-full flex items-center justify-center shadow-premium transition-all duration-300 ring-4 ring-background",
+                  "h-14 w-14 rounded-full flex items-center justify-center shadow-premium transition-all duration-300 ring-4 ring-background mw-tap-bounce",
                   "bg-gradient-to-br from-primary via-primary/90 to-secondary text-primary-foreground",
+                  isActive && "mw-center-pulse",
                   isActive ? "scale-110 ring-primary/20" : "hover:scale-105 active:scale-95"
                 )}>
                   <Icon className="h-6 w-6" />
@@ -124,17 +196,25 @@ export function BottomNav() {
             <NavLink
               key={path}
               to={path}
+              data-mw-nav-item
               className={cn(
-                "flex flex-col items-center gap-1 px-2 py-1.5 rounded-2xl transition-all duration-300 flex-1",
+                "flex flex-col items-center gap-1 px-2 py-1.5 rounded-2xl transition-all duration-300 flex-1 relative mw-tap-bounce",
                 isActive
-                  ? "text-primary translate-y-[-2px]"
+                  ? "text-primary translate-y-[-2px] mw-nav-active"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
+              {/* Active glow behind icon */}
+              {isActive && (
+                <div
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-20 blur-xl pointer-events-none"
+                  style={{ background: 'var(--region-logo-primary, #0D9488)' }}
+                />
+              )}
               <div
                 className={cn(
-                  "p-2 rounded-xl transition-all duration-300",
-                  isActive && "bg-primary/10 shadow-sm"
+                  "p-2 rounded-xl transition-all duration-300 relative",
+                  isActive && "bg-primary/10 shadow-sm mw-nav-glow"
                 )}
               >
                 <Icon
@@ -144,7 +224,10 @@ export function BottomNav() {
                   )}
                 />
               </div>
-              <span className="text-[9px] font-black uppercase tracking-tight">{translatedLabel}</span>
+              <span className={cn(
+                "text-[9px] font-black uppercase tracking-tight",
+                isActive && "text-primary"
+              )}>{translatedLabel}</span>
             </NavLink>
           );
         })}
@@ -153,12 +236,19 @@ export function BottomNav() {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <button
+              data-mw-nav-item
               className={cn(
-                "flex flex-col items-center gap-1 px-2 py-1.5 rounded-2xl transition-all duration-300 flex-1",
+                "flex flex-col items-center gap-1 px-2 py-1.5 rounded-2xl transition-all duration-300 flex-1 relative mw-tap-bounce",
                 open ? "text-primary translate-y-[-2px]" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <div className={cn("p-2 rounded-xl transition-all duration-300", open && "bg-primary/10 shadow-sm")}>
+              {open && (
+                <div
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-20 blur-xl pointer-events-none"
+                  style={{ background: 'var(--region-logo-primary, #0D9488)' }}
+                />
+              )}
+              <div className={cn("p-2 rounded-xl transition-all duration-300 relative", open && "bg-primary/10 shadow-sm mw-nav-glow")}>
                 <Menu className={cn("h-5 w-5 transition-transform duration-300", open && "scale-110")} />
               </div>
               <span className="text-[9px] font-black uppercase tracking-tight">{t('common.more') || 'Mais'}</span>
@@ -237,7 +327,7 @@ export function BottomNav() {
                                 "absolute -top-6 -right-6 h-20 w-20 rounded-full opacity-20 blur-xl",
                                 inst.bgColor
                               )} />
-                              
+
                               <div className="relative">
                                 <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center mb-3 border", inst.bgColor, inst.borderColor)}>
                                   <Icon className={cn("h-5 w-5", inst.color)} />
@@ -303,7 +393,7 @@ export function BottomNav() {
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 rounded-2xl" />
                         <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-primary/10 blur-xl" />
                         <div className="absolute -bottom-6 -left-6 h-20 w-20 rounded-full bg-secondary/10 blur-xl" />
-                        
+
                         <div className="relative flex items-center gap-4">
                           <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
                             <Stethoscope className="h-7 w-7 text-primary-foreground" />
@@ -378,5 +468,6 @@ export function BottomNav() {
         </Sheet>
       </div>
     </nav>
+    </>
   );
 }

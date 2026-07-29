@@ -9,7 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 
-export function ReferralBanner() {
+interface ReferralBannerProps {
+  onOpenShareSheet?: () => void;
+}
+
+export function ReferralBanner({ onOpenShareSheet }: ReferralBannerProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { country, t } = useCountry();
@@ -81,6 +85,11 @@ export function ReferralBanner() {
             <Button size="sm" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 rounded-xl shadow-lg shadow-emerald-600/20" onClick={shareWhatsApp}>
               <Share2 className="h-4 w-4 mr-2" /> WhatsApp
             </Button>
+            {onOpenShareSheet && (
+              <Button size="sm" className="flex-1 bg-gradient-to-r from-teal-600 to-indigo-600 hover:from-teal-700 hover:to-indigo-700 text-white font-bold h-10 rounded-xl shadow-lg shadow-teal-600/20" onClick={onOpenShareSheet}>
+                <Gift className="h-4 w-4 mr-2" /> {t('referrals.invite_friends') || 'Convida Amigos'}
+              </Button>
+            )}
             <Button size="sm" variant="ghost" className="w-full text-xs font-bold text-muted-foreground mt-2" onClick={() => navigate("/referrals")}>
               <Gift className="h-4 w-4 mr-2" /> {t('referrals.details')}
             </Button>

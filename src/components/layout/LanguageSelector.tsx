@@ -6,13 +6,20 @@ export function LanguageSelector() {
   const { allCountries, country, setCountryById, locale, setLocale, t } = useCountry();
 
   const languages = [
-    { code: 'pt', name: 'Português (PT)', flag: '🇵🇹' },
+    { code: 'pt', name: 'Português (MZ)', flag: '🇲🇿' },
     { code: 'pt-BR', name: 'Português (BR)', flag: '🇧🇷' },
     { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
     { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'sw', name: 'Kiswahili', flag: '🇹🇿' },
+    { code: 'am', name: 'አማርኛ (Amharic)', flag: '🇪🇹' },
     { code: 'hi', name: 'हिंदी (Hindi)', flag: '🇮🇳' },
     { code: 'af', name: 'Afrikaans', flag: '🇿🇦' },
+    { code: 'emk', name: 'Emakhuwa', flag: '🇲🇿' },
+    { code: 'tsn', name: 'Xichangana', flag: '🇲🇿' },
+    { code: 'seh', name: 'Cisena', flag: '🇲🇿' },
+    { code: 'elo', name: 'Elomwe', flag: '🇲🇿' },
+    { code: 'chw', name: 'Echuwabo', flag: '🇲🇿' },
   ];
 
   return (
