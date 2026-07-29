@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +44,7 @@ const fadeUp = {
 
 export default function RegionalManagerDashboard() {
   const { province } = useProvince();
+  const { managedProvinceId } = useManagedProvince();
   const { t } = useCountry();
   const navigate = useNavigate();
   const [stats, setStats] = useState<RegionalStats>({
@@ -60,7 +62,7 @@ export default function RegionalManagerDashboard() {
   const loadStats = async () => {
     if (!province) return;
     setLoading(true);
-    const pid = province.id;
+    const pid = managedProvinceId || province?.id || '';
 
     const startMonth = new Date();
     startMonth.setDate(1);
@@ -100,7 +102,7 @@ export default function RegionalManagerDashboard() {
 
   const loadPendingVerifications = async () => {
     if (!province) return;
-    const pid = province.id;
+    const pid = managedProvinceId || province?.id || '';
 
     const { data: doctors } = await (supabase as any)
       .from('doctor_profiles')

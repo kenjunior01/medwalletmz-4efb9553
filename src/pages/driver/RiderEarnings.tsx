@@ -272,7 +272,19 @@ export default function RiderEarnings() {
     });
     const bestDay = dayMap.size > 0 ? Math.max(...dayMap.values()) : 0;
 
-    const bonusEarned = Math.floor(filtered.length * 2.5); // Simulated bonus estimate
+    // MedWallet compensation: better than Yango
+    // Base: 85% of delivery fee + per-delivery bonus + streak bonuses
+    const PER_DELIVERY_BONUS = 20;       // 20 MZN per delivery
+    const STREAK_TIERS = [5, 10, 15, 20, 25];
+    const STREAK_BONUSES = [50, 80, 120, 150, 200]; // MZN
+    
+    // Calculate streak bonus for this period
+    const streakBonus = STREAK_TIERS.reduce((bonus, threshold, i) => {
+      return filtered.length >= threshold ? STREAK_BONUSES[i] : bonus;
+    }, 0);
+    
+    const perDeliveryBonus = filtered.length * PER_DELIVERY_BONUS;
+    const bonusEarned = perDeliveryBonus + streakBonus;
 
     return { totalEarned, deliveries, avgPerDelivery, bestDay, tips, bonusEarned, trips: filtered };
   }, [activePeriod, allTrips]);
@@ -599,6 +611,41 @@ export default function RiderEarnings() {
           </motion.div>
 
           {/* Tips row */}
+          <motion.div variants={fadeUp}>
+            <GlassCard className="bg-gray-900/80 border-gray-800 p-4 mb-3">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15">
+                  <Trophy className="h-4 w-4 text-emerald-400" />
+                </div>
+                <span className="text-xs font-medium text-gray-400">MedWallet+ — Melhor que Yango</span>
+                <Badge className="bg-emerald-500/15 text-emerald-400 text-[8px] font-black border-emerald-500/20">85% seu</Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-gray-800/60 rounded-xl p-2.5">
+                  <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Taxa Platform</p>
+                  <p className="text-sm font-bold text-gray-300">15%</p>
+                  <p className="text-[8px] text-gray-600">Yango cobra 20-25%</p>
+                </div>
+                <div className="bg-gray-800/60 rounded-xl p-2.5">
+                  <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Bonus/Entrega</p>
+                  <p className="text-sm font-bold text-gray-300">+20 MZN</p>
+                  <p className="text-[8px] text-gray-600">Yango: 0-10 MZN</p>
+                </div>
+                <div className="bg-gray-800/60 rounded-xl p-2.5">
+                  <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Bónus Referência</p>
+                  <p className="text-sm font-bold text-gray-300">300 MZN</p>
+                  <p className="text-[8px] text-gray-600">Yango: 100-200 MZN</p>
+                </div>
+                <div className="bg-gray-800/60 rounded-xl p-2.5">
+                  <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Garantia Semanal</p>
+                  <p className="text-sm font-bold text-gray-300">3.000 MZN</p>
+                  <p className="text-[8px] text-gray-600">Se 20+ entregas/semana</p>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          {/* Tips amount */}
           <motion.div variants={fadeUp}>
             <GlassCard className="flex items-center justify-between bg-gray-900/80 border-gray-800">
               <div className="flex items-center gap-3">

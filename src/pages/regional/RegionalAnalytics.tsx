@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince, provinces } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { GlassCard, BentoCard, BentoGrid } from '@/components/ui/design-system';
 import { Badge } from '@/components/ui/badge';
@@ -353,6 +354,7 @@ function HourlyGrid({
 // ─── Main Component ─────────────────────────────────────────────────────────
 export default function RegionalAnalytics() {
   const { province } = useProvince();
+const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvince();
   const { t } = useCountry();
   const [period, setPeriod] = useState<Period>('30d');
   const [loading, setLoading] = useState(true);
@@ -372,7 +374,7 @@ export default function RegionalAnalytics() {
   // ── Generate deterministic mock data from province identity ──
   const generateData = useCallback(
     (p: Period): MetricData => {
-      const id = province?.id ?? 'maputo-cidade';
+      const id = managedProvinceId || province?.id || 'maputo-cidade';
       const rng = seededRandom(hashString(id + p));
       const mult: Record<Period, number> = { '7d': 0.25, '30d': 1, '90d': 2.8, '12m': 11 };
       const m = mult[p];
@@ -458,7 +460,7 @@ export default function RegionalAnalytics() {
         const { data: agg, error } = await (supabase as any)
           .from('province_analytics')
           .select('*')
-          .eq('province_id', province.id)
+          .eq('province_id', managedProvinceId || province?.id || 'maputo-cidade')
           .eq('period', period)
           .single();
 

@@ -22,6 +22,7 @@ type AppRole =
 interface UserRole {
   role: AppRole;
   country_id?: string;
+  province_id?: string;
 }
 
 interface AuthContextType {
@@ -50,11 +51,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserRoles = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from('user_roles')
-      .select('role, country_id')
+      .select('role, country_id, province_id')
       .eq('user_id', userId);
 
     if (!error && data) {
-      const rolesList = data.map(r => ({ role: r.role as AppRole, country_id: r.country_id }));
+      const rolesList = data.map((r: any) => ({ role: r.role as AppRole, country_id: r.country_id, province_id: r.province_id }));
       setUserRoles(rolesList);
       setRoles(rolesList.map(r => r.role));
     } else {
@@ -122,12 +123,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const { data, error } = await supabase
         .from('user_roles')
-        .select('role, country_id')
+        .select('role, country_id, province_id')
         .eq('user_id', nextUser.id);
 
       if (!mounted || requestId !== roleRequest) return;
       if (!error && data) {
-        const rolesList = data.map(r => ({ role: r.role as AppRole, country_id: r.country_id }));
+        const rolesList = data.map((r: any) => ({ role: r.role as AppRole, country_id: r.country_id, province_id: r.province_id }));
         setUserRoles(rolesList);
         setRoles(rolesList.map(r => r.role));
       } else {

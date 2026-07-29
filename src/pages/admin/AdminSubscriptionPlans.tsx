@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useManagedCountry } from "@/hooks/useManagedCountry";
+import { useManagedProvince } from "@/hooks/useManagedProvince";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +13,20 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2, Edit } from "@/components/icons/lucide-compat";
+import { Plus, Trash2, Edit, Shield, Globe } from "@/components/icons/lucide-compat";
 
 const audiences = ["customer", "doctor", "clinic", "hospital", "lab", "pharmacy", "store_owner", "driver"];
 const periods = ["monthly", "quarterly", "yearly"];
 
 export default function AdminSubscriptionPlans() {
+  const { hasRole } = useAuth();
+  const { managedCountryId } = useManagedCountry();
+  const { managedProvinceId, isProvincialManager } = useManagedProvince();
+
+  const isAdmin = hasRole('admin');
+  const isCountryManager = hasRole('country_manager');
+  const isManager = isCountryManager || isProvincialManager;
+
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -34,19 +45,42 @@ export default function AdminSubscriptionPlans() {
   };
   const [form, setForm] = useState<any>(empty);
 
+  // Scope label for the UI
+  const scopeLabel = isAdmin
+    ? "Global"
+    : isCountryManager
+      ? `País: ${managedCountryId || 'N/A'}`
+      : `Província: ${managedProvinceId || 'N/A'}`;
+
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
+    let query = supabase
       .from("subscription_plans")
       .select("*")
       .order("target_audience")
       .order("price_mzn");
+
+    // Country manager: only see plans for their country
+    if (isCountryManager && managedCountryId) {
+      query = query.eq("country_id", managedCountryId);
+    }
+    // Provincial manager: only see plans for their province
+    if (isProvincialManager && managedProvinceId) {
+      query = query.eq("province_id", managedProvinceId);
+    }
+
+    const { data } = await query;
     setPlans(data || []);
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
 
-  const openNew = () => { setEditing(null); setForm(empty); setOpen(true); };
+  const openNew = () => {
+    setEditing(null);
+    setForm({ ...empty });
+    setOpen(true);
+  };
+
   const openEdit = (p: any) => {
     setEditing(p);
     const feats = Array.isArray(p.features) ? p.features : (p.features?.items ?? []);
@@ -67,7 +101,8 @@ export default function AdminSubscriptionPlans() {
   const save = async () => {
     const features = form.features_text.split("\n").map((x: string) => x.trim()).filter(Boolean);
     const slug = (form.slug || form.name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    const payload = {
+
+    const payload: any = {
       name: form.name,
       slug,
       description: form.description || null,
@@ -78,6 +113,15 @@ export default function AdminSubscriptionPlans() {
       is_active: form.is_active,
       badge: form.badge || null,
     };
+
+    // Auto-assign country_id and province_id based on manager scope
+    if (isCountryManager && managedCountryId) {
+      payload.country_id = managedCountryId;
+    }
+    if (isProvincialManager && managedProvinceId) {
+      payload.province_id = managedProvinceId;
+    }
+
     const { error } = editing
       ? await supabase.from("subscription_plans").update(payload).eq("id", editing.id)
       : await supabase.from("subscription_plans").insert(payload);
@@ -98,8 +142,18 @@ export default function AdminSubscriptionPlans() {
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Planos de Subscrição</h1>
-          <p className="text-sm text-muted-foreground">Criar e gerir planos por tipo de utilizador</p>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            Planos de Subscrição
+            <Badge variant="outline" className="text-[9px] font-bold">
+              {isAdmin ? <Globe className="h-3 w-3 mr-1" /> : <Shield className="h-3 w-3 mr-1" />}
+              {scopeLabel}
+            </Badge>
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {isAdmin
+              ? "Gerir todos os planos de subscrição"
+              : "Gerir planos visíveis na sua região"}
+          </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -180,6 +234,14 @@ export default function AdminSubscriptionPlans() {
               </div>
             </Card>
           ))}
+          {plans.length === 0 && (
+            <div className="col-span-full text-center py-12">
+              <p className="text-muted-foreground">Nenhum plano encontrado para {scopeLabel.toLowerCase()}.</p>
+              <Button variant="outline" className="mt-4" onClick={openNew}>
+                <Plus className="h-4 w-4 mr-1" /> Criar Primeiro Plano
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

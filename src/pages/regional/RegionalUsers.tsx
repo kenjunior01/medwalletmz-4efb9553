@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -201,6 +202,7 @@ function SkeletonUserCards() {
 /* ════════════════════════ COMPONENT ══════════════════════════════════ */
 export default function RegionalUsers() {
   const { province } = useProvince();
+const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvince();
   const { t } = useCountry();
 
   /* ──── State ──── */
@@ -230,12 +232,12 @@ export default function RegionalUsers() {
     setLoading(true);
 
     try {
-      const pid = province.id;
+      const pid = managedProvinceId || province?.id || '';
 
       const { data, error } = await (supabase as any)
         .from('profiles')
         .select('*, user_roles(role)')
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -275,7 +277,7 @@ export default function RegionalUsers() {
 
   const loadStats = useCallback(async () => {
     if (!province) return;
-    const pid = province.id;
+    const pid = managedProvinceId || province?.id || '';
 
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
@@ -283,12 +285,12 @@ export default function RegionalUsers() {
 
     try {
       const [totalRes, patientsRes, prosRes, activeTodayRes, newMonthRes, suspendedRes] = await Promise.all([
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid).in('primary_role', ['patient', 'user']),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid).in('primary_role', ['doctor', 'rider', 'store_owner']),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid).eq('is_active', true).gte('last_sign_in_at', startOfDay),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid).gte('created_at', startOfMonth),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid).eq('is_active', false),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || ''),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['patient', 'user']),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['doctor', 'rider', 'store_owner']),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', true).gte('last_sign_in_at', startOfDay),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').gte('created_at', startOfMonth),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', false),
       ]);
 
       setStats({

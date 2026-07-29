@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -108,6 +109,7 @@ function filterToRole(filter: FacilityRole | 'all'): FacilityRole[] {
 
 export default function RegionalFacilities() {
   const { province } = useProvince();
+const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvince();
   const { t } = useCountry();
 
   // State
@@ -136,13 +138,13 @@ export default function RegionalFacilities() {
   const loadFacilities = useCallback(async () => {
     if (!province) return;
     setLoading(true);
-    const pid = province.id;
+    const pid = managedProvinceId || province?.id || '';
     const roles = ['clinic', 'hospital', 'lab', 'store_owner'];
 
     const { data, error } = await (supabase as any)
       .from('profiles')
       .select('id, full_name, role, province, address, is_verified, avatar_url, phone, email, created_at')
-      .eq('province', pid)
+      .eq('province', managedProvinceId || pid || '')
       .in('role', roles)
       .order('created_at', { ascending: false });
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -103,6 +104,7 @@ const SETTINGS_TABLE = 'province_settings';
 
 export default function RegionalSettings() {
   const { province } = useProvince();
+const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvince();
   const { t } = useCountry();
 
   // ── Local state ───────────────────────────────────────────────
@@ -135,7 +137,7 @@ export default function RegionalSettings() {
         const { data, error } = await (supabase as any)
           .from(SETTINGS_TABLE)
           .select('*')
-          .eq('province_id', province.id)
+          .eq('province_id', managedProvinceId || province?.id || '')
           .single();
 
         if (data) {
@@ -180,7 +182,7 @@ export default function RegionalSettings() {
     setSaving(true);
     try {
       const payload = {
-        province_id: province.id,
+        province_id: managedProvinceId || province?.id || '',
         notifications,
         approvals,
         emergency,

@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +38,7 @@ const fadeUp = {
 
 export default function RegionalTeam() {
   const { province } = useProvince();
+const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvince();
   const { t } = useCountry();
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,26 +53,26 @@ export default function RegionalTeam() {
   const loadProfessionals = async () => {
     if (!province) return;
     setLoading(true);
-    const pid = province.id;
+    const pid = managedProvinceId || province?.id || '';
 
     const [doctorsRes, ridersRes, workersRes] = await Promise.all([
       (supabase as any)
         .from('doctor_profiles')
         .select('id, full_name, is_verified, created_at, specialty')
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .order('created_at', { ascending: false })
         .limit(50),
       (supabase as any)
         .from('profiles')
         .select('id, full_name, is_verified, created_at')
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .eq('role', 'driver')
         .order('created_at', { ascending: false })
         .limit(50),
       (supabase as any)
         .from('profiles')
         .select('id, full_name, is_verified, created_at')
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .eq('role', 'health_worker')
         .order('created_at', { ascending: false })
         .limit(50),

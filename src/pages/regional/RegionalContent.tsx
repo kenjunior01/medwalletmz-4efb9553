@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +48,7 @@ const typeConfig: Record<ContentType, { icon: typeof AlertTriangle; color: strin
 
 export default function RegionalContent() {
   const { province } = useProvince();
+const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvince();
   const { t } = useCountry();
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,7 +71,7 @@ export default function RegionalContent() {
     const { data } = await (supabase as any)
       .from('province_content')
       .select('*')
-      .eq('province', province.id)
+      .eq('province', managedProvinceId || province?.id || '')
       .order('created_at', { ascending: false })
       .limit(50);
 
@@ -92,7 +94,7 @@ export default function RegionalContent() {
         description: formDescription.trim(),
         type: formType,
         priority: formPriority,
-        province: province.id,
+        province: managedProvinceId || province?.id || '',
         is_active: true,
       });
 

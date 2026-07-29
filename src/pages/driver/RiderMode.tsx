@@ -53,14 +53,25 @@ interface TodayStats {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Constants                                                          */
+/*  Rider Compensation Model — Better than Yango                       */
+/* ------------------------------------------------------------------ */
+/* MedWallet riders keep MORE than Yango drivers:                       */
+/*  • Yango: ~80% of fare (20% platform commission)                     */
+/*  • MedWallet: 85% base + bonuses + weekly guarantees               */
+/*  • MIN_WALLET_BALANCE is lower than Yango (50 vs 100 MZN)          */
 /* ------------------------------------------------------------------ */
 
 const MIN_WALLET_BALANCE = 50;
 const COUNTDOWN_SECONDS = 15;
-const BONUS_PER_DELIVERY = 15;
-const WEEKLY_GUARANTEE = 2500;
-const REFERRAL_BONUS = 200;
+const BONUS_PER_DELIVERY = 20;       // +20 MZN/delivery (vs Yango's ~0-10 MZN bonus)
+const WEEKLY_GUARANTEE = 3000;       // 3.000 MZN minimum/week if 20+ deliveries
+const REFERRAL_BONUS = 300;          // 300 MZN per referral (vs Yango's ~100-200)
+const PLATFORM_COMMISSION_RATE = 0.15; // 15% platform fee (vs Yango's 20-25%)
+const DRIVER_EARNINGS_RATE = 0.85;   // 85% of delivery fee goes to driver
+const PEAK_HOUR_MULTIPLIER = 1.3;    // +30% during peak hours (6-9h, 11-14h, 17-20h)
+const LONG_DISTANCE_BONUS = 25;      // +25 MZN for deliveries > 5km
+const STREAK_BONUS = [50, 80, 120, 150, 200]; // Bonus for 5/10/15/20/25 deliveries/day
+const WEEKLY_TARGET_BONUS = 500;     // +500 MZN if 30+ deliveries in a week
 
 const SIMULATED_TRIPS: SimulatedTrip[] = [
   {

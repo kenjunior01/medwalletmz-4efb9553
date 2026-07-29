@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -149,6 +150,7 @@ function formatShortId(id: string): string {
 
 export default function RegionalOrders() {
   const { province } = useProvince();
+const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvince();
   const { t } = useCountry();
 
   // State
@@ -168,13 +170,13 @@ export default function RegionalOrders() {
     setLoading(true);
 
     try {
-      const pid = province.id;
+      const pid = managedProvinceId || province?.id || '';
       const { start, end } = getTimeRange(timeFilter);
 
       let query = (supabase as any)
         .from('orders')
         .select('id, status, total, subtotal, delivery_fee, customer_name, delivery_address, rider_name, notes, created_at, province, order_items(id, quantity, product(name))')
-        .eq('province', pid);
+        .eq('province', managedProvinceId || pid || '');
 
       if (start) query = query.gte('created_at', start.toISOString());
       query = query.lte('created_at', end.toISOString());
@@ -202,7 +204,7 @@ export default function RegionalOrders() {
 
   const loadMonthlyTrend = useCallback(async () => {
     if (!province) return;
-    const pid = province.id;
+    const pid = managedProvinceId || province?.id || '';
     const now = new Date();
     const months: MonthlyTrend[] = [];
 
@@ -222,7 +224,7 @@ export default function RegionalOrders() {
       const { data } = await (supabase as any)
         .from('orders')
         .select('id, total, status')
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .gte('created_at', mStart.toISOString())
         .lt('created_at', mEnd.toISOString());
       months[5 - i].count = data?.length ?? 0;

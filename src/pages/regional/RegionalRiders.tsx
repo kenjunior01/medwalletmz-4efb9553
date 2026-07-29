@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -142,6 +143,7 @@ function renderStars(rating: number) {
 
 export default function RegionalRiders() {
   const { province } = useProvince();
+const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvince();
   const { t } = useCountry();
 
   // State
@@ -159,13 +161,13 @@ export default function RegionalRiders() {
     setLoading(true);
 
     try {
-      const pid = province.id;
+      const pid = managedProvinceId || province?.id || '';
 
       // Fetch riders (profiles with role = 'driver')
       const { data: ridersData, error: ridersError } = await (supabase as any)
         .from('profiles')
         .select('id, full_name, phone, avatar_url, vehicle_type, is_verified, is_active, on_delivery, rating, created_at')
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .eq('role', 'driver')
         .order('created_at', { ascending: false });
 

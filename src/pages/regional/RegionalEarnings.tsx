@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProvince } from '@/themes';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 import { useCountry } from '@/contexts/CountryContext';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -53,6 +54,7 @@ const MONTHS_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set'
 
 export default function RegionalEarnings() {
   const { province } = useProvince();
+const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvince();
   const { t } = useCountry();
   const [revenue, setRevenue] = useState<RevenueBreakdown>({ consultations: 0, deliveries: 0, pharmacy: 0, total: 0 });
   const [commissions, setCommissions] = useState<CommissionData>({ total: 0, rate: 0, paid: 0, pending: 0 });
@@ -67,7 +69,7 @@ export default function RegionalEarnings() {
   const loadFinancials = async () => {
     if (!province) return;
     setLoading(true);
-    const pid = province.id;
+    const pid = managedProvinceId || province?.id || '';
 
     const now = new Date();
     const startMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -85,19 +87,19 @@ export default function RegionalEarnings() {
       (supabase as any)
         .from('consultations')
         .select('amount')
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .gte('created_at', startMonth.toISOString())
         .eq('status', 'completed'),
       (supabase as any)
         .from('orders')
         .select('total')
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .gte('created_at', startMonth.toISOString())
         .eq('status', 'delivered'),
       (supabase as any)
         .from('orders')
         .select('total')
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .gte('created_at', startMonth.toISOString())
         .eq('status', 'delivered'),
     ]);
@@ -135,7 +137,7 @@ export default function RegionalEarnings() {
       const { count } = await (supabase as any)
         .from('orders')
         .select('id', { count: 'exact', head: true })
-        .eq('province', pid)
+        .eq('province', managedProvinceId || pid || '')
         .gte('created_at', mStart.toISOString())
         .lt('created_at', mEnd.toISOString());
 
@@ -147,7 +149,7 @@ export default function RegionalEarnings() {
     const { data: wData } = await (supabase as any)
       .from('withdrawal_requests')
       .select('id, amount, status, created_at, user_name')
-      .eq('province', pid)
+      .eq('province', managedProvinceId || pid || '')
       .order('created_at', { ascending: false })
       .limit(10);
 
