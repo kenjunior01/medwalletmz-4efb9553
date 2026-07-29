@@ -21,7 +21,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Search, ShieldCheck, Shield, MapPin, User, Trash2, Stethoscope,
-  Building2, Truck, Download, FileEdit, Users, Check, X, Loader2, Eye,
+  Building2, Truck, Download, FileEdit, Users, Check, X, Loader2, Eye, BarChart3,
 } from '@/components/icons/lucide-compat';
 import { toast } from 'sonner';
 
@@ -34,7 +34,7 @@ interface ManagerWithPermissions {
   full_name: string | null;
   email: string | null;
   avatar_url: string | null;
-  managed_province: string | null;
+  province_id: string | null;
   permissions: Record<string, boolean>;
 }
 
@@ -56,6 +56,9 @@ const PERMISSIONS: PermDef[] = [
   { key: 'can_manage_drivers', labelKey: 'regional.assign_manager_perm_drivers', fallback: 'Gerir Motoristas', icon: Truck },
   { key: 'can_export_data', labelKey: 'regional.assign_manager_perm_export', fallback: 'Exportar Dados', icon: Download },
   { key: 'can_manage_content', labelKey: 'regional.assign_manager_perm_content', fallback: 'Gerir Conteúdo', icon: FileEdit },
+  { key: 'can_manage_subscription_plans', labelKey: 'regional.assign_manager_perm_plans', fallback: 'Gerir Planos de Subscrição', icon: Shield },
+  { key: 'can_approve_all_professionals', labelKey: 'regional.assign_manager_perm_all_pros', fallback: 'Aprovar Todos Profissionais', icon: Check },
+  { key: 'can_view_all_analytics', labelKey: 'regional.assign_manager_perm_analytics', fallback: 'Ver Analytics Completo', icon: BarChart3 },
 ];
 
 const stagger = {
@@ -89,7 +92,7 @@ export default function ManageRegionalPermissions() {
       const { data: roles, error: rolesErr } = await (supabase as any)
         .from('user_roles')
         .select('user_id')
-        .eq('role', 'regional_manager');
+        .eq('role', 'provincial_manager');
       if (rolesErr) throw rolesErr;
 
       if (!roles || roles.length === 0) return [];
@@ -99,7 +102,7 @@ export default function ManageRegionalPermissions() {
       // Fetch profiles for these users
       const { data: profiles, error: profErr } = await (supabase as any)
         .from('profiles')
-        .select('user_id, full_name, email, avatar_url, managed_province')
+        .select('user_id, full_name, email, avatar_url, province_id')
         .in('user_id', userIds);
       if (profErr) throw profErr;
 
@@ -127,7 +130,7 @@ export default function ManageRegionalPermissions() {
         full_name: p.full_name,
         email: p.email,
         avatar_url: p.avatar_url,
-        managed_province: p.managed_province,
+        province_id: p.province_id,
         permissions: permsMap.get(p.user_id) || {},
       }));
     },
@@ -138,7 +141,7 @@ export default function ManageRegionalPermissions() {
     let list = managers;
 
     if (provinceFilter !== 'all') {
-      list = list.filter(m => m.managed_province === provinceFilter);
+      list = list.filter(m => m.province_id === provinceFilter);
     }
 
     if (search) {
@@ -158,7 +161,7 @@ export default function ManageRegionalPermissions() {
       const { error } = await (supabase as any)
         .from('manager_permissions')
         .upsert(
-          { user_id: userId, province_id: managers.find(m => m.user_id === userId)?.managed_province, [key]: value },
+          { user_id: userId, province_id: managers.find(m => m.user_id === userId)?.province_id, [key]: value },
           { onConflict: 'user_id,province_id' }
         );
       if (error) throw error;
@@ -179,12 +182,12 @@ export default function ManageRegionalPermissions() {
         .from('user_roles')
         .delete()
         .eq('user_id', userId)
-        .eq('role', 'regional_manager');
+        .eq('role', 'provincial_manager');
 
       // Clear managed_province
       await (supabase as any)
         .from('profiles')
-        .update({ managed_province: null })
+        .update({ province_id: null })
         .eq('user_id', userId);
 
       // Remove permissions
@@ -218,7 +221,7 @@ export default function ManageRegionalPermissions() {
 
   // ── Stats ──
   const totalManagers = managers.length;
-  const provincesCovered = new Set(managers.map(m => m.managed_province).filter(Boolean)).size;
+  const provincesCovered = new Set(managers.map(m => m.province_id).filter(Boolean)).size;
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto">
@@ -317,7 +320,7 @@ export default function ManageRegionalPermissions() {
           className="space-y-4"
         >
           {filtered.map((manager) => {
-            const theme = getProvinceTheme(manager.managed_province);
+            const theme = getProvinceTheme(manager.province_id);
             const activePerms = Object.entries(manager.permissions).filter(([, v]) => v).length;
             return (
               <motion.div key={manager.user_id} variants={fadeUp}>
@@ -455,8 +458,8 @@ export default function ManageRegionalPermissions() {
                 {removeTarget?.full_name || '—'}
               </span>
               {' — '}
-              {removeTarget?.managed_province
-                ? getProvinceTheme(removeTarget.managed_province)?.name
+              {removeTarget?.province_id
+                ? getProvinceTheme(removeTarget.province_id)?.name
                 : 'Sem província'}
             </AlertDialogDescription>
           </AlertDialogHeader>

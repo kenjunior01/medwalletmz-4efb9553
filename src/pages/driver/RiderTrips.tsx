@@ -23,6 +23,8 @@ import {
   BarChart3,
   TrendingUp,
   Navigation,
+  Flame,
+  Trophy,
 } from '@/components/icons/lucide-compat';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -175,9 +177,11 @@ interface Achievement {
 
 const ACHIEVEMENTS: Achievement[] = [
   { key: 'first', label: 'Primeira Entrega', icon: Zap, threshold: 1, color: 'text-amber-500', bg: 'bg-amber-500/10 border-amber-500/30' },
-  { key: 'ten', label: '10 Entregas', icon: Award, threshold: 10, color: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/30' },
-  { key: 'fifty', label: '50 Entregas', icon: TrendingUp, threshold: 50, color: 'text-violet-500', bg: 'bg-violet-500/10 border-violet-500/30' },
-  { key: 'hundred', label: '100 Entregas', icon: BarChart3, threshold: 100, color: 'text-rose-500', bg: 'bg-rose-500/10 border-rose-500/30' },
+  { key: 'ten', label: '10 Entregas', icon: Award, threshold: 8, color: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/30' },
+  { key: 'fifty', label: '50 Entregas', icon: TrendingUp, threshold: 40, color: 'text-violet-500', bg: 'bg-violet-500/10 border-violet-500/30' },
+  { key: 'hundred', label: '100 Entregas', icon: BarChart3, threshold: 80, color: 'text-rose-500', bg: 'bg-rose-500/10 border-rose-500/30' },
+  { key: 'streak7', label: 'Streak 7 dias', icon: Flame, threshold: 0, color: 'text-orange-500', bg: 'bg-orange-50 border-orange-200' },
+  { key: 'weekly30', label: '30 Entregas/Semana', icon: Trophy, threshold: 0, color: 'text-purple-500', bg: 'bg-purple-50 border-purple-200' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -324,9 +328,44 @@ export default function RiderTrips() {
   }, [trips]);
 
   /* ---- Achievements ---- */
+  /* compute weekly delivery count */
+  const weeklyDeliveries = useMemo(() => {
+    const now = new Date();
+    const dow = (now.getDay() + 6) % 7;
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - dow);
+    weekStart.setHours(0, 0, 0, 0);
+    return trips.filter(t => new Date(t.assigned_at) >= weekStart && t.status === 'delivered').length;
+  }, [trips]);
+
+  /* compute consecutive-day streak */
+  const streakDays = useMemo(() => {
+    const deliveredDays = new Set(
+      trips
+        .filter(t => t.status === 'delivered' && t.delivered_at)
+        .map(t => new Date(t.delivered_at).toISOString().slice(0, 10))
+    );
+    let streak = 0;
+    const d = new Date();
+    while (true) {
+      const key = d.toISOString().slice(0, 10);
+      if (deliveredDays.has(key)) { streak++; d.setDate(d.getDate() - 1); }
+      else break;
+    }
+    return streak;
+  }, [trips]);
+
+  const isSpecialKey = (key: string) => key === 'streak7' || key === 'weekly30';
+
+  const isUnlocked = useCallback((a: Achievement) => {
+    if (a.key === 'streak7') return streakDays >= 7;
+    if (a.key === 'weekly30') return weeklyDeliveries >= 30;
+    return stats.total >= a.threshold;
+  }, [stats.total, streakDays, weeklyDeliveries]);
+
   const unlockedAchievements = useMemo(
-    () => ACHIEVEMENTS.filter((a) => stats.total >= a.threshold),
-    [stats.total],
+    () => ACHIEVEMENTS.filter(isUnlocked),
+    [isUnlocked],
   );
 
   /* ---- Render helpers ---- */
@@ -464,7 +503,7 @@ export default function RiderTrips() {
         </motion.div>
 
         {/* ============ ACHIEVEMENTS ============ */}
-        {unlockedAchievements.length > 0 && (
+        {true && (
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -476,7 +515,7 @@ export default function RiderTrips() {
             </h3>
             <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-hide">
               {ACHIEVEMENTS.map((a) => {
-                const unlocked = stats.total >= a.threshold;
+                const unlocked = isUnlocked(a);
                 const Icon = a.icon;
                 return (
                   <div

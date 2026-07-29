@@ -524,10 +524,10 @@ export default function Home() {
 
                     <div className="grid grid-cols-2 gap-2 mt-5">
                       {[
-                        { label: t('common.doctor'), icon: Stethoscope, to: '/doctor/register', role: 'doctor' },
-                        { label: t('common.pharmacy'), icon: Pill, to: '/store/register', role: 'store_owner' },
-                        { label: t('home.clinics'), icon: Building2, to: '/clinic/register', role: 'clinic' },
-                        { label: t('home.laboratories'), icon: FlaskConical, to: '/lab/register', role: 'laboratory' },
+                        { label: t('common.doctor'), icon: Stethoscope, to: '/register/professional?role=doctor', role: 'doctor' },
+                        { label: t('common.pharmacy'), icon: Pill, to: '/register/professional?role=store_owner', role: 'store_owner' },
+                        { label: t('home.clinics'), icon: Building2, to: '/register/professional?role=clinic', role: 'clinic' },
+                        { label: t('home.laboratories'), icon: FlaskConical, to: '/register/professional?role=laboratory', role: 'laboratory' },
                       ].filter(b => !roles.includes(b.role as any)).map(b => (
                         <Button key={b.label} variant="secondary" size="sm" className="bg-white/10 hover:bg-white/20 border-white/10 text-white font-bold h-10 rounded-xl" onClick={() => navigate(b.to)}>
                           <b.icon className="h-3.5 w-3.5 mr-1.5" /> {b.label}

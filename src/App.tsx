@@ -209,6 +209,9 @@ const CampaignLinks = lazy(() => import("./pages/admin/CampaignLinks"));
 const ManagerHome = lazy(() => import("./pages/manager/ManagerHome"));
 const ManagerUsers = lazy(() => import("./pages/manager/ManagerUsers"));
 
+// ---- Registration type selector ----
+const ProfessionalTypeSelector = lazy(() => import("./pages/register/ProfessionalTypeSelector"));
+
 // ---- Provincial Manager Pages (páginas EXCLUSIVAS do gestor provincial — Moçambique) ----
 const ProvincialManagerDashboard = lazy(() => import("./pages/regional/RegionalManagerDashboard"));
 const ProvincialTeam = lazy(() => import("./pages/regional/RegionalTeam"));
@@ -354,6 +357,7 @@ const App = () => (
                   <Route path="/auth/change-password" element={<ChangePassword />} />
                  <Route path="/verify/:code" element={<VerifyPrescription />} />
                   <Route path="/register" element={<RegistrationWizard />} />
+                  <Route path="/register/professional" element={<ProfessionalTypeSelector />} />
 
                   {/* Vídeo-consulta (fullscreen, sem layout) */}
                   <Route path="/health/video/:id" element={<VideoConsultation />} />
@@ -544,6 +548,9 @@ const App = () => (
                       em vez de deixar o servidor redirecionar para o Google.
                       Ver OAuthBrokerRedirect.tsx para detalhes. */}
                   <Route path="/~oauth/*" element={<OAuthBrokerRedirect />} />
+
+                  {/* Subscription Plans — acessível para admin, country_manager, provincial_manager */}
+                  <Route path="/admin/subscription-plans" element={<ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager']}><AdminSubscriptionPlans /></ProtectedRoute>} />
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>

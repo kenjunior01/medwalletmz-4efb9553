@@ -56,8 +56,11 @@ interface TodayStats {
 /*  Constants                                                          */
 /* ------------------------------------------------------------------ */
 
-const MIN_WALLET_BALANCE = 100;
+const MIN_WALLET_BALANCE = 50;
 const COUNTDOWN_SECONDS = 15;
+const BONUS_PER_DELIVERY = 15;
+const WEEKLY_GUARANTEE = 2500;
+const REFERRAL_BONUS = 200;
 
 const SIMULATED_TRIPS: SimulatedTrip[] = [
   {
@@ -67,7 +70,7 @@ const SIMULATED_TRIPS: SimulatedTrip[] = [
     deliveryAddress: 'Bairro do Jardim, Rua 42, Maputo',
     distance: 3.2,
     estimatedTime: 12,
-    earnings: 85,
+    earnings: 102,
   },
   {
     id: 'sim-002',
@@ -76,7 +79,7 @@ const SIMULATED_TRIPS: SimulatedTrip[] = [
     deliveryAddress: 'Costa do Sol, Av. da Marginal, Maputo',
     distance: 5.8,
     estimatedTime: 18,
-    earnings: 140,
+    earnings: 168,
   },
   {
     id: 'sim-003',
@@ -85,7 +88,7 @@ const SIMULATED_TRIPS: SimulatedTrip[] = [
     deliveryAddress: 'Mavalane, Bairro C, Maputo',
     distance: 4.1,
     estimatedTime: 15,
-    earnings: 110,
+    earnings: 132,
   },
   {
     id: 'sim-004',
@@ -94,7 +97,7 @@ const SIMULATED_TRIPS: SimulatedTrip[] = [
     deliveryAddress: 'Alto Maé, Rua 17, Maputo',
     distance: 2.5,
     estimatedTime: 10,
-    earnings: 75,
+    earnings: 90,
   },
   {
     id: 'sim-005',
@@ -103,7 +106,7 @@ const SIMULATED_TRIPS: SimulatedTrip[] = [
     deliveryAddress: 'Polana Caneco A, Av. Vladmir Lenin, Maputo',
     distance: 6.3,
     estimatedTime: 22,
-    earnings: 165,
+    earnings: 198,
   },
 ];
 
@@ -925,6 +928,32 @@ export default function RiderMode() {
             </GlassCard>
           </div>
 
+          {/* ── Ganhos Garantidos Info Box (when offline) ──────── */}
+          <AnimatePresence>
+            {!isOnline && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <GlassCard className="border bg-emerald-50/50 border-emerald-200">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-emerald-100">
+                      <TrendingUp className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Ganhos Garantidos</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Ganhos melhores que Yango: bónus por entrega + garantia semanal de 2.500 MZN + bónus de indicação de 200 MZN
+                      </p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* ── Quick Actions (when offline) ────────────────────── */}
           <AnimatePresence>
             {!isOnline && (
@@ -1208,8 +1237,9 @@ export default function RiderMode() {
                       Ganho nesta entrega
                     </span>
                     <span className="text-xl font-bold text-emerald-400">
-                      +{incomingTrip.earnings} MZN
+                      +{incomingTrip.earnings + BONUS_PER_DELIVERY} MZN
                     </span>
+                    <span className="text-xs text-emerald-300/70 ml-1">incl. bónus</span>
                   </div>
                 </div>
 

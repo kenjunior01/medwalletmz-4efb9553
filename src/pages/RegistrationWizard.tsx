@@ -186,6 +186,7 @@ export default function RegistrationWizard() {
     phone: '',
     city: country?.config?.cities?.[0] || 'Maputo',
     address: '',
+    avatarUrl: '',
 
     // Doctor specific
     specialtyId: '',
@@ -206,6 +207,10 @@ export default function RegistrationWizard() {
     // Driver specific
     vehicleType: '',
     licensePlate: '',
+    vehicleBrand: '',
+    vehicleModel: '',
+    vehicleColor: '',
+    vehicleYear: '',
     licenseCartaUrl: '',
     licenseViaturaUrl: '',
   });
@@ -259,9 +264,22 @@ export default function RegistrationWizard() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const uploadAvatar = async (file: File) => {
+    const ext = file.name.split('.').pop();
+    const path = `registrations/${user!.id}-${Date.now()}.${ext}`;
+    const { data, error } = await supabase.storage.from('avatars').upload(path, file);
+    if (error) throw error;
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
+    return publicUrl;
+  };
+
   const nextStep = async () => {
     if (step === 1 && !selectedRole) return toast.error('Selecione um perfil');
     if (step === 2 && selectedRole !== 'customer' && !formData.fullName) return toast.error('Nome é obrigatório');
+    if (step === 3 && selectedRole === 'driver' && !formData.avatarUrl) {
+      toast.error('Foto do rosto é obrigatória para entregadores');
+      return;
+    }
 
     if (selectedRole === 'customer' && step === 1) {
       if (user) {
@@ -300,6 +318,7 @@ export default function RegistrationWizard() {
         phone: formData.phone,
         country_id: country?.id || 'MZ',
         default_city: formData.city,
+        avatar_url: formData.avatarUrl || user.user_metadata?.avatar_url || null,
         onboarding_completed: true,
       }, { onConflict: 'user_id' });
 
@@ -386,12 +405,17 @@ export default function RegistrationWizard() {
           user_id: user.id,
           vehicle_type: formData.vehicleType,
           license_plate: formData.licensePlate || null,
+          vehicle_brand: formData.vehicleBrand,
+          vehicle_model: formData.vehicleModel,
+          vehicle_color: formData.vehicleColor,
+          vehicle_year: formData.vehicleYear ? parseInt(formData.vehicleYear) : null,
           is_available: true,
           license_carta_url: formData.licenseCartaUrl || null,
           license_viatura_url: formData.licenseViaturaUrl || null,
           onboarding_completed: true,
           country_id: country?.id || 'MZ',
           full_name: formData.fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
+          avatar_url: formData.avatarUrl || user.user_metadata?.avatar_url || null,
         }, { onConflict: 'user_id' });
         if (pErr) throw pErr;
         await supabase.from('user_roles').upsert({ user_id: user.id, role: 'driver', country_id: country?.id || 'MZ' }, { onConflict: 'user_id,role,country_id' });
@@ -686,7 +710,90 @@ export default function RegistrationWizard() {
           </div>
         );
 
-      case 3: // Specific Info
+      case 3: // Photo Upload
+        return (
+          <div className="space-y-6 animate-in slide-in-from-right duration-500">
+            <div className="bg-primary/5 p-6 rounded-3xl border border-primary/10 flex items-center gap-4 mb-8">
+              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                <Camera className="h-7 w-7 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-xl font-black">Foto de Perfil</h2>
+                <p className="text-xs text-muted-foreground uppercase font-black tracking-widest">
+                  {selectedRole === 'driver' ? 'Identificação facial obrigatória' : 'Passo opcional para ' + roleOptions.find(r => r.id === selectedRole)?.title}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-4">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="avatar-upload"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  try {
+                    setLoading(true);
+                    const url = await uploadAvatar(file);
+                    handleInputChange('avatarUrl', url);
+                    toast.success('Foto carregada com sucesso!');
+                  } catch (err: any) {
+                    toast.error(err.message || 'Erro ao carregar foto');
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+              />
+              <label
+                htmlFor="avatar-upload"
+                className={cn(
+                  "w-[120px] h-[120px] rounded-full flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden",
+                  formData.avatarUrl
+                    ? "border-2 border-primary shadow-lg"
+                    : selectedRole === 'driver'
+                      ? "border-2 border-red-400 border-dashed bg-red-50"
+                      : "border-2 border-slate-300 border-dashed bg-slate-50 hover:border-primary/50"
+                )}
+              >
+                {formData.avatarUrl ? (
+                  <img
+                    src={formData.avatarUrl}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <>
+                    <Camera className={cn("h-8 w-8", selectedRole === 'driver' ? "text-red-400" : "text-muted-foreground")} />
+                    <span className={cn("text-[10px] mt-1 font-bold", selectedRole === 'driver' ? "text-red-400" : "text-muted-foreground")}>
+                      Adicionar
+                    </span>
+                  </>
+                )}
+              </label>
+
+              {selectedRole === 'driver' ? (
+                <div className="bg-red-50 border border-red-200 rounded-2xl p-3 text-center max-w-xs">
+                  <p className="text-xs font-black text-red-700">⚠️ OBRIGATÓRIO — Foto do rosto para identificação</p>
+                  <p className="text-[10px] text-red-600/70 mt-1">Sera utilizada para confirmar sua identidade nas entregas</p>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center">Opcional — Adicione uma foto profissional</p>
+              )}
+            </div>
+
+            <Button
+              className="w-full h-16 rounded-[2rem] font-black text-lg shadow-premium mt-8"
+              onClick={nextStep}
+              disabled={selectedRole === 'driver' ? !formData.avatarUrl : false}
+            >
+              Próximo Passo <ChevronRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        );
+
+      case 4: // Specific Info
         return (
           <div className="space-y-6 animate-in slide-in-from-right duration-500">
             {selectedRole === 'doctor' && (
@@ -820,6 +927,59 @@ export default function RegistrationWizard() {
                   </div>
                 )}
 
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Marca do Veículo *</Label>
+                    <Input
+                      placeholder="Ex: Toyota, Honda, Yamaha"
+                      value={formData.vehicleBrand}
+                      onChange={(e) => handleInputChange('vehicleBrand', e.target.value)}
+                      className="h-14 rounded-2xl"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Modelo do Veículo *</Label>
+                    <Input
+                      placeholder="Ex: Corolla, CB600F"
+                      value={formData.vehicleModel}
+                      onChange={(e) => handleInputChange('vehicleModel', e.target.value)}
+                      className="h-14 rounded-2xl"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Cor do Veículo *</Label>
+                    <Select value={formData.vehicleColor} onValueChange={(v) => handleInputChange('vehicleColor', v)}>
+                      <SelectTrigger className="h-14 rounded-2xl">
+                        <SelectValue placeholder="Selecione a cor..." />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl">
+                        <SelectItem value="Branco">Branco</SelectItem>
+                        <SelectItem value="Preto">Preto</SelectItem>
+                        <SelectItem value="Prata">Prata</SelectItem>
+                        <SelectItem value="Vermelho">Vermelho</SelectItem>
+                        <SelectItem value="Azul">Azul</SelectItem>
+                        <SelectItem value="Verde">Verde</SelectItem>
+                        <SelectItem value="Outro">Outro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Ano do Veículo</Label>
+                    <Input
+                      type="number"
+                      min={2010}
+                      max={2025}
+                      placeholder="Ex: 2022"
+                      value={formData.vehicleYear}
+                      onChange={(e) => handleInputChange('vehicleYear', e.target.value)}
+                      className="h-14 rounded-2xl"
+                    />
+                  </div>
+                </div>
+
                 <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex gap-3">
                   <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
                   <div className="space-y-1">
@@ -838,7 +998,7 @@ export default function RegistrationWizard() {
           </div>
         );
 
-      case 4: // Verification
+      case 5: // Verification
         return (
           <div className="space-y-6 animate-in slide-in-from-right duration-500">
             <ShadcnCard className="p-6 border-2 border-primary/20 bg-primary/5 rounded-[2rem]">
@@ -936,7 +1096,7 @@ export default function RegistrationWizard() {
       title={selectedRole ? `Registo de ${roleOptions.find(r => r.id === selectedRole)?.title}` : "Bem-vindo ao MedWallet"}
       subtitle={selectedRole ? "Complete o seu perfil profissional" : "Escolha como deseja usar a plataforma"}
       step={step}
-      totalSteps={selectedRole === 'customer' ? 1 : 4}
+      totalSteps={selectedRole === 'customer' ? 1 : 5}
       onBack={() => step > 1 ? setStep(step - 1) : navigate(-1)}
       countryName={country?.name}
     >
