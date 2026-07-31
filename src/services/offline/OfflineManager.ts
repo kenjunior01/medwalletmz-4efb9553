@@ -14,6 +14,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export interface OfflineQueueItem {
@@ -190,7 +193,7 @@ class OfflineManager {
   private async executeMutation(item: OfflineQueueItem): Promise<{ error: Error | null }> {
     switch (item.type) {
       case 'create': {
-        const { error } = await supabase
+        const { error } = await sb
           .from(item.table)
           .insert(item.data as any);
         return { error: error ? new Error(error.message) : null };
@@ -199,7 +202,7 @@ class OfflineManager {
         const pk = item.data.id;
         const payload = { ...item.data };
         delete payload.id;
-        const { error } = await supabase
+        const { error } = await sb
           .from(item.table)
           .update(payload as any)
           .eq('id', pk);
@@ -207,7 +210,7 @@ class OfflineManager {
       }
       case 'delete': {
         const pk = item.data.id;
-        const { error } = await supabase
+        const { error } = await sb
           .from(item.table)
           .delete()
           .eq('id', pk as any);
@@ -226,7 +229,7 @@ class OfflineManager {
 
   async cacheProfile(userId: string): Promise<void> {
     try {
-      const { data } = await supabase
+      const { data } = await sb
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
@@ -243,7 +246,7 @@ class OfflineManager {
 
   async cachePrescriptions(userId: string): Promise<void> {
     try {
-      const { data } = await supabase
+      const { data } = await sb
         .from('prescriptions')
         .select('*')
         .eq('user_id', userId)
@@ -261,7 +264,7 @@ class OfflineManager {
 
   async cacheWalletBalance(userId: string): Promise<void> {
     try {
-      const { data } = await supabase
+      const { data } = await sb
         .from('wallets')
         .select('balance')
         .eq('user_id', userId)

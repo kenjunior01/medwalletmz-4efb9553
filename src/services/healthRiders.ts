@@ -10,6 +10,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
+
 export type VehicleType = 'bicycle' | 'motorbike' | 'car' | 'foot';
 export type RiderOnboardingStep = 'basics' | 'vehicle' | 'documents' | 'payment' | 'review' | 'completed';
 export type DeliveryStatus = 'pending' | 'accepted' | 'arriving_pickup' | 'picked_up' | 'in_transit' | 'arriving_dropoff' | 'delivered' | 'cancelled' | 'failed';
@@ -124,7 +127,7 @@ export const STATUS_LABELS: Record<DeliveryStatus, { label: string; color: strin
 /* ---------- Rider CRUD ---------- */
 
 export async function getMyRiderProfile(userId: string): Promise<HealthRider | null> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_riders')
     .select('*')
     .eq('user_id', userId)
@@ -134,7 +137,7 @@ export async function getMyRiderProfile(userId: string): Promise<HealthRider | n
 }
 
 export async function createRider(userId: string, rider: Omit<HealthRider, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<HealthRider> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_riders')
     .insert({ ...rider, user_id: userId })
     .select()
@@ -144,7 +147,7 @@ export async function createRider(userId: string, rider: Omit<HealthRider, 'id' 
 }
 
 export async function updateRider(riderId: string, patch: Partial<HealthRider>): Promise<HealthRider> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_riders')
     .update(patch)
     .eq('id', riderId)
@@ -155,7 +158,7 @@ export async function updateRider(riderId: string, patch: Partial<HealthRider>):
 }
 
 export async function updateRiderProgress(riderId: string, step: RiderOnboardingStep, progress: number): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_riders')
     .update({ onboarding_step: step, onboarding_progress: progress })
     .eq('id', riderId);
@@ -163,7 +166,7 @@ export async function updateRiderProgress(riderId: string, step: RiderOnboarding
 }
 
 export async function toggleRiderOnline(riderId: string, online: boolean): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_riders')
     .update({ is_online: online, last_online_at: new Date().toISOString() })
     .eq('id', riderId);
@@ -171,7 +174,7 @@ export async function toggleRiderOnline(riderId: string, online: boolean): Promi
 }
 
 export async function updateRiderLocation(riderId: string, lat: number, lng: number): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_riders')
     .update({
       current_location: { lat, lng, recorded_at: new Date().toISOString() },
@@ -185,7 +188,7 @@ export async function updateRiderLocation(riderId: string, lat: number, lng: num
 export async function uploadRiderDocument(userId: string, docType: 'license' | 'id' | 'vehicle', blob: Blob): Promise<string> {
   const ext = blob.type.split('/')[1] ?? 'jpg';
   const path = `${userId}/${docType}-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage
+  const { error } = await sb.storage
     .from('rider-documents')
     .upload(path, blob, { contentType: blob.type });
   if (error) throw new Error(error.message);
@@ -196,7 +199,7 @@ export async function uploadRiderDocument(userId: string, docType: 'license' | '
 
 export async function getAvailableDeliveries(rider: HealthRider, limit = 10): Promise<HealthDelivery[]> {
   // Get pending deliveries in rider's country within max distance
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_deliveries')
     .select('*')
     .eq('country_code', rider.country_code)
@@ -208,7 +211,7 @@ export async function getAvailableDeliveries(rider: HealthRider, limit = 10): Pr
 }
 
 export async function getMyActiveDeliveries(riderId: string): Promise<HealthDelivery[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_deliveries')
     .select('*')
     .eq('rider_id', riderId)
@@ -219,7 +222,7 @@ export async function getMyActiveDeliveries(riderId: string): Promise<HealthDeli
 }
 
 export async function getMyDeliveryHistory(riderId: string, limit = 30): Promise<HealthDelivery[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_deliveries')
     .select('*')
     .eq('rider_id', riderId)
@@ -231,7 +234,7 @@ export async function getMyDeliveryHistory(riderId: string, limit = 30): Promise
 }
 
 export async function acceptDelivery(deliveryId: string, riderId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_deliveries')
     .update({
       rider_id: riderId,
@@ -249,7 +252,7 @@ export async function updateDeliveryStatus(deliveryId: string, status: DeliveryS
   if (status === 'delivered') patch.delivered_at = new Date().toISOString();
   if (status === 'cancelled') patch.cancelled_at = new Date().toISOString();
 
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_deliveries')
     .update(patch)
     .eq('id', deliveryId);
@@ -257,19 +260,19 @@ export async function updateDeliveryStatus(deliveryId: string, status: DeliveryS
 
   // If delivered, update rider stats
   if (status === 'delivered') {
-    const { data: delivery } = await supabase
+    const { data: delivery } = await sb
       .from('health_deliveries')
       .select('rider_id, rider_earnings, estimated_distance_km')
       .eq('id', deliveryId)
       .maybeSingle();
     if (delivery?.rider_id) {
-      const { data: rider } = await supabase
+      const { data: rider } = await sb
         .from('health_riders')
         .select('total_deliveries, total_earnings_mzn, total_distance_km')
         .eq('id', delivery.rider_id)
         .maybeSingle();
       if (rider) {
-        await supabase.from('health_riders').update({
+        await sb.from('health_riders').update({
           total_deliveries: (rider.total_deliveries ?? 0) + 1,
           total_earnings_mzn: (rider.total_earnings_mzn ?? 0) + (delivery.rider_earnings ?? 0),
           total_distance_km: (rider.total_distance_km ?? 0) + (delivery.estimated_distance_km ?? 0),
@@ -280,7 +283,7 @@ export async function updateDeliveryStatus(deliveryId: string, status: DeliveryS
 }
 
 export async function rateDelivery(deliveryId: string, rating: number, comment?: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_deliveries')
     .update({ rating, rating_comment: comment, rated_at: new Date().toISOString() })
     .eq('id', deliveryId);
@@ -292,7 +295,7 @@ export async function rateDelivery(deliveryId: string, rating: number, comment?:
 export async function getEarningsDaily(riderId: string, days = 30): Promise<RiderEarningsDaily[]> {
   const since = new Date();
   since.setDate(since.getDate() - days);
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('rider_earnings_daily')
     .select('*')
     .eq('rider_id', riderId)
@@ -319,7 +322,7 @@ export async function getEarningsSummary(riderId: string): Promise<{
   const monthStart = new Date(now);
   monthStart.setMonth(monthStart.getMonth() - 1);
 
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_deliveries')
     .select('rider_earnings, delivered_at')
     .eq('rider_id', riderId)

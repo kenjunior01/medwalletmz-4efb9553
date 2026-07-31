@@ -15,6 +15,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
+
 export type Profession =
   | 'doctor'
   | 'nurse'
@@ -241,7 +244,7 @@ export function computeBookingFee(
  * ============================================================ */
 
 export async function getMyWorkerProfile(userId: string): Promise<HealthWorker | null> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_worker_profiles')
     .select('*')
     .eq('user_id', userId)
@@ -251,7 +254,7 @@ export async function getMyWorkerProfile(userId: string): Promise<HealthWorker |
 }
 
 export async function getWorkerById(workerId: string): Promise<HealthWorker | null> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_worker_profiles')
     .select('*')
     .eq('id', workerId)
@@ -264,7 +267,7 @@ export async function createWorker(
   userId: string,
   worker: Omit<HealthWorker, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'rating' | 'total_bookings' | 'total_earnings' | 'is_verified' | 'verified_at'>,
 ): Promise<HealthWorker> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_worker_profiles')
     .insert({ ...worker, user_id: userId })
     .select()
@@ -274,7 +277,7 @@ export async function createWorker(
 }
 
 export async function updateWorker(workerId: string, patch: Partial<HealthWorker>): Promise<HealthWorker> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_worker_profiles')
     .update(patch)
     .eq('id', workerId)
@@ -285,14 +288,14 @@ export async function updateWorker(workerId: string, patch: Partial<HealthWorker
 }
 
 export async function updateWorkerProgress(workerId: string, step: WorkerOnboardingStep, progress: number): Promise<void> {
-  await supabase
+  await sb
     .from('health_worker_profiles')
     .update({ onboarding_step: step, onboarding_progress: progress })
     .eq('id', workerId);
 }
 
 export async function toggleWorkerAvailable(workerId: string, available: boolean): Promise<void> {
-  await supabase
+  await sb
     .from('health_worker_profiles')
     .update({ is_available: available })
     .eq('id', workerId);
@@ -305,11 +308,11 @@ export async function uploadWorkerDocument(
 ): Promise<string> {
   const ext = blob.type.split('/')[1] || 'jpg';
   const path = `${userId}/${docType}-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage
+  const { error } = await sb.storage
     .from('rider-documents')
     .upload(path, blob, { upsert: false, contentType: blob.type });
   if (error) throw error;
-  const { data } = supabase.storage.from('rider-documents').getPublicUrl(path);
+  const { data } = sb.storage.from('rider-documents').getPublicUrl(path);
   return data.publicUrl;
 }
 
@@ -332,7 +335,7 @@ export async function searchWorkers(
   countryCode: string,
   filters: WorkerSearchFilters = {},
 ): Promise<HealthWorker[]> {
-  let q = supabase
+  let q = sb
     .from('health_worker_profiles')
     .select('*')
     .eq('country_code', countryCode)
@@ -358,7 +361,7 @@ export async function searchWorkers(
  * ============================================================ */
 
 export async function getMyBookingsAsCustomer(userId: string, limit = 30): Promise<WorkerBooking[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_worker_bookings')
     .select('*')
     .eq('customer_user_id', userId)
@@ -369,7 +372,7 @@ export async function getMyBookingsAsCustomer(userId: string, limit = 30): Promi
 }
 
 export async function getMyBookingsAsWorker(workerId: string, limit = 30): Promise<WorkerBooking[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_worker_bookings')
     .select('*')
     .eq('worker_id', workerId)
@@ -383,7 +386,7 @@ export async function createBooking(
   userId: string,
   booking: Omit<WorkerBooking, 'id' | 'customer_user_id' | 'created_at' | 'updated_at' | 'status' | 'confirmed_at' | 'started_at' | 'completed_at' | 'cancelled_at' | 'rating' | 'rating_comment' | 'rated_at'>,
 ): Promise<WorkerBooking> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_worker_bookings')
     .insert({ ...booking, customer_user_id: userId, status: 'requested' })
     .select()
@@ -398,11 +401,11 @@ export async function updateBookingStatus(bookingId: string, status: BookingStat
   if (status === 'in_progress') patch.started_at = new Date().toISOString();
   if (status === 'completed') patch.completed_at = new Date().toISOString();
   if (status === 'cancelled' || status === 'no_show') patch.cancelled_at = new Date().toISOString();
-  await supabase.from('health_worker_bookings').update(patch).eq('id', bookingId);
+  await sb.from('health_worker_bookings').update(patch).eq('id', bookingId);
 }
 
 export async function cancelBooking(bookingId: string, cancelledBy: string, reason: string): Promise<void> {
-  await supabase
+  await sb
     .from('health_worker_bookings')
     .update({
       status: 'cancelled',
@@ -414,7 +417,7 @@ export async function cancelBooking(bookingId: string, cancelledBy: string, reas
 }
 
 export async function rateBooking(bookingId: string, rating: number, comment?: string): Promise<void> {
-  await supabase
+  await sb
     .from('health_worker_bookings')
     .update({
       rating,
@@ -429,7 +432,7 @@ export async function rateBooking(bookingId: string, rating: number, comment?: s
  * ============================================================ */
 
 export async function getWorkerEarningsSummary(workerId: string): Promise<WorkerEarningsSummary> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_worker_bookings')
     .select('worker_earnings, status, completed_at, scheduled_at')
     .eq('worker_id', workerId);

@@ -8,6 +8,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
+
 export interface RegionalRanking {
   id?: string;
   period: string; // '2026-W30' or '2026-Q3' or '2026'
@@ -107,7 +110,7 @@ export function getAvailablePeriods(): PeriodOption[] {
 
 /** Get rankings for a period. */
 export async function getRankings(period: string): Promise<RegionalRanking[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_rankings')
     .select('*')
     .eq('period', period)
@@ -123,7 +126,7 @@ export async function getRankings(period: string): Promise<RegionalRanking[]> {
 
 /** Get rankings for a specific country across all periods (history). */
 export async function getCountryRankingHistory(countryCode: string, limit = 12): Promise<RegionalRanking[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_rankings')
     .select('*')
     .eq('country_code', countryCode)
@@ -175,7 +178,7 @@ export function getMockRankings(period: string): RegionalRanking[] {
 
 /** Get the user's country ranking position with details. */
 export async function getMyCountryRanking(countryCode: string, period: string): Promise<RegionalRanking | null> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_rankings')
     .select('*')
     .eq('country_code', countryCode)

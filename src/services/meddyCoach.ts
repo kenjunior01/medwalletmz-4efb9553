@@ -5,6 +5,9 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
 import { geminiChat, geminiStructured, isGeminiConfigured } from '@/lib/gemini';
 import { useCountry } from '@/contexts/CountryContext';
 
@@ -201,7 +204,7 @@ export async function startConversation(
   context: string = 'general',
   language: string = 'pt'
 ): Promise<MeddyConversation> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('meddy_conversations')
     .insert({
       user_id: userId,
@@ -218,7 +221,7 @@ export async function startConversation(
 }
 
 export async function getConversationHistory(conversationId: string): Promise<MeddyMessage[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('meddy_messages')
     .select('*')
     .eq('conversation_id', conversationId)
@@ -229,7 +232,7 @@ export async function getConversationHistory(conversationId: string): Promise<Me
 }
 
 export async function getRecentConversations(userId: string, limit: number = 10): Promise<MeddyConversation[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('meddy_conversations')
     .select('*')
     .eq('user_id', userId)
@@ -248,7 +251,7 @@ export async function sendMessage(
   // 1. Persist user message
   const crisisCheck = await detectCrisis(userMessage);
 
-  const { data: userMsg } = await supabase
+  const { data: userMsg } = await sb
     .from('meddy_messages')
     .insert({
       conversation_id: conversationId,
@@ -304,7 +307,7 @@ export async function sendMessage(
   }
 
   // 6. Persist Meddy reply
-  const { data: assistantMsg } = await supabase
+  const { data: assistantMsg } = await sb
     .from('meddy_messages')
     .insert({
       conversation_id: conversationId,
@@ -318,7 +321,7 @@ export async function sendMessage(
     .single();
 
   // 7. Update conversation stats
-  await supabase
+  await sb
     .from('meddy_conversations')
     .update({
       last_message_at: new Date().toISOString(),
@@ -349,7 +352,7 @@ export async function endConversation(
     }
   }
 
-  await supabase
+  await sb
     .from('meddy_conversations')
     .update({
       is_active: false,

@@ -4,6 +4,9 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
 import { geminiChat, isGeminiConfigured } from '@/lib/gemini';
 
 export interface JournalEntry {
@@ -42,7 +45,7 @@ function daysAgo(n: number): string {
 }
 
 export async function addEntry(userId: string, entry: Omit<JournalEntry, 'id' | 'user_id' | 'entry_date'>): Promise<JournalEntry> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_journal')
     .upsert({ user_id: userId, entry_date: todayISO(), ...entry }, { onConflict: 'user_id,entry_date' })
     .select()
@@ -53,7 +56,7 @@ export async function addEntry(userId: string, entry: Omit<JournalEntry, 'id' | 
 
 export async function getEntry(userId: string, date?: string): Promise<JournalEntry | null> {
   const d = date || todayISO();
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_journal')
     .select('*')
     .eq('user_id', userId)
@@ -64,7 +67,7 @@ export async function getEntry(userId: string, date?: string): Promise<JournalEn
 }
 
 export async function getEntries(userId: string, startDate: string, endDate: string): Promise<JournalEntry[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('health_journal')
     .select('*')
     .eq('user_id', userId)
@@ -116,7 +119,7 @@ export async function generateWeeklyInsight(userId: string, language: string = '
     // Persist insight on today's entry
     const todayEntry = await getEntry(userId);
     if (todayEntry?.id) {
-      await supabase.from('health_journal').update({
+      await sb.from('health_journal').update({
         ai_insight: insight,
         ai_insight_generated_at: new Date().toISOString(),
       }).eq('id', todayEntry.id);

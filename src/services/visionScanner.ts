@@ -4,6 +4,9 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
 import { geminiAnalyzeImage, geminiStructured, isGeminiConfigured } from '@/lib/gemini';
 
 export type ScanType = 'prescription' | 'lab_result' | 'medicine_label' | 'doctor_note' | 'vaccine_card' | 'other';
@@ -54,13 +57,13 @@ export async function uploadScanImage(userId: string, file: File): Promise<strin
   const ext = file.name.split('.').pop() || 'jpg';
   const path = `${userId}/${Date.now()}.${ext}`;
 
-  const { error } = await supabase.storage
+  const { error } = await sb.storage
     .from('vision-scans')
     .upload(path, file, { cacheControl: '3600', upsert: false });
 
   if (error) throw new Error(error.message);
 
-  const { data } = supabase.storage.from('vision-scans').getPublicUrl(path);
+  const { data } = sb.storage.from('vision-scans').getPublicUrl(path);
   return data.publicUrl;
 }
 
@@ -231,7 +234,7 @@ export async function scanMedicineLabel(file: File): Promise<{
 // ─── Save & fetch ──────────────────────────────────────────────────────────
 
 export async function saveScan(userId: string, scan: Omit<VisionScan, 'id' | 'user_id' | 'created_at'>): Promise<VisionScan> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('vision_scans')
     .insert({ user_id: userId, ...scan, model_used: 'gemini-2.0-flash' })
     .select()
@@ -241,7 +244,7 @@ export async function saveScan(userId: string, scan: Omit<VisionScan, 'id' | 'us
 }
 
 export async function getScans(userId: string, limit: number = 20): Promise<VisionScan[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('vision_scans')
     .select('*')
     .eq('user_id', userId)
@@ -252,7 +255,7 @@ export async function getScans(userId: string, limit: number = 20): Promise<Visi
 }
 
 export async function updateScanReview(scanId: string, corrections: Record<string, any>): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('vision_scans')
     .update({
       was_reviewed_by_user: true,

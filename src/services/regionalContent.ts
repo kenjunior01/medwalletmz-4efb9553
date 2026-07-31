@@ -7,6 +7,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
+
 export type ContentType = 'health_campaign' | 'partner_highlight' | 'emergency_notice' | 'holiday_schedule' | 'local_tip';
 
 export interface RegionalContent {
@@ -46,7 +49,7 @@ const CONTENT_TYPES: ContentType[] = ['health_campaign', 'partner_highlight', 'e
 
 /** Get content for a country (active only, sorted: pinned first, then start date desc). */
 export async function getContent(countryCode: string, opts?: { includeInactive?: boolean; type?: ContentType }): Promise<RegionalContent[]> {
-  let q = supabase
+  let q = sb
     .from('regional_content')
     .select('*')
     .eq('country_code', countryCode)
@@ -61,7 +64,7 @@ export async function getContent(countryCode: string, opts?: { includeInactive?:
 
 /** Get a single content item by ID. */
 export async function getContentById(id: string): Promise<RegionalContent | null> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_content')
     .select('*')
     .eq('id', id)
@@ -72,7 +75,7 @@ export async function getContentById(id: string): Promise<RegionalContent | null
 
 /** Create new content. */
 export async function createContent(userId: string, item: Omit<RegionalContent, 'id' | 'created_by' | 'created_at' | 'updated_at' | 'views_count' | 'clicks_count'>): Promise<RegionalContent> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_content')
     .insert({ ...item, created_by: userId })
     .select()
@@ -83,7 +86,7 @@ export async function createContent(userId: string, item: Omit<RegionalContent, 
 
 /** Update content. */
 export async function updateContent(id: string, patch: Partial<RegionalContent>): Promise<RegionalContent> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_content')
     .update(patch)
     .eq('id', id)
@@ -95,7 +98,7 @@ export async function updateContent(id: string, patch: Partial<RegionalContent>)
 
 /** Soft-delete (deactivate) content. */
 export async function deactivateContent(id: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('regional_content')
     .update({ is_active: false })
     .eq('id', id);
@@ -104,7 +107,7 @@ export async function deactivateContent(id: string): Promise<void> {
 
 /** Hard delete content. */
 export async function deleteContent(id: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('regional_content')
     .delete()
     .eq('id', id);
@@ -113,7 +116,7 @@ export async function deleteContent(id: string): Promise<void> {
 
 /** Increment views counter. */
 export async function recordView(id: string): Promise<void> {
-  const { error } = await supabase.rpc('increment_content_views', { content_id: id });
+  const { error } = await sb.rpc('increment_content_views', { content_id: id });
   if (error) {
     // Fallback: read + update
     try {
@@ -127,7 +130,7 @@ export async function recordView(id: string): Promise<void> {
 
 /** Increment clicks counter. */
 export async function recordClick(id: string): Promise<void> {
-  const { error } = await supabase.rpc('increment_content_clicks', { content_id: id });
+  const { error } = await sb.rpc('increment_content_clicks', { content_id: id });
   if (error) {
     try {
       const cur = await getContentById(id);
@@ -140,7 +143,7 @@ export async function recordClick(id: string): Promise<void> {
 
 /** Toggle pinned status. */
 export async function togglePinned(id: string, pinned: boolean): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('regional_content')
     .update({ is_pinned: pinned })
     .eq('id', id);
@@ -149,7 +152,7 @@ export async function togglePinned(id: string, pinned: boolean): Promise<void> {
 
 /** Toggle active status. */
 export async function toggleActive(id: string, active: boolean): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('regional_content')
     .update({ is_active: active })
     .eq('id', id);

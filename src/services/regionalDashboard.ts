@@ -1,5 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
+
 // ─── Types ────────────────────────────────────────────────────────────────
 
 export interface RegionalKPI {
@@ -84,7 +87,7 @@ export function getPeriodMTD(): string {
 /** Fetch KPIs for a country with sparkline trend data */
 export async function getKPIs(countryCode: string, period?: string) {
   const p = period ?? getPeriodMTD();
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_kpis' as any)
     .select('*')
     .eq('country_code', countryCode)
@@ -98,7 +101,7 @@ export async function getKPIs(countryCode: string, period?: string) {
 /** Fetch quarterly goals with progress */
 export async function getGoals(countryCode: string, quarter?: string) {
   const q = quarter ?? getQuarterKey();
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_goals' as any)
     .select('*')
     .eq('country_code', countryCode)
@@ -118,7 +121,7 @@ export async function upsertGoal(
   unit: string,
   label?: string,
 ) {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_goals' as any)
     .upsert({
       country_code: countryCode,
@@ -137,7 +140,7 @@ export async function upsertGoal(
 
 /** Get this region's ranking vs others */
 export async function getRanking(period: string, countryCode: string) {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_rankings' as any)
     .select('*')
     .eq('period', period)
@@ -151,7 +154,7 @@ export async function getRanking(period: string, countryCode: string) {
 
 /** Fetch active health campaigns for a country */
 export async function getActiveCampaigns(countryCode: string) {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_content' as any)
     .select('*')
     .eq('country_code', countryCode)
@@ -166,7 +169,7 @@ export async function getActiveCampaigns(countryCode: string) {
 
 /** Fetch global ranking for leaderboard */
 export async function getGlobalRanking(period: string) {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('regional_rankings' as any)
     .select('*')
     .eq('period', period)
@@ -181,7 +184,7 @@ export async function getPriorityActions(countryCode: string): Promise<PriorityA
   const actions: PriorityAction[] = [];
 
   // 1. Partners pending verification
-  const { count: pendingPartners } = await supabase
+  const { count: pendingPartners } = await sb
     .from('partner_applications' as any)
     .select('id', { count: 'exact', head: true })
     .eq('country_code', countryCode)
@@ -200,7 +203,7 @@ export async function getPriorityActions(countryCode: string): Promise<PriorityA
   }
 
   // 2. KPIs behind target
-  const { data: kpis } = await supabase
+  const { data: kpis } = await sb
     .from('regional_kpis' as any)
     .select('*')
     .eq('country_code', countryCode)
@@ -222,7 +225,7 @@ export async function getPriorityActions(countryCode: string): Promise<PriorityA
   }
 
   // 3. Goals at risk
-  const { data: goals } = await supabase
+  const { data: goals } = await sb
     .from('regional_goals' as any)
     .select('*')
     .eq('country_code', countryCode)
@@ -245,7 +248,7 @@ export async function getPriorityActions(countryCode: string): Promise<PriorityA
   // 4. Campaigns ending soon
   const soon = new Date();
   soon.setDate(soon.getDate() + 7);
-  const { data: endingCampaigns } = await supabase
+  const { data: endingCampaigns } = await sb
     .from('regional_content' as any)
     .select('*')
     .eq('country_code', countryCode)
@@ -274,7 +277,7 @@ export async function getPriorityActions(countryCode: string): Promise<PriorityA
 
 /** Fetch all countries for the global admin country selector */
 export async function getAllCountryRankings() {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('countries' as any)
     .select('id, name, flag_url, region');
 

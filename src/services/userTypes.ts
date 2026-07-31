@@ -16,6 +16,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
+
 export type UserType = 'patient' | 'health_worker' | 'rider' | 'promoter';
 
 export interface UserTypeOption {
@@ -80,7 +83,7 @@ export const USER_TYPES: UserTypeOption[] = [
 /** Get the primary user type for the current user. */
 export async function getUserType(userId: string): Promise<UserType> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('profiles')
       .select('user_type')
       .eq('user_id', userId)
@@ -96,7 +99,7 @@ export async function getUserType(userId: string): Promise<UserType> {
 /** Set the user's primary type (creates or updates). */
 export async function setUserType(userId: string, type: UserType): Promise<void> {
   try {
-    const { error } = await supabase.rpc('set_user_primary_type', {
+    const { error } = await sb.rpc('set_user_primary_type', {
       p_user_id: userId,
       p_type: type,
     });
@@ -104,9 +107,9 @@ export async function setUserType(userId: string, type: UserType): Promise<void>
   } catch (e: any) {
     // Fallback: try direct update on profiles
     console.warn('set_user_primary_type RPC failed, falling back', e);
-    await supabase.from('profiles').update({ user_type: type }).eq('user_id', userId);
+    await sb.from('profiles').update({ user_type: type }).eq('user_id', userId);
     // Best-effort insert into user_types
-    await supabase.from('user_types').upsert({
+    await sb.from('user_types').upsert({
       user_id: userId,
       user_type: type,
       is_primary: true,
@@ -133,7 +136,7 @@ export interface PendingVerification {
 
 export async function getPendingVerifications(): Promise<PendingVerification[]> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('pending_verifications')
       .select('*')
       .order('created_at', { ascending: false });
@@ -146,7 +149,7 @@ export async function getPendingVerifications(): Promise<PendingVerification[]> 
 }
 
 export async function approveRider(riderId: string, adminId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_riders')
     .update({
       is_verified: true,
@@ -159,7 +162,7 @@ export async function approveRider(riderId: string, adminId: string): Promise<vo
 }
 
 export async function rejectRider(riderId: string, adminId: string, reason: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_riders')
     .update({
       is_verified: false,
@@ -173,7 +176,7 @@ export async function rejectRider(riderId: string, adminId: string, reason: stri
 }
 
 export async function approveWorker(workerId: string, adminId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_worker_profiles')
     .update({
       is_verified: true,
@@ -187,7 +190,7 @@ export async function approveWorker(workerId: string, adminId: string): Promise<
 }
 
 export async function rejectWorker(workerId: string, adminId: string, reason: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('health_worker_profiles')
     .update({
       is_verified: false,
