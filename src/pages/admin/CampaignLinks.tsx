@@ -174,7 +174,7 @@ export default function CampaignLinks() {
     queryKey: ['admin-campaign-links', search, typeFilter],
     queryFn: async () => {
       // Using campaign_links table if it exists, otherwise local mock
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('campaign_links')
         .select('*')
         .order('created_at', { ascending: false });
@@ -212,7 +212,7 @@ export default function CampaignLinks() {
 
       const fullUrl = `${baseUrl}/?${params.toString()}`;
 
-      const { error } = await supabase.from('campaign_links').insert({
+      const { error } = await (supabase as any).from('campaign_links').insert({
         name: data.name,
         description: data.description,
         type: data.type,

@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 /* ─── Types ───────────────────────────────────────────────────────────────── */
 
-type FacilityRole = 'clinic' | 'hospital' | 'lab' | 'store_owner';
+type FacilityRole = 'clinic' | 'hospital' | 'lab' | 'store_owner' | 'pharmacy';
 type VerificationStatus = 'verified' | 'pending' | 'suspended';
 
 interface Facility {
@@ -58,21 +58,21 @@ const fadeUp = {
 
 /* ─── Helpers ─────────────────────────────────────────────────────────────── */
 
-const ROLE_LABELS: Record<FacilityRole, string> = {
+const ROLE_LABELS: Record<string, string> = {
   clinic: 'Clínica',
   hospital: 'Hospital',
   lab: 'Laboratório',
   store_owner: 'Farmácia',
 };
 
-const ROLE_ICONS: Record<FacilityRole, React.ElementType> = {
+const ROLE_ICONS: Record<string, React.ElementType> = {
   clinic: Stethoscope,
   hospital: Building2,
   lab: FlaskConical,
   store_owner: Pill,
 };
 
-const ROLE_COLORS: Record<FacilityRole, string> = {
+const ROLE_COLORS: Record<string, string> = {
   clinic: 'bg-teal-500/10 text-teal-600',
   hospital: 'bg-rose-500/10 text-rose-600',
   lab: 'bg-amber-500/10 text-amber-600',

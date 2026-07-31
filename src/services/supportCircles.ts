@@ -7,6 +7,9 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
 import { geminiStructured, isGeminiConfigured } from '@/lib/gemini';
 
 export interface SupportCircle {
@@ -136,7 +139,7 @@ Responde APENAS com JSON: {"status": "approved|flagged|rejected", "reason": "exp
 /* ---------- Circles CRUD ---------- */
 
 export async function getCircles(opts?: { countryCode?: string; conditionTag?: string; userId?: string }): Promise<SupportCircle[]> {
-  let q = supabase.from('support_circles').select('*');
+  let q = sb.from('support_circles').select('*');
   if (opts?.countryCode) q = q.or(`country_code.eq.${opts.countryCode},country_code.is.null`);
   if (opts?.conditionTag) q = q.eq('condition_tag', opts.conditionTag);
   q = q.order('created_at', { ascending: false });
@@ -150,7 +153,7 @@ export async function getCircles(opts?: { countryCode?: string; conditionTag?: s
   const circleIds = circles.map((c) => c.id);
 
   // Get member counts
-  const { data: memberCounts } = await supabase
+  const { data: memberCounts } = await sb
     .from('support_circle_members')
     .select('circle_id')
     .in('circle_id', circleIds);
@@ -160,7 +163,7 @@ export async function getCircles(opts?: { countryCode?: string; conditionTag?: s
   }
 
   // Get last message preview per circle
-  const { data: lastMessages } = await supabase
+  const { data: lastMessages } = await sb
     .from('support_circle_messages')
     .select('circle_id, content, created_at')
     .in('circle_id', circleIds)
@@ -173,7 +176,7 @@ export async function getCircles(opts?: { countryCode?: string; conditionTag?: s
   // Get user membership
   let userMembership = new Set<string>();
   if (opts?.userId) {
-    const { data: myMemberships } = await supabase
+    const { data: myMemberships } = await sb
       .from('support_circle_members')
       .select('circle_id')
       .eq('user_id', opts.userId)
@@ -191,19 +194,19 @@ export async function getCircles(opts?: { countryCode?: string; conditionTag?: s
 }
 
 export async function getCircleById(id: string, userId?: string): Promise<SupportCircle | null> {
-  const { data, error } = await supabase.from('support_circles').select('*').eq('id', id).maybeSingle();
+  const { data, error } = await sb.from('support_circles').select('*').eq('id', id).maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) return null;
 
   // Compute member count
-  const { count } = await supabase
+  const { count } = await sb
     .from('support_circle_members')
     .select('*', { count: 'exact', head: true })
     .eq('circle_id', id);
 
   let isMember = false;
   if (userId) {
-    const { data: myMembership } = await supabase
+    const { data: myMembership } = await sb
       .from('support_circle_members')
       .select('id, role')
       .eq('circle_id', id)
@@ -216,7 +219,7 @@ export async function getCircleById(id: string, userId?: string): Promise<Suppor
 }
 
 export async function createCircle(userId: string, circle: Omit<SupportCircle, 'id' | 'created_by' | 'created_at' | 'updated_at'>): Promise<SupportCircle> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('support_circles')
     .insert({ ...circle, created_by: userId })
     .select()
@@ -224,7 +227,7 @@ export async function createCircle(userId: string, circle: Omit<SupportCircle, '
   if (error) throw new Error(error.message);
 
   // Auto-join creator as admin
-  await supabase.from('support_circle_members').insert({
+  await sb.from('support_circle_members').insert({
     circle_id: data.id,
     user_id: userId,
     role: 'admin',
@@ -236,7 +239,7 @@ export async function createCircle(userId: string, circle: Omit<SupportCircle, '
 /* ---------- Membership ---------- */
 
 export async function joinCircle(circleId: string, userId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('support_circle_members')
     .insert({ circle_id: circleId, user_id: userId, role: 'member' });
   if (error) {
@@ -246,7 +249,7 @@ export async function joinCircle(circleId: string, userId: string): Promise<void
 }
 
 export async function leaveCircle(circleId: string, userId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('support_circle_members')
     .delete()
     .eq('circle_id', circleId)
@@ -255,7 +258,7 @@ export async function leaveCircle(circleId: string, userId: string): Promise<voi
 }
 
 export async function getMyCircles(userId: string): Promise<SupportCircle[]> {
-  const { data: memberships, error } = await supabase
+  const { data: memberships, error } = await sb
     .from('support_circle_members')
     .select('circle_id')
     .eq('user_id', userId);
@@ -263,7 +266,7 @@ export async function getMyCircles(userId: string): Promise<SupportCircle[]> {
   if (!memberships || memberships.length === 0) return [];
 
   const circleIds = memberships.map((m) => m.circle_id);
-  const { data: circles, error: e2 } = await supabase
+  const { data: circles, error: e2 } = await sb
     .from('support_circles')
     .select('*')
     .in('id', circleIds)
@@ -271,7 +274,7 @@ export async function getMyCircles(userId: string): Promise<SupportCircle[]> {
   if (e2) throw new Error(e2.message);
 
   // Get last message per circle
-  const { data: lastMsgs } = await supabase
+  const { data: lastMsgs } = await sb
     .from('support_circle_messages')
     .select('circle_id, content, created_at')
     .in('circle_id', circleIds)
@@ -293,7 +296,7 @@ export async function getMyCircles(userId: string): Promise<SupportCircle[]> {
 /* ---------- Messages ---------- */
 
 export async function getMessages(circleId: string, limit = 50, before?: string): Promise<CircleMessage[]> {
-  let q = supabase
+  let q = sb
     .from('support_circle_messages')
     .select(`
       *,
@@ -307,7 +310,7 @@ export async function getMessages(circleId: string, limit = 50, before?: string)
   const { data, error } = await q;
   if (error) {
     // Fallback without join (auth.users not always accessible from client)
-    const { data: d2, error: e2 } = await supabase
+    const { data: d2, error: e2 } = await sb
       .from('support_circle_messages')
       .select('*')
       .eq('circle_id', circleId)
@@ -337,7 +340,7 @@ export async function sendMessage(
   }
 
   // 3. Insert message
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('support_circle_messages')
     .insert({
       circle_id: circleId,
@@ -358,7 +361,7 @@ export async function sendMessage(
 
 export async function reactToMessage(messageId: string, emoji: string): Promise<void> {
   // Read current reactions, increment, save
-  const { data: msg } = await supabase
+  const { data: msg } = await sb
     .from('support_circle_messages')
     .select('reactions')
     .eq('id', messageId)
@@ -366,16 +369,16 @@ export async function reactToMessage(messageId: string, emoji: string): Promise<
   if (!msg) return;
   const reactions = (msg.reactions as Record<string, number>) ?? {};
   reactions[emoji] = (reactions[emoji] ?? 0) + 1;
-  await supabase.from('support_circle_messages').update({ reactions }).eq('id', messageId);
+  await sb.from('support_circle_messages').update({ reactions }).eq('id', messageId);
 }
 
 export async function deleteMessage(messageId: string): Promise<void> {
-  const { error } = await supabase.from('support_circle_messages').delete().eq('id', messageId);
+  const { error } = await sb.from('support_circle_messages').delete().eq('id', messageId);
   if (error) throw new Error(error.message);
 }
 
 export async function markCircleRead(circleId: string, userId: string): Promise<void> {
-  await supabase
+  await sb
     .from('support_circle_members')
     .update({ last_read_at: new Date().toISOString() })
     .eq('circle_id', circleId)

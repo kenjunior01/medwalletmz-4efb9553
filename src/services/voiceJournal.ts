@@ -14,6 +14,9 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
 import { isGeminiConfigured } from '@/lib/gemini';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
@@ -154,7 +157,7 @@ function pickMimeType(): string | undefined {
 export async function uploadVoiceAudio(userId: string, blob: Blob): Promise<string> {
   const ext = blob.type.includes('webm') ? 'webm' : blob.type.includes('ogg') ? 'ogg' : 'm4a';
   const path = `${userId}/${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from('voice-journals').upload(path, blob, {
+  const { error } = await sb.storage.from('voice-journals').upload(path, blob, {
     contentType: blob.type,
     cacheControl: '3600',
   });
@@ -276,7 +279,7 @@ export function createWebSpeechController(onResult: (r: WebSpeechResult, isFinal
 /* ---------- DB operations ---------- */
 
 export async function saveVoiceJournal(userId: string, entry: Omit<VoiceJournalEntry, 'id' | 'user_id'>): Promise<VoiceJournalEntry> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('voice_journals')
     .insert({ user_id: userId, ...entry })
     .select()
@@ -286,7 +289,7 @@ export async function saveVoiceJournal(userId: string, entry: Omit<VoiceJournalE
 }
 
 export async function getVoiceJournals(userId: string, limit = 30): Promise<VoiceJournalEntry[]> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('voice_journals')
     .select('*')
     .eq('user_id', userId)
@@ -297,12 +300,12 @@ export async function getVoiceJournals(userId: string, limit = 30): Promise<Voic
 }
 
 export async function deleteVoiceJournal(id: string): Promise<void> {
-  const { error } = await supabase.from('voice_journals').delete().eq('id', id);
+  const { error } = await sb.from('voice_journals').delete().eq('id', id);
   if (error) throw new Error(error.message);
 }
 
 export async function getPublicAudioUrl(audioPath: string): Promise<string | null> {
-  const { data } = supabase.storage.from('voice-journals').createSignedUrl(audioPath, 3600);
+  const { data } = sb.storage.from('voice-journals').createSignedUrl(audioPath, 3600);
   return data?.signedUrl ?? null;
 }
 

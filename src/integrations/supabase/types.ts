@@ -4380,6 +4380,7 @@ export type Database = {
           country_id: string | null
           created_at: string
           id: string
+          province_id: string | null
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
@@ -4387,6 +4388,7 @@ export type Database = {
           country_id?: string | null
           created_at?: string
           id?: string
+          province_id?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
@@ -4394,6 +4396,7 @@ export type Database = {
           country_id?: string | null
           created_at?: string
           id?: string
+          province_id?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }

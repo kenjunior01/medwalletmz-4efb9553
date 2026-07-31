@@ -9,6 +9,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+// Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
+const sb: any = supabase;
+
 export type Relationship = 'parent' | 'child' | 'spouse' | 'sibling' | 'grandparent' | 'other';
 
 export interface FamilyMember {
@@ -59,7 +62,7 @@ export interface MedicationSchedule {
 
 /** Add a new family member under the caretaker's account. */
 export async function addFamilyMember(userId: string, member: Omit<FamilyMember, 'id' | 'caretaker_user_id'>): Promise<FamilyMember> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('family_members')
     .insert({ caretaker_user_id: userId, ...member })
     .select()
@@ -70,7 +73,7 @@ export async function addFamilyMember(userId: string, member: Omit<FamilyMember,
 
 /** Update an existing family member. */
 export async function updateFamilyMember(memberId: string, patch: Partial<FamilyMember>): Promise<FamilyMember> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('family_members')
     .update(patch)
     .eq('id', memberId)
@@ -83,17 +86,17 @@ export async function updateFamilyMember(memberId: string, patch: Partial<Family
 /** Soft-deactivate (or hard-delete) a family member. */
 export async function removeFamilyMember(memberId: string, hardDelete = false): Promise<void> {
   if (hardDelete) {
-    const { error } = await supabase.from('family_members').delete().eq('id', memberId);
+    const { error } = await sb.from('family_members').delete().eq('id', memberId);
     if (error) throw new Error(error.message);
   } else {
-    const { error } = await supabase.from('family_members').update({ is_active: false }).eq('id', memberId);
+    const { error } = await sb.from('family_members').update({ is_active: false }).eq('id', memberId);
     if (error) throw new Error(error.message);
   }
 }
 
 /** Get all family members for a caretaker. */
 export async function getFamilyMembers(userId: string, includeInactive = false): Promise<FamilyMember[]> {
-  let q = supabase.from('family_members').select('*').eq('caretaker_user_id', userId).order('created_at', { ascending: true });
+  let q = sb.from('family_members').select('*').eq('caretaker_user_id', userId).order('created_at', { ascending: true });
   if (!includeInactive) q = q.eq('is_active', true);
   const { data, error } = await q;
   if (error) throw new Error(error.message);
@@ -102,7 +105,7 @@ export async function getFamilyMembers(userId: string, includeInactive = false):
 
 /** Get one family member by ID. */
 export async function getFamilyMember(memberId: string): Promise<FamilyMember | null> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('family_members')
     .select('*')
     .eq('id', memberId)
@@ -113,7 +116,7 @@ export async function getFamilyMember(memberId: string): Promise<FamilyMember | 
 
 /** Mark a scheduled medication as taken now (or at a specific time). */
 export async function markMedicationTaken(logId: string, takenAt: Date = new Date()): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('family_medication_logs')
     .update({ taken_at: takenAt.toISOString() })
     .eq('id', logId);
@@ -122,7 +125,7 @@ export async function markMedicationTaken(logId: string, takenAt: Date = new Dat
 
 /** Mark a scheduled medication as skipped (with reason). */
 export async function markMedicationSkipped(logId: string, reason: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await sb
     .from('family_medication_logs')
     .update({ skipped_at: new Date().toISOString(), skipped_reason: reason })
     .eq('id', logId);
@@ -137,7 +140,7 @@ export async function scheduleMedicationToday(
   scheduledTime: string,
   notes?: string,
 ): Promise<FamilyMedicationLog> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('family_medication_logs')
     .insert({
       family_member_id: memberId,
@@ -158,7 +161,7 @@ export async function getTodaySchedule(memberId: string): Promise<MedicationSche
   start.setHours(0, 0, 0, 0);
   const end = new Date();
   end.setHours(23, 59, 59, 999);
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('family_medication_logs')
     .select('*')
     .eq('family_member_id', memberId)
@@ -195,7 +198,7 @@ export async function getAdherenceSummary(memberId: string): Promise<{
 }> {
   const since = new Date();
   since.setDate(since.getDate() - 7);
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('family_medication_logs')
     .select('taken_at, skipped_at, scheduled_time, created_at')
     .eq('family_member_id', memberId)
