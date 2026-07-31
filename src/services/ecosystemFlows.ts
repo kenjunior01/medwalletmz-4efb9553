@@ -197,7 +197,7 @@ export async function createEcosystemBooking(
   // For patient_to_worker: also create a worker booking + delivery
   if (params.flowType === 'patient_to_worker' && params.patientId && params.workerId) {
     // 1. Create the worker booking (status: confirmed)
-    const { data: workerBooking, error: bookingError } = await supabase
+    const { data: workerBooking, error: bookingError } = await (supabase as any)
       .from('health_worker_bookings')
       .insert({
         worker_id: params.workerId,
@@ -220,7 +220,7 @@ export async function createEcosystemBooking(
     if (bookingError) throw new Error(bookingError.message);
 
     // 2. Create the health delivery (status: pending) so riders see it
-    const { data: delivery, error: deliveryError } = await supabase
+    const { data: delivery, error: deliveryError } = await (supabase as any)
       .from('health_deliveries')
       .insert({
         customer_user_id: params.patientId,
@@ -245,7 +245,7 @@ export async function createEcosystemBooking(
     if (deliveryError) throw new Error(deliveryError.message);
 
     // 3. Create the ecosystem booking with linked IDs
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('ecosystem_bookings')
       .insert({
         ...bookingRow,
@@ -260,7 +260,7 @@ export async function createEcosystemBooking(
   }
 
   // Generic flow (worker_to_patient_delivery or promoter_referral_transport)
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('ecosystem_bookings')
     .insert(bookingRow)
     .select()
@@ -295,7 +295,7 @@ export async function bookRiderToWorkerAppointment(params: {
       : 'clinic_consultation';
 
   // Step 1: Create the worker booking (confirmed immediately)
-  const { data: workerBooking, error: bookingError } = await supabase
+  const { data: workerBooking, error: bookingError } = await (supabase as any)
     .from('health_worker_bookings')
     .insert({
       worker_id: params.workerId,
@@ -320,7 +320,7 @@ export async function bookRiderToWorkerAppointment(params: {
   if (bookingError) throw new Error(bookingError.message);
 
   // Step 2: Create the health delivery so it appears in the rider marketplace
-  const { data: delivery, error: deliveryError } = await supabase
+  const { data: delivery, error: deliveryError } = await (supabase as any)
     .from('health_deliveries')
     .insert({
       customer_user_id: params.patientId,
@@ -345,7 +345,7 @@ export async function bookRiderToWorkerAppointment(params: {
   if (deliveryError) throw new Error(deliveryError.message);
 
   // Step 3: Create the ecosystem booking linking everything together
-  const { data: ecoBooking, error: ecoError } = await supabase
+  const { data: ecoBooking, error: ecoError } = await (supabase as any)
     .from('ecosystem_bookings')
     .insert({
       initiated_by: params.patientId,
@@ -374,7 +374,7 @@ export async function bookRiderToWorkerAppointment(params: {
  * Falls back to mock data on error.
  */
 export async function getMyEcosystemBookings(userId: string): Promise<EcosystemBooking[]> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('ecosystem_bookings')
     .select('*')
     .or(
@@ -393,7 +393,7 @@ export async function getMyEcosystemBookings(userId: string): Promise<EcosystemB
  * Falls back to mock data on error.
  */
 export async function getPendingRiderRequests(): Promise<EcosystemBooking[]> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('ecosystem_bookings')
     .select('*')
     .eq('status', 'pending_rider')
@@ -413,7 +413,7 @@ export async function assignRiderToEcosystemBooking(
   riderId: string,
 ): Promise<void> {
   // Update ecosystem booking with optimistic lock
-  const { error: ecoError } = await supabase
+  const { error: ecoError } = await (supabase as any)
     .from('ecosystem_bookings')
     .update({
       rider_id: riderId,
@@ -425,14 +425,14 @@ export async function assignRiderToEcosystemBooking(
   if (ecoError) throw new Error(ecoError.message);
 
   // Also update the linked health delivery if it exists
-  const { data: booking } = await supabase
+  const { data: booking } = await (supabase as any)
     .from('ecosystem_bookings')
     .select('rider_delivery_id')
     .eq('id', bookingId)
     .maybeSingle();
 
   if (booking?.rider_delivery_id) {
-    await supabase
+    await (supabase as any)
       .from('health_deliveries')
       .update({
         rider_id: riderId,
@@ -449,7 +449,7 @@ export async function assignRiderToEcosystemBooking(
  */
 export async function completeEcosystemBooking(bookingId: string): Promise<void> {
   // Fetch linked IDs first
-  const { data: booking, error: fetchError } = await supabase
+  const { data: booking, error: fetchError } = await (supabase as any)
     .from('ecosystem_bookings')
     .select('rider_delivery_id, worker_booking_id')
     .eq('id', bookingId)
@@ -458,7 +458,7 @@ export async function completeEcosystemBooking(bookingId: string): Promise<void>
   if (fetchError) throw new Error(fetchError.message);
 
   // Mark ecosystem booking as completed
-  const { error: ecoError } = await supabase
+  const { error: ecoError } = await (supabase as any)
     .from('ecosystem_bookings')
     .update({ status: 'completed' })
     .eq('id', bookingId);
@@ -467,7 +467,7 @@ export async function completeEcosystemBooking(bookingId: string): Promise<void>
 
   // Also complete the linked delivery
   if (booking?.rider_delivery_id) {
-    await supabase
+    await (supabase as any)
       .from('health_deliveries')
       .update({
         status: 'delivered',
@@ -478,7 +478,7 @@ export async function completeEcosystemBooking(bookingId: string): Promise<void>
 
   // Also complete the linked worker booking
   if (booking?.worker_booking_id) {
-    await supabase
+    await (supabase as any)
       .from('health_worker_bookings')
       .update({
         status: 'completed',

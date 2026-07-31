@@ -59,7 +59,7 @@ export interface OnboardingListItem extends CountryOnboarding {
 
 /** Get all onboarding records (admin view). */
 export async function getOnboardings(): Promise<OnboardingListItem[]> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('country_onboarding')
     .select('*')
     .order('updated_at', { ascending: false });
@@ -74,7 +74,7 @@ export async function getOnboardings(): Promise<OnboardingListItem[]> {
 
 /** Get a single onboarding record. */
 export async function getOnboarding(id: string): Promise<CountryOnboarding | null> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('country_onboarding')
     .select('*')
     .eq('id', id)
@@ -84,7 +84,7 @@ export async function getOnboarding(id: string): Promise<CountryOnboarding | nul
 }
 
 export async function getOnboardingByCountry(countryCode: string): Promise<CountryOnboarding | null> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('country_onboarding')
     .select('*')
     .eq('country_code', countryCode)
@@ -95,7 +95,7 @@ export async function getOnboardingByCountry(countryCode: string): Promise<Count
 
 /** Create new onboarding record. */
 export async function createOnboarding(userId: string, countryCode: string, countryName: string): Promise<CountryOnboarding> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('country_onboarding')
     .insert({
       country_code: countryCode,
@@ -125,7 +125,7 @@ export async function saveStep(onboardingId: string, step: OnboardingStep, stepD
   const progress = Math.round(((curIdx + 1) / (STEP_ORDER.length - 1)) * 100);
 
   // 4. Update
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('country_onboarding')
     .update({
       wizard_data: wizardData,
@@ -141,7 +141,7 @@ export async function saveStep(onboardingId: string, step: OnboardingStep, stepD
 
 /** Activate a country (final step). */
 export async function activateCountry(onboardingId: string, q1Targets?: Record<string, any>): Promise<CountryOnboarding> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('country_onboarding')
     .update({
       is_activated: true,
@@ -159,7 +159,7 @@ export async function activateCountry(onboardingId: string, q1Targets?: Record<s
 
 /** Assign regional CEO. */
 export async function assignRegionalCEO(onboardingId: string, ceoUserId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from('country_onboarding')
     .update({ regional_ceo_user_id: ceoUserId })
     .eq('id', onboardingId);
@@ -168,7 +168,7 @@ export async function assignRegionalCEO(onboardingId: string, ceoUserId: string)
 
 /** Delete onboarding record. */
 export async function deleteOnboarding(id: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from('country_onboarding')
     .delete()
     .eq('id', id);
