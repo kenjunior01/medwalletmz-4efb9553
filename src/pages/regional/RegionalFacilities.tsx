@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 /* ─── Types ───────────────────────────────────────────────────────────────── */
 
-type FacilityRole = 'clinic' | 'hospital' | 'lab' | 'store_owner';
+type FacilityRole = 'clinic' | 'hospital' | 'lab' | 'store_owner' | 'pharmacy';
 type VerificationStatus = 'verified' | 'pending' | 'suspended';
 
 interface Facility {

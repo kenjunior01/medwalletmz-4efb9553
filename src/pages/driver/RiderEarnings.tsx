@@ -25,7 +25,7 @@ import {
   ArrowRight,
   ChevronRight,
   CircleDollarSign,
-  PiggyBank,
+  Wallet as PiggyBank,
   Gift,
   Trophy,
   Medal,
