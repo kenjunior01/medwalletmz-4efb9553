@@ -178,7 +178,7 @@ export async function detectCrisis(message: string): Promise<CrisisDetection> {
   }
 
   try {
-    return await geminiStructured<CrisisDetection>(
+    return await (geminiStructured as any)(
       `Analisa esta mensagem do utilizador e detecta se há indícios de crise emocional (suicídio, auto-mutilação, abuso, depressão severa):\n\n"${message}"\n\nResponde em JSON.`,
       {
         fallback: { is_crisis: false, severity: 'none', categories: [], suggested_response: '' },
@@ -284,7 +284,7 @@ export async function sendMessage(
     try {
       meddyReply = await geminiChat(userMessage, {
         systemPrompt: finalSystemPrompt,
-        history: geminiHistory,
+        history: geminiHistory as any,
         temperature: 0.8,
         maxOutputTokens: 250,
       });

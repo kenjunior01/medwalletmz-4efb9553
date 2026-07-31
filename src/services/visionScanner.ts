@@ -134,7 +134,7 @@ export async function scanPrescription(file: File): Promise<{
     return { medications: [], doctor_name: undefined, facility: undefined, date: undefined, next_appointment: undefined };
   }
   try {
-    return await geminiStructured(
+    return await (geminiStructured as any)(
       PRESCRIPTION_PROMPT,
       {
         fallback: { medications: [] },
@@ -172,7 +172,7 @@ export async function scanLabResult(file: File): Promise<{
     return { results: [] };
   }
   try {
-    return await geminiStructured(
+    return await (geminiStructured as any)(
       LAB_RESULT_PROMPT,
       {
         fallback: { results: [] },
@@ -208,7 +208,7 @@ export async function scanMedicineLabel(file: File): Promise<{
     return {};
   }
   try {
-    return await geminiStructured(
+    return await (geminiStructured as any)(
       MEDICINE_LABEL_PROMPT,
       {
         fallback: {},
