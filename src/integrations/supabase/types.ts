@@ -339,6 +339,45 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string | null
+          id: number
+          ip_address: unknown
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string | null
+          id?: number
+          ip_address?: unknown
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string | null
+          id?: number
+          ip_address?: unknown
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       blood_donation_campaigns: {
         Row: {
           address: string | null
@@ -1335,6 +1374,7 @@ export type Database = {
           current_latitude: number | null
           current_longitude: number | null
           delivered_at: string | null
+          driver_earnings: number | null
           driver_id: string
           id: string
           order_id: string
@@ -1346,6 +1386,7 @@ export type Database = {
           current_latitude?: number | null
           current_longitude?: number | null
           delivered_at?: string | null
+          driver_earnings?: number | null
           driver_id: string
           id?: string
           order_id: string
@@ -1357,6 +1398,7 @@ export type Database = {
           current_latitude?: number | null
           current_longitude?: number | null
           delivered_at?: string | null
+          driver_earnings?: number | null
           driver_id?: string
           id?: string
           order_id?: string
@@ -1372,6 +1414,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      driver_vehicles: {
+        Row: {
+          brand: string
+          color: string | null
+          created_at: string | null
+          driver_id: string
+          id: string
+          inspection_url: string | null
+          insurance_url: string | null
+          is_primary: boolean | null
+          is_verified: boolean | null
+          license_carta_url: string | null
+          license_plate: string | null
+          license_viatura_url: string | null
+          model: string
+          photo_back: string | null
+          photo_front: string | null
+          photo_interior: string | null
+          photo_side: string | null
+          updated_at: string | null
+          vehicle_type: string
+          verified_at: string | null
+          verified_by: string | null
+          year: number | null
+        }
+        Insert: {
+          brand: string
+          color?: string | null
+          created_at?: string | null
+          driver_id: string
+          id?: string
+          inspection_url?: string | null
+          insurance_url?: string | null
+          is_primary?: boolean | null
+          is_verified?: boolean | null
+          license_carta_url?: string | null
+          license_plate?: string | null
+          license_viatura_url?: string | null
+          model: string
+          photo_back?: string | null
+          photo_front?: string | null
+          photo_interior?: string | null
+          photo_side?: string | null
+          updated_at?: string | null
+          vehicle_type: string
+          verified_at?: string | null
+          verified_by?: string | null
+          year?: number | null
+        }
+        Update: {
+          brand?: string
+          color?: string | null
+          created_at?: string | null
+          driver_id?: string
+          id?: string
+          inspection_url?: string | null
+          insurance_url?: string | null
+          is_primary?: boolean | null
+          is_verified?: boolean | null
+          license_carta_url?: string | null
+          license_plate?: string | null
+          license_viatura_url?: string | null
+          model?: string
+          photo_back?: string | null
+          photo_front?: string | null
+          photo_interior?: string | null
+          photo_side?: string | null
+          updated_at?: string | null
+          vehicle_type?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          year?: number | null
+        }
+        Relationships: []
       }
       email_send_log: {
         Row: {
@@ -3446,15 +3563,20 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          city: string | null
           country_id: string | null
           created_at: string
           default_city: string | null
+          driver_selfie_url: string | null
+          email: string | null
           emola_number: string | null
           full_name: string | null
           health_certified: boolean
           id: string
+          is_active: boolean | null
           is_available: boolean | null
           is_verified_driver: boolean
+          last_login: string | null
           license_carta_url: string | null
           license_plate: string | null
           license_viatura_url: string | null
@@ -3462,24 +3584,37 @@ export type Database = {
           mpesa_number: string | null
           onboarding_completed: boolean
           phone: string | null
+          province_id: string | null
           referral_code: string | null
           referred_by: string | null
+          total_earnings_mzn: number | null
           updated_at: string
           user_id: string
+          user_type: string | null
+          vehicle_brand: string | null
+          vehicle_color: string | null
+          vehicle_model: string | null
+          vehicle_photo_urls: string[] | null
           vehicle_type: string | null
+          vehicle_year: number | null
           verified_at: string | null
         }
         Insert: {
           avatar_url?: string | null
+          city?: string | null
           country_id?: string | null
           created_at?: string
           default_city?: string | null
+          driver_selfie_url?: string | null
+          email?: string | null
           emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
           id?: string
+          is_active?: boolean | null
           is_available?: boolean | null
           is_verified_driver?: boolean
+          last_login?: string | null
           license_carta_url?: string | null
           license_plate?: string | null
           license_viatura_url?: string | null
@@ -3487,24 +3622,37 @@ export type Database = {
           mpesa_number?: string | null
           onboarding_completed?: boolean
           phone?: string | null
+          province_id?: string | null
           referral_code?: string | null
           referred_by?: string | null
+          total_earnings_mzn?: number | null
           updated_at?: string
           user_id: string
+          user_type?: string | null
+          vehicle_brand?: string | null
+          vehicle_color?: string | null
+          vehicle_model?: string | null
+          vehicle_photo_urls?: string[] | null
           vehicle_type?: string | null
+          vehicle_year?: number | null
           verified_at?: string | null
         }
         Update: {
           avatar_url?: string | null
+          city?: string | null
           country_id?: string | null
           created_at?: string
           default_city?: string | null
+          driver_selfie_url?: string | null
+          email?: string | null
           emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
           id?: string
+          is_active?: boolean | null
           is_available?: boolean | null
           is_verified_driver?: boolean
+          last_login?: string | null
           license_carta_url?: string | null
           license_plate?: string | null
           license_viatura_url?: string | null
@@ -3512,11 +3660,19 @@ export type Database = {
           mpesa_number?: string | null
           onboarding_completed?: boolean
           phone?: string | null
+          province_id?: string | null
           referral_code?: string | null
           referred_by?: string | null
+          total_earnings_mzn?: number | null
           updated_at?: string
           user_id?: string
+          user_type?: string | null
+          vehicle_brand?: string | null
+          vehicle_color?: string | null
+          vehicle_model?: string | null
+          vehicle_photo_urls?: string[] | null
           vehicle_type?: string | null
+          vehicle_year?: number | null
           verified_at?: string | null
         }
         Relationships: []
@@ -3548,6 +3704,39 @@ export type Database = {
           p256dh?: string
           user_agent?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          action: string
+          blocked: boolean
+          count: number
+          created_at: string | null
+          id: number
+          key_hash: string
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          action: string
+          blocked?: boolean
+          count?: number
+          created_at?: string | null
+          id?: number
+          key_hash: string
+          window_end?: string
+          window_start?: string
+        }
+        Update: {
+          action?: string
+          blocked?: boolean
+          count?: number
+          created_at?: string | null
+          id?: number
+          key_hash?: string
+          window_end?: string
+          window_start?: string
         }
         Relationships: []
       }
@@ -4362,6 +4551,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          idempotency_key: string | null
           metadata: Json | null
           payment_method: string | null
           reference_id: string | null
@@ -4376,6 +4566,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          idempotency_key?: string | null
           metadata?: Json | null
           payment_method?: string | null
           reference_id?: string | null
@@ -4390,6 +4581,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          idempotency_key?: string | null
           metadata?: Json | null
           payment_method?: string | null
           reference_id?: string | null
@@ -4569,13 +4761,65 @@ export type Database = {
         Args: { p_id: string; p_notes?: string }
         Returns: Json
       }
+      award_referral_bonus: {
+        Args: {
+          _bonus_coins?: number
+          _bonus_mzn?: number
+          _referred_id: string
+          _referrer_id: string
+        }
+        Returns: Json
+      }
       book_consultation_atomic: {
         Args: { _coupon_id?: string; _reason?: string; _slot_id: string }
         Returns: Json
       }
       bootstrap_admin: { Args: never; Returns: Json }
+      check_rate_limit: {
+        Args: {
+          _action: string
+          _block_minutes?: number
+          _identifier: string
+          _max_attempts?: number
+          _window_minutes?: number
+        }
+        Returns: Json
+      }
+      checkout_debit_order: {
+        Args: {
+          _amount: number
+          _description?: string
+          _order_id: string
+          _user_id: string
+        }
+        Returns: Json
+      }
+      cleanup_expired_rate_limits: { Args: never; Returns: number }
+      clear_rate_limit: {
+        Args: { _action?: string; _identifier: string }
+        Returns: undefined
+      }
       confirm_mpesa_payment: {
         Args: { _id: string; _mpesa_tx_id?: string }
+        Returns: Json
+      }
+      create_order_atomic: {
+        Args: {
+          _delivery_address: string
+          _delivery_fee: number
+          _is_priority?: boolean
+          _items?: Json
+          _notes?: string
+          _payment_method?: string
+          _payment_phone?: string
+          _prescription_id?: string
+          _priority_level?: number
+          _requires_cold_chain?: boolean
+          _store_id: string
+          _subtotal: number
+          _total: number
+          _user_id: string
+        }
         Returns: Json
       }
       delete_email: {
@@ -4607,19 +4851,60 @@ export type Database = {
         }
       }
       gen_prescription_code: { Args: never; Returns: string }
+      get_audit_log: {
+        Args: {
+          _action?: string
+          _limit?: number
+          _offset?: number
+          _user_id?: string
+        }
+        Returns: {
+          action: string
+          actor_id: string
+          created_at: string
+          id: number
+          new_data: Json
+          old_data: Json
+          record_id: string
+          table_name: string
+        }[]
+      }
+      get_driver_vehicles: {
+        Args: { p_driver_id: string }
+        Returns: {
+          brand: string
+          color: string
+          id: string
+          is_primary: boolean
+          is_verified: boolean
+          license_plate: string
+          model: string
+          photo_back: string
+          photo_front: string
+          photo_interior: string
+          photo_side: string
+          vehicle_type: string
+          year: number
+        }[]
+      }
       get_profile_private: {
         Args: { _user_id: string }
         Returns: {
           avatar_url: string | null
+          city: string | null
           country_id: string | null
           created_at: string
           default_city: string | null
+          driver_selfie_url: string | null
+          email: string | null
           emola_number: string | null
           full_name: string | null
           health_certified: boolean
           id: string
+          is_active: boolean | null
           is_available: boolean | null
           is_verified_driver: boolean
+          last_login: string | null
           license_carta_url: string | null
           license_plate: string | null
           license_viatura_url: string | null
@@ -4627,11 +4912,19 @@ export type Database = {
           mpesa_number: string | null
           onboarding_completed: boolean
           phone: string | null
+          province_id: string | null
           referral_code: string | null
           referred_by: string | null
+          total_earnings_mzn: number | null
           updated_at: string
           user_id: string
+          user_type: string | null
+          vehicle_brand: string | null
+          vehicle_color: string | null
+          vehicle_model: string | null
+          vehicle_photo_urls: string[] | null
           vehicle_type: string | null
+          vehicle_year: number | null
           verified_at: string | null
         }[]
         SetofOptions: {
@@ -4640,6 +4933,25 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      get_profiles_for_manager: {
+        Args: { _limit?: number; _role?: string; _search?: string }
+        Returns: {
+          avatar_url: string
+          city: string
+          country_id: string
+          created_at: string
+          email: string
+          full_name: string
+          is_active: boolean
+          onboarding_completed: boolean
+          phone: string
+          province_id: string
+          roles: Json
+          total_earnings_mzn: number
+          user_id: string
+          user_type: string
+        }[]
       }
       get_user_roles: {
         Args: { _user_id: string }
@@ -4673,48 +4985,116 @@ export type Database = {
           user_id: string
         }[]
       }
-      list_profiles_admin: {
-        Args: { _ids: string[] }
-        Returns: {
-          full_name: string
-          phone: string
-          user_id: string
-        }[]
-      }
-      list_profiles_admin_full: {
-        Args: never
-        Returns: {
-          avatar_url: string | null
-          country_id: string | null
-          created_at: string
-          default_city: string | null
-          emola_number: string | null
-          full_name: string | null
-          health_certified: boolean
-          id: string
-          is_available: boolean | null
-          is_verified_driver: boolean
-          license_carta_url: string | null
-          license_plate: string | null
-          license_viatura_url: string | null
-          mkesh_number: string | null
-          mpesa_number: string | null
-          onboarding_completed: boolean
-          phone: string | null
-          referral_code: string | null
-          referred_by: string | null
-          updated_at: string
-          user_id: string
-          vehicle_type: string | null
-          verified_at: string | null
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "profiles"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
+      list_profiles_admin:
+        | {
+            Args: { _ids: string[] }
+            Returns: {
+              full_name: string
+              phone: string
+              user_id: string
+            }[]
+          }
+        | {
+            Args: {
+              _country_id?: string
+              _ids?: string[]
+              _limit?: number
+              _offset?: number
+              _province_id?: string
+              _search?: string
+            }
+            Returns: {
+              avatar_url: string
+              city: string
+              country_id: string
+              created_at: string
+              email: string
+              full_name: string
+              is_active: boolean
+              phone: string
+              province_id: string
+              roles: Json
+              user_id: string
+              user_type: string
+            }[]
+          }
+      list_profiles_admin_full:
+        | {
+            Args: never
+            Returns: {
+              avatar_url: string | null
+              city: string | null
+              country_id: string | null
+              created_at: string
+              default_city: string | null
+              driver_selfie_url: string | null
+              email: string | null
+              emola_number: string | null
+              full_name: string | null
+              health_certified: boolean
+              id: string
+              is_active: boolean | null
+              is_available: boolean | null
+              is_verified_driver: boolean
+              last_login: string | null
+              license_carta_url: string | null
+              license_plate: string | null
+              license_viatura_url: string | null
+              mkesh_number: string | null
+              mpesa_number: string | null
+              onboarding_completed: boolean
+              phone: string | null
+              province_id: string | null
+              referral_code: string | null
+              referred_by: string | null
+              total_earnings_mzn: number | null
+              updated_at: string
+              user_id: string
+              user_type: string | null
+              vehicle_brand: string | null
+              vehicle_color: string | null
+              vehicle_model: string | null
+              vehicle_photo_urls: string[] | null
+              vehicle_type: string | null
+              vehicle_year: number | null
+              verified_at: string | null
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "profiles"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
+        | {
+            Args: {
+              _country_id?: string
+              _limit?: number
+              _province_id?: string
+              _role_filter?: string
+              _search?: string
+            }
+            Returns: {
+              avatar_url: string
+              city: string
+              country_id: string
+              created_at: string
+              email: string
+              full_name: string
+              is_active: boolean
+              last_login: string
+              license_plate: string
+              onboarding_completed: boolean
+              phone: string
+              province_id: string
+              roles: Json
+              total_earnings_mzn: number
+              user_id: string
+              user_type: string
+              vehicle_type: string
+            }[]
+          }
+      login_rate_check: { Args: { _email: string }; Returns: Json }
       mark_consultation_completed: { Args: { _id: string }; Returns: Json }
       moderate_ad: {
         Args: { _action: string; _id: string; _notes?: string }
@@ -4757,6 +5137,23 @@ export type Database = {
         Args: { _coupon_id: string; _user_id: string }
         Returns: undefined
       }
+      register_driver_vehicle: {
+        Args: {
+          p_brand: string
+          p_color?: string
+          p_driver_id: string
+          p_license_carta_url?: string
+          p_license_plate?: string
+          p_license_viatura_url?: string
+          p_model: string
+          p_photo_back?: string
+          p_photo_front?: string
+          p_photo_side?: string
+          p_vehicle_type: string
+          p_year?: number
+        }
+        Returns: string
+      }
       reject_mpesa_payment: {
         Args: { _id: string; _reason: string }
         Returns: Json
@@ -4781,6 +5178,35 @@ export type Database = {
       }
       resolve_withdrawal: {
         Args: { _action: string; _id: string; _notes?: string }
+        Returns: Json
+      }
+      rider_credit_earnings: {
+        Args: {
+          _amount: number
+          _delivery_assignment_id?: string
+          _description?: string
+          _rider_user_id: string
+        }
+        Returns: Json
+      }
+      update_vehicle_photos: {
+        Args: {
+          p_driver_id: string
+          p_photo_back?: string
+          p_photo_front?: string
+          p_photo_interior?: string
+          p_photo_side?: string
+          p_vehicle_id: string
+        }
+        Returns: boolean
+      }
+      validate_checkout_amounts: {
+        Args: {
+          _delivery_fee: number
+          _item_count?: number
+          _subtotal: number
+          _total: number
+        }
         Returns: Json
       }
       validate_coupon: {
@@ -4876,6 +5302,11 @@ export type Database = {
         | "veterinary"
         | "hospital"
         | "lab"
+        | "provincial_manager"
+        | "regional_ceo"
+        | "regional_manager"
+        | "pharmacist"
+        | "promoter"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -5015,6 +5446,11 @@ export const Constants = {
         "veterinary",
         "hospital",
         "lab",
+        "provincial_manager",
+        "regional_ceo",
+        "regional_manager",
+        "pharmacist",
+        "promoter",
       ],
     },
   },
