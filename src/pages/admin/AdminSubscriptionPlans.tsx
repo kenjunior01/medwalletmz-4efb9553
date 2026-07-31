@@ -62,11 +62,11 @@ export default function AdminSubscriptionPlans() {
 
     // Country manager: only see plans for their country
     if (isCountryManager && managedCountryId) {
-      query = query.eq("country_id", managedCountryId);
+      query = (query as any).eq("country_id", managedCountryId);
     }
     // Provincial manager: only see plans for their province
     if (isProvincialManager && managedProvinceId) {
-      query = query.eq("province_id", managedProvinceId);
+      query = (query as any).eq("province_id", managedProvinceId);
     }
 
     const { data } = await query;

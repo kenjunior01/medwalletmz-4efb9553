@@ -138,7 +138,7 @@ export async function scanPrescription(file: File): Promise<{
       PRESCRIPTION_PROMPT,
       {
         fallback: { medications: [] },
-        models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
+
         body: {
           contents: [{
             role: 'user',
@@ -176,7 +176,7 @@ export async function scanLabResult(file: File): Promise<{
       LAB_RESULT_PROMPT,
       {
         fallback: { results: [] },
-        models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
+
         body: {
           contents: [{
             role: 'user',
@@ -212,7 +212,7 @@ export async function scanMedicineLabel(file: File): Promise<{
       MEDICINE_LABEL_PROMPT,
       {
         fallback: {},
-        models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
+
         body: {
           contents: [{
             role: 'user',

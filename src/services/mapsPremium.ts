@@ -176,7 +176,7 @@ export async function getRoute(origin: GeoPoint, destination: GeoPoint): Promise
   const duration_min = Math.round((distance_km / 30) * 60);
   return {
     total_distance_km: Math.round(distance_km * 10) / 10,
-    total_duration_min,
+    total_duration_min: duration_min,
     total_duration_with_traffic_min: duration_min,
     traffic_level: 'light',
     steps: [{

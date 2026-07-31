@@ -182,7 +182,7 @@ export async function detectCrisis(message: string): Promise<CrisisDetection> {
       `Analisa esta mensagem do utilizador e detecta se há indícios de crise emocional (suicídio, auto-mutilação, abuso, depressão severa):\n\n"${message}"\n\nResponde em JSON.`,
       {
         fallback: { is_crisis: false, severity: 'none', categories: [], suggested_response: '' },
-        models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
+
         body: {
           contents: [{
             role: 'user',

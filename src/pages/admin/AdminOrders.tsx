@@ -38,7 +38,7 @@ export default function AdminOrders() {
 
       // Country isolation: country_manager only sees own country
       if (managedCountryId) {
-        query = query.eq('country_id', managedCountryId);
+        query = (query as any).eq('country_id', managedCountryId);
       }
       
       if (statusFilter !== 'all') {
