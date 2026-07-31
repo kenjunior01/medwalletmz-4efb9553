@@ -265,12 +265,22 @@ export default function RegistrationWizard() {
   };
 
   const uploadAvatar = async (file: File) => {
-    const ext = file.name.split('.').pop();
-    const path = `registrations/${user!.id}-${Date.now()}.${ext}`;
-    const { data, error } = await supabase.storage.from('avatars').upload(path, file);
+    if (!user) throw new Error('Inicie sessão para carregar a foto');
+    if (file.size > 5 * 1024 * 1024) throw new Error('A foto deve ter no máximo 5 MB');
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    const path = `${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('avatars').upload(path, file, {
+      upsert: true,
+      cacheControl: '3600',
+      contentType: file.type || 'image/jpeg',
+    });
     if (error) throw error;
-    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
-    return publicUrl;
+    // Bucket privado: gerar URL assinada de longa duração para exibição.
+    const { data: signed, error: signErr } = await supabase.storage
+      .from('avatars')
+      .createSignedUrl(path, 60 * 60 * 24 * 365 * 5);
+    if (signErr || !signed?.signedUrl) throw signErr || new Error('Não foi possível gerar o link da foto');
+    return signed.signedUrl;
   };
 
   const nextStep = async () => {
