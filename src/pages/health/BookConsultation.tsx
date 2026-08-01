@@ -39,7 +39,7 @@ export default function BookConsultation() {
   const [reason, setReason] = useState('');
   const [saving, setSaving] = useState(false);
   const [coupon, setCoupon] = useState<any>(null);
-  const [useWallet, setUseWallet] = useState(false);
+  const [payWithWallet, setPayWithWallet] = useState(false);
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [confirmState, setConfirmState] = useState<ConfirmState>('form');
   const [bookedConsultationId, setBookedConsultationId] = useState<string | null>(null);
