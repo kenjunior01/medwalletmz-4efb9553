@@ -1,21 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { requireCronOrAdmin } from '../_shared/auth.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apiKey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret',
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+
+  const denied = await requireCronOrAdmin(req)
+  if (denied) return denied
 
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
-
-    const API_KEY = "AIzaSyCSmjlxj48ngrPinTo4gdVBzmBf9CPVrFU"
 
     // 1. Get all active users with push tokens
     const { data: users } = await supabase.from('profiles').select('user_id, full_name, default_city, country_id')
@@ -46,7 +48,8 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('morning-health-vibe error:', error)
+    return new Response(JSON.stringify({ error: 'Request failed' }), {
       status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }

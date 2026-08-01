@@ -1,5 +1,6 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { requireRole } from '../_shared/auth.ts';
 
 // Importa institui\u00e7\u00f5es de MZ via Google Places API (New) e persiste em clinics/stores.
 // Body: { city: string, types: string[], reset?: boolean }
@@ -63,9 +64,24 @@ function photoUrl(photoName: string | undefined) {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  // Admin-only: this function performs destructive deletes and paid API calls.
+  const auth = await requireRole(req, ['admin']);
+  if (auth instanceof Response) return auth;
+
   try {
-    const { city, types = ['pharmacy','hospital','clinic','laboratory','veterinary'], reset = false } = await req.json();
-    if (!city) throw new Error('city required');
+    const body = await req.json();
+    const city = body?.city;
+    const types: string[] = Array.isArray(body?.types) && body.types.length
+      ? body.types.filter((t: unknown) => typeof t === 'string' && t in TYPE_QUERIES)
+      : ['pharmacy','hospital','clinic','laboratory','veterinary'];
+    // Destructive reset requires an explicit confirmation flag from the admin.
+    const reset = body?.reset === true && body?.confirm_reset === 'DELETE_MZ_DATA';
+
+    if (typeof city !== 'string' || city.length === 0 || city.length > 120) {
+      return new Response(JSON.stringify({ error: 'Invalid city' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
@@ -139,7 +155,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error(e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
+    return new Response(JSON.stringify({ error: 'Import failed' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

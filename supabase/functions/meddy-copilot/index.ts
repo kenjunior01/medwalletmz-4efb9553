@@ -7,6 +7,7 @@
 // Usa ZAI chat completions API para gerar respostas analíticas
 // com base no snapshot de dados de compliance enviado pelo cliente.
 // ============================================================
+import { requireRole } from '../_shared/auth.ts';
 
 const ZAI_API_KEY = Deno.env.get("ZAI_API_KEY") || "";
 const ZAI_API_URL = Deno.env.get("ZAI_API_URL") || "https://api.z.ai/api/paas/v4";
@@ -53,35 +54,49 @@ Deno.serve(async (req: Request) => {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, x-client-info",
       },
     });
   }
+
+  const auth = await requireRole(req, ["admin", "country_manager", "regional_manager", "regional_ceo", "provincial_manager"]);
+  if (auth instanceof Response) return auth;
 
   try {
     const body: RequestBody = await req.json();
     const { query, context } = body;
 
-    if (!query) {
+    if (typeof query !== "string" || query.length === 0 || query.length > 4000) {
       return jsonResponse({ error: "Missing query" }, 400);
+    }
+    if (!context || typeof context !== "object") {
+      return jsonResponse({ error: "Missing context" }, 400);
     }
 
     // Compact context for prompt
+    const arr = (v: unknown): any[] => (Array.isArray(v) ? v : []);
+    const countries = arr(context.countries);
+    const frameworks = arr(context.frameworks);
+    const partners = arr(context.partners);
+    const auditRecent = arr(context.audit_recent);
+    const insuranceProducts = arr(context.insurance_products);
+    const insuranceClaims = arr(context.insurance_claims);
+
     const contextSummary = {
       scope: context.scope,
-      countries: context.countries.slice(0, 30),
-      frameworks: context.frameworks.slice(0, 50),
-      partners: context.partners.slice(0, 30),
-      audit_recent: context.audit_recent.slice(0, 20),
-      insurance_products: context.insurance_products.slice(0, 20),
-      insurance_claims: context.insurance_claims.slice(0, 20),
+      countries: countries.slice(0, 30),
+      frameworks: frameworks.slice(0, 50),
+      partners: partners.slice(0, 30),
+      audit_recent: auditRecent.slice(0, 20),
+      insurance_products: insuranceProducts.slice(0, 20),
+      insurance_claims: insuranceClaims.slice(0, 20),
       totals: {
-        countries: context.countries.length,
-        frameworks: context.frameworks.length,
-        partners: context.partners.length,
-        audit_events: context.audit_recent.length,
-        insurance_products: context.insurance_products.length,
-        insurance_claims: context.insurance_claims.length,
+        countries: countries.length,
+        frameworks: frameworks.length,
+        partners: partners.length,
+        audit_events: auditRecent.length,
+        insurance_products: insuranceProducts.length,
+        insurance_claims: insuranceClaims.length,
       },
     };
 
@@ -124,7 +139,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ response: responseText });
   } catch (e) {
     console.error("meddy-copilot error:", e);
-    return jsonResponse({ error: e.message }, 500);
+    return jsonResponse({ error: "Request failed" }, 500);
   }
 });
 

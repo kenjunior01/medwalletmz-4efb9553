@@ -47,7 +47,12 @@ export default function AdminMzImporter() {
       addLog(`→ ${city}...`);
       try {
         const { data, error } = await supabase.functions.invoke('seed-mz-google', {
-          body: { city, types: TYPES, reset: reset && i === 0 },
+          body: {
+            city,
+            types: TYPES,
+            reset: reset && i === 0,
+            ...(reset && i === 0 ? { confirm_reset: 'DELETE_MZ_DATA' } : {}),
+          },
         });
         if (error) throw error;
         const s = data?.summary || {};
