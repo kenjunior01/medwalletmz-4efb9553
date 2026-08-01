@@ -86,6 +86,7 @@ const MyConsultations = lazy(() => import("./pages/health/MyConsultations"));
 const ConsultationChat = lazy(() => import("./pages/health/ConsultationChat"));
 const HealthProfile = lazy(() => import("./pages/health/HealthProfile"));
 const DoctorDashboard = lazy(() => import("./pages/doctor/DoctorDashboard"));
+const DoctorLayout = lazy(() => import("./pages/doctor/DoctorLayout"));
 const DoctorPatients = lazy(() => import("./pages/doctor/DoctorPatients"));
 const CreatePrescription = lazy(() => import("./pages/doctor/CreatePrescription"));
 const DoctorAvailability = lazy(() => import("./pages/doctor/DoctorAvailability"));
@@ -526,11 +527,13 @@ const App = () => (
 
                   {/* Doctor Routes — protegido ao nível da rota */}
                   <Route path="/doctor/register" element={<RegistrationWizard />} />
-                  <Route path="/doctor/dashboard" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDashboard /></ProtectedRoute>} />
-                  <Route path="/doctor/patients" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorPatients /></ProtectedRoute>} />
-                  <Route path="/doctor/prescription/new" element={<ProtectedRoute allowedRoles={['doctor']}><CreatePrescription /></ProtectedRoute>} />
-                  <Route path="/doctor/availability" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorAvailability /></ProtectedRoute>} />
-                  <Route path="/doctor/profile" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorProfile /></ProtectedRoute>} />
+                  <Route element={<ProtectedRoute allowedRoles={['doctor']}><DoctorLayout /></ProtectedRoute>}>
+                    <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+                    <Route path="/doctor/patients" element={<DoctorPatients />} />
+                    <Route path="/doctor/prescription/new" element={<CreatePrescription />} />
+                    <Route path="/doctor/availability" element={<DoctorAvailability />} />
+                    <Route path="/doctor/profile" element={<DoctorProfile />} />
+                  </Route>
                   <Route path="/pharmacy/profile" element={<ProtectedRoute allowedRoles={['store_owner', 'pharmacy']}><PharmacyProfile /></ProtectedRoute>} />
                   <Route path="/institution/profile" element={<ProtectedRoute allowedRoles={['clinic', 'hospital']}><InstitutionProfile /></ProtectedRoute>} />
 
