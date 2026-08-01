@@ -7,6 +7,7 @@
 // Usa ZAI chat completions API para gerar respostas analíticas
 // com base no snapshot de dados de compliance enviado pelo cliente.
 // ============================================================
+import { requireRole } from '../_shared/auth.ts';
 
 const ZAI_API_KEY = Deno.env.get("ZAI_API_KEY") || "";
 const ZAI_API_URL = Deno.env.get("ZAI_API_URL") || "https://api.z.ai/api/paas/v4";
@@ -53,17 +54,23 @@ Deno.serve(async (req: Request) => {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, x-client-info",
       },
     });
   }
+
+  const auth = await requireRole(req, ["admin", "country_manager", "regional_manager", "regional_ceo", "provincial_manager"]);
+  if (auth instanceof Response) return auth;
 
   try {
     const body: RequestBody = await req.json();
     const { query, context } = body;
 
-    if (!query) {
+    if (typeof query !== "string" || query.length === 0 || query.length > 4000) {
       return jsonResponse({ error: "Missing query" }, 400);
+    }
+    if (!context || typeof context !== "object") {
+      return jsonResponse({ error: "Missing context" }, 400);
     }
 
     // Compact context for prompt
@@ -124,7 +131,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ response: responseText });
   } catch (e) {
     console.error("meddy-copilot error:", e);
-    return jsonResponse({ error: e.message }, 500);
+    return jsonResponse({ error: "Request failed" }, 500);
   }
 });
 
