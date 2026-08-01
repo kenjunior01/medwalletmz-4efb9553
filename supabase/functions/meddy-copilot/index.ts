@@ -74,21 +74,29 @@ Deno.serve(async (req: Request) => {
     }
 
     // Compact context for prompt
+    const arr = (v: unknown): any[] => (Array.isArray(v) ? v : []);
+    const countries = arr(context.countries);
+    const frameworks = arr(context.frameworks);
+    const partners = arr(context.partners);
+    const auditRecent = arr(context.audit_recent);
+    const insuranceProducts = arr(context.insurance_products);
+    const insuranceClaims = arr(context.insurance_claims);
+
     const contextSummary = {
       scope: context.scope,
-      countries: context.countries.slice(0, 30),
-      frameworks: context.frameworks.slice(0, 50),
-      partners: context.partners.slice(0, 30),
-      audit_recent: context.audit_recent.slice(0, 20),
-      insurance_products: context.insurance_products.slice(0, 20),
-      insurance_claims: context.insurance_claims.slice(0, 20),
+      countries: countries.slice(0, 30),
+      frameworks: frameworks.slice(0, 50),
+      partners: partners.slice(0, 30),
+      audit_recent: auditRecent.slice(0, 20),
+      insurance_products: insuranceProducts.slice(0, 20),
+      insurance_claims: insuranceClaims.slice(0, 20),
       totals: {
-        countries: context.countries.length,
-        frameworks: context.frameworks.length,
-        partners: context.partners.length,
-        audit_events: context.audit_recent.length,
-        insurance_products: context.insurance_products.length,
-        insurance_claims: context.insurance_claims.length,
+        countries: countries.length,
+        frameworks: frameworks.length,
+        partners: partners.length,
+        audit_events: auditRecent.length,
+        insurance_products: insuranceProducts.length,
+        insurance_claims: insuranceClaims.length,
       },
     };
 
