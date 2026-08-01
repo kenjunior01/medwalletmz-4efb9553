@@ -86,6 +86,7 @@ const MyConsultations = lazy(() => import("./pages/health/MyConsultations"));
 const ConsultationChat = lazy(() => import("./pages/health/ConsultationChat"));
 const HealthProfile = lazy(() => import("./pages/health/HealthProfile"));
 const DoctorDashboard = lazy(() => import("./pages/doctor/DoctorDashboard"));
+const DoctorLayout = lazy(() => import("./pages/doctor/DoctorLayout"));
 const DoctorPatients = lazy(() => import("./pages/doctor/DoctorPatients"));
 const CreatePrescription = lazy(() => import("./pages/doctor/CreatePrescription"));
 const DoctorAvailability = lazy(() => import("./pages/doctor/DoctorAvailability"));
