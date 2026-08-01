@@ -472,8 +472,37 @@ export default function BookConsultation() {
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground pt-1">
               <Wallet className="h-3 w-3" aria-hidden="true" />
-              Pagamento directo ao serviço — não precisa de saldo na carteira.
+              {payWithWallet && canPayWithWallet
+                ? 'A plataforma paga o profissional com o teu saldo.'
+                : 'Pagamento directo ao serviço — não precisa de saldo na carteira.'}
             </div>
+            <button
+              type="button"
+              onClick={() => canPayWithWallet && setPayWithWallet((v) => !v)}
+              disabled={!canPayWithWallet}
+              aria-pressed={payWithWallet && canPayWithWallet}
+              className={cn(
+                'w-full mt-3 flex items-center justify-between gap-3 rounded-lg border p-3 text-left transition min-h-[44px]',
+                payWithWallet && canPayWithWallet
+                  ? 'border-primary bg-primary/10 ring-2 ring-primary/30'
+                  : 'border-border hover:bg-accent',
+                !canPayWithWallet && 'opacity-60 cursor-not-allowed'
+              )}
+            >
+              <span className="flex items-center gap-2">
+                <Wallet className="h-4 w-4" aria-hidden="true" />
+                <span>
+                  <span className="block font-semibold text-xs">Pagar com saldo da carteira</span>
+                  <span className="block text-[11px] text-muted-foreground">
+                    Saldo: {walletBalance.toFixed(2)} {currency}
+                    {!canPayWithWallet && ' — insuficiente'}
+                  </span>
+                </span>
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider">
+                {payWithWallet && canPayWithWallet ? 'Activo' : 'Usar'}
+              </span>
+            </button>
           </CardContent>
         </Card>
       </div>
