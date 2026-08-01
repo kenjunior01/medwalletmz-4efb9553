@@ -39,6 +39,7 @@ export default function BookConsultation() {
   const [reason, setReason] = useState('');
   const [saving, setSaving] = useState(false);
   const [coupon, setCoupon] = useState<any>(null);
+  const [payWithWallet, setPayWithWallet] = useState(false);
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [confirmState, setConfirmState] = useState<ConfirmState>('form');
   const [bookedConsultationId, setBookedConsultationId] = useState<string | null>(null);
@@ -84,6 +85,8 @@ export default function BookConsultation() {
   const finalAmount = Math.max(gross - discount, 0);
   // Pacientes pagam directamente o serviço — não é exigido saldo na carteira.
   const lowBalance = false;
+  const walletBalance = Number(wallet?.balance || 0);
+  const canPayWithWallet = walletBalance >= finalAmount && finalAmount > 0;
 
   // Group slots by day for better UX
   const slotsByDay = useMemo(() => {
@@ -111,12 +114,19 @@ export default function BookConsultation() {
         _slot_id: selected.id,
         _reason: reason || null,
         _coupon_id: coupon?.id ?? null,
-      });
+        _use_wallet: payWithWallet && canPayWithWallet,
+      } as any);
       if (error) {
         if (error.message?.includes('professional_insufficient_balance')) {
           toast.error('Profissional indisponível', {
             description: 'Este profissional não tem saldo suficiente na carteira para aceitar consultas neste momento.',
           });
+          setConfirmState('form');
+        } else if (error.message?.includes('patient_insufficient_balance')) {
+          toast.error('Saldo insuficiente', {
+            description: 'O teu saldo não cobre o valor da consulta. Desmarca o pagamento com carteira ou carrega saldo.',
+          });
+          setPayWithWallet(false);
           setConfirmState('form');
         } else if (error.message?.includes('slot_unavailable')) {
           toast.error(t('booking.slot_taken'));
@@ -462,8 +472,37 @@ export default function BookConsultation() {
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground pt-1">
               <Wallet className="h-3 w-3" aria-hidden="true" />
-              Pagamento directo ao serviço — não precisa de saldo na carteira.
+              {payWithWallet && canPayWithWallet
+                ? 'A plataforma paga o profissional com o teu saldo.'
+                : 'Pagamento directo ao serviço — não precisa de saldo na carteira.'}
             </div>
+            <button
+              type="button"
+              onClick={() => canPayWithWallet && setPayWithWallet((v) => !v)}
+              disabled={!canPayWithWallet}
+              aria-pressed={payWithWallet && canPayWithWallet}
+              className={cn(
+                'w-full mt-3 flex items-center justify-between gap-3 rounded-lg border p-3 text-left transition min-h-[44px]',
+                payWithWallet && canPayWithWallet
+                  ? 'border-primary bg-primary/10 ring-2 ring-primary/30'
+                  : 'border-border hover:bg-accent',
+                !canPayWithWallet && 'opacity-60 cursor-not-allowed'
+              )}
+            >
+              <span className="flex items-center gap-2">
+                <Wallet className="h-4 w-4" aria-hidden="true" />
+                <span>
+                  <span className="block font-semibold text-xs">Pagar com saldo da carteira</span>
+                  <span className="block text-[11px] text-muted-foreground">
+                    Saldo: {walletBalance.toFixed(2)} {currency}
+                    {!canPayWithWallet && ' — insuficiente'}
+                  </span>
+                </span>
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider">
+                {payWithWallet && canPayWithWallet ? 'Activo' : 'Usar'}
+              </span>
+            </button>
           </CardContent>
         </Card>
       </div>

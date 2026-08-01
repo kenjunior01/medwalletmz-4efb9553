@@ -38,6 +38,10 @@ export default function Referrals() {
   const [referrals, setReferrals] = useState<any[]>([]);
   const [bonusMzn, setBonusMzn] = useState(100);
   const [bonusCoins, setBonusCoins] = useState(100);
+  const [proBonus, setProBonus] = useState(50);
+  const [hasReferrer, setHasReferrer] = useState<boolean | null>(null);
+  const [inputCode, setInputCode] = useState('');
+  const [redeeming, setRedeeming] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -55,13 +59,32 @@ export default function Referrals() {
       setReferrals(refs ?? []);
       const { data: settings } = await supabase
         .from('platform_settings').select('key, value')
-        .in('key', ['referral_bonus_mzn', 'referral_bonus_coins']);
+        .in('key', ['referral_bonus_mzn', 'referral_bonus_coins', 'referral_professional_bonus_mzn']);
       (settings || []).forEach((s: any) => {
         if (s.key === 'referral_bonus_mzn') setBonusMzn(Number(s.value));
         if (s.key === 'referral_bonus_coins') setBonusCoins(Number(s.value));
+        if (s.key === 'referral_professional_bonus_mzn') setProBonus(Number(s.value));
       });
+      const { data: mine } = await supabase
+        .from('user_referrals').select('id').eq('referred_id', user.id).maybeSingle();
+      setHasReferrer(!!mine);
     })();
   }, [user]);
+
+  const redeem = async () => {
+    if (!inputCode.trim()) return;
+    setRedeeming(true);
+    const { data, error } = await supabase.rpc('redeem_referral_code' as any, { p_code: inputCode.trim() });
+    setRedeeming(false);
+    const res = data as any;
+    if (error || !res?.ok) {
+      toast.error(res?.error || error?.message || 'Não foi possível usar este código');
+      return;
+    }
+    toast.success('Código aplicado com sucesso!');
+    setHasReferrer(true);
+    setInputCode('');
+  };
 
   const link = `${window.location.origin}/auth?ref=${code}`;
   const completed = referrals.filter(r => r.status === 'completed').length;
@@ -114,8 +137,32 @@ export default function Referrals() {
             <Button className="w-full mt-2" onClick={shareNative}>
               <Share2 className="h-4 w-4 mr-1" /> Partilhar
             </Button>
+            <p className="mt-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 p-2 text-xs text-emerald-700 dark:text-emerald-300">
+              Convida um profissional de saúde (médico, clínica, farmácia, laboratório…) e recebes{' '}
+              <strong>{proBonus} {currencyCode}</strong> na tua carteira — podes usar esse saldo para pagar consultas.
+            </p>
           </Card>
         </motion.div>
+
+        {hasReferrer === false && (
+          <motion.div {...fadeUp} transition={{ duration: 0.4, delay: 0.12 }}>
+            <Card className="p-4 space-y-2">
+              <p className="text-sm font-semibold">Tens um código de convite?</p>
+              <div className="flex gap-2">
+                <input
+                  value={inputCode}
+                  onChange={(e) => setInputCode(e.target.value.toUpperCase())}
+                  placeholder="EX: MOZ1A2B3C"
+                  aria-label="Código de convite"
+                  className="flex-1 rounded-md border bg-background px-3 py-2 font-mono text-sm uppercase focus-visible:ring-2 focus-visible:ring-ring"
+                />
+                <Button onClick={redeem} disabled={redeeming || !inputCode.trim()}>
+                  {redeeming ? 'A validar…' : 'Aplicar'}
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Progress Tracker */}
         <motion.div {...fadeUp} transition={{ duration: 0.4, delay: 0.15 }}>

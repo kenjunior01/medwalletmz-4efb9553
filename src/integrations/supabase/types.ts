@@ -943,7 +943,10 @@ export type Database = {
           fee: number
           id: string
           notes: string | null
+          paid_at: string | null
           patient_id: string
+          payment_method: string
+          payment_status: string
           reason: string | null
           scheduled_at: string
           status: string
@@ -959,7 +962,10 @@ export type Database = {
           fee?: number
           id?: string
           notes?: string | null
+          paid_at?: string | null
           patient_id: string
+          payment_method?: string
+          payment_status?: string
           reason?: string | null
           scheduled_at: string
           status?: string
@@ -975,7 +981,10 @@ export type Database = {
           fee?: number
           id?: string
           notes?: string | null
+          paid_at?: string | null
           patient_id?: string
+          payment_method?: string
+          payment_status?: string
           reason?: string | null
           scheduled_at?: string
           status?: string
@@ -4351,8 +4360,11 @@ export type Database = {
           created_at: string
           id: string
           paid_at: string | null
+          professional_bonus_mzn: number
+          professional_bonus_paid: boolean
           referral_code: string
           referred_id: string
+          referred_role: string | null
           referrer_id: string
           status: string
         }
@@ -4363,8 +4375,11 @@ export type Database = {
           created_at?: string
           id?: string
           paid_at?: string | null
+          professional_bonus_mzn?: number
+          professional_bonus_paid?: boolean
           referral_code: string
           referred_id: string
+          referred_role?: string | null
           referrer_id: string
           status?: string
         }
@@ -4375,8 +4390,11 @@ export type Database = {
           created_at?: string
           id?: string
           paid_at?: string | null
+          professional_bonus_mzn?: number
+          professional_bonus_paid?: boolean
           referral_code?: string
           referred_id?: string
+          referred_role?: string | null
           referrer_id?: string
           status?: string
         }
@@ -4840,10 +4858,20 @@ export type Database = {
         }
         Returns: Json
       }
-      book_consultation_atomic: {
-        Args: { _coupon_id?: string; _reason?: string; _slot_id: string }
-        Returns: Json
-      }
+      book_consultation_atomic:
+        | {
+            Args: { _coupon_id?: string; _reason?: string; _slot_id: string }
+            Returns: Json
+          }
+        | {
+            Args: {
+              _coupon_id?: string
+              _reason?: string
+              _slot_id: string
+              _use_wallet?: boolean
+            }
+            Returns: Json
+          }
       bootstrap_admin: { Args: never; Returns: Json }
       check_rate_limit: {
         Args: {
@@ -5215,6 +5243,7 @@ export type Database = {
         Args: { _coupon_id: string; _user_id: string }
         Returns: undefined
       }
+      redeem_referral_code: { Args: { p_code: string }; Returns: Json }
       register_driver_vehicle: {
         Args: {
           p_brand: string
