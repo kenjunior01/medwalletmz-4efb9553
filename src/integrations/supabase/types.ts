@@ -483,6 +483,13 @@ export type Database = {
             referencedRelation: "blood_requests"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "blood_donation_matches_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "blood_requests_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       blood_donors: {
@@ -4729,6 +4736,66 @@ export type Database = {
       }
     }
     Views: {
+      blood_donors_public: {
+        Row: {
+          blood_type: string | null
+          city: string | null
+          is_active: boolean | null
+          is_available: boolean | null
+          neighborhood: string | null
+        }
+        Insert: {
+          blood_type?: string | null
+          city?: string | null
+          is_active?: boolean | null
+          is_available?: boolean | null
+          neighborhood?: string | null
+        }
+        Update: {
+          blood_type?: string | null
+          city?: string | null
+          is_active?: boolean | null
+          is_available?: boolean | null
+          neighborhood?: string | null
+        }
+        Relationships: []
+      }
+      blood_requests_public: {
+        Row: {
+          blood_type: string | null
+          city: string | null
+          created_at: string | null
+          deadline: string | null
+          id: string | null
+          status: string | null
+          units_needed: number | null
+          units_received: number | null
+          urgency: string | null
+        }
+        Insert: {
+          blood_type?: string | null
+          city?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          id?: string | null
+          status?: string | null
+          units_needed?: number | null
+          units_received?: number | null
+          urgency?: string | null
+        }
+        Update: {
+          blood_type?: string | null
+          city?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          id?: string | null
+          status?: string | null
+          units_needed?: number | null
+          units_received?: number | null
+          urgency?: string | null
+        }
+        Relationships: []
+      }
       platform_settings_public: {
         Row: {
           key: string | null
@@ -4870,6 +4937,13 @@ export type Database = {
           old_data: Json
           record_id: string
           table_name: string
+        }[]
+      }
+      get_doctor_license: {
+        Args: { _doctor_id: string }
+        Returns: {
+          license_number: string
+          license_url: string
         }[]
       }
       get_driver_vehicles: {
