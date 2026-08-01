@@ -85,6 +85,8 @@ export default function BookConsultation() {
   const finalAmount = Math.max(gross - discount, 0);
   // Pacientes pagam directamente o serviço — não é exigido saldo na carteira.
   const lowBalance = false;
+  const walletBalance = Number(wallet?.balance || 0);
+  const canPayWithWallet = walletBalance >= finalAmount && finalAmount > 0;
 
   // Group slots by day for better UX
   const slotsByDay = useMemo(() => {
@@ -112,12 +114,19 @@ export default function BookConsultation() {
         _slot_id: selected.id,
         _reason: reason || null,
         _coupon_id: coupon?.id ?? null,
-      });
+        _use_wallet: payWithWallet && canPayWithWallet,
+      } as any);
       if (error) {
         if (error.message?.includes('professional_insufficient_balance')) {
           toast.error('Profissional indisponível', {
             description: 'Este profissional não tem saldo suficiente na carteira para aceitar consultas neste momento.',
           });
+          setConfirmState('form');
+        } else if (error.message?.includes('patient_insufficient_balance')) {
+          toast.error('Saldo insuficiente', {
+            description: 'O teu saldo não cobre o valor da consulta. Desmarca o pagamento com carteira ou carrega saldo.',
+          });
+          setPayWithWallet(false);
           setConfirmState('form');
         } else if (error.message?.includes('slot_unavailable')) {
           toast.error(t('booking.slot_taken'));
