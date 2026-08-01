@@ -82,7 +82,8 @@ export default function BookConsultation() {
   const gross = Number(doctor?.consultation_fee || 0);
   const discount = coupon?.discount ?? 0;
   const finalAmount = Math.max(gross - discount, 0);
-  const lowBalance = (wallet?.balance ?? 0) < finalAmount;
+  // Pacientes pagam directamente o serviço — não é exigido saldo na carteira.
+  const lowBalance = false;
 
   // Group slots by day for better UX
   const slotsByDay = useMemo(() => {
@@ -103,13 +104,6 @@ export default function BookConsultation() {
   const handleBook = async () => {
     if (!user) { navigate('/auth'); return; }
     if (!selected || !doctor) return;
-    if (lowBalance) {
-      toast.error(t('booking.insufficient_balance'), {
-        description: t('booking.insufficient_balance_desc', { amount: (finalAmount - (wallet?.balance ?? 0)).toFixed(2), currency }),
-      });
-      navigate('/wallet');
-      return;
-    }
     setSaving(true);
     setConfirmState('processing');
     try {
@@ -119,7 +113,12 @@ export default function BookConsultation() {
         _coupon_id: coupon?.id ?? null,
       });
       if (error) {
-        if (error.message?.includes('slot_unavailable')) {
+        if (error.message?.includes('professional_insufficient_balance')) {
+          toast.error('Profissional indisponível', {
+            description: 'Este profissional não tem saldo suficiente na carteira para aceitar consultas neste momento.',
+          });
+          setConfirmState('form');
+        } else if (error.message?.includes('slot_unavailable')) {
           toast.error(t('booking.slot_taken'));
           setSlots((prev) => prev.filter((s) => s.id !== selected.id));
           setSelected(null);
@@ -463,14 +462,8 @@ export default function BookConsultation() {
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground pt-1">
               <Wallet className="h-3 w-3" aria-hidden="true" />
-              {t('booking.wallet_balance', { balance: (wallet?.balance ?? 0).toFixed(2), currency })}
+              Pagamento directo ao serviço — não precisa de saldo na carteira.
             </div>
-            {lowBalance && (
-              <div className="flex items-center gap-1 text-xs text-destructive pt-1 font-semibold" role="alert">
-                <AlertTriangle className="h-3 w-3" aria-hidden="true" />
-                {t('booking.insufficient_balance_short')}
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>

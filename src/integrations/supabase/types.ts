@@ -5128,6 +5128,7 @@ export type Database = {
         }
         Returns: Json
       }
+      professional_min_balance: { Args: never; Returns: number }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
