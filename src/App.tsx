@@ -49,6 +49,9 @@ const Help = lazy(() => import("./pages/Help"));
 const Rewards = lazy(() => import("./pages/Rewards"));
 const OrderTracking = lazy(() => import("./pages/OrderTracking"));
 const Settings = lazy(() => import("./pages/Settings"));
+const Receipts = lazy(() => import("./pages/Receipts"));
+const Messages = lazy(() => import("./pages/chat/Messages"));
+const ChatThread = lazy(() => import("./pages/chat/ChatThread"));
 
 // ---- Admin Pages ----
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
