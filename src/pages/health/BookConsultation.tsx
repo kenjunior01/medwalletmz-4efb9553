@@ -278,6 +278,13 @@ export default function BookConsultation() {
               {t('booking.view_consultation')}
               <ChevronRight className="h-4 w-4 ml-2" aria-hidden="true" />
             </Button>
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/receipts')}
+              className="min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Ver comprovativo de pagamento
+            </Button>
           </div>
           <p className="text-[10px] text-muted-foreground mt-6 animate-pulse">{t('booking.redirecting')}</p>
         </motion.div>
