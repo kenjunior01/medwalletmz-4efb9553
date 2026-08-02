@@ -10,7 +10,7 @@ import { ArrowLeft, Send, Paperclip, FileText, Loader2, ShieldCheck, Share2 } fr
 import { toast } from 'sonner';
 import { markThreadRead, uploadChatFile, type ChatMessage } from '@/lib/chat';
 import { InvoiceComposer } from '@/components/chat/InvoiceComposer';
-import { shareToWhatsApp } from '@/lib/whatsapp';
+
 
 export default function ChatThread() {
   const { id } = useParams();
@@ -139,7 +139,7 @@ export default function ChatThread() {
                     size="sm"
                     variant="secondary"
                     className="mt-2 h-7 text-xs"
-                    onClick={() => shareToWhatsApp(`${m.body}\n\nDocumento: ${m.attachment_url}`)}
+                    onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`${m.body}\n\nDocumento: ${m.attachment_url}`)}`, '_blank', 'noopener,noreferrer')}
                   >
                     <Share2 className="h-3 w-3 mr-1" /> Enviar por WhatsApp
                   </Button>
