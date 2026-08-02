@@ -56,7 +56,7 @@ export default function Messages() {
       .in('thread_id', ids)
       .neq('user_id', user.id);
 
-    const otherIds = Array.from(new Set((others || []).map((o: any) => o.user_id)));
+    const otherIds: string[] = Array.from(new Set((others || []).map((o: any) => String(o.user_id))));
     const nameMap = new Map<string, string>();
     if (otherIds.length) {
       const { data: profs } = await supabase.from('profiles').select('user_id, full_name').in('user_id', otherIds);
