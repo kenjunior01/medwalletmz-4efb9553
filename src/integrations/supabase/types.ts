@@ -669,6 +669,127 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          attachment_name: string | null
+          attachment_type: string | null
+          attachment_url: string | null
+          body: string | null
+          created_at: string
+          id: string
+          kind: string
+          metadata: Json
+          sender_id: string
+          thread_id: string
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          metadata?: Json
+          sender_id: string
+          thread_id: string
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          metadata?: Json
+          sender_id?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "chat_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_participants: {
+        Row: {
+          created_at: string
+          id: string
+          last_read_at: string
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_read_at?: string
+          role?: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_read_at?: string
+          role?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_participants_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "chat_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_threads: {
+        Row: {
+          context_id: string | null
+          context_type: string | null
+          created_at: string
+          created_by: string
+          id: string
+          kind: string
+          last_message: string | null
+          last_message_at: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          kind?: string
+          last_message?: string | null
+          last_message_at?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          kind?: string
+          last_message?: string | null
+          last_message_at?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clinic_doctors: {
         Row: {
           clinic_id: string
@@ -3015,6 +3136,66 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_receipts: {
+        Row: {
+          amount_paid: number
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          currency: string
+          discount_amount: number
+          gross_amount: number
+          id: string
+          metadata: Json
+          net_payout: number
+          payee_id: string | null
+          payer_id: string
+          payment_method: string
+          receipt_number: string
+          reference_id: string | null
+          service_type: string
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          discount_amount?: number
+          gross_amount?: number
+          id?: string
+          metadata?: Json
+          net_payout?: number
+          payee_id?: string | null
+          payer_id: string
+          payment_method?: string
+          receipt_number: string
+          reference_id?: string | null
+          service_type?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          discount_amount?: number
+          gross_amount?: number
+          id?: string
+          metadata?: Json
+          net_payout?: number
+          payee_id?: string | null
+          payer_id?: string
+          payment_method?: string
+          receipt_number?: string
+          reference_id?: string | null
+          service_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -4858,20 +5039,15 @@ export type Database = {
         }
         Returns: Json
       }
-      book_consultation_atomic:
-        | {
-            Args: { _coupon_id?: string; _reason?: string; _slot_id: string }
-            Returns: Json
-          }
-        | {
-            Args: {
-              _coupon_id?: string
-              _reason?: string
-              _slot_id: string
-              _use_wallet?: boolean
-            }
-            Returns: Json
-          }
+      book_consultation_atomic: {
+        Args: {
+          _coupon_id?: string
+          _reason?: string
+          _slot_id: string
+          _use_wallet?: boolean
+        }
+        Returns: Json
+      }
       bootstrap_admin: { Args: never; Returns: Json }
       check_rate_limit: {
         Args: {
@@ -4992,6 +5168,16 @@ export type Database = {
           year: number
         }[]
       }
+      get_or_create_direct_thread: {
+        Args: {
+          _context_id?: string
+          _context_type?: string
+          _kind?: string
+          _other: string
+          _title?: string
+        }
+        Returns: string
+      }
       get_profile_private: {
         Args: { _user_id: string }
         Returns: {
@@ -5078,6 +5264,50 @@ export type Database = {
         Returns: boolean
       }
       is_professional: { Args: { _user_id: string }; Returns: boolean }
+      is_thread_participant: {
+        Args: { _thread: string; _user: string }
+        Returns: boolean
+      }
+      issue_payment_receipt: {
+        Args: {
+          _commission_rate: number
+          _currency: string
+          _discount: number
+          _gross: number
+          _metadata?: Json
+          _paid: number
+          _payee: string
+          _payer: string
+          _payment_method: string
+          _reference_id: string
+          _service_type: string
+        }
+        Returns: {
+          amount_paid: number
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          currency: string
+          discount_amount: number
+          gross_amount: number
+          id: string
+          metadata: Json
+          net_payout: number
+          payee_id: string | null
+          payer_id: string
+          payment_method: string
+          receipt_number: string
+          reference_id: string | null
+          service_type: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payment_receipts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       lab_order_set_result: {
         Args: { _order_id: string; _result_url: string }
         Returns: Json
