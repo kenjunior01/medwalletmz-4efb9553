@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, Share2, ReceiptText } from '@/components/icons/lucide-compat';
+import { Download, Share2, Receipt } from '@/components/icons/lucide-compat';
 import { buildDocumentPdf, downloadPdf, sharePdf, formatMoney } from '@/lib/documents';
 import { toast } from 'sonner';
 
@@ -89,7 +89,7 @@ export function PaymentReceiptCard({ receipt, perspective }: { receipt: ReceiptR
       <CardContent className="p-4 space-y-3">
         <div className="flex items-start gap-3">
           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <ReceiptText className="h-5 w-5 text-primary" />
+            <Receipt className="h-5 w-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-semibold truncate">{label}</p>

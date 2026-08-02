@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ArrowLeft, ReceiptText } from '@/components/icons/lucide-compat';
+import { ArrowLeft, Receipt } from '@/components/icons/lucide-compat';
 import { PaymentReceiptCard, type ReceiptRecord } from '@/components/payments/PaymentReceiptCard';
 
 export default function Receipts() {
@@ -60,7 +60,7 @@ export default function Receipts() {
           <div className="space-y-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-40 w-full rounded-xl" />)}</div>
         ) : receipts.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
-            <ReceiptText className="h-10 w-10 mx-auto mb-3 opacity-50" />
+            <Receipt className="h-10 w-10 mx-auto mb-3 opacity-50" />
             <p>Ainda não tens comprovativos. Os pagamentos feitos com saldo da carteira geram recibo automaticamente.</p>
           </div>
         ) : (
