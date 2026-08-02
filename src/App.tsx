@@ -284,6 +284,9 @@ const App = () => (
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/help" element={<Help />} />
                     <Route path="/rewards" element={<Rewards />} />
+                    <Route path="/receipts" element={<Receipts />} />
+                    <Route path="/messages" element={<Messages />} />
+                    <Route path="/messages/:id" element={<ChatThread />} />
                     <Route path="/order/:id" element={<OrderTracking />} />
                     <Route path="/health/doctors" element={<Doctors />} />
                     <Route path="/health/book/:doctorId" element={<BookConsultation />} />
