@@ -323,6 +323,7 @@ const App = () => (
                     <Route path="/health/veterinary" element={<Veterinary />} />
                     <Route path="/partners" element={<Partners />} />
                     <Route path="/referrals" element={<Referrals />} />
+                    <Route path="/tornar-se-gestor" element={<BecomeManager />} />
                     <Route path="/wallet" element={<Wallet />} />
                     <Route path="/wallet/withdraw" element={<Withdraw />} />
                     <Route path="/favorites" element={<Favorites />} />
