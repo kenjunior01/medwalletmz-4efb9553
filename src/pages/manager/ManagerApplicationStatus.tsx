@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Shield, Trophy, CheckCircle, Ban } from '@/components/icons/lucide-compat';
 import { MANAGER_QUIZ } from '@/lib/managerQuest';
+import ApplicationMessages from '@/components/manager/ApplicationMessages';
 
 const STATUS: Record<string, { label: string; cls: string; desc: string }> = {
   pending: { label: 'Enviada', cls: 'bg-amber-100 text-amber-800', desc: 'A sua candidatura foi recebida e aguarda análise.' },
@@ -102,6 +103,8 @@ export default function ManagerApplicationStatus() {
               )}
             </CardContent>
           </Card>
+
+          <ApplicationMessages applicationId={app.id} />
 
           <Card>
             <CardHeader className="pb-2"><CardTitle className="text-base">Eventos</CardTitle></CardHeader>
