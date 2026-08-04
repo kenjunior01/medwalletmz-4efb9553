@@ -33,7 +33,7 @@ export default function GlobalCommandCenter() {
     setNotifications(nRes.data || []);
 
     // Calculate real global revenue
-    const { data: ordersData } = await (supabase as any).from('orders').select('total, country_code, created_at').eq('status', 'delivered');
+    const { data: ordersData } = await (supabase as any).from('orders').select('total, country_id, created_at').eq('status', 'delivered');
     const startMonth = new Date();
     startMonth.setDate(1); startMonth.setHours(0, 0, 0, 0);
     const startPrevMonth = new Date(startMonth); startPrevMonth.setMonth(startPrevMonth.getMonth() - 1);
