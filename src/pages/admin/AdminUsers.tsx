@@ -89,7 +89,9 @@ export default function AdminUsers() {
         .from('user_roles')
         .select('user_id, role, country_id');
 
-      if (country?.id) {
+      // Admins globais veem TODOS os roles (incluindo os globais, sem país).
+      // Gestores de país só veem os roles do seu país.
+      if (isManager && !isAdmin && country?.id) {
         rQuery = rQuery.eq('country_id', country.id);
       }
 
@@ -383,6 +385,25 @@ export default function AdminUsers() {
                           }}
                         >
                           <span className="flex items-center gap-2"><LogIn className="h-4 w-4" /> Entrar no painel de {r.country_id}</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      ))}
+                    {selectedUser.roles
+                      .filter(r => r.role === 'country_manager' && r.country_id)
+                      .map((r, i) => (
+                        <Button
+                          key={`enter-mgr-${i}`}
+                          size="sm"
+                          variant="outline"
+                          className="w-full mb-1 justify-between font-semibold"
+                          onClick={() => {
+                            try { localStorage.setItem('selectedCountryId', r.country_id!); } catch {}
+                            toast.success(`A abrir o painel regional de ${r.country_id}`);
+                            navigate('/manager');
+                            setIsDialogOpen(false);
+                          }}
+                        >
+                          <span className="flex items-center gap-2"><LogIn className="h-4 w-4" /> Painel regional (/manager) — {r.country_id}</span>
                           <ChevronRight className="h-4 w-4" />
                         </Button>
                       ))}

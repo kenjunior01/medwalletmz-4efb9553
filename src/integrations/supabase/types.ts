@@ -2583,6 +2583,87 @@ export type Database = {
           },
         ]
       }
+      manager_applications: {
+        Row: {
+          answers: Json
+          country_id: string | null
+          created_at: string
+          current_occupation: string | null
+          email: string | null
+          experience_years: number
+          full_name: string
+          has_transport: boolean
+          id: string
+          languages: string[]
+          linkedin: string | null
+          max_score: number
+          motivation: string | null
+          phone: string | null
+          province: string | null
+          quiz_score: number
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          target_region: string | null
+          updated_at: string
+          user_id: string
+          weekly_hours: number
+        }
+        Insert: {
+          answers?: Json
+          country_id?: string | null
+          created_at?: string
+          current_occupation?: string | null
+          email?: string | null
+          experience_years?: number
+          full_name: string
+          has_transport?: boolean
+          id?: string
+          languages?: string[]
+          linkedin?: string | null
+          max_score?: number
+          motivation?: string | null
+          phone?: string | null
+          province?: string | null
+          quiz_score?: number
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          target_region?: string | null
+          updated_at?: string
+          user_id: string
+          weekly_hours?: number
+        }
+        Update: {
+          answers?: Json
+          country_id?: string | null
+          created_at?: string
+          current_occupation?: string | null
+          email?: string | null
+          experience_years?: number
+          full_name?: string
+          has_transport?: boolean
+          id?: string
+          languages?: string[]
+          linkedin?: string | null
+          max_score?: number
+          motivation?: string | null
+          phone?: string | null
+          province?: string | null
+          quiz_score?: number
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          target_region?: string | null
+          updated_at?: string
+          user_id?: string
+          weekly_hours?: number
+        }
+        Relationships: []
+      }
       maternal_profiles: {
         Row: {
           anc_visits_done: number | null

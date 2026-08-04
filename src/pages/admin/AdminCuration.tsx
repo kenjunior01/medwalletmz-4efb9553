@@ -514,9 +514,14 @@ export default function AdminCuration() {
             Revê, valida coordenadas e publica farmácias, clínicas, hospitais e laboratórios em {country?.name}.
           </p>
         </div>
-        <Link to={isManager ? "/manager" : "/admin/import"} className="text-xs text-primary underline">
-          ← Voltar ao Dashboard
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/admin/institutions" className="text-xs font-semibold text-primary underline">
+            Ver instituições já publicadas →
+          </Link>
+          <Link to={isManager ? "/manager" : "/admin/import"} className="text-xs text-primary underline">
+            ← Voltar ao Dashboard
+          </Link>
+        </div>
       </header>
 
       {isAdmin && (
