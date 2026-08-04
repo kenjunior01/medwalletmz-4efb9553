@@ -95,12 +95,23 @@ export function useWallet() {
 
     const preferredMethod = method || country?.config?.payment_methods?.[0]?.id || 'wallet';
 
-    const { data, error } = await supabase.rpc('wallet_deposit', {
-      _user_id: user.id, _amount: amount, _method: preferredMethod,
-    });
+    // Depósitos nunca creditam saldo diretamente pelo cliente: cria-se um
+    // pedido de pagamento pendente que só é creditado após confirmação do gestor.
+    const reference = `MW-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    const { data, error } = await (supabase as any)
+      .from('mpesa_manual_payments')
+      .insert({
+        user_id: user.id,
+        reference,
+        amount_mzn: amount,
+        description: `Depósito na carteira via ${preferredMethod}`,
+        status: 'pending',
+      })
+      .select()
+      .single();
     if (error) throw error;
     await load();
-    return data as any;
+    return { pending: true, reference, payment: data } as any;
   };
 
   const debit = async (amount: number, serviceType: string, refId: string, description?: string) => {
