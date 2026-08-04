@@ -89,7 +89,9 @@ export default function AdminUsers() {
         .from('user_roles')
         .select('user_id, role, country_id');
 
-      if (country?.id) {
+      // Admins globais veem TODOS os roles (incluindo os globais, sem país).
+      // Gestores de país só veem os roles do seu país.
+      if (isManager && !isAdmin && country?.id) {
         rQuery = rQuery.eq('country_id', country.id);
       }
 
