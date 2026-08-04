@@ -407,6 +407,20 @@ export default function Settings() {
           <Card className="rounded-[1.5rem] border-2">
             <CardContent className="p-0 divide-y">
               <button
+                onClick={() => navigate("/minha-candidatura")}
+                className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                aria-label="Estado da candidatura a Gestor Regional"
+              >
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="text-sm font-bold block">A minha candidatura</span>
+                  <p className="text-[10px] text-muted-foreground">Estado, respostas e eventos da candidatura a Gestor Regional</p>
+                </div>
+              </button>
+
+              <button
                 onClick={() => navigate("/help")}
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 aria-label={t("profile.menu.help")}
