@@ -136,6 +136,8 @@ const AdminTransactions = lazy(() => import("./pages/admin/AdminTransactions"));
 const AdminImport = lazy(() => import("./pages/admin/AdminImport"));
 const AdminCuration = lazy(() => import("./pages/admin/AdminCuration"));
 const AdminInstitutions = lazy(() => import("./pages/admin/AdminInstitutions"));
+const AdminManagerApplications = lazy(() => import("./pages/admin/AdminManagerApplications"));
+const BecomeManager = lazy(() => import("./pages/manager/BecomeManager"));
 const AdminMzImporter = lazy(() => import("./pages/admin/AdminMzImporter"));
 const GlobalMetrics = lazy(() => import("./pages/admin/GlobalMetrics"));
 const GlobalCommandCenter = lazy(() => import("./pages/admin/GlobalCommandCenter"));
@@ -400,6 +402,7 @@ const App = () => (
                     <Route path="import" element={<AdminImport />} />
                     <Route path="curation" element={<AdminCuration />} />
                     <Route path="institutions" element={<AdminInstitutions />} />
+                    <Route path="manager-applications" element={<AdminManagerApplications />} />
                     <Route path="mz-importer" element={<AdminMzImporter />} />
                     <Route path="insurance" element={<AdminInsurance />} />
                     <Route path="ads" element={<AdminAds />} />
