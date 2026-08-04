@@ -420,6 +420,34 @@ export default function Settings() {
                 </div>
               </button>
 
+              <button
+                onClick={() => navigate("/minha-candidatura")}
+                className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                aria-label="Estado da candidatura a Gestor Regional"
+              >
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="text-sm font-bold block">A minha candidatura</span>
+                  <p className="text-[10px] text-muted-foreground">Estado, respostas e eventos da candidatura a Gestor Regional</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => navigate("/help")}
+                className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                aria-label={t("profile.menu.help")}
+              >
+                <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <LifeBuoy className="h-5 w-5 text-blue-500" aria-hidden="true" />
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="text-sm font-bold block">{t("profile.menu.help")}</span>
+                  <p className="text-[10px] text-muted-foreground">{t("profile.menu.legal")}</p>
+                </div>
+              </button>
+
               <div className="p-4 space-y-2" aria-label={t("settings.trust_encrypted")}>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Lock className="h-3.5 w-3.5 text-green-600" aria-hidden="true" />
