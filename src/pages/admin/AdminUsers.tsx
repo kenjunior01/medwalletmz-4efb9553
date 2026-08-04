@@ -388,6 +388,25 @@ export default function AdminUsers() {
                           <ChevronRight className="h-4 w-4" />
                         </Button>
                       ))}
+                    {selectedUser.roles
+                      .filter(r => r.role === 'country_manager' && r.country_id)
+                      .map((r, i) => (
+                        <Button
+                          key={`enter-mgr-${i}`}
+                          size="sm"
+                          variant="outline"
+                          className="w-full mb-1 justify-between font-semibold"
+                          onClick={() => {
+                            try { localStorage.setItem('selectedCountryId', r.country_id!); } catch {}
+                            toast.success(`A abrir o painel regional de ${r.country_id}`);
+                            navigate('/manager');
+                            setIsDialogOpen(false);
+                          }}
+                        >
+                          <span className="flex items-center gap-2"><LogIn className="h-4 w-4" /> Painel regional (/manager) — {r.country_id}</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      ))}
                   </div>
                 )}
                 <div className="flex flex-wrap gap-2 mb-4">
