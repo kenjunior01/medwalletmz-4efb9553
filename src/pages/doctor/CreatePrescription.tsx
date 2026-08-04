@@ -98,9 +98,8 @@ export default function CreatePrescription() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-3 flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
+    <div className="flex flex-col">
+      <header className="border-b p-3 flex items-center gap-3">
         <div className="flex-1">
           <h1 className="font-semibold flex items-center gap-2"><FileSignature className="h-4 w-4 text-primary" /> Nova Receita</h1>
           <p className="text-xs text-muted-foreground">Paciente: {patientName}</p>
