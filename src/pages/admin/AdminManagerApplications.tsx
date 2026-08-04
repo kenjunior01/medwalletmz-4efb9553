@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Trophy, Shield, CheckCircle, Ban, ChevronRight } from '@/components/icons/lucide-compat';
 import { MANAGER_QUIZ } from '@/lib/managerQuest';
+import ApplicationMessages from '@/components/manager/ApplicationMessages';
 
 const STATUS: Record<string, { label: string; cls: string }> = {
   pending: { label: 'Pendente', cls: 'bg-amber-100 text-amber-800' },
@@ -129,6 +130,8 @@ export default function AdminManagerApplications() {
                   })}
                 </ul>
               </div>
+              <ApplicationMessages applicationId={selected.id} asStaff />
+
               <Textarea placeholder="Notas de avaliação..." value={notes} onChange={(e) => setNotes(e.target.value)} />
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" onClick={() => updateStatus.mutate({ id: selected.id, status: 'in_review' })}>Em análise</Button>

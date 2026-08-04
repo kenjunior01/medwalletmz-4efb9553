@@ -2583,6 +2583,44 @@ export type Database = {
           },
         ]
       }
+      manager_application_messages: {
+        Row: {
+          application_id: string
+          body: string
+          created_at: string
+          id: string
+          is_staff: boolean
+          sender_id: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          body: string
+          created_at?: string
+          id?: string
+          is_staff?: boolean
+          sender_id: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          is_staff?: boolean
+          sender_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manager_application_messages_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "manager_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       manager_applications: {
         Row: {
           answers: Json
