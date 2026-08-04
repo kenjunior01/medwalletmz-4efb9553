@@ -186,7 +186,7 @@ export default function AdminCuration() {
     queryFn: async () => {
       let q = (supabase as any)
         .from('place_proposals')
-        .select('id, source, entity_type, name, address, city, neighborhood, reference_point, phone, website, description, image_url, latitude, longitude, status, reward_amount, reward_currency, reward_joy_coins, reward_paid, review_notes, created_at, updated_at, raw_payload, search_meta, proposed_by, country_id')
+        .select('id, source, entity_type, name, address, city, neighborhood, reference_point, phone, website, description, image_url, latitude, longitude, status, reward_amount:reward_mzn, reward_joy_coins, reward_paid, review_notes, created_at, updated_at, raw_payload, search_meta, proposed_by, country_id')
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 

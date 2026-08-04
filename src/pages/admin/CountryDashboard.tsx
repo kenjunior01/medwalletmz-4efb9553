@@ -39,7 +39,7 @@ export default function CountryDashboard() {
       const { count: pendingCount } = await (supabase as any).from('place_proposals').select('id', { count: 'exact', head: true }).eq('status', 'pending').eq('country_id', countryId);
       const { count: partnerApps } = await (supabase as any).from('partner_applications').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
 
-      const { data: volumeData } = await (supabase as any).from('orders').select('total').eq('country_code', countryId).gte('created_at', startMonth.toISOString()).eq('status', 'delivered');
+      const { data: volumeData } = await (supabase as any).from('orders').select('total').eq('country_id', countryId).gte('created_at', startMonth.toISOString()).eq('status', 'delivered');
       const totalVolume = (volumeData || []).reduce((s: number, o: any) => s + Number(o.total || 0), 0);
 
       return {

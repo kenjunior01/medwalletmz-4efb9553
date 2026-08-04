@@ -50,7 +50,7 @@ export function UserProposalsWidget({ userId }: { userId: string }) {
     queryFn: async () => {
       const { data } = await (supabase as any)
         .from('place_proposals')
-        .select('id,name,entity_type,city,status,reward_paid,reward_amount,reward_currency,reward_joy_coins,created_at,image_url')
+        .select('id,name,entity_type,city,status,reward_paid,reward_amount:reward_mzn,reward_joy_coins,created_at,image_url')
         .eq('proposed_by', userId)
         .eq('source', 'user_submit')
         .order('created_at', { ascending: false })

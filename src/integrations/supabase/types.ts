@@ -3109,6 +3109,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          country_id: string | null
           created_at: string
           delivery_address: string | null
           delivery_fee: number
@@ -3126,6 +3127,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          country_id?: string | null
           created_at?: string
           delivery_address?: string | null
           delivery_fee?: number
@@ -3143,6 +3145,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          country_id?: string | null
           created_at?: string
           delivery_address?: string | null
           delivery_fee?: number
