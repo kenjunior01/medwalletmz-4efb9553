@@ -25,6 +25,8 @@ import {
   Globe,
   ShieldCheck,
   Bot,
+  Building2,
+  Award,
 } from "@/components/icons/lucide-compat";
 import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardShell, type DashboardMenuItem } from '@/components/layout/DashboardShell';
@@ -39,6 +41,8 @@ const menuItems: DashboardMenuItem[] = [
   { icon: Package, label: 'Produtos', path: '/admin/products' },
   { icon: ShoppingBag, label: 'Pedidos', path: '/admin/orders' },
   { icon: Users, label: 'Usuários', path: '/admin/users' },
+  { icon: Building2, label: 'Instituições (Ativas)', path: '/admin/institutions', highlight: true },
+  { icon: Award, label: 'Candidaturas a Gestor', path: '/admin/manager-applications', highlight: true },
   { icon: Truck, label: 'Entregadores', path: '/admin/drivers' },
   { icon: Tag, label: 'Cupons', path: '/admin/coupons' },
   { icon: Gift, label: 'Convites', path: '/admin/referrals' },
