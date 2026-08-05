@@ -10,7 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Trophy, Shield, CheckCircle, Ban, ChevronRight } from '@/components/icons/lucide-compat';
-import { MANAGER_QUIZ } from '@/lib/managerQuest';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MANAGER_QUIZ, MAX_PHASE_SCORE, PHASES } from '@/lib/managerQuest';
 import ApplicationMessages from '@/components/manager/ApplicationMessages';
 
 const STATUS: Record<string, { label: string; cls: string }> = {
@@ -26,6 +28,10 @@ export default function AdminManagerApplications() {
   const { user } = useAuth();
   const [selected, setSelected] = useState<any | null>(null);
   const [notes, setNotes] = useState('');
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [regionFilter, setRegionFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('score');
 
   const { data: apps, isLoading } = useQuery({
     queryKey: ['manager-applications'],
@@ -66,20 +72,63 @@ export default function AdminManagerApplications() {
     onError: () => toast.error('Erro ao promover candidato'),
   });
 
+  const regions = Array.from(new Set((apps || []).map((a: any) => a.province).filter(Boolean)));
+
+  const filtered = (apps || [])
+    .filter((a: any) => statusFilter === 'all' || a.status === statusFilter)
+    .filter((a: any) => regionFilter === 'all' || a.province === regionFilter)
+    .filter((a: any) => {
+      const q = search.trim().toLowerCase();
+      if (!q) return true;
+      return [a.full_name, a.email, a.phone, a.province, a.target_region]
+        .filter(Boolean).some((v: string) => v.toLowerCase().includes(q));
+    })
+    .sort((a: any, b: any) => {
+      if (sortBy === 'recent') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      if (sortBy === 'simulation') return (b.phase_scores?.['3'] ?? 0) - (a.phase_scores?.['3'] ?? 0);
+      return (b.quiz_score ?? 0) - (a.quiz_score ?? 0);
+    });
+
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-5xl">
       <header>
         <h1 className="text-2xl font-bold flex items-center gap-2"><Trophy className="h-6 w-6 text-primary" /> Candidaturas a Gestor Regional</h1>
-        <p className="text-muted-foreground text-sm">Ordenadas por pontuação no questionário de competências.</p>
+        <p className="text-muted-foreground text-sm">Avaliação em 3 fases: triagem, cenários e simulação dos 90 dias.</p>
       </header>
+
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <Input placeholder="Pesquisar nome, email, telefone..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger><SelectValue placeholder="Estado" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os estados</SelectItem>
+            {Object.entries(STATUS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={regionFilter} onValueChange={setRegionFilter}>
+          <SelectTrigger><SelectValue placeholder="Província" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas as províncias</SelectItem>
+            {regions.map((r: any) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger><SelectValue placeholder="Ordenar" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="score">Pontuação total</SelectItem>
+            <SelectItem value="simulation">Pontuação da simulação</SelectItem>
+            <SelectItem value="recent">Mais recentes</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       {isLoading ? (
         <div className="space-y-3">{Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}</div>
-      ) : !apps?.length ? (
-        <Card><CardContent className="p-12 text-center text-muted-foreground">Ainda não há candidaturas.</CardContent></Card>
+      ) : !filtered.length ? (
+        <Card><CardContent className="p-12 text-center text-muted-foreground">Nenhuma candidatura corresponde aos filtros.</CardContent></Card>
       ) : (
         <div className="space-y-3">
-          {apps.map((a) => (
+          {filtered.map((a: any) => (
             <Card key={a.id} className="cursor-pointer hover:border-primary/50" onClick={() => { setSelected(a); setNotes(a.review_notes || ''); }}>
               <CardContent className="p-4 flex items-center gap-4">
                 <div className="w-14 text-center">
@@ -89,6 +138,13 @@ export default function AdminManagerApplications() {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold truncate">{a.full_name}</p>
                   <p className="text-xs text-muted-foreground truncate">{[a.province, a.country_id, a.current_occupation].filter(Boolean).join(' · ')}</p>
+                  <div className="flex gap-1 mt-1">
+                    {PHASES.map((p) => (
+                      <span key={p.phase} className="text-[10px] rounded bg-muted px-1.5 py-0.5">
+                        F{p.phase}: {a.phase_scores?.[String(p.phase)] ?? 0}/{MAX_PHASE_SCORE[p.phase]}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 <Badge className={STATUS[a.status]?.cls}>{STATUS[a.status]?.label || a.status}</Badge>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -113,6 +169,21 @@ export default function AdminManagerApplications() {
                 <p><span className="text-muted-foreground">Transporte:</span> {selected.has_transport ? 'Sim' : 'Não'}</p>
                 <p><span className="text-muted-foreground">Idiomas:</span> {(selected.languages || []).join(', ')}</p>
               </div>
+              <div className="grid grid-cols-3 gap-2">
+                {PHASES.map((p) => (
+                  <div key={p.phase} className="rounded-lg border p-2 text-center">
+                    <p className="text-[10px] text-muted-foreground">{p.title.replace(/^Fase \d+ — /, `Fase ${p.phase} · `)}</p>
+                    <p className="font-bold text-primary">{selected.phase_scores?.[String(p.phase)] ?? 0}<span className="text-xs text-muted-foreground">/{MAX_PHASE_SCORE[p.phase]}</span></p>
+                  </div>
+                ))}
+              </div>
+              {selected.cv_url && (
+                <Button variant="outline" size="sm" onClick={async () => {
+                  const { data } = await (supabase as any).storage.from('licenses').createSignedUrl(selected.cv_url, 300);
+                  if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+                  else toast.error('Não foi possível abrir o documento');
+                }}>Abrir CV / documento</Button>
+              )}
               {selected.motivation && (
                 <div><p className="font-semibold mb-1">Motivação</p><p className="text-muted-foreground whitespace-pre-wrap">{selected.motivation}</p></div>
               )}
