@@ -50,6 +50,7 @@ export default function VisionScanner() {
   const [savedScan, setSavedScan] = useState<VisionScan | null>(null);
   const [recentScans, setRecentScans] = useState<VisionScan[]>([]);
   const [corrections, setCorrections] = useState<Record<string, any>>({});
+  const [storedImageUrl, setStoredImageUrl] = useState<string>('');
 
   const loadRecentScans = useCallback(async () => {
     if (!user) return;
@@ -62,7 +63,7 @@ export default function VisionScanner() {
   }, [user]);
 
   // Load on mount
-  useState(() => { void loadRecentScans(); });
+  useEffect(() => { void loadRecentScans(); }, [loadRecentScans]);
 
   const handleFileSelect = useCallback(async (file: File) => {
     if (!file || !user || !selectedType) return;
@@ -75,6 +76,7 @@ export default function VisionScanner() {
     setStage('uploading');
     try {
       const imageUrl = await uploadScanImage(user.id, file);
+      setStoredImageUrl(imageUrl);
       setStage('scanning');
 
       let result: any = {};
@@ -84,13 +86,15 @@ export default function VisionScanner() {
         result = await scanLabResult(file);
       } else if (selectedType === 'medicine_label') {
         result = await scanMedicineLabel(file);
+      } else {
+        result = await scanDocument(file, selectedType);
       }
 
       setScanResult(result);
       setStage('review');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Scan failed:', err);
-      toast.error(t('visionScanner.error_scan_failed'));
+      toast.error(err?.message || t('visionScanner.error_scan_failed'));
       setStage('select');
     }
   }, [user, selectedType, t]);
@@ -100,7 +104,7 @@ export default function VisionScanner() {
     try {
       const scan = await saveScan(user.id, {
         scan_type: selectedType,
-        image_url: imagePreview,
+        image_url: storedImageUrl || imagePreview,
         extracted_data: scanResult,
         detected_medications: scanResult?.medications,
         detected_doctor: scanResult?.doctor_name,
@@ -109,7 +113,7 @@ export default function VisionScanner() {
         detected_next_appointment: scanResult?.next_appointment,
         detected_test_name: scanResult?.test_name,
         detected_results: scanResult?.results,
-        confidence_score: 0.85, // placeholder
+        confidence_score: typeof scanResult?.confidence === 'number' ? scanResult.confidence : 0.85,
         was_reviewed_by_user: true,
         was_corrected: Object.keys(corrections).length > 0,
         user_corrections: corrections,
