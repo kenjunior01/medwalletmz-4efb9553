@@ -13,9 +13,10 @@
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Mic, MicOff, Square, Play, Pause, Trash2, Sparkles, AudioLines,
+  Mic, MicOff, Square, Play, Pause, Trash2, Sparkles, AudioLines, Pencil,
   AlertTriangle, X, Clock, Filter, RefreshCw, Volume2,
 } from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
@@ -35,6 +36,7 @@ export default function VoiceJournal() {
   const Waveform = AudioLines;
   const { t, locale } = useCountry() as any;
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [stage, setStage] = useState<Stage>('idle');
   const [entries, setEntries] = useState<VoiceJournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
