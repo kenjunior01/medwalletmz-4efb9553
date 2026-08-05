@@ -13,9 +13,10 @@
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Mic, MicOff, Square, Play, Pause, Trash2, Sparkles, AudioLines,
+  Mic, MicOff, Square, Play, Pause, Trash2, Sparkles, AudioLines, Pencil,
   AlertTriangle, X, Clock, Filter, RefreshCw, Volume2,
 } from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
@@ -35,6 +36,7 @@ export default function VoiceJournal() {
   const Waveform = AudioLines;
   const { t, locale } = useCountry() as any;
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [stage, setStage] = useState<Stage>('idle');
   const [entries, setEntries] = useState<VoiceJournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -179,11 +181,12 @@ export default function VoiceJournal() {
       setStage('saved');
       await loadEntries();
 
-      // Auto-return to idle after 4s
+      // Leva o utilizador a rever/editar a transcrição antes de a manter no registo
       setTimeout(() => {
         setStage('idle');
         setLastSaved(null);
-      }, 4000);
+        if (entry?.id) navigate(`/health/voice-journal/${entry.id}`);
+      }, 1500);
     } catch (e: any) {
       setError(e?.message ?? 'Erro ao processar áudio');
       setStage('idle');
@@ -344,7 +347,7 @@ export default function VoiceJournal() {
             <ul className="space-y-3">
               <AnimatePresence initial={false}>
                 {filteredEntries.map((e, i) => (
-                  <VoiceEntryCard key={e.id} entry={e} index={i} onDelete={() => handleDelete(e.id!)} t={t} />
+                  <VoiceEntryCard key={e.id} entry={e} index={i} onDelete={() => handleDelete(e.id!)} onEdit={() => navigate(`/health/voice-journal/${e.id}`)} t={t} />
                 ))}
               </AnimatePresence>
             </ul>
@@ -483,7 +486,7 @@ function RecorderCard({ stage, duration, onStart, onStop, onCancel, waveCanvasRe
 
 /* ---------- Voice entry card ---------- */
 
-function VoiceEntryCard({ entry, index, onDelete, t }: { entry: VoiceJournalEntry; index: number; onDelete: () => void; t: any }) {
+function VoiceEntryCard({ entry, index, onDelete, onEdit, t }: { entry: VoiceJournalEntry; index: number; onDelete: () => void; onEdit: () => void; t: any }) {
   const [expanded, setExpanded] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState(false);
@@ -600,6 +603,13 @@ function VoiceEntryCard({ entry, index, onDelete, t }: { entry: VoiceJournalEntr
               </div>
             )}
           </div>
+          <button
+            onClick={onEdit}
+            className="p-2 rounded-lg text-slate-400 hover:text-violet-600 hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+            aria-label="Rever e editar transcrição"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
           <button
             onClick={onDelete}
             className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"

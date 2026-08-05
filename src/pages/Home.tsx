@@ -2,7 +2,7 @@ import { Seo } from "@/components/Seo";
 import {
   Stethoscope, Sparkles, Pill, MessageCircle, ArrowRight,
   Plus, Calendar, ShieldCheck, Building2,
-  BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse
+  BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse, Camera
 } from '@/components/icons/lucide-compat';
 import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FreeTrialBanner } from "@/components/monetization/FreeTrialBanner";
@@ -383,6 +383,34 @@ export default function Home() {
               </section>
 
               <AirQualityWidget />
+
+              {/* ACESSO RÁPIDO — ferramentas de IA */}
+              <section className="px-4" aria-labelledby="quick-tools-heading">
+                <h2 id="quick-tools-heading" className="text-sm font-black mb-3 uppercase tracking-wide text-muted-foreground">
+                  {t('home.quick_access') ?? 'Acesso rápido'}
+                </h2>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { icon: Mic, label: 'Diário de Voz', desc: 'Fala e a IA regista', to: '/health/voice-journal', cls: 'from-violet-500/10 to-fuchsia-500/10 border-violet-500/20 text-violet-600' },
+                    { icon: Camera, label: 'Scanner IA', desc: 'Receitas e exames', to: '/health/scanner', cls: 'from-primary/10 to-secondary/10 border-primary/20 text-primary' },
+                  ].map(item => (
+                    <button
+                      key={item.to}
+                      onClick={() => navigate(user ? item.to : `/auth?redirect=${encodeURIComponent(item.to)}`)}
+                      aria-label={item.label}
+                      className={cn(
+                        'text-left p-4 rounded-2xl border-2 bg-gradient-to-br transition-all active:scale-95 min-h-[44px]',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+                        item.cls
+                      )}
+                    >
+                      <item.icon className="h-6 w-6 mb-2" aria-hidden="true" />
+                      <p className="text-sm font-black text-foreground leading-tight">{item.label}</p>
+                      <p className="text-[11px] text-muted-foreground font-medium">{item.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </section>
 
               <PillTracker />
 

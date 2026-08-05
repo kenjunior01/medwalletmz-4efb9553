@@ -71,8 +71,25 @@ export async function uploadScanImage(userId: string, file: File): Promise<strin
 
   if (error) throw new Error(error.message);
 
-  const { data } = await sb.storage.from('vision-scans').createSignedUrl(path, 60 * 60 * 24 * 365);
-  return data?.signedUrl ?? path;
+  // Guardamos o caminho no storage — o URL assinado é gerado quando necessário.
+  return path;
+}
+
+/** Extrai o caminho do storage a partir de um caminho puro ou de um URL assinado antigo. */
+export function storagePathFromImageUrl(imageUrl: string): string | null {
+  if (!imageUrl) return null;
+  if (!/^https?:\/\//i.test(imageUrl)) return imageUrl.replace(/^\/+/, '');
+  const match = imageUrl.match(/vision-scans\/(.+?)(\?|$)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+/** URL assinado (1h por omissão) para ver/baixar a imagem digitalizada. */
+export async function getScanImageSignedUrl(imageUrl: string, expiresIn = 3600): Promise<string | null> {
+  if (imageUrl?.startsWith('data:')) return imageUrl;
+  const path = storagePathFromImageUrl(imageUrl);
+  if (!path) return null;
+  const { data } = await sb.storage.from('vision-scans').createSignedUrl(path, expiresIn, { download: false });
+  return data?.signedUrl ?? null;
 }
 
 // ─── Scan functions ────────────────────────────────────────────────────────
@@ -190,6 +207,12 @@ export async function getScans(userId: string, limit: number = 20): Promise<Visi
     .limit(limit);
   if (error) throw new Error(error.message);
   return (data || []) as VisionScan[];
+}
+
+export async function getScan(id: string): Promise<VisionScan | null> {
+  const { data, error } = await sb.from('vision_scans').select('*').eq('id', id).maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as VisionScan) ?? null;
 }
 
 export async function updateScanReview(scanId: string, corrections: Record<string, any>): Promise<void> {

@@ -216,9 +216,15 @@ export default function VisionScanner() {
                 <div className="space-y-2">
                   {recentScans.slice(0, 5).map(scan => (
                     <Card key={scan.id} className="hover:shadow-sm transition-shadow">
-                      <CardContent className="p-3 flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                          {scan.image_url && <img src={scan.image_url} alt="" className="w-full h-full object-cover" aria-hidden="true" />}
+                      <CardContent
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => navigate(`/health/scanner/${scan.id}`)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/health/scanner/${scan.id}`); } }}
+                        className="p-3 flex items-center gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
+                      >
+                        <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                          <ImageIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-bold truncate">
@@ -409,6 +415,15 @@ export default function VisionScanner() {
             <p className="text-sm text-muted-foreground mb-6">{t('visionScanner.saved_desc')}</p>
             <div className="flex flex-col gap-2 max-w-xs mx-auto">
               <Button
+                onClick={() => savedScan?.id && navigate(`/health/scanner/${savedScan.id}`)}
+                disabled={!savedScan?.id}
+                className="min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Ver resultado detalhado
+                <ChevronRight className="h-4 w-4 ml-2" aria-hidden="true" />
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => navigate('/health/wallet')}
                 className="min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
