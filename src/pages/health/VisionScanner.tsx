@@ -415,6 +415,15 @@ export default function VisionScanner() {
             <p className="text-sm text-muted-foreground mb-6">{t('visionScanner.saved_desc')}</p>
             <div className="flex flex-col gap-2 max-w-xs mx-auto">
               <Button
+                onClick={() => savedScan?.id && navigate(`/health/scanner/${savedScan.id}`)}
+                disabled={!savedScan?.id}
+                className="min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Ver resultado detalhado
+                <ChevronRight className="h-4 w-4 ml-2" aria-hidden="true" />
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => navigate('/health/wallet')}
                 className="min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
