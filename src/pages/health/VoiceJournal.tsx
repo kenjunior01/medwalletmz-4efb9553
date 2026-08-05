@@ -486,7 +486,7 @@ function RecorderCard({ stage, duration, onStart, onStop, onCancel, waveCanvasRe
 
 /* ---------- Voice entry card ---------- */
 
-function VoiceEntryCard({ entry, index, onDelete, t }: { entry: VoiceJournalEntry; index: number; onDelete: () => void; t: any }) {
+function VoiceEntryCard({ entry, index, onDelete, onEdit, t }: { entry: VoiceJournalEntry; index: number; onDelete: () => void; onEdit: () => void; t: any }) {
   const [expanded, setExpanded] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState(false);
@@ -603,6 +603,13 @@ function VoiceEntryCard({ entry, index, onDelete, t }: { entry: VoiceJournalEntr
               </div>
             )}
           </div>
+          <button
+            onClick={onEdit}
+            className="p-2 rounded-lg text-slate-400 hover:text-violet-600 hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+            aria-label="Rever e editar transcrição"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
           <button
             onClick={onDelete}
             className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
