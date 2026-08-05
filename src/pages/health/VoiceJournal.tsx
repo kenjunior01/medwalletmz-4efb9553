@@ -347,7 +347,7 @@ export default function VoiceJournal() {
             <ul className="space-y-3">
               <AnimatePresence initial={false}>
                 {filteredEntries.map((e, i) => (
-                  <VoiceEntryCard key={e.id} entry={e} index={i} onDelete={() => handleDelete(e.id!)} t={t} />
+                  <VoiceEntryCard key={e.id} entry={e} index={i} onDelete={() => handleDelete(e.id!)} onEdit={() => navigate(`/health/voice-journal/${e.id}`)} t={t} />
                 ))}
               </AnimatePresence>
             </ul>
