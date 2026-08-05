@@ -492,26 +492,27 @@ function VoiceEntryCard({ entry, index, onDelete, t }: { entry: VoiceJournalEntr
 
   const mood = entry.detected_mood ? MOOD_LABELS[entry.detected_mood] : null;
 
-  const loadAudio = async () => {
-    if (audioUrl || loadingAudio) return;
+  const loadAudio = async (): Promise<string | null> => {
+    if (audioUrl) return audioUrl;
+    if (loadingAudio) return null;
     setLoadingAudio(true);
     try {
       const url = await getPublicAudioUrl(entry.audio_url);
       setAudioUrl(url);
+      return url;
     } catch (e) {
       console.warn('Failed to load audio:', e);
+      return null;
     } finally {
       setLoadingAudio(false);
     }
   };
 
   const togglePlay = async () => {
-    if (!audioUrl) {
-      await loadAudio();
-      return;
-    }
+    const url = audioUrl ?? (await loadAudio());
+    if (!url) return;
     if (!audioRef.current) {
-      audioRef.current = new Audio(audioUrl);
+      audioRef.current = new Audio(url);
       audioRef.current.onended = () => setPlaying(false);
     }
     if (playing) {
