@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Calendar, MessageCircle, DollarSign, Users, Stethoscope, CalendarClock } from "@/components/icons/lucide-compat";
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Calendar, MessageCircle, DollarSign, Users, Stethoscope, CalendarClock,
+  FileText, Wallet, ChevronRight, Clock,
+} from "@/components/icons/lucide-compat";
 import NumberFlow from '@number-flow/react';
 import {
   PanelShell, NeuCard, BentoCard, BentoGrid, GlassCard,
@@ -15,6 +19,8 @@ export default function DoctorDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
+  const [displayName, setDisplayName] = useState<string>('');
+  const [loading, setLoading] = useState(true);
   const [today, setToday] = useState<any[]>([]);
   const [upcoming, setUpcoming] = useState<any[]>([]);
   const [stats, setStats] = useState({ patients: 0, monthRevenue: 0 });
@@ -22,8 +28,12 @@ export default function DoctorDashboard() {
 
   const load = async () => {
     if (!user) return;
+    setLoading(true);
     const { data: p } = await supabase.from('doctor_profiles').select('*').eq('user_id', user.id).maybeSingle();
     setProfile(p);
+
+    const { data: me } = await supabase.from('profiles').select('full_name').eq('user_id', user.id).maybeSingle();
+    setDisplayName((me as any)?.full_name || '');
 
     const startToday = new Date(); startToday.setHours(0,0,0,0);
     const endToday = new Date(); endToday.setHours(23,59,59,999);
@@ -58,6 +68,7 @@ export default function DoctorDashboard() {
       .eq('status', 'active')
       .maybeSingle();
     setHasSub(!!sub && (sub as any).plan?.target_audience === 'doctor');
+    setLoading(false);
   };
 
   useEffect(() => { load(); }, [user]);
@@ -67,6 +78,29 @@ export default function DoctorDashboard() {
     await supabase.from('doctor_profiles').update({ is_available: v }).eq('user_id', user.id);
     setProfile({ ...profile, is_available: v });
   };
+
+  const nextConsult = useMemo(() => {
+    const now = Date.now();
+    return today.find((c) => new Date(c.scheduled_at).getTime() >= now) ?? upcoming[0] ?? null;
+  }, [today, upcoming]);
+
+  const fmtTime = (d: string) =>
+    new Date(d).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-4 space-y-5">
+        <Skeleton className="h-40 w-full rounded-3xl" />
+        <div className="grid grid-cols-3 gap-3">
+          <Skeleton className="h-24 rounded-2xl" />
+          <Skeleton className="h-24 rounded-2xl" />
+          <Skeleton className="h-24 rounded-2xl" />
+        </div>
+        <Skeleton className="h-32 w-full rounded-2xl" />
+        <Skeleton className="h-32 w-full rounded-2xl" />
+      </div>
+    );
+  }
 
   if (!profile) {
     return (
@@ -81,21 +115,49 @@ export default function DoctorDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <SkipLink />
-      <main id="main" className="p-4 space-y-5">
+      <main id="main" className="p-4 space-y-5 max-w-5xl mx-auto w-full pb-24">
         {/* Hero panel */}
         <PanelShell className="p-6">
           <LayeredOrbs variant="ocean" />
-          <div className="flex items-center justify-between mb-4">
-            <div>
+          <div className="flex items-start justify-between gap-3 mb-4">
+            <div className="min-w-0">
               <p className="text-xs text-muted-foreground uppercase tracking-wide">Bem-vindo(a)</p>
-              <h1 className="text-2xl font-black text-gradient-premium">Dr(a). Consulta</h1>
+              <h1 className="text-2xl font-black text-gradient-premium truncate">
+                Dr(a). {displayName || 'Profissional'}
+              </h1>
+              {profile.specialty && (
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">{profile.specialty}</p>
+              )}
             </div>
-            {!profile.is_verified && <StatusBadge status="pending">A verificar</StatusBadge>}
+            {profile.is_verified
+              ? <StatusBadge status="success">Verificado</StatusBadge>
+              : <StatusBadge status="pending">A verificar</StatusBadge>}
           </div>
           <NeuCard className="!p-3 flex items-center justify-between">
-            <label htmlFor="avail" className="text-sm font-semibold">Disponível para consultas</label>
+            <label htmlFor="avail" className="text-sm font-semibold flex items-center gap-2">
+              <span className={`h-2 w-2 rounded-full ${profile.is_available ? 'bg-secondary animate-pulse' : 'bg-muted-foreground/40'}`} />
+              {profile.is_available ? 'Disponível para consultas' : 'Indisponível'}
+            </label>
             <Switch id="avail" checked={profile.is_available} onCheckedChange={toggleAvailable} />
           </NeuCard>
+
+          {nextConsult && (
+            <button
+              onClick={() => navigate(`/health/consultation/${nextConsult.id}`)}
+              className="mt-3 w-full text-left rounded-2xl border border-secondary/30 bg-secondary/5 p-3 flex items-center gap-3 hover:bg-secondary/10 transition"
+            >
+              <div className="h-10 w-10 rounded-xl bg-secondary/15 flex items-center justify-center shrink-0">
+                <Clock className="h-5 w-5 text-secondary" aria-hidden="true" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Próxima consulta</p>
+                <p className="text-sm font-semibold truncate">
+                  {new Date(nextConsult.scheduled_at).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })} · {fmtTime(nextConsult.scheduled_at)}
+                </p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+            </button>
+          )}
         </PanelShell>
 
         {hasSub === false && (
@@ -129,9 +191,46 @@ export default function DoctorDashboard() {
           </BentoCard>
         </BentoGrid>
 
+        {/* Ações rápidas */}
+        <section aria-labelledby="qa-h">
+          <h2 id="qa-h" className="sr-only">Ações rápidas</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { icon: FileText, label: 'Nova receita', to: '/doctor/prescription/new' },
+              { icon: CalendarClock, label: 'Horários', to: '/doctor/availability' },
+              { icon: Users, label: 'Pacientes', to: '/doctor/patients' },
+              { icon: Wallet, label: 'Carteira', to: '/wallet' },
+            ].map(({ icon: Icon, label, to }) => (
+              <button
+                key={to}
+                onClick={() => navigate(to)}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl border border-border bg-card hover:bg-muted/50 hover:shadow-md transition-all"
+              >
+                <span className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+                </span>
+                <span className="text-xs font-semibold text-center">{label}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
         <section aria-labelledby="today-h">
-          <h2 id="today-h" className="font-bold text-base mb-2">Hoje</h2>
-          {today.length === 0 && <p className="text-sm text-muted-foreground">Sem consultas hoje.</p>}
+          <div className="flex items-center justify-between mb-2">
+            <h2 id="today-h" className="font-bold text-base">Hoje</h2>
+            {today.length > 0 && (
+              <span className="text-xs text-muted-foreground font-semibold">{today.length} consulta(s)</span>
+            )}
+          </div>
+          {today.length === 0 && (
+            <NeuCard className="!p-6 text-center">
+              <Calendar className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" aria-hidden="true" />
+              <p className="text-sm text-muted-foreground">Sem consultas hoje.</p>
+              <Button variant="ghost" size="sm" className="mt-2" onClick={() => navigate('/doctor/availability')}>
+                Abrir novos horários
+              </Button>
+            </NeuCard>
+          )}
           {today.map(c => (
             <GlassCard
               key={c.id}
@@ -142,11 +241,11 @@ export default function DoctorDashboard() {
               className="mb-2 !p-3 flex items-center gap-3 cursor-pointer hover:border-secondary/40 transition-all"
             >
                 <div className="text-center min-w-[44px]">
-                  <p className="text-lg font-black text-secondary tabular-nums">{new Date(c.scheduled_at).getHours()}h</p>
+                  <p className="text-lg font-black text-secondary tabular-nums leading-none">{fmtTime(c.scheduled_at)}</p>
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm">Consulta {c.consultation_type}</p>
-                  <p className="text-xs text-muted-foreground">{c.reason || 'Sem motivo descrito'}</p>
+                  <p className="text-xs text-muted-foreground truncate">{c.reason || 'Sem motivo descrito'}</p>
                 </div>
                 <MessageCircle className="h-4 w-4 text-secondary" aria-hidden="true" />
             </GlassCard>
@@ -155,7 +254,12 @@ export default function DoctorDashboard() {
 
         <section aria-labelledby="up-h">
           <h2 id="up-h" className="font-bold text-base mb-2">Próximas</h2>
-          {upcoming.length === 0 && <p className="text-sm text-muted-foreground">Sem consultas agendadas.</p>}
+          {upcoming.length === 0 && (
+            <NeuCard className="!p-6 text-center">
+              <CalendarClock className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" aria-hidden="true" />
+              <p className="text-sm text-muted-foreground">Sem consultas agendadas.</p>
+            </NeuCard>
+          )}
           {upcoming.map(c => (
             <NeuCard
               key={c.id}
@@ -163,20 +267,16 @@ export default function DoctorDashboard() {
               tabIndex={0}
               onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/health/consultation/${c.id}`); }}
               onClick={() => navigate(`/health/consultation/${c.id}`)}
-              className="mb-2 !p-3 cursor-pointer"
+              className="mb-2 !p-3 cursor-pointer flex items-center gap-3"
             >
-              <p className="text-sm font-semibold">{new Date(c.scheduled_at).toLocaleString('pt-PT', { dateStyle: 'medium', timeStyle: 'short' })}</p>
-              <p className="text-xs text-muted-foreground">{c.reason || 'Consulta agendada'}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">{new Date(c.scheduled_at).toLocaleString('pt-PT', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                <p className="text-xs text-muted-foreground truncate">{c.reason || 'Consulta agendada'}</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
             </NeuCard>
           ))}
         </section>
-
-        <div className="grid gap-2">
-          <Button variant="outline" className="w-full h-12 border-secondary/40 hover:bg-secondary/10" onClick={() => navigate('/doctor/availability')}>
-            <CalendarClock className="h-4 w-4 mr-2" aria-hidden="true" /> Gerir horários disponíveis
-          </Button>
-          <Button variant="outline" className="w-full h-12" onClick={() => navigate('/doctor/patients')}>Ver pacientes</Button>
-        </div>
       </main>
     </div>
   );
