@@ -138,36 +138,8 @@ export async function scanPrescription(file: File): Promise<{
   date?: string;
   next_appointment?: string;
 }> {
-  if (!isGeminiConfigured()) {
-    return { medications: [], doctor_name: undefined, facility: undefined, date: undefined, next_appointment: undefined };
-  }
-  try {
-    return await (geminiStructured as any)(
-      PRESCRIPTION_PROMPT,
-      {
-        fallback: { medications: [] },
-
-        body: {
-          contents: [{
-            role: 'user',
-            parts: [
-              { text: PRESCRIPTION_PROMPT },
-              {
-                inlineData: {
-                  mimeType: file.type || 'image/jpeg',
-                  data: await fileToBase64(file),
-                },
-              },
-            ],
-          }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1500, responseMimeType: 'application/json' },
-        },
-      }
-    );
-  } catch (err) {
-    console.error('scanPrescription error:', err);
-    return { medications: [] };
-  }
+  const data = await runScan(file, 'prescription');
+  return { medications: data.medications ?? [], ...data } as any;
 }
 
 export async function scanLabResult(file: File): Promise<{
@@ -176,31 +148,8 @@ export async function scanLabResult(file: File): Promise<{
   date?: string;
   lab_name?: string;
 }> {
-  if (!isGeminiConfigured()) {
-    return { results: [] };
-  }
-  try {
-    return await (geminiStructured as any)(
-      LAB_RESULT_PROMPT,
-      {
-        fallback: { results: [] },
-
-        body: {
-          contents: [{
-            role: 'user',
-            parts: [
-              { text: LAB_RESULT_PROMPT },
-              { inlineData: { mimeType: file.type || 'image/jpeg', data: await fileToBase64(file) } },
-            ],
-          }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1500, responseMimeType: 'application/json' },
-        },
-      }
-    );
-  } catch (err) {
-    console.error('scanLabResult error:', err);
-    return { results: [] };
-  }
+  const data = await runScan(file, 'lab_result');
+  return { results: data.results ?? [], ...data } as any;
 }
 
 export async function scanMedicineLabel(file: File): Promise<{
@@ -212,31 +161,12 @@ export async function scanMedicineLabel(file: File): Promise<{
   batch_number?: string;
   instructions?: string;
 }> {
-  if (!isGeminiConfigured()) {
-    return {};
-  }
-  try {
-    return await (geminiStructured as any)(
-      MEDICINE_LABEL_PROMPT,
-      {
-        fallback: {},
+  return await runScan(file, 'medicine_label');
+}
 
-        body: {
-          contents: [{
-            role: 'user',
-            parts: [
-              { text: MEDICINE_LABEL_PROMPT },
-              { inlineData: { mimeType: file.type || 'image/jpeg', data: await fileToBase64(file) } },
-            ],
-          }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 800, responseMimeType: 'application/json' },
-        },
-      }
-    );
-  } catch (err) {
-    console.error('scanMedicineLabel error:', err);
-    return {};
-  }
+/** Generic scan for doctor notes, vaccine cards and other documents. */
+export async function scanDocument(file: File, scanType: ScanType): Promise<Record<string, any>> {
+  return await runScan(file, scanType);
 }
 
 // ─── Save & fetch ──────────────────────────────────────────────────────────
