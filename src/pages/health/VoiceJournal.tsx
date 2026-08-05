@@ -318,6 +318,7 @@ export default function VoiceJournal() {
           waveCanvasRef={waveCanvasRef}
           lastSaved={lastSaved}
           geminiConfigured={geminiConfigured}
+          liveTranscript={(finalTranscript + ' ' + interimTranscript).trim()}
           t={t}
         />
 
@@ -362,12 +363,12 @@ export default function VoiceJournal() {
 
 /* ---------- Recorder card ---------- */
 
-function RecorderCard({ stage, duration, onStart, onStop, onCancel, waveCanvasRef, lastSaved, geminiConfigured, t }: {
+function RecorderCard({ stage, duration, onStart, onStop, onCancel, waveCanvasRef, lastSaved, geminiConfigured, liveTranscript, t }: {
   stage: Stage; duration: number;
   onStart: () => void; onStop: () => void; onCancel: () => void;
   waveCanvasRef: React.RefObject<HTMLCanvasElement | null>;
   lastSaved: VoiceJournalEntry | null;
-  geminiConfigured: boolean; t: any;
+  geminiConfigured: boolean; liveTranscript?: string; t: any;
 }) {
   return (
     <motion.section
@@ -390,7 +391,7 @@ function RecorderCard({ stage, duration, onStart, onStop, onCancel, waveCanvasRe
             <p className="mt-1 text-sm text-slate-500 max-w-xs">{t('voiceJournal.hint') ?? 'Conta como te sentes hoje. O que correu bem? O que pesa?'}</p>
             {!geminiConfigured && (
               <p className="mt-3 text-xs text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                {t('voiceJournal.geminiMissing') ?? 'IA limitada — configura VITE_GEMINI_API_KEY para análise completa'}
+                {t('voiceJournal.geminiMissing') ?? 'IA indisponível de momento'}
               </p>
             )}
           </motion.div>
@@ -412,6 +413,11 @@ function RecorderCard({ stage, duration, onStart, onStop, onCancel, waveCanvasRe
               className="w-full max-w-md h-20 bg-violet-50/50 rounded-2xl"
               aria-hidden
             />
+            {liveTranscript ? (
+              <p className="mt-4 max-w-md text-sm text-slate-600 text-center italic" aria-live="polite">
+                “{liveTranscript}”
+              </p>
+            ) : null}
             <div className="mt-6 flex gap-3">
               <button
                 onClick={onCancel}
