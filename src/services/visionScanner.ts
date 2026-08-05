@@ -7,7 +7,15 @@ import { supabase } from '@/integrations/supabase/client';
 
 // Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
 const sb: any = supabase;
-import { geminiAnalyzeImage, geminiStructured, isGeminiConfigured } from '@/lib/gemini';
+async function runScan(file: File, scanType: ScanType): Promise<Record<string, any>> {
+  const image = await fileToBase64(file);
+  const { data, error } = await supabase.functions.invoke('vision-scan', {
+    body: { image, mimeType: file.type || 'image/jpeg', scanType },
+  });
+  if (error) throw error;
+  if (!data || (data as any).error) throw new Error((data as any)?.error ?? 'Falha na análise');
+  return data as Record<string, any>;
+}
 
 export type ScanType = 'prescription' | 'lab_result' | 'medicine_label' | 'doctor_note' | 'vaccine_card' | 'other';
 
@@ -63,8 +71,8 @@ export async function uploadScanImage(userId: string, file: File): Promise<strin
 
   if (error) throw new Error(error.message);
 
-  const { data } = sb.storage.from('vision-scans').getPublicUrl(path);
-  return data.publicUrl;
+  const { data } = await sb.storage.from('vision-scans').createSignedUrl(path, 60 * 60 * 24 * 365);
+  return data?.signedUrl ?? path;
 }
 
 // ─── Scan functions ────────────────────────────────────────────────────────
