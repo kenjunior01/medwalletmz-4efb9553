@@ -181,11 +181,12 @@ export default function VoiceJournal() {
       setStage('saved');
       await loadEntries();
 
-      // Auto-return to idle after 4s
+      // Leva o utilizador a rever/editar a transcrição antes de a manter no registo
       setTimeout(() => {
         setStage('idle');
         setLastSaved(null);
-      }, 4000);
+        if (entry?.id) navigate(`/health/voice-journal/${entry.id}`);
+      }, 1500);
     } catch (e: any) {
       setError(e?.message ?? 'Erro ao processar áudio');
       setStage('idle');
