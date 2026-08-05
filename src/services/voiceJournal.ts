@@ -299,3 +299,20 @@ function blobToBase64(blob: Blob): Promise<string> {
     reader.readAsDataURL(blob);
   });
 }
+
+/* ---------- Single entry read / update ---------- */
+
+export async function getVoiceJournal(id: string): Promise<VoiceJournalEntry | null> {
+  const { data, error } = await sb.from('voice_journals').select('*').eq('id', id).maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as VoiceJournalEntry) ?? null;
+}
+
+export async function updateVoiceJournal(
+  id: string,
+  patch: Partial<Pick<VoiceJournalEntry, 'transcript' | 'ai_summary' | 'detected_mood' | 'detected_keywords' | 'processing_status'>>,
+): Promise<VoiceJournalEntry> {
+  const { data, error } = await sb.from('voice_journals').update(patch).eq('id', id).select().single();
+  if (error) throw new Error(error.message);
+  return data as VoiceJournalEntry;
+}
