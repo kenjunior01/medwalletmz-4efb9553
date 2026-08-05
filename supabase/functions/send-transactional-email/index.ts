@@ -162,6 +162,37 @@ Deno.serve(async (req) => {
 
   // 3. Get or create unsubscribe token (one token per email address)
   const normalizedEmail = effectiveRecipient.toLowerCase()
+
+  // 2b. Respect the recipient's per-category email preferences (profiles.email_prefs)
+  const PREF_BY_TEMPLATE: Record<string, string> = {
+    'welcome': 'welcome',
+    'order-confirmation': 'orders',
+    'notification': 'alerts',
+  }
+  const prefKey = PREF_BY_TEMPLATE[templateName]
+  if (prefKey) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('email_prefs')
+      .eq('email', normalizedEmail)
+      .maybeSingle()
+    const prefs = (profile?.email_prefs ?? {}) as Record<string, unknown>
+    if (prefs[prefKey] === false) {
+      await supabase.from('email_send_log').insert({
+        message_id: messageId,
+        template_name: templateName,
+        recipient_email: effectiveRecipient,
+        status: 'suppressed',
+        error_message: 'Recipient opted out of this email category',
+      })
+      console.log('Email skipped by user preference', { effectiveRecipient, templateName })
+      return new Response(
+        JSON.stringify({ success: false, reason: 'user_opted_out' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+  }
+
   let unsubscribeToken: string
 
   // Check for existing token for this email
