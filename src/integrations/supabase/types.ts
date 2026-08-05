@@ -5552,6 +5552,32 @@ export type Database = {
             }[]
           }
       login_rate_check: { Args: { _email: string }; Returns: Json }
+      manager_performance_ranking: {
+        Args: { _days?: number }
+        Returns: {
+          active_users: number
+          ape_visits: number
+          art_adherence: number
+          consultations_completed: number
+          country_id: string
+          declining: boolean
+          email: string
+          full_name: string
+          manager_commission: number
+          new_users: number
+          province_id: string
+          revenue: number
+          revenue_previous: number
+          revenue_recent: number
+          role: string
+          scope_label: string
+          score: number
+          total_users: number
+          user_id: string
+          users_previous: number
+          users_recent: number
+        }[]
+      }
       mark_consultation_completed: { Args: { _id: string }; Returns: Json }
       moderate_ad: {
         Args: { _action: string; _id: string; _notes?: string }
