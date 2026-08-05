@@ -209,6 +209,12 @@ export async function getScans(userId: string, limit: number = 20): Promise<Visi
   return (data || []) as VisionScan[];
 }
 
+export async function getScan(id: string): Promise<VisionScan | null> {
+  const { data, error } = await sb.from('vision_scans').select('*').eq('id', id).maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as VisionScan) ?? null;
+}
+
 export async function updateScanReview(scanId: string, corrections: Record<string, any>): Promise<void> {
   const { error } = await sb
     .from('vision_scans')
