@@ -17,12 +17,6 @@ import { supabase } from '@/integrations/supabase/client';
 
 // Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
 const sb: any = supabase;
-import { isGeminiConfigured } from '@/lib/gemini';
-
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
-const BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
-const AUDIO_MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash'];
-
 export type ProcessingStatus = 'pending' | 'transcribing' | 'analyzing' | 'completed' | 'failed';
 
 export type DetectedMood = 'happy' | 'calm' | 'sad' | 'anxious' | 'angry' | 'neutral' | 'tired';
@@ -168,61 +162,23 @@ export async function uploadVoiceAudio(userId: string, blob: Blob): Promise<stri
 /* ---------- AI Analysis (audio → text + mood + insight) ---------- */
 
 /**
- * Send audio to Gemini for transcription + analysis.
- * Returns null if Gemini is not configured (caller should fall back to Web Speech API).
+ * Send audio to the secure `voice-analyze` edge function (Lovable AI).
+ * Returns null when the AI could not analyse the audio — the caller then
+ * falls back to the Web Speech transcript.
  */
 export async function analyzeAudioWithGemini(blob: Blob): Promise<AudioAnalysisResult | null> {
-  if (!isGeminiConfigured()) return null;
-
-  const base64 = await blobToBase64(blob);
-  const prompt = `Estás a ouvir um diário de voz pessoal sobre saúde e bem-estar.
-Analisa o áudio e responde APENAS com JSON válido (sem markdown) neste formato:
-{
-  "transcript": "transcrição completa palavra-a-palavra na língua falada",
-  "language": "código ISO 639-1 (pt, en, es, fr, hi, sw, etc.)",
-  "confidence": 0.0 a 1.0,
-  "mood": "happy | calm | sad | anxious | angry | neutral | tired",
-  "symptoms": ["sintomas mencionados, ex: dor de cabeça, insónia, fadiga"],
-  "keywords": ["tópicos principais, ex: trabalho, família, sono"],
-  "summary": "resumo em 1 frase do que a pessoa partilhou",
-  "insight": "insight empático e prático em 2-3 frases. NÃO dês conselho médico. Valida os sentimentos, sugere 1 pequeno passo de bem-estar."
-}
-Se não conseguires ouvir claramente, define confidence baixo e transcribe o que entenderes.`;
-
-  const inlineData = {
-    mimeType: blob.type || 'audio/webm',
-    data: base64,
-  };
-
-  let lastError: unknown = null;
-  for (const model of AUDIO_MODELS) {
-    try {
-      const url = `${BASE_URL}/${model}:generateContent?key=${API_KEY}`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: prompt }, { inlineData }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 1000, topP: 0.9 },
-        }),
-      });
-      if (!response.ok) {
-        const errBody = await response.json().catch(() => ({}));
-        throw new Error(`Gemini ${response.status}: ${(errBody as any)?.error?.message ?? response.statusText}`);
-      }
-      const data = await response.json();
-      const text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text ?? '').join('') ?? '';
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error('Resposta sem JSON');
-      const parsed = JSON.parse(jsonMatch[0]) as AudioAnalysisResult;
-      return parsed;
-    } catch (e) {
-      lastError = e;
-      continue;
-    }
+  try {
+    const base64 = await blobToBase64(blob);
+    const { data, error } = await supabase.functions.invoke('voice-analyze', {
+      body: { audio: base64, mimeType: blob.type || 'audio/webm' },
+    });
+    if (error) throw error;
+    if (!data || (data as any).error) throw new Error((data as any)?.error ?? 'Sem resposta');
+    return data as AudioAnalysisResult;
+  } catch (e) {
+    console.warn('[voiceJournal] audio analysis failed:', e);
+    return null;
   }
-  console.warn('[voiceJournal] Gemini audio analysis failed:', lastError);
-  return null;
 }
 
 /* ---------- Web Speech API fallback (browser-native) ---------- */
@@ -305,7 +261,7 @@ export async function deleteVoiceJournal(id: string): Promise<void> {
 }
 
 export async function getPublicAudioUrl(audioPath: string): Promise<string | null> {
-  const { data } = sb.storage.from('voice-journals').createSignedUrl(audioPath, 3600);
+  const { data } = await sb.storage.from('voice-journals').createSignedUrl(audioPath, 3600);
   return data?.signedUrl ?? null;
 }
 

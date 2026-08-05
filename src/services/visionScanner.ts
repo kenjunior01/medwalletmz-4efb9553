@@ -7,7 +7,15 @@ import { supabase } from '@/integrations/supabase/client';
 
 // Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
 const sb: any = supabase;
-import { geminiAnalyzeImage, geminiStructured, isGeminiConfigured } from '@/lib/gemini';
+async function runScan(file: File, scanType: ScanType): Promise<Record<string, any>> {
+  const image = await fileToBase64(file);
+  const { data, error } = await supabase.functions.invoke('vision-scan', {
+    body: { image, mimeType: file.type || 'image/jpeg', scanType },
+  });
+  if (error) throw error;
+  if (!data || (data as any).error) throw new Error((data as any)?.error ?? 'Falha na análise');
+  return data as Record<string, any>;
+}
 
 export type ScanType = 'prescription' | 'lab_result' | 'medicine_label' | 'doctor_note' | 'vaccine_card' | 'other';
 
@@ -63,8 +71,8 @@ export async function uploadScanImage(userId: string, file: File): Promise<strin
 
   if (error) throw new Error(error.message);
 
-  const { data } = sb.storage.from('vision-scans').getPublicUrl(path);
-  return data.publicUrl;
+  const { data } = await sb.storage.from('vision-scans').createSignedUrl(path, 60 * 60 * 24 * 365);
+  return data?.signedUrl ?? path;
 }
 
 // ─── Scan functions ────────────────────────────────────────────────────────
@@ -130,36 +138,8 @@ export async function scanPrescription(file: File): Promise<{
   date?: string;
   next_appointment?: string;
 }> {
-  if (!isGeminiConfigured()) {
-    return { medications: [], doctor_name: undefined, facility: undefined, date: undefined, next_appointment: undefined };
-  }
-  try {
-    return await (geminiStructured as any)(
-      PRESCRIPTION_PROMPT,
-      {
-        fallback: { medications: [] },
-
-        body: {
-          contents: [{
-            role: 'user',
-            parts: [
-              { text: PRESCRIPTION_PROMPT },
-              {
-                inlineData: {
-                  mimeType: file.type || 'image/jpeg',
-                  data: await fileToBase64(file),
-                },
-              },
-            ],
-          }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1500, responseMimeType: 'application/json' },
-        },
-      }
-    );
-  } catch (err) {
-    console.error('scanPrescription error:', err);
-    return { medications: [] };
-  }
+  const data = await runScan(file, 'prescription');
+  return { medications: data.medications ?? [], ...data } as any;
 }
 
 export async function scanLabResult(file: File): Promise<{
@@ -168,31 +148,8 @@ export async function scanLabResult(file: File): Promise<{
   date?: string;
   lab_name?: string;
 }> {
-  if (!isGeminiConfigured()) {
-    return { results: [] };
-  }
-  try {
-    return await (geminiStructured as any)(
-      LAB_RESULT_PROMPT,
-      {
-        fallback: { results: [] },
-
-        body: {
-          contents: [{
-            role: 'user',
-            parts: [
-              { text: LAB_RESULT_PROMPT },
-              { inlineData: { mimeType: file.type || 'image/jpeg', data: await fileToBase64(file) } },
-            ],
-          }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1500, responseMimeType: 'application/json' },
-        },
-      }
-    );
-  } catch (err) {
-    console.error('scanLabResult error:', err);
-    return { results: [] };
-  }
+  const data = await runScan(file, 'lab_result');
+  return { results: data.results ?? [], ...data } as any;
 }
 
 export async function scanMedicineLabel(file: File): Promise<{
@@ -204,31 +161,12 @@ export async function scanMedicineLabel(file: File): Promise<{
   batch_number?: string;
   instructions?: string;
 }> {
-  if (!isGeminiConfigured()) {
-    return {};
-  }
-  try {
-    return await (geminiStructured as any)(
-      MEDICINE_LABEL_PROMPT,
-      {
-        fallback: {},
+  return await runScan(file, 'medicine_label');
+}
 
-        body: {
-          contents: [{
-            role: 'user',
-            parts: [
-              { text: MEDICINE_LABEL_PROMPT },
-              { inlineData: { mimeType: file.type || 'image/jpeg', data: await fileToBase64(file) } },
-            ],
-          }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 800, responseMimeType: 'application/json' },
-        },
-      }
-    );
-  } catch (err) {
-    console.error('scanMedicineLabel error:', err);
-    return {};
-  }
+/** Generic scan for doctor notes, vaccine cards and other documents. */
+export async function scanDocument(file: File, scanType: ScanType): Promise<Record<string, any>> {
+  return await runScan(file, scanType);
 }
 
 // ─── Save & fetch ──────────────────────────────────────────────────────────
@@ -236,7 +174,7 @@ export async function scanMedicineLabel(file: File): Promise<{
 export async function saveScan(userId: string, scan: Omit<VisionScan, 'id' | 'user_id' | 'created_at'>): Promise<VisionScan> {
   const { data, error } = await sb
     .from('vision_scans')
-    .insert({ user_id: userId, ...scan, model_used: 'gemini-2.0-flash' })
+    .insert({ user_id: userId, ...scan, model_used: 'google/gemini-2.5-flash' })
     .select()
     .single();
   if (error) throw new Error(error.message);

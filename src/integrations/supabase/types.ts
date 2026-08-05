@@ -4884,6 +4884,132 @@ export type Database = {
           },
         ]
       }
+      vision_scans: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          detected_date: string | null
+          detected_doctor: string | null
+          detected_facility: string | null
+          detected_medications: Json | null
+          detected_next_appointment: string | null
+          detected_results: Json | null
+          detected_test_name: string | null
+          extracted_data: Json | null
+          id: string
+          image_url: string | null
+          language_detected: string | null
+          linked_lab_order_id: string | null
+          linked_prescription_id: string | null
+          model_used: string | null
+          scan_type: string
+          user_corrections: Json | null
+          user_id: string
+          was_corrected: boolean
+          was_reviewed_by_user: boolean
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          detected_date?: string | null
+          detected_doctor?: string | null
+          detected_facility?: string | null
+          detected_medications?: Json | null
+          detected_next_appointment?: string | null
+          detected_results?: Json | null
+          detected_test_name?: string | null
+          extracted_data?: Json | null
+          id?: string
+          image_url?: string | null
+          language_detected?: string | null
+          linked_lab_order_id?: string | null
+          linked_prescription_id?: string | null
+          model_used?: string | null
+          scan_type: string
+          user_corrections?: Json | null
+          user_id: string
+          was_corrected?: boolean
+          was_reviewed_by_user?: boolean
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          detected_date?: string | null
+          detected_doctor?: string | null
+          detected_facility?: string | null
+          detected_medications?: Json | null
+          detected_next_appointment?: string | null
+          detected_results?: Json | null
+          detected_test_name?: string | null
+          extracted_data?: Json | null
+          id?: string
+          image_url?: string | null
+          language_detected?: string | null
+          linked_lab_order_id?: string | null
+          linked_prescription_id?: string | null
+          model_used?: string | null
+          scan_type?: string
+          user_corrections?: Json | null
+          user_id?: string
+          was_corrected?: boolean
+          was_reviewed_by_user?: boolean
+        }
+        Relationships: []
+      }
+      voice_journals: {
+        Row: {
+          ai_insight: string | null
+          ai_summary: string | null
+          audio_url: string
+          created_at: string
+          detected_keywords: string[] | null
+          detected_mood: string | null
+          detected_symptoms: string[] | null
+          duration_seconds: number
+          id: string
+          processing_status: string
+          recorded_at: string
+          transcript: string | null
+          transcript_confidence: number | null
+          transcript_language: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_insight?: string | null
+          ai_summary?: string | null
+          audio_url: string
+          created_at?: string
+          detected_keywords?: string[] | null
+          detected_mood?: string | null
+          detected_symptoms?: string[] | null
+          duration_seconds?: number
+          id?: string
+          processing_status?: string
+          recorded_at?: string
+          transcript?: string | null
+          transcript_confidence?: number | null
+          transcript_language?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_insight?: string | null
+          ai_summary?: string | null
+          audio_url?: string
+          created_at?: string
+          detected_keywords?: string[] | null
+          detected_mood?: string | null
+          detected_symptoms?: string[] | null
+          duration_seconds?: number
+          id?: string
+          processing_status?: string
+          recorded_at?: string
+          transcript?: string | null
+          transcript_confidence?: number | null
+          transcript_language?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       wallet_transactions: {
         Row: {
           amount: number
