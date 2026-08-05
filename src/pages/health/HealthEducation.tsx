@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -95,7 +96,49 @@ export default function HealthEducation() {
   const related = articles?.filter((a: any) => a.id !== article?.id && a.category === article?.category).slice(0, 3) ?? [];
 
   // Se tiver slug, abre o detalhe
-  if (slug) return <ArticleDetail article={article} related={related} loading={loadingOne} onBack={() => navigate("/health/education")} user={user} navigate={navigate} />;
+  if (slug) {
+    const articleJsonLd = article
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: article.title,
+          description: article.excerpt ?? undefined,
+          image: article.cover_url ?? undefined,
+          datePublished: article.published_at ?? undefined,
+          dateModified: article.updated_at ?? article.published_at ?? undefined,
+          articleSection: article.category ?? undefined,
+          inLanguage: "pt-MZ",
+          mainEntityOfPage: `https://medwalletmz.online/health/education/${slug}`,
+          author: {
+            "@type": "Person",
+            name: article.author_name || "Equipa MedWallet",
+            ...(article.author_credentials ? { jobTitle: article.author_credentials } : {}),
+          },
+          publisher: {
+            "@type": "Organization",
+            name: "MedWallet",
+            logo: { "@type": "ImageObject", url: "https://medwalletmz.online/icon-512.png" },
+          },
+        }
+      : null;
+    return (
+      <>
+        {article && (
+          <Helmet>
+            <title>{`${article.title} — MedWallet`}</title>
+            {article.excerpt && <meta name="description" content={article.excerpt} />}
+            <link rel="canonical" href={`https://medwalletmz.online/health/education/${slug}`} />
+            <meta property="og:type" content="article" />
+            <meta property="og:title" content={article.title} />
+            <meta property="og:url" content={`https://medwalletmz.online/health/education/${slug}`} />
+            {article.cover_url && <meta property="og:image" content={article.cover_url} />}
+            <script type="application/ld+json">{JSON.stringify(articleJsonLd)}</script>
+          </Helmet>
+        )}
+        <ArticleDetail article={article} related={related} loading={loadingOne} onBack={() => navigate("/health/education")} user={user} navigate={navigate} />
+      </>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
