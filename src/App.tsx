@@ -130,6 +130,7 @@ const VideoSessions = lazy(() => import("./pages/health/VideoSessions"));
 const Referrals = lazy(() => import("./pages/Referrals"));
 const Wallet = lazy(() => import("./pages/Wallet"));
 const Legal = lazy(() => import("./pages/Legal"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const AdminWallets = lazy(() => import("./pages/admin/AdminWallets"));
 const AdminCommissions = lazy(() => import("./pages/admin/AdminCommissions"));
 const AdminPlatformSettings = lazy(() => import("./pages/admin/AdminPlatformSettings"));
@@ -337,6 +338,7 @@ const App = () => (
                     <Route path="/wallet/withdraw" element={<Withdraw />} />
                     <Route path="/favorites" element={<Favorites />} />
                     <Route path="/legal" element={<Legal />} />
+                    <Route path="/unsubscribe" element={<Unsubscribe />} />
                     <Route path="/legal/:type" element={<LegalDocs />} />
                     <Route path="/suggest-place" element={<SuggestPlace />} />
                     <Route path="/health/insurance" element={<Insurance />} />
