@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, MailX, CheckCircle2, AlertCircle } from "@/components/icons/lucide-compat";
+import { Loader2, Mail, CheckCircle2, AlertCircle } from "@/components/icons/lucide-compat";
 
 type State = "loading" | "valid" | "invalid" | "already" | "success" | "error";
 
@@ -59,7 +59,7 @@ export default function Unsubscribe() {
             ) : state === "invalid" || state === "error" ? (
               <AlertCircle className="h-6 w-6 text-destructive" />
             ) : (
-              <MailX className="h-6 w-6 text-muted-foreground" />
+              <Mail className="h-6 w-6 text-muted-foreground" />
             )}
           </div>
           <CardTitle>
