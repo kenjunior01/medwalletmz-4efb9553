@@ -174,7 +174,7 @@ export async function scanDocument(file: File, scanType: ScanType): Promise<Reco
 export async function saveScan(userId: string, scan: Omit<VisionScan, 'id' | 'user_id' | 'created_at'>): Promise<VisionScan> {
   const { data, error } = await sb
     .from('vision_scans')
-    .insert({ user_id: userId, ...scan, model_used: 'gemini-2.0-flash' })
+    .insert({ user_id: userId, ...scan, model_used: 'google/gemini-2.5-flash' })
     .select()
     .single();
   if (error) throw new Error(error.message);
