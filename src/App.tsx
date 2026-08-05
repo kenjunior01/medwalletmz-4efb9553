@@ -101,8 +101,10 @@ const PrescriptionDetail = lazy(() => import("./pages/health/PrescriptionDetail"
 const VerifyPrescription = lazy(() => import("./pages/health/VerifyPrescription"));
 const HealthJournal = lazy(() => import("./pages/health/HealthJournal"));
 const VisionScanner = lazy(() => import("./pages/health/VisionScanner"));
+const ScanResult = lazy(() => import("./pages/health/ScanResult"));
 const FamilyHub = lazy(() => import("./pages/health/FamilyHub"));
 const VoiceJournal = lazy(() => import("./pages/health/VoiceJournal"));
+const VoiceJournalReview = lazy(() => import("./pages/health/VoiceJournalReview"));
 const MapsPremium = lazy(() => import("./pages/health/MapsPremium"));
 const SupportCircles = lazy(() => import("./pages/health/SupportCircles"));
 const HealthRidersNetwork = lazy(() => import("./pages/health/HealthRidersNetwork"));
@@ -304,8 +306,10 @@ const App = () => (
                     <Route path="/health/prescription/:id" element={<PrescriptionDetail />} />
                     <Route path="/health/journal" element={<HealthJournal />} />
                     <Route path="/health/scanner" element={<VisionScanner />} />
+                    <Route path="/health/scanner/:id" element={<ScanResult />} />
                     <Route path="/health/family" element={<FamilyHub />} />
                     <Route path="/health/voice-journal" element={<VoiceJournal />} />
+                    <Route path="/health/voice-journal/:id" element={<VoiceJournalReview />} />
                     <Route path="/health/maps" element={<MapsPremium />} />
                     <Route path="/health/circles" element={<SupportCircles />} />
                     <Route path="/health/riders" element={<HealthRidersNetwork />} />
