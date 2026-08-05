@@ -13,10 +13,28 @@ import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
-import { Shield, ChevronRight, ChevronLeft, CheckCircle, Trophy } from '@/components/icons/lucide-compat';
-import { MANAGER_QUIZ, MAX_QUIZ_SCORE, scoreQuiz } from '@/lib/managerQuest';
+import { Shield, ChevronRight, ChevronLeft, CheckCircle, Trophy, Upload } from '@/components/icons/lucide-compat';
+import {
+  MANAGER_QUIZ, MAX_QUIZ_SCORE, MAX_PHASE_SCORE, PHASES, QuizPhase,
+  questionsForPhase, scoreByPhase, scoreQuiz,
+} from '@/lib/managerQuest';
 
 const LANGS = ['Português', 'Inglês', 'Changana', 'Sena', 'Macua', 'Ndau', 'Outro'];
+
+type Step =
+  | { kind: 'profile' }
+  | { kind: 'phase-intro'; phase: QuizPhase }
+  | { kind: 'question'; phase: QuizPhase; qid: string }
+  | { kind: 'final' };
+
+const STEPS: Step[] = [
+  { kind: 'profile' },
+  ...PHASES.flatMap((p): Step[] => [
+    { kind: 'phase-intro', phase: p.phase },
+    ...questionsForPhase(p.phase).map((q): Step => ({ kind: 'question', phase: p.phase, qid: q.id })),
+  ]),
+  { kind: 'final' },
+];
 
 export default function BecomeManager() {
   const { user } = useAuth();
@@ -26,6 +44,8 @@ export default function BecomeManager() {
   const [step, setStep] = useState(0);
   const [existing, setExisting] = useState<any | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [cvName, setCvName] = useState('');
 
   const [form, setForm] = useState({
     full_name: '',
@@ -39,6 +59,7 @@ export default function BecomeManager() {
     has_transport: false,
     linkedin: '',
     motivation: '',
+    cv_url: '',
   });
   const [languages, setLanguages] = useState<string[]>(['Português']);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -58,17 +79,38 @@ export default function BecomeManager() {
     })();
   }, [user]);
 
-  const quizStepStart = 1;
-  const totalSteps = quizStepStart + MANAGER_QUIZ.length + 1;
-  const progress = Math.round((step / (totalSteps - 1)) * 100);
+  const current = STEPS[step];
+  const progress = Math.round((step / (STEPS.length - 1)) * 100);
   const score = useMemo(() => scoreQuiz(answers), [answers]);
+  const phases = useMemo(() => scoreByPhase(answers), [answers]);
 
   const canAdvance = () => {
-    if (step === 0) return form.full_name.trim().length > 2 && form.phone.trim().length > 5 && form.province.trim().length > 1;
-    if (step >= quizStepStart && step < quizStepStart + MANAGER_QUIZ.length) {
-      return !!answers[MANAGER_QUIZ[step - quizStepStart].id];
+    if (!current) return false;
+    if (current.kind === 'profile') {
+      return form.full_name.trim().length > 2 && form.phone.trim().length > 5 && form.province.trim().length > 1;
     }
-    return form.motivation.trim().length >= 80;
+    if (current.kind === 'question') return !!answers[current.qid];
+    if (current.kind === 'final') return form.motivation.trim().length >= 80;
+    return true;
+  };
+
+  const uploadCv = async (file: File) => {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { toast.error('O ficheiro deve ter no máximo 10 MB'); return; }
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'pdf';
+      const path = `manager-applications/${user?.id}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from('licenses').upload(path, file, { upsert: true });
+      if (error) throw error;
+      setForm((f) => ({ ...f, cv_url: path }));
+      setCvName(file.name);
+      toast.success('Documento carregado');
+    } catch {
+      toast.error('Erro ao carregar o documento');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const submit = async () => {
@@ -82,6 +124,8 @@ export default function BecomeManager() {
       answers,
       quiz_score: score,
       max_score: MAX_QUIZ_SCORE,
+      phase_scores: phases,
+      simulation: { score: phases['3'], max: MAX_PHASE_SCORE[3] },
     });
     setSaving(false);
     if (error) {
@@ -89,7 +133,7 @@ export default function BecomeManager() {
       return;
     }
     toast.success('Candidatura enviada! A equipa irá avaliar.');
-    setExisting({ status: 'pending', quiz_score: score, max_score: MAX_QUIZ_SCORE });
+    setExisting({ status: 'pending', quiz_score: score, max_score: MAX_QUIZ_SCORE, phase_scores: phases, justSubmitted: true });
   };
 
   if (!user) {
@@ -108,39 +152,58 @@ export default function BecomeManager() {
       pending: 'Em espera de análise', in_review: 'Em análise', interview: 'Convidado para entrevista',
       approved: 'Aprovada', rejected: 'Não aprovada',
     };
+    const ps = existing.phase_scores || {};
     return (
       <main className="max-w-lg mx-auto p-6 space-y-4">
         <Helmet><title>Candidatura a Gestor Regional | MedWallet</title></Helmet>
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-primary" /> A sua candidatura</CardTitle></CardHeader>
           <CardContent className="space-y-3">
+            {existing.justSubmitted && (
+              <div className="rounded-xl border border-primary/30 bg-primary/10 p-3 text-sm flex gap-2">
+                <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <span>Candidatura recebida. Enviámos a confirmação e a equipa responde nos próximos dias úteis através da área de mensagens.</span>
+              </div>
+            )}
             <Badge>{statusLabel[existing.status] || existing.status}</Badge>
-            <p className="text-sm text-muted-foreground">Pontuação: <strong>{existing.quiz_score}/{existing.max_score}</strong></p>
+            <p className="text-sm text-muted-foreground">Pontuação total: <strong>{existing.quiz_score}/{existing.max_score}</strong></p>
+            <div className="grid grid-cols-3 gap-2">
+              {PHASES.map((p) => (
+                <div key={p.phase} className="rounded-lg border p-2 text-center">
+                  <p className="text-[10px] text-muted-foreground">Fase {p.phase}</p>
+                  <p className="font-bold text-primary">{ps[String(p.phase)] ?? 0}<span className="text-xs text-muted-foreground">/{MAX_PHASE_SCORE[p.phase]}</span></p>
+                </div>
+              ))}
+            </div>
             {existing.review_notes && <p className="text-sm">Notas: {existing.review_notes}</p>}
-            <Button variant="outline" onClick={() => navigate('/')}>Voltar ao início</Button>
+            <div className="flex gap-2">
+              <Button onClick={() => navigate('/minha-candidatura')}>Acompanhar candidatura</Button>
+              <Button variant="outline" onClick={() => navigate('/')}>Início</Button>
+            </div>
           </CardContent>
         </Card>
       </main>
     );
   }
 
-  const quizIndex = step - quizStepStart;
-  const q = MANAGER_QUIZ[quizIndex];
+  const q = current?.kind === 'question' ? MANAGER_QUIZ.find((x) => x.id === current.qid) : null;
+  const phaseQs = current && 'phase' in current ? questionsForPhase(current.phase) : [];
+  const phaseMeta = current && 'phase' in current ? PHASES.find((p) => p.phase === current.phase) : null;
 
   return (
     <main className="max-w-2xl mx-auto p-4 md:p-8 space-y-6">
       <Helmet>
         <title>Tornar-se Gestor Regional | MedWallet</title>
-        <meta name="description" content="Candidate-se a Gestor Regional da MedWallet: responda ao questionário de competências e junte-se à equipa de liderança." />
+        <meta name="description" content="Candidate-se a Gestor Regional da MedWallet: questionário de avaliação em 3 fases, simulação prática e resposta da equipa." />
       </Helmet>
 
       <header className="space-y-2">
         <h1 className="text-2xl font-black flex items-center gap-2"><Shield className="h-6 w-6 text-primary" /> Quest: Gestor Regional</h1>
-        <p className="text-sm text-muted-foreground">Responda com honestidade. A pontuação e as respostas vão directamente para o painel de administração.</p>
+        <p className="text-sm text-muted-foreground">Avaliação em 3 fases. As respostas e pontuações vão directamente para o painel de administração.</p>
         <Progress value={progress} className="h-2" />
       </header>
 
-      {step === 0 && (
+      {current?.kind === 'profile' && (
         <Card><CardContent className="p-5 space-y-4">
           <div><Label>Nome completo *</Label><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></div>
           <div className="grid grid-cols-2 gap-3">
@@ -178,9 +241,18 @@ export default function BecomeManager() {
         </CardContent></Card>
       )}
 
-      {q && (
+      {current?.kind === 'phase-intro' && phaseMeta && (
+        <Card><CardContent className="p-6 space-y-3 text-center">
+          <Badge variant="outline" className="mx-auto">Fase {phaseMeta.phase} de 3</Badge>
+          <h2 className="text-xl font-black">{phaseMeta.title}</h2>
+          <p className="text-sm text-muted-foreground">{phaseMeta.subtitle}</p>
+          <p className="text-xs text-muted-foreground">{phaseQs.length} perguntas · máximo {MAX_PHASE_SCORE[phaseMeta.phase]} pontos</p>
+        </CardContent></Card>
+      )}
+
+      {q && current?.kind === 'question' && (
         <Card><CardContent className="p-5 space-y-4">
-          <Badge variant="outline">{q.section} · {quizIndex + 1}/{MANAGER_QUIZ.length}</Badge>
+          <Badge variant="outline">{q.section} · {phaseQs.findIndex((x) => x.id === q.id) + 1}/{phaseQs.length}</Badge>
           <h2 className="text-lg font-bold">{q.question}</h2>
           <div className="space-y-2">
             {q.options.map((o) => (
@@ -193,15 +265,36 @@ export default function BecomeManager() {
         </CardContent></Card>
       )}
 
-      {step === totalSteps - 1 && (
+      {current?.kind === 'final' && (
         <Card><CardContent className="p-5 space-y-4">
           <h2 className="text-lg font-bold">Porque devemos escolher-lhe?</h2>
           <Textarea rows={7} maxLength={2000} value={form.motivation}
             onChange={(e) => setForm({ ...form, motivation: e.target.value })}
             placeholder="Fale da sua rede de contactos na saúde, resultados que já entregou, e o plano dos primeiros 90 dias (mínimo 80 caracteres)." />
           <p className="text-xs text-muted-foreground">{form.motivation.length} caracteres</p>
-          <div className="rounded-xl bg-muted/40 p-3 text-sm flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-primary" /> Pontuação do questionário: <strong>{score}/{MAX_QUIZ_SCORE}</strong>
+
+          <div className="space-y-2">
+            <Label>CV ou carta de apresentação (PDF ou imagem, opcional)</Label>
+            <label className="flex items-center gap-2 rounded-xl border border-dashed p-3 cursor-pointer hover:border-primary/50">
+              <Upload className="h-4 w-4 text-primary" />
+              <span className="text-sm text-muted-foreground">
+                {uploading ? 'A carregar...' : cvName || 'Escolher ficheiro (máx. 10 MB)'}
+              </span>
+              <input type="file" className="hidden" accept=".pdf,image/*"
+                onChange={(e) => e.target.files?.[0] && uploadCv(e.target.files[0])} />
+            </label>
+          </div>
+
+          <div className="rounded-xl bg-muted/40 p-3 text-sm space-y-2">
+            <p className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-primary" /> Pontuação total: <strong>{score}/{MAX_QUIZ_SCORE}</strong></p>
+            <div className="grid grid-cols-3 gap-2">
+              {PHASES.map((p) => (
+                <div key={p.phase} className="rounded-lg bg-background p-2 text-center">
+                  <p className="text-[10px] text-muted-foreground">Fase {p.phase}</p>
+                  <p className="font-bold text-primary">{phases[String(p.phase)]}<span className="text-xs text-muted-foreground">/{MAX_PHASE_SCORE[p.phase]}</span></p>
+                </div>
+              ))}
+            </div>
           </div>
         </CardContent></Card>
       )}
@@ -210,7 +303,7 @@ export default function BecomeManager() {
         <Button variant="outline" disabled={step === 0} onClick={() => setStep((s) => s - 1)}>
           <ChevronLeft className="h-4 w-4 mr-1" /> Anterior
         </Button>
-        {step < totalSteps - 1 ? (
+        {step < STEPS.length - 1 ? (
           <Button disabled={!canAdvance()} onClick={() => setStep((s) => s + 1)}>
             Seguinte <ChevronRight className="h-4 w-4 ml-1" />
           </Button>

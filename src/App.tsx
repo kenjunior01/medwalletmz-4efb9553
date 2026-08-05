@@ -139,6 +139,7 @@ const AdminInstitutions = lazy(() => import("./pages/admin/AdminInstitutions"));
 const AdminManagerApplications = lazy(() => import("./pages/admin/AdminManagerApplications"));
 const AdminManagerRanking = lazy(() => import("./pages/admin/AdminManagerRanking"));
 const BecomeManager = lazy(() => import("./pages/manager/BecomeManager"));
+const ManagerCareers = lazy(() => import("./pages/manager/ManagerCareers"));
 const ManagerApplicationStatus = lazy(() => import("./pages/manager/ManagerApplicationStatus"));
 const AdminMzImporter = lazy(() => import("./pages/admin/AdminMzImporter"));
 const GlobalMetrics = lazy(() => import("./pages/admin/GlobalMetrics"));
@@ -325,6 +326,7 @@ const App = () => (
                     <Route path="/health/veterinary" element={<Veterinary />} />
                     <Route path="/partners" element={<Partners />} />
                     <Route path="/referrals" element={<Referrals />} />
+                    <Route path="/vagas-gestor" element={<ManagerCareers />} />
                     <Route path="/tornar-se-gestor" element={<BecomeManager />} />
                     <Route path="/minha-candidatura" element={<ManagerApplicationStatus />} />
                     <Route path="/wallet" element={<Wallet />} />

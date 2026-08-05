@@ -2627,6 +2627,7 @@ export type Database = {
           country_id: string | null
           created_at: string
           current_occupation: string | null
+          cv_url: string | null
           email: string | null
           experience_years: number
           full_name: string
@@ -2636,12 +2637,14 @@ export type Database = {
           linkedin: string | null
           max_score: number
           motivation: string | null
+          phase_scores: Json
           phone: string | null
           province: string | null
           quiz_score: number
           review_notes: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          simulation: Json
           status: string
           target_region: string | null
           updated_at: string
@@ -2653,6 +2656,7 @@ export type Database = {
           country_id?: string | null
           created_at?: string
           current_occupation?: string | null
+          cv_url?: string | null
           email?: string | null
           experience_years?: number
           full_name: string
@@ -2662,12 +2666,14 @@ export type Database = {
           linkedin?: string | null
           max_score?: number
           motivation?: string | null
+          phase_scores?: Json
           phone?: string | null
           province?: string | null
           quiz_score?: number
           review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          simulation?: Json
           status?: string
           target_region?: string | null
           updated_at?: string
@@ -2679,6 +2685,7 @@ export type Database = {
           country_id?: string | null
           created_at?: string
           current_occupation?: string | null
+          cv_url?: string | null
           email?: string | null
           experience_years?: number
           full_name?: string
@@ -2688,12 +2695,14 @@ export type Database = {
           linkedin?: string | null
           max_score?: number
           motivation?: string | null
+          phase_scores?: Json
           phone?: string | null
           province?: string | null
           quiz_score?: number
           review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          simulation?: Json
           status?: string
           target_region?: string | null
           updated_at?: string
