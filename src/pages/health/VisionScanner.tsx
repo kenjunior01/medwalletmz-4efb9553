@@ -21,7 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
 import {
   uploadScanImage, scanPrescription, scanLabResult, scanMedicineLabel,
-  saveScan, getScans, updateScanReview,
+  scanDocument, saveScan, getScans, updateScanReview,
   type ScanType, type VisionScan, type DetectedMedication, type DetectedLabResult,
 } from '@/services/visionScanner';
 import { cn } from '@/lib/utils';
