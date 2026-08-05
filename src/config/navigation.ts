@@ -108,6 +108,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/monetizacao", icon: Wallet, label: "O meu MedWallet", group: "Principal" },
     { path: "/impacto", icon: Globe, label: "Impacto Público", group: "Principal" },
     { path: "/register/professional", icon: Stethoscope, label: "Sou Profissional de Saúde", group: "Principal" },
+    { path: "/vagas-gestor", icon: TrendingUp, label: "Tornar-me Gestor Regional", group: "Principal" },
     { path: "/educacao", icon: BookOpen, label: "Educação em Saúde", group: "Saúde" },
     { path: "/rede-ape", icon: HeartHandshake, label: "Rede APE", group: "Saúde" },
     { path: "/health/doctors", icon: Stethoscope, label: "nav.doctors", group: "Saúde" },
