@@ -240,6 +240,7 @@ export default function VoiceJournal() {
   useEffect(() => {
     return () => {
       recControllerRef.current?.cancel();
+      speechRef.current?.stop();
       if (timerRef.current) clearInterval(timerRef.current);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
