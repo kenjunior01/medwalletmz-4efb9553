@@ -1,7 +1,9 @@
 project_id = "pfqruzusjjxyidhqkiob"
 
-[functions.process-email-queue]
-verify_jwt = true
-
-[functions.emergency-sos]
-verify_jwt = false
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.emergency-sos]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
