@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, MailX, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2, MailX, CheckCircle2, AlertCircle } from "@/components/icons/lucide-compat";
 
 type State = "loading" | "valid" | "invalid" | "already" | "success" | "error";
 
