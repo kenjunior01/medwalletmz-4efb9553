@@ -283,6 +283,24 @@ export default function Settings() {
               </div>
 
               {/* Dark mode toggle */}
+              <button
+                type="button"
+                onClick={() => navigate("/settings/emails")}
+                className="w-full flex items-center justify-between p-4 min-h-[64px] text-left hover:bg-muted/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                    <Bell className="h-5 w-5 text-blue-500" aria-hidden="true" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <Label className="text-sm font-bold">Preferências de email</Label>
+                    <p className="text-[10px] text-muted-foreground">
+                      Escolha que emails quer receber (boas-vindas, pedidos, alertas)
+                    </p>
+                  </div>
+                </div>
+              </button>
+
               <div className="flex items-center justify-between p-4 min-h-[64px]">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">

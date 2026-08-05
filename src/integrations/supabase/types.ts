@@ -3897,6 +3897,7 @@ export type Database = {
           default_city: string | null
           driver_selfie_url: string | null
           email: string | null
+          email_prefs: Json
           emola_number: string | null
           full_name: string | null
           health_certified: boolean
@@ -3935,6 +3936,7 @@ export type Database = {
           default_city?: string | null
           driver_selfie_url?: string | null
           email?: string | null
+          email_prefs?: Json
           emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
@@ -3973,6 +3975,7 @@ export type Database = {
           default_city?: string | null
           driver_selfie_url?: string | null
           email?: string | null
+          email_prefs?: Json
           emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
@@ -5445,6 +5448,7 @@ export type Database = {
           default_city: string | null
           driver_selfie_url: string | null
           email: string | null
+          email_prefs: Json
           emola_number: string | null
           full_name: string | null
           health_certified: boolean
@@ -5621,6 +5625,7 @@ export type Database = {
               default_city: string | null
               driver_selfie_url: string | null
               email: string | null
+              email_prefs: Json
               emola_number: string | null
               full_name: string | null
               health_certified: boolean
