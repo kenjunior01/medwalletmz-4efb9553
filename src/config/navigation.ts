@@ -192,6 +192,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/admin/country-permissions", icon: ShieldCheck, label: "Permissões de Gestores", group: "Gestão" },
     { path: "/admin/assign-provincial-manager", icon: UserPlus, label: "Gestores Provinciais (MZ)", group: "Gestão" },
     { path: "/admin/provincial-permissions", icon: ShieldCheck, label: "Permissões Provinciais (MZ)", group: "Gestão" },
+    { path: "/admin/manager-ranking", icon: TrendingUp, label: "Ranking de Gestores", group: "Gestão" },
     { path: "/admin/drivers", icon: Truck, label: "nav.drivers", group: "Gestão" },
     { path: "/admin/orders", icon: Package, label: "nav.orders", group: "Gestão" },
     { path: "/admin/transactions", icon: Wallet, label: "nav.financial", group: "Gestão" },
