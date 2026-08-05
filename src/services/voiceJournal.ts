@@ -17,12 +17,6 @@ import { supabase } from '@/integrations/supabase/client';
 
 // Cliente sem tipagem estrita para tabelas ainda não presentes nos tipos gerados.
 const sb: any = supabase;
-import { isGeminiConfigured } from '@/lib/gemini';
-
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
-const BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
-const AUDIO_MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash'];
-
 export type ProcessingStatus = 'pending' | 'transcribing' | 'analyzing' | 'completed' | 'failed';
 
 export type DetectedMood = 'happy' | 'calm' | 'sad' | 'anxious' | 'angry' | 'neutral' | 'tired';
