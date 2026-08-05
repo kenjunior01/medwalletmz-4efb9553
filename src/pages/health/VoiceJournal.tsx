@@ -19,19 +19,22 @@ import {
   AlertTriangle, X, Clock, Filter, RefreshCw, Volume2,
 } from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   VoiceJournalEntry, DetectedMood, ProcessingStatus,
   createRecordingController, RecordingController,
   uploadVoiceAudio, analyzeAudioWithGemini,
   saveVoiceJournal, getVoiceJournals, deleteVoiceJournal,
   getPublicAudioUrl, formatDuration, MOOD_LABELS,
+  createWebSpeechController,
 } from '@/services/voiceJournal';
 
 type Stage = 'idle' | 'recording' | 'uploading' | 'analyzing' | 'saved';
 
 export default function VoiceJournal() {
   const Waveform = AudioLines;
-  const { t, user, locale } = useCountry() as any;
+  const { t, locale } = useCountry() as any;
+  const { user } = useAuth();
   const [stage, setStage] = useState<Stage>('idle');
   const [entries, setEntries] = useState<VoiceJournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,11 +46,13 @@ export default function VoiceJournal() {
   const [lastSaved, setLastSaved] = useState<VoiceJournalEntry | null>(null);
 
   const recControllerRef = useRef<RecordingController | null>(null);
+  const speechRef = useRef<ReturnType<typeof createWebSpeechController> | null>(null);
   const waveCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const geminiConfigured = useMemo(() => Boolean(import.meta.env.VITE_GEMINI_API_KEY), []);
+  // AI analysis runs server-side (Lovable AI) — always available.
+  const geminiConfigured = true;
 
   const loadEntries = useCallback(async () => {
     if (!user?.id) return;
@@ -87,6 +92,22 @@ export default function VoiceJournal() {
 
       // Waveform animation
       drawWaveform(controller);
+
+      // Live transcript fallback (Chrome/Edge)
+      try {
+        const speech = createWebSpeechController((r, isFinal) => {
+          if (isFinal) {
+            setFinalTranscript((prev) => (prev ? `${prev} ${r.transcript}` : r.transcript));
+            setInterimTranscript('');
+          } else {
+            setInterimTranscript(r.transcript);
+          }
+        });
+        if (speech.isSupported()) {
+          speechRef.current = speech;
+          await speech.start(typeof locale === 'string' ? locale : 'pt-PT');
+        }
+      } catch { /* transcrição ao vivo é opcional */ }
     } catch (e: any) {
       setError(e?.message ?? 'Não foi possível aceder ao microfone. Verifique as permissões.');
       setStage('idle');
@@ -98,6 +119,8 @@ export default function VoiceJournal() {
     setStage('uploading');
     if (timerRef.current) clearInterval(timerRef.current);
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    speechRef.current?.stop();
+    speechRef.current = null;
 
     const result = await recControllerRef.current.stop();
     recControllerRef.current = null;
@@ -170,6 +193,8 @@ export default function VoiceJournal() {
   const handleCancelRecording = () => {
     recControllerRef.current?.cancel();
     recControllerRef.current = null;
+    speechRef.current?.stop();
+    speechRef.current = null;
     if (timerRef.current) clearInterval(timerRef.current);
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setStage('idle');
