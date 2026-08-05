@@ -261,7 +261,7 @@ export async function deleteVoiceJournal(id: string): Promise<void> {
 }
 
 export async function getPublicAudioUrl(audioPath: string): Promise<string | null> {
-  const { data } = sb.storage.from('voice-journals').createSignedUrl(audioPath, 3600);
+  const { data } = await sb.storage.from('voice-journals').createSignedUrl(audioPath, 3600);
   return data?.signedUrl ?? null;
 }
 
