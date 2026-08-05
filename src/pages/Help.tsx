@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import {
   ArrowLeft,
   MessageCircle,
@@ -189,8 +190,31 @@ export default function Help() {
     }))
     .filter((category) => category.questions.length > 0);
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqCategories.flatMap((category) =>
+      category.questions.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    ),
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
+      <Helmet>
+        <title>Ajuda & Suporte — MedWallet</title>
+        <meta
+          name="description"
+          content="Respostas às perguntas mais frequentes sobre pedidos, entregas, pagamentos, carteira e consultas na MedWallet."
+        />
+        <link rel="canonical" href="https://medwalletmz.online/help" />
+        <meta property="og:title" content="Ajuda & Suporte — MedWallet" />
+        <meta property="og:url" content="https://medwalletmz.online/help" />
+        <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
+      </Helmet>
       {/* Header */}
       <div className="flex items-center gap-3 p-4 border-b border-border bg-card sticky top-0 z-10">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">
