@@ -5,12 +5,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
 import { useLocation as useAppLocation } from '@/contexts/LocationContext';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
@@ -235,30 +235,25 @@ export function ViralShareSheet({ open, onOpenChange, province }: ViralShareShee
   if (!user) return null;
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-[2.5rem] px-0 pb-12 max-h-[92vh] overflow-y-auto border-t-2 border-primary/20 shadow-2xl">
-        {/* ── Handle ── */}
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="h-1.5 w-10 rounded-full bg-muted-foreground/20" />
-        </div>
-
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="rounded-t-3xl px-0 pb-12 max-h-[92vh] overflow-y-auto border-t-2 border-primary/20 shadow-2xl">
         <div className="px-6">
           {/* ── Header ── */}
-          <SheetHeader className="mb-4">
+          <DrawerHeader className="mb-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-teal-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-teal-500/20">
                 <Gift className="h-5 w-5 text-white" />
               </div>
               <div>
-                <SheetTitle className="text-xl font-black">
+                <DrawerTitle className="text-xl font-black">
                   {t('referrals.share_sheet_title') || 'Convida Amigos'}
-                </SheetTitle>
-                <SheetDescription className="text-sm font-medium text-muted-foreground">
+                </DrawerTitle>
+                <DrawerDescription className="text-sm font-medium text-muted-foreground">
                   {t('referrals.share_sheet_subtitle') || 'Partilha e ganha bónus por cada amigo que entrar'}
-                </SheetDescription>
+                </DrawerDescription>
               </div>
             </div>
-          </SheetHeader>
+          </DrawerHeader>
 
           {/* ── Province Context ── */}
           {province && (
@@ -387,7 +382,7 @@ export function ViralShareSheet({ open, onOpenChange, province }: ViralShareShee
             </div>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 }

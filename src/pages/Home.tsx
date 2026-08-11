@@ -4,25 +4,32 @@ import {
   Plus, Calendar, ShieldCheck, Building2,
   BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse
 } from '@/components/icons/lucide-compat';
-import { FreeTrialBanner } from "@/components/monetization/FreeTrialBanner";
-import { FollowUpReminders } from "@/components/health/FollowUpReminders";
-import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
-import { VisitorProOnboarding } from "@/components/onboarding/VisitorProOnboarding";
-import { KlipyBanner } from "@/components/klipy/KlipyBanner";
-import { PersonalizedForYou } from "@/components/health/PersonalizedForYou";
-import { EcosystemFlow } from "@/components/health/EcosystemFlow";
-import { AirQualityWidget } from "@/components/home/AirQualityWidget";
-import { ReferralBanner } from "@/components/referrals/ReferralBanner";
 import { ViralShareSheet } from "@/components/growth/ViralShareSheet";
-import { MeddyWelcomeCard } from "@/components/mascot/MeddyWelcomeCard";
 import { MeddyChat } from "@/components/meddy/MeddyChat";
-import { MorningGreeting } from "@/components/health/MorningGreeting";
-import { HealthProfileOnboarding } from "@/components/health/HealthProfileOnboarding";
-import { PillTracker } from "@/components/health/PillTracker";
-import { EmergencySOS } from "@/components/health/EmergencySOS";
 import { RoleHero } from "@/components/home/RoleHero";
 import { UserTypeHero } from "@/components/home/UserTypeHero";
 import { RoleBasedHome } from "@/components/home/RoleBasedHome";
+
+/* ── Lazy-loaded below-fold components (code-split per chunk) ── */
+const FreeTrialBanner = lazy(() => import("@/components/monetization/FreeTrialBanner").then(m => ({ default: m.FreeTrialBanner })));
+const FollowUpReminders = lazy(() => import("@/components/health/FollowUpReminders").then(m => ({ default: m.FollowUpReminders })));
+const NearbyProvidersWidget = lazy(() => import("@/components/home/NearbyProvidersWidget").then(m => ({ default: m.NearbyProvidersWidget })));
+const VisitorProOnboarding = lazy(() => import("@/components/onboarding/VisitorProOnboarding").then(m => ({ default: m.VisitorProOnboarding })));
+const KlipyBanner = lazy(() => import("@/components/klipy/KlipyBanner").then(m => ({ default: m.KlipyBanner })));
+const PersonalizedForYou = lazy(() => import("@/components/health/PersonalizedForYou").then(m => ({ default: m.PersonalizedForYou })));
+const EcosystemFlow = lazy(() => import("@/components/health/EcosystemFlow").then(m => ({ default: m.EcosystemFlow })));
+const AirQualityWidget = lazy(() => import("@/components/home/AirQualityWidget").then(m => ({ default: m.AirQualityWidget })));
+const ReferralBanner = lazy(() => import("@/components/referrals/ReferralBanner").then(m => ({ default: m.ReferralBanner })));
+const MeddyWelcomeCard = lazy(() => import("@/components/mascot/MeddyWelcomeCard").then(m => ({ default: m.MeddyWelcomeCard })));
+const MorningGreeting = lazy(() => import("@/components/health/MorningGreeting").then(m => ({ default: m.MorningGreeting })));
+const HealthProfileOnboarding = lazy(() => import("@/components/health/HealthProfileOnboarding").then(m => ({ default: m.HealthProfileOnboarding })));
+const PillTracker = lazy(() => import("@/components/health/PillTracker").then(m => ({ default: m.PillTracker })));
+const EmergencySOS = lazy(() => import("@/components/health/EmergencySOS").then(m => ({ default: m.EmergencySOS })));
+
+/** Lightweight Suspense wrapper — renders nothing until chunk loads */
+function LazySuspense({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={null}>{children}</Suspense>;
+};
 // Heavy imports removed from Home for mobile performance:
 // - EnableNotificationsBanner (rendered elsewhere), MagneticWrapper, ShimmerCard,
 //   GradientText, PulseRing, FloatingParticles, NumberTicker (all from premium/)
@@ -30,16 +37,17 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRole";
 import { useUserType } from "@/hooks/useUserType";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
 import { useCountry } from "@/contexts/CountryContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Fragment, useState, useCallback } from "react";
+import { Fragment, useState, useCallback, lazy, Suspense } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -48,6 +56,7 @@ export default function Home() {
   const { userType } = useUserType();
   const { wallet, loading: walletLoading } = useWallet();
   const { country, t } = useCountry();
+  const queryClient = useQueryClient();
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
 
   const greet = () => {
@@ -146,6 +155,15 @@ export default function Home() {
     recognition.start();
   }, [country?.id, navigate, t]);
 
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['profile-name'] }),
+      queryClient.invalidateQueries({ queryKey: ['upcoming-c'] }),
+      queryClient.invalidateQueries({ queryKey: ['top-doctors-home'] }),
+      queryClient.invalidateQueries({ queryKey: ['wallet'] }),
+    ]);
+  }, [queryClient]);
+
   return (
     <>
       <Seo
@@ -154,10 +172,10 @@ export default function Home() {
         path="/"
       />
 
-      {/* ============ OVERLAYS / MODALS (always visible, outside tab system) ============ */}
-      <HealthProfileOnboarding />
-      <MorningGreeting />
-      <EmergencySOS />
+      {/* ============ OVERLAYS / MODALS (lazy — may not render visible content) ============ */}
+      <LazySuspense><HealthProfileOnboarding /></LazySuspense>
+      <LazySuspense><MorningGreeting /></LazySuspense>
+      <LazySuspense><EmergencySOS /></LazySuspense>
 
       {/* ============ ROLE-BASED HOME (non-patient types get their own experience) ============ */}
       {userType && userType !== 'patient' ? (
@@ -166,6 +184,7 @@ export default function Home() {
           <MeddyChat />
         </div>
       ) : (
+        <PullToRefresh onRefresh={handleRefresh}>
         <div className="animate-fade-in space-y-6 stagger-children">
         {/* ============ USER TYPE HERO (personalizado por tipo) ============ */}
         <UserTypeHero />
@@ -223,16 +242,16 @@ export default function Home() {
         )}
 
         {/* ============ MEDDY WELCOME CARD (logged-in patients only) ============ */}
-        {user && !isProvider && !isAdmin && <MeddyWelcomeCard />}
+        {user && !isProvider && !isAdmin && <LazySuspense><MeddyWelcomeCard /></LazySuspense>}
 
         {/* ============ ENABLE NOTIFICATIONS BANNER (outside tabs) ============ */}
         
         {/* Onboarding leve para visitantes/pacientes: mostrar como registar como profissional */}
-        {!isProvider && !isAdmin && <VisitorProOnboarding />}
+        {!isProvider && !isAdmin && <LazySuspense><VisitorProOnboarding /></LazySuspense>}
 
         {/* ============ FREE TRIAL BANNER (outside tabs) ============ */}
         <section className="px-4">
-          <FreeTrialBanner />
+          <LazySuspense><FreeTrialBanner /></LazySuspense>
         </section>
 
         {/* ============ TAB SWITCHER (Today / Discover) ============ */}
@@ -378,11 +397,11 @@ export default function Home() {
                 </button>
               </section>
 
-              <AirQualityWidget />
+              <LazySuspense><AirQualityWidget /></LazySuspense>
 
-              <PillTracker />
+              <LazySuspense><PillTracker /></LazySuspense>
 
-              <FollowUpReminders />
+              <LazySuspense><FollowUpReminders /></LazySuspense>
             </div>
           ) : (
             <div
@@ -421,12 +440,12 @@ export default function Home() {
                 </div>
               </section>
 
-              <NearbyProvidersWidget />
+              <LazySuspense><NearbyProvidersWidget /></LazySuspense>
 
-              <PersonalizedForYou />
+              <LazySuspense><PersonalizedForYou /></LazySuspense>
 
               {/* ECOSYSTEM INTERCONNECTION — sintonia between user types */}
-              {user && <EcosystemFlow />}
+              {user && <LazySuspense><EcosystemFlow /></LazySuspense>}
 
               {/* PLANS PREMIUM MZ (upsell) */}
               <section className="px-4">
@@ -498,10 +517,10 @@ export default function Home() {
                 </button>
               </section>
 
-              <ReferralBanner onOpenShareSheet={() => setShareSheetOpen(true)} />
+              <LazySuspense><ReferralBanner onOpenShareSheet={() => setShareSheetOpen(true)} /></LazySuspense>
               <ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} />
 
-              <KlipyBanner query={`${country?.name || 'mozambique'} healthcare`} />
+              <LazySuspense><KlipyBanner query={`${country?.name || 'mozambique'} healthcare`} /></LazySuspense>
 
               {/* BECOME A PROVIDER */}
               <section className="px-4">
@@ -568,6 +587,7 @@ export default function Home() {
         
         <MeddyChat />
       </div>
+        </PullToRefresh>
       )}
     </>
   );

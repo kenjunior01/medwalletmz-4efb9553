@@ -10,8 +10,8 @@ import {
   ChevronUp, Home, Bike, Heart, Users, Megaphone, Gift, Wallet, UserPlus, CheckCircle2, Plus
 } from '@/components/icons/lucide-compat';
 import {
-  Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
-} from '@/components/ui/sheet';
+  Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger,
+} from '@/components/ui/drawer';
 import { Badge } from '@/components/ui/badge';
 import { ViralShareSheet } from '@/components/growth/ViralShareSheet';
 import { useCountry } from '@/contexts/CountryContext';
@@ -188,8 +188,8 @@ export function BottomNav() {
           })}
 
           {/* More Button */}
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
+          <Drawer open={open} onOpenChange={setOpen} snapPoints={[0.4, 0.85]}>
+            <DrawerTrigger asChild>
               <button
                 className={cn(
                   'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors duration-150 flex-1 no-tap-target',
@@ -201,15 +201,15 @@ export function BottomNav() {
                 </div>
                 <span className='text-[9px] font-semibold'>{t('common.more') || 'Mais'}</span>
               </button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="rounded-t-2xl px-0 pb-10 max-h-[85vh] overflow-y-auto border-t border-border/50">
+            </DrawerTrigger>
+            <DrawerContent className="px-0 pb-10 max-h-[85vh] overflow-y-auto">
               <div className="px-5">
-                <SheetHeader className="mb-5 flex flex-row items-center justify-between space-y-0">
-                  <SheetTitle className="text-lg font-bold flex items-center gap-2">
+                <DrawerHeader className="mb-5 flex flex-row items-center justify-between space-y-0">
+                  <DrawerTitle className="text-lg font-bold flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-primary" />
                     {t('bottomnav.hub_title') || 'MedWallet Hub'}
-                  </SheetTitle>
-                </SheetHeader>
+                  </DrawerTitle>
+                </DrawerHeader>
 
                 {/* User Context Quick Card */}
                 <div className="bg-muted/50 border border-border/50 rounded-2xl p-3.5 mb-5 flex items-center justify-between">
@@ -345,8 +345,8 @@ export function BottomNav() {
                   </div>
                 </div>
               </div>
-            </SheetContent>
-          </Sheet>
+            </DrawerContent>
+          </Drawer>
         </div>
       </nav>
     </>

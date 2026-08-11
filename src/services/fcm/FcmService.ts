@@ -210,16 +210,23 @@ class FcmService {
     this.currentUserId = userId;
     this.platform = detectPlatform();
 
-    try {
-      if (this.platform === 'web') {
-        await this.initWeb();
-      } else {
-        await this.initNative();
+    // Retry up to 2 times with exponential backoff
+    const MAX_RETRIES = 2;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        if (this.platform === 'web') {
+          await this.initWeb();
+        } else {
+          await this.initNative();
+        }
+        this.initialized = true;
+        return; // Success — exit retry loop
+      } catch (err) {
+        console.warn(`[FcmService] Init attempt ${attempt + 1} failed:`, err);
+        if (attempt < MAX_RETRIES) {
+          await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+        }
       }
-
-      this.initialized = true;
-    } catch (err) {
-      console.warn('[FcmService] Erro ao inicializar:', err);
     }
   }
 
@@ -455,7 +462,7 @@ class FcmService {
             // mas pode ser usado como identificador único do dispositivo
             const key = await subscription.getKey('p256dh');
             if (key) {
-              const token = btoa(String.fromCharCode(...new Uint8Array(key)));
+              const token = btoa(Array.from(new Uint8Array(key), b => String.fromCharCode(b)).join(''));
               this.currentToken = token;
               return token;
             }

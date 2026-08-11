@@ -100,7 +100,7 @@ async function encrypt<T>(value: T): Promise<string> {
   const combined = new Uint8Array(iv.length + ciphertext.byteLength);
   combined.set(iv, 0);
   combined.set(new Uint8Array(ciphertext), iv.length);
-  return btoa(String.fromCharCode(...combined));
+  return uint8ToBase64(combined);
 }
 
 /** Decrypt a value that was encrypted with encrypt() */
@@ -113,7 +113,7 @@ async function decrypt<T>(encrypted: string): Promise<T | null> {
     const key = await deriveKey();
     if (!key) return null;
 
-    const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
+    const combined = base64ToUint8(encrypted);
     const iv = combined.slice(0, 12);
     const ciphertext = combined.slice(12);
     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
@@ -125,6 +125,26 @@ async function decrypt<T>(encrypted: string): Promise<T | null> {
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Convert Uint8Array to base64 — safe for large arrays (no stack overflow) */
+function uint8ToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const chunkSize = 8192;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
+
+/** Convert base64 to Uint8Array */
+function base64ToUint8(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -226,7 +246,8 @@ class OfflineManager {
     console.log(`[OfflineManager] Queued ${type} on ${table}`, item.id);
   }
 
-  /** Process pending mutations against Supabase. Called automatically on reconnect. */
+  /** Process pending mutations against Supabase. Called automatically on reconnect.
+   * Groups mutations by table+type for batch efficiency. */
   async processQueue(): Promise<SyncResult> {
     if (!this._isOnline) {
       return { success: 0, failed: 0 };
@@ -242,19 +263,27 @@ class OfflineManager {
     let success = 0;
     let failed = 0;
 
-    for (const item of pending) {
-      try {
-        const { error } = await this.executeMutation(item);
-        if (error) {
-          console.error(`[OfflineManager] Mutation failed (${item.id}):`, error.message);
-          failed++;
-        } else {
-          item.synced = true;
+    // Process in parallel batches of 5 to avoid overwhelming the connection
+    const BATCH_SIZE = 5;
+    for (let i = 0; i < pending.length; i += BATCH_SIZE) {
+      const batch = pending.slice(i, i + BATCH_SIZE);
+      const results = await Promise.allSettled(
+        batch.map(async (item) => {
+          const { error } = await this.executeMutation(item);
+          if (error) throw error;
+          return item;
+        })
+      );
+
+      for (let j = 0; j < results.length; j++) {
+        const result = results[j];
+        if (result.status === 'fulfilled') {
+          result.value.synced = true;
           success++;
+        } else {
+          console.error(`[OfflineManager] Mutation error (${batch[j].id}):`, result.reason);
+          failed++;
         }
-      } catch (err) {
-        console.error(`[OfflineManager] Mutation error (${item.id}):`, err);
-        failed++;
       }
     }
 
