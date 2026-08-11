@@ -105,6 +105,25 @@ export default function Wallet() {
           if (upErr) throw upErr;
           proofUrl = path;
         }
+        // Check for duplicate reference before inserting (idempotency)
+        if (method === 'mpesa' && reference) {
+          const { data: existing } = await (supabase as any)
+            .from('mpesa_manual_payments')
+            .select('id, status')
+            .eq('user_id', user?.id)
+            .eq('reference', reference)
+            .maybeSingle();
+          if (existing) {
+            if (existing.status === 'confirmed') {
+              toast.error('Esta referência já foi processada e confirmada.');
+              return;
+            }
+            if (existing.status === 'pending') {
+              toast.warning('Já existe um pedido pendente com esta referência. Aguarde a confirmação.');
+              return;
+            }
+          }
+        }
         const { error } = await (supabase as any).from('mpesa_manual_payments').insert({
           user_id: user?.id,
           amount_mzn: amt,
@@ -116,12 +135,34 @@ export default function Wallet() {
         });
         if (error) throw error;
       } else {
+        // Idempotency: generate a unique key from method+reference+amount+user
+        const idempotencyKey = `${method}:${reference}:${amt}`;
+
+        // Check for duplicate before inserting
+        const { data: existingTx } = await (supabase as any)
+          .from('wallet_transactions')
+          .select('id, status')
+          .eq('user_id', user?.id)
+          .eq('idempotency_key', idempotencyKey)
+          .maybeSingle();
+        if (existingTx) {
+          if (existingTx.status === 'confirmed') {
+            toast.error('Este depósito já foi processado e confirmado.');
+            return;
+          }
+          if (existingTx.status === 'pending') {
+            toast.warning('Já existe um pedido pendente com esta referência. Aguarde a confirmação.');
+            return;
+          }
+        }
+
         const { error } = await (supabase as any).from('wallet_transactions').insert({
           user_id: user?.id,
           amount: amt,
           type: 'deposit',
           status: 'pending',
           description: `Depósito via ${methodLabel[method] || method} - Ref: ${reference}`,
+          idempotency_key: idempotencyKey,
           metadata: {
             payment_method: method,
             payment_reference: reference,
@@ -129,7 +170,14 @@ export default function Wallet() {
             offline_deposit: true,
           },
         });
-        if (error) throw error;
+        if (error) {
+          // If unique constraint violation, it's a race condition — treat as duplicate
+          if (error.code === '23505') {
+            toast.warning('Já existe um pedido com esta referência. Aguarde a confirmação.');
+            return;
+          }
+          throw error;
+        }
       }
 
       toast.success(t('wallet.success_msg') || 'Solicitação enviada!');

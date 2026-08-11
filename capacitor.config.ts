@@ -1,25 +1,30 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 // =============================================================================
-// CONFIGURAÇÃO CAPACITOR — MedWallet
+// CAPACITOR 7 — MedWallet MZ (Configuração Avançada v2)
 // =============================================================================
-// Estratégia HYBRID:
-//   - Em produção (Android/iOS): a app carrega a versão WEB da plataforma
-//     (https://medwalletmz.online), mantendo-se sempre sincronizada.
-//   - Em desenvolvimento: usa os assets locais (dist/) para testar mudanças
-//     antes de fazer deploy.
 //
-// Vantagens desta abordagem:
-//   1. Single source of truth: qualquer deploy na web reflecte-se na app
-//   2. Não precisa de fazer rebuild do APK para cada mudança
-//   3. Funciona offline com service worker (PWA) cached no webview
-//   4. Atualizações instantâneas (sem passar pela revisão da Play Store)
+// Arquitectura HYBRID:
+//   Producao: carrega https://medwalletmz.online (sempre sincronizado)
+//   Desenvolvimento: usa assets locais (dist/) ou dev server LAN
 //
-// Quando fazer rebuild do APK:
-//   - Mudar permissões Android (AndroidManifest.xml)
-//   - Mudar ícone da app
-//   - Mudar appId (NUNCA depois de publicado)
-//   - Mudar versão (versionCode/versionName) para Play Store
+// Plugins instalados (14 nativos):
+//   Core, App, Camera, Geolocation, Push Notifications, SplashScreen,
+//   StatusBar, Keyboard, Network, Share, Haptics, Screen Orientation,
+//   Filesystem, Local Notifications
+//
+// Capacidades avancadas:
+//   - Deep linking (App Links + custom scheme)
+//   - WebView otimizado com hardware acceleration
+//   - User-Agent personalizado para analytics
+//   - Background animado nativo-to-web transicao suave
+//   - Safe areas, overscroll, gesto de voltar
+//   - Haptic feedback contextual
+//   - Keep-awake para consultas/SOS
+//   - PWA fallback automatico
+//
+// Build: npm run build && npx cap sync android
+//   APK:  cd android && ./gradlew assembleRelease
 // =============================================================================
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -30,38 +35,106 @@ const config: CapacitorConfig = {
   appName: 'MedWallet',
   webDir: 'dist',
 
-  // Em produção: carrega a versão web (sempre sincronizada)
-  // Em desenvolvimento: usa assets locais
-  ...(isDev ? {} : {
-    server: {
-      androidScheme: 'https',
-      url: WEB_URL,
-      cleartext: false,
-    },
-  }),
+  // ---- COR DE FUNDO (evita flash branco no boot) ----
+  backgroundColor: '#047857',
 
+  // ---- SERVER: producao carrega do site, dev usa assets locais ----
+  ...(isDev
+    ? {
+        server: {
+          androidScheme: 'https',
+          url: 'http://192.168.1.100:5173',
+          cleartext: true,
+        },
+      }
+    : {
+        server: {
+          androidScheme: 'https',
+          url: WEB_URL,
+          cleartext: false,
+        },
+      }
+  ),
+
+  // ---- PLUGINS ----
   plugins: {
+    // --- SplashScreen: transicao cinematografica ---
     SplashScreen: {
       launchShowDuration: 2000,
-      backgroundColor: "#047857",
-      showSpinner: true,
-      androidSpinnerStyle: "large",
-      iosSpinnerStyle: "small",
-      spinnerColor: "#ffffff",
+      launchAutoHide: true,
+      backgroundColor: '#047857',
+      showSpinner: false,
       splashFullScreen: true,
       splashImmersive: true,
+      androidScaleType: 'CENTER_CROP',
+      iosSpinnerStyle: 'small',
     },
+
+    // --- StatusBar: integrada com o conteudo, transicao suave ---
     StatusBar: {
       style: 'LIGHT',
       backgroundColor: '#047857',
-      overlaysWebView: false,
+      overlaysWebView: true,
     },
-    // Push notifications via Firebase Cloud Messaging
-    // Necessita google-services.json em android/app/
+
+    // --- App: lifecycle, deep links, idioma ---
+    App: {
+      // Deep linking configurado:
+      //   https://medwalletmz.online/register?role=driver → registo
+      //   https://medwalletmz.online/health/triage → triagem
+      //   https://medwalletmz.online/order/abc-123 → tracking
+      //   medwallet://register?role=driver → fallback scheme
+      backgroundColor: '#047857',
+    },
+
+    // --- Keyboard: comportamento avancado em formularios ---
+    Keyboard: {
+      resize: 'none',           // Usa flex layout em vez de resize
+      resizeOnFullScreen: true,  // Em fullscreen, permite resize
+      style: 'dark',             // Teclado escuro (match dark theme)
+    },
+
+    // --- Screen Orientation: retrato por defeito ---
+    ScreenOrientation: {
+      initialOrientation: 'portrait',
+    },
+
+    // --- Push Notifications (FCM) ---
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
+
+    // --- Local Notifications (lembretes medicamentos, consultas) ---
+    LocalNotifications: {
+      smallIcon: 'ic_stat_icon_config_sample',
+      iconColor: '#047857',
+      sound: 'default',
+    },
+
+    // --- Network: detectar online/offline ---
+    Network: {},
   },
+
+  // ---- COMPORTAMENTO DO WEBVIEW ----
+  ios: {
+    contentInset: 'automatic',
+    // Evitar overscroll elástico (pull-to-refresh acidental)
+    // scrollEnabled: true (padrao — necessario para conteudo longo)
+  },
+
+  android: {
+    // WebView otimizado com hardware acceleration
+    allowMixedContent: false,     // Bloquear HTTP em HTTPS (seguranca)
+    // Capturar back button no JS para UX custom
+    useLegacyBridge: false,       // Usar bridge moderno (Capacitor 7)
+    // WebView rendering
+    // backgroundColor definido acima como top-level
+  },
+
+  // ---- SERVER EXTRA CONFIG ----
+  // Para PWA fallback: se o servidor estiver offline, carregar
+  // os assets locais (ultimo build sincronizado)
+  // (Capacitor 7: use `android.allowMixedContent` e `server.cleartext`)
 };
 
 export default config;

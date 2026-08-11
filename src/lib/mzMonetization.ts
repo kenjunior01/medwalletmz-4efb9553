@@ -116,7 +116,8 @@ export async function initiateSubscription(opts: {
         status: 'pending',
         payment_method: 'mpesa',
         amount_paid: finalAmount,
-        admin_notes: `Plano ${plan.name} · ${billing} (${periodMonths}m) · expira em ${expiresAt}`,
+        expires_at: expiresAt, // computeExpiry() já retorna string ISO
+        admin_notes: `Plano ${plan.name} · ${billing} (${periodMonths}m)`,
       })
       .select('id')
       .single();
@@ -394,66 +395,38 @@ export async function recordReferralSuccess(opts: {
       .maybeSingle();
     if (existing) return false;
 
-    const { error } = await (supabase as any).from('user_referrals').insert({
+    const { data: newReferral, error } = await (supabase as any).from('user_referrals').insert({
       referrer_id: referrerId,
       referred_id: referredId,
       status: 'completed',
       bonus_mzn: bonusMzn,
       bonus_coins: bonusCoins,
-    });
+    }).select('id').single();
     if (error) {
+      // Unique constraint violation = race condition — another call already inserted
+      if (error.code === '23505') return false;
       console.warn('[mzMonetization] recordReferralSuccess falhou:', error.message);
       return false;
     }
 
-    // Credita bónus MZN ao wallet do referrer
-    await (supabase as any).rpc('wallet_credit_cashback', {
-      _user_id: referrerId,
-      _source_amount: 0,
-      _pct: 0,
-      _source: 'referral_bonus',
-      _reference: `REF-${referredId}`,
-    });
-    // Como pct=0 retorna 0 MZN, precisamos somar manualmente o bonus_mzn
-    await (supabase as any)
-      .from('wallets')
-      .update({
-        balance_mzn: (await getWalletBalance(referrerId)) + bonusMzn,
-        total_deposited: (await getWalletDeposited(referrerId)) + bonusMzn,
-      })
-      .eq('user_id', referrerId);
+    // Credita bónus MZN ao wallet do referrer — atomicamente via RPC
+    if (bonusMzn > 0) {
+      const { error: creditErr } = await (supabase as any).rpc('wallet_credit', {
+        _user_id: referrerId,
+        _amount: bonusMzn,
+        _type: 'credit',
+        _ref_id: newReferral?.id || referredId,
+        _description: `Bónus de indicação — utilizador ${referredId.slice(0, 8)}`,
+      });
+      if (creditErr) {
+        console.warn('[mzMonetization] Falha ao creditar bónus referência:', creditErr.message);
+      }
+    }
 
     return true;
   } catch (e) {
     console.warn('[mzMonetization] recordReferralSuccess exception:', e);
     return false;
-  }
-}
-
-// ---------- HELPERS internos (read) ----------
-async function getWalletBalance(userId: string): Promise<number> {
-  try {
-    const { data } = await (supabase as any)
-      .from('wallets')
-      .select('balance_mzn')
-      .eq('user_id', userId)
-      .maybeSingle();
-    return Number(data?.balance_mzn) || 0;
-  } catch {
-    return 0;
-  }
-}
-
-async function getWalletDeposited(userId: string): Promise<number> {
-  try {
-    const { data } = await (supabase as any)
-      .from('wallets')
-      .select('total_deposited')
-      .eq('user_id', userId)
-      .maybeSingle();
-    return Number(data?.total_deposited) || 0;
-  } catch {
-    return 0;
   }
 }
 

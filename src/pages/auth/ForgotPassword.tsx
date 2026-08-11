@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Seo } from '@/components/Seo';
 import { useTranslation } from '@/contexts/CountryContext';
 import { Loader2, Mail, ArrowLeft, KeyRound, CheckCircle2, AlertCircle } from "@/components/icons/lucide-compat";
+import AnimatedBackground from '@/components/brand/AnimatedBackground';
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -55,9 +56,11 @@ export default function ForgotPassword() {
         path="/auth/forgot-password"
       />
 
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center space-y-3">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <AnimatedBackground variant="auth" className="fixed inset-0" />
+        <div className="relative z-10 w-full max-w-md">
+          <Card>
+            <CardHeader className="text-center space-y-3">
             <div className="mx-auto h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
               <KeyRound className="h-7 w-7 text-primary" />
             </div>
@@ -139,11 +142,12 @@ export default function ForgotPassword() {
               {tr('Voltar ao Login')}
             </Button>
           </CardFooter>
-        </Card>
+          </Card>
 
-        <p className="mt-6 text-xs text-muted-foreground">
-          {tr('MedWallet MZ — Plataforma de Saúde Digital')}
-        </p>
+          <p className="mt-6 text-xs text-muted-foreground text-center">
+            {tr('MedWallet MZ — Plataforma de Saúde Digital')}
+          </p>
+        </div>
       </div>
     </>
   );

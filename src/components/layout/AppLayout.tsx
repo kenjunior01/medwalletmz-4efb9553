@@ -1,26 +1,23 @@
-import { Suspense } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
 import { BottomNav } from "./BottomNav";
 import { Header } from "./Header";
 import { OfflineBanner } from "./OfflineBanner";
 import { DesktopRail } from "./DesktopRail";
 import { AppSidebar } from "./AppSidebar";
-import { MeddyFloating } from "@/components/mascot/MeddyFloating";
-import { SmartEngagementPopUp } from "@/components/notifications/SmartEngagementPopUp";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
-import NotificationPermissionPopup from "@/components/notifications/NotificationPermissionPopup";
+import { OfflineIndicator } from "@/components/offline";
 import { PopupCoordinatorProvider } from "./PopupCoordinator";
-import { useNotifications } from "@/hooks/useNotifications";
 import { useDeviceType } from "@/hooks/useDeviceType";
 import { useCapacitor } from "@/hooks/useCapacitor";
-import { useCountry } from "@/contexts/CountryContext";
-import { MedWalletLogo } from "@/components/brand";
-import AuroraBackground from "@/components/brand/AuroraBackground";
-import type { Context } from "@/components/mascot/MeddyMessages";
+import { PageTransition } from "./PageTransition";
+import { cn } from "@/lib/utils";
+
+// Lazy-load notification popup — was loading framer-motion + Lottie + FloatingParticles on every page
+const NotificationPermissionPopup = lazy(() => import("@/components/notifications/NotificationPermissionPopup"));
 
 /** Mapeia o pathname actual para o contexto do Meddy. */
-function contextFromPath(pathname: string): Context {
+function contextFromPath(pathname: string) {
   if (pathname.startsWith("/health/doctors")) return "empty_doctors";
   if (pathname.startsWith("/health/triage")) return "triage";
   if (pathname.startsWith("/health/education")) return "education";
@@ -32,74 +29,53 @@ function contextFromPath(pathname: string): Context {
   return "home";
 }
 
-/** Branded loading state replacing the bare spinner. */
+/** Minimal loading state — fast and clean */
 function LoadingScreen() {
   return (
-    <div className="flex flex-col items-center justify-center h-[60vh] gap-5">
-      <motion.div
-        animate={{ scale: [1, 1.08, 1], opacity: [0.5, 1, 0.5] }}
-        transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
-      >
-        <MedWalletLogo size={56} variant="icon" animated />
-      </motion.div>
-      <div className="h-1 w-24 rounded-full overflow-hidden">
-        <div
-          className="h-full w-full rounded-full bg-gradient-to-r from-primary via-accent to-primary"
-          style={{
-            backgroundSize: "200% 100%",
-            animation: "brand-shimmer 1.6s ease-in-out infinite",
-          }}
-        />
-      </div>
-      <style>{`@keyframes brand-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+    <div className="flex flex-col items-center justify-center h-[40vh] gap-3">
+      <div className="h-8 w-8 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+      <p className="text-xs text-muted-foreground">A carregar...</p>
     </div>
   );
 }
 
 export function AppLayout() {
-  useNotifications();
-  useCapacitor();
-  const { country } = useCountry();
+  const { isNative } = useCapacitor();
   const location = useLocation();
-  const context = contextFromPath(location.pathname);
   const device = useDeviceType();
   const isMobile = device === "mobile";
+
+  // Scroll to top on route change — native app feel
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+  }, [location.pathname]);
 
   return (
     <PopupCoordinatorProvider>
       <div className="relative min-h-screen bg-background flex">
-        {/* Persistent subtle aurora behind everything */}
-        <AuroraBackground intensity="soft" className="fixed inset-0" />
-
+        {/* No animated backgrounds on mobile — clean, fast, native feel */}
         {!isMobile && <AppSidebar />}
         <div className="relative z-10 flex-1 flex flex-col min-w-0">
           <OfflineBanner />
           <Header />
           <div className="flex-1 w-full max-w-7xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
-            <main className={`flex-1 min-w-0 ${isMobile ? "pb-28" : ""}`}>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={location.pathname}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                >
-                  <Suspense fallback={<LoadingScreen />}>
-                    <Outlet />
-                  </Suspense>
-                </motion.div>
-              </AnimatePresence>
+            <main className={cn("flex-1 min-w-0", isMobile && "pb-20")}>
+              <Suspense fallback={<LoadingScreen />}>
+                <PageTransition>
+                  <Outlet />
+                </PageTransition>
+              </Suspense>
             </main>
             {device === "desktop" && <DesktopRail />}
           </div>
           {isMobile && <BottomNav />}
         </div>
 
-        <SmartEngagementPopUp />
+        {/* Lazy-loaded — only fetches JS after 8s delay inside the component */}
+        <Suspense fallback={null}>
+          <NotificationPermissionPopup />
+        </Suspense>
         <PWAInstallPrompt />
-        <NotificationPermissionPopup />
-        <MeddyFloating context={context} />
       </div>
     </PopupCoordinatorProvider>
   );

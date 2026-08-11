@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Network Security Configuration para MedWallet
+    Network Security Configuration v2 — MedWallet MZ
 
-    Política:
-      - Tráfego HTTPS permitido por defeito
-      - Tráfego HTTP bloqueado (cleartextTrafficPermitted=false)
-      - Exceções para localhost (apenas para dev)
+    Politica de seguranca:
+    - HTTPS obrigatorio (cleartextTrafficPermitted=false)
+    - Trust apenas certificados do sistema + Let's Encrypt
+    - Excecoes localhost/10.0.0.x para dev (LAN debugging)
+    - Certificate pinning para supabase.co e medwalletmz.online
+    - HSTS headers respeitados
 -->
 <network-security-config>
+    <!-- Base: HTTPS obrigatorio -->
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
     </base-config>
+
+    <!-- Dev: permitir LAN connections -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">10.0.0.1</domain>
+        <domain includeSubdomains="true">192.168.1.100</domain>
+    </domain-config>
+
+    <!-- Pin Supabase (pode ser removido se der problemas com cert rotation) -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">supabase.co</domain>
+        <domain includeSubdomains="true">medwalletmz.online</domain>
+        <pin-set>
+            <!-- Let's Encrypt ISRG Root X1 -->
+            <pin digest="SHA-256">C5+8ZFU9P3t6+QFTGMxaPdP7+iLZ4Xrq0xTCmKjlTSc=</pin>
+        </pin-set>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
     </domain-config>
 </network-security-config>

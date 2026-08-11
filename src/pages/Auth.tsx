@@ -4,18 +4,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, Phone, ArrowLeft, Sparkles, Heart, Pill, Stethoscope, Activity, ShieldCheck, ChevronRight, Zap, Globe, Star, CheckCircle2, AlertCircle } from '@/components/icons/lucide-compat';
+import { Loader2, Mail, Lock, User, Phone, ArrowLeft, Sparkles, Heart, ChevronRight, Zap, Globe, Star } from '@/components/icons/lucide-compat';
 import { z } from 'zod';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Spotlight, SplitText, GradientText, FloatingParticles, MagneticWrapper, ShimmerButton, TextMorph } from '@/components/ui/premium';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserTypeSelector } from '@/components/auth/UserTypeSelector';
-
 // Factory para schemas de validação com mensagens traduzidas
 const makeEmailSchema = (t: (k: string) => string) => z.string().email(t('auth.validation_invalid_email'));
 const makePasswordSchema = (t: (k: string) => string) => z.string().min(6, t('auth.validation_password_min'));
@@ -53,85 +49,18 @@ const normalizePhone = (v: string) => {
   return v.trim();
 };
 
-// Componente para Stickers flutuantes com efeito de paralaxe
-const FloatingSticker = ({ icon: Icon, delay = 0, className = "", color = "bg-white" }: { icon: any, delay?: number, className?: string, color?: string }) => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const springConfig = { damping: 25, stiffness: 150 };
-  const x = useSpring(useTransform(mouseX, [-0.5, 0.5], [-30, 30]), springConfig);
-  const y = useSpring(useTransform(mouseY, [-0.5, 0.5], [-30, 30]), springConfig);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set((e.clientX / window.innerWidth) - 0.5);
-      mouseY.set((e.clientY / window.innerHeight) - 0.5);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
-
-  return (
-    <motion.div
-      style={{ x, y }}
-      initial={{ opacity: 0, scale: 0, rotate: -20 }}
-      animate={{
-        opacity: 1,
-        scale: 1,
-        rotate: [0, 5, -5, 0],
-        y: [0, -10, 0]
-      }}
-      transition={{
-        opacity: { duration: 0.5, delay },
-        scale: { type: "spring", delay },
-        rotate: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-        y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-      }}
-      className={cn("absolute pointer-events-none hidden md:flex items-center justify-center p-4 rounded-2xl shadow-premium border-4 border-white", color, className)}
-    >
-      <Icon size={32} className="text-primary" strokeWidth={2.5} />
-      <div className="absolute -bottom-1 -right-1">
-        <Sparkles size={16} className="text-secondary fill-secondary" />
-      </div>
-    </motion.div>
-  );
-};
+// Dynamic background uses CSS .float-orb animation from index.css
 
 // Fundo Dinâmico com Orbs e Mesh
 const DynamicBackground = () => {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-primary/5" />
-
-      {/* Mesh Gradient Animado */}
-      <motion.div
-        animate={{
-          scale: [1, 1.1, 1],
-          rotate: [0, 5, 0],
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute -top-[20%] -left-[10%] w-[120%] h-[120%] opacity-30"
-        style={{
-          background: `radial-gradient(circle at 20% 30%, hsl(var(--secondary) / 0.4) 0%, transparent 40%),
-                       radial-gradient(circle at 80% 70%, hsl(var(--primary) / 0.3) 0%, transparent 40%),
-                       radial-gradient(circle at 50% 50%, hsl(var(--accent) / 0.2) 0%, transparent 50%)`
-        }}
-      />
-
-      {/* Orbs interativos */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="float-orb w-[600px] h-[600px] -top-40 -left-40 bg-primary/10" style={{ animationDelay: '0s' }} />
         <div className="float-orb w-[500px] h-[500px] -bottom-20 -right-20 bg-secondary/10" style={{ animationDelay: '-4s' }} />
         <div className="float-orb w-[300px] h-[300px] top-1/2 left-1/4 bg-accent/10" style={{ animationDelay: '-8s' }} />
       </div>
-
-      {/* Stickers Decorativos */}
-      <FloatingSticker icon={Heart} className="top-[15%] left-[8%] -rotate-12" delay={0.1} />
-      <FloatingSticker icon={Pill} className="top-[60%] left-[12%] rotate-12" delay={0.3} color="bg-emerald-50" />
-      <FloatingSticker icon={Stethoscope} className="top-[20%] right-[10%] rotate-6" delay={0.5} color="bg-blue-50" />
-      <FloatingSticker icon={Activity} className="top-[70%] right-[15%] -rotate-6" delay={0.7} color="bg-rose-50" />
-      <FloatingSticker icon={ShieldCheck} className="bottom-[15%] left-[40%] rotate-3" delay={0.9} color="bg-amber-50" />
-      <FloatingSticker icon={Zap} className="top-[40%] right-[5%] -rotate-12" delay={1.1} color="bg-yellow-50" />
     </div>
   );
 };
@@ -187,7 +116,17 @@ export default function Auth() {
   }, []);
   const referralCode = useMemo(() => new URLSearchParams(location.search).get('ref')?.trim() || '', [location.search]);
   const initialTab = useMemo(() => new URLSearchParams(location.search).get('tab'), [location.search]);
-  const nextPath = useMemo(() => new URLSearchParams(location.search).get('next'), [location.search]);
+  // Security: read nextPath from URL params and validate to prevent open redirect attacks
+  const rawNextPath = useMemo(() => new URLSearchParams(location.search).get('next') || '', [location.search]);
+  const safeNextPath = useMemo(() => {
+    if (!rawNextPath) return null;
+    if (!rawNextPath.startsWith('/') || rawNextPath.startsWith('//') || rawNextPath.startsWith('/\\')) return null;
+    // Block protocol-relative and absolute URLs (e.g. javascript:, https:, data:)
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(rawNextPath)) return null;
+    // Block encoded variants that could bypass the above checks
+    if (rawNextPath.includes('%3A') || rawNextPath.includes('%2F%2F')) return null;
+    return rawNextPath;
+  }, [rawNextPath]);
   const mode = useMemo(() => new URLSearchParams(location.search).get('mode'), [location.search]);
 
   useEffect(() => {
@@ -198,8 +137,8 @@ export default function Auth() {
 
   const goAfterAuth = async (userId?: string | null) => {
     try {
-      if (!userId) return navigate(nextPath || '/register');
-      if (nextPath) return navigate(nextPath);
+      if (!userId) return navigate(safeNextPath || '/register');
+      if (safeNextPath) return navigate(safeNextPath);
 
       // Busca perfil e roles simultaneamente para decisão mais inteligente
       const [profileRes, rolesRes] = await Promise.all([
@@ -232,7 +171,7 @@ export default function Auth() {
     if (cooldownRemaining > 0) return;
     setLoading(true);
     try {
-      const { error } = await signInWithGoogle(referralCode, nextPath);
+      const { error } = await signInWithGoogle(referralCode, safeNextPath);
       if (error) {
         console.error("Google Auth Error:", error);
         toast.error(t('auth.error_google_title'), {
@@ -324,8 +263,8 @@ export default function Auth() {
       } else {
         setFailedAttempts(0);
         toast.success(t('auth.welcome_back'));
-        if (mode === 'professional' || nextPath) {
-          navigate(nextPath || '/register');
+        if (mode === 'professional' || safeNextPath) {
+          navigate(safeNextPath || '/register');
         } else {
           await goAfterAuth(signedIn?.id);
         }
@@ -355,7 +294,7 @@ export default function Auth() {
         } else if (userType === 'promoter') {
           navigate('/referrals');
         } else {
-          navigate(nextPath || '/register');
+          navigate(safeNextPath || '/register');
         }
       }
     } catch (err) {
@@ -374,17 +313,12 @@ export default function Auth() {
         aria-live="polite"
       >
         <span className="sr-only">{t('auth.checking_session_aria')}</span>
-        <motion.div
-          animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="relative"
-          aria-hidden="true"
-        >
+        <div className="relative animate-fade-in" aria-hidden="true">
           <div className="h-16 w-16 rounded-3xl bg-primary/20 flex items-center justify-center">
             <Loader2 className="h-8 w-8 text-primary animate-spin" />
           </div>
           <Sparkles className="absolute -top-2 -right-2 text-secondary h-6 w-6 animate-pulse" />
-        </motion.div>
+        </div>
         <p className="mt-4 font-black text-primary animate-pulse tracking-widest uppercase text-xs">{t('auth.checking_session')}</p>
         {/* Skeleton espelha o layout do card de auth para sensação de continuidade */}
         <div className="mt-8 w-full max-w-md" aria-hidden="true">
@@ -401,15 +335,9 @@ export default function Auth() {
 
   return (
     <div className="min-h-[100dvh] relative overflow-hidden bg-background flex flex-col font-sans selection:bg-primary/20">
-      <FloatingParticles count={15} />
       <DynamicBackground />
 
-      {/* Header Interativo */}
-      <motion.div
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="relative z-10 p-6 flex justify-between items-center"
-      >
+      <div className="relative z-10 p-6 flex justify-between items-center animate-fade-in">
         <Button
           variant="ghost"
           size="icon"
@@ -423,54 +351,31 @@ export default function Auth() {
           <Globe className="h-4 w-4 text-secondary" aria-hidden="true" />
           <span className="text-[10px] font-black uppercase tracking-wider">{country?.name || 'MedWallet'}</span>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Main Content */}
-      <Spotlight size={350}>
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-6 pb-20">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", damping: 20, stiffness: 100 }}
-          className="w-full max-w-md"
-        >
-          {/* Logo Premium */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-6 pb-20 animate-fade-in">
+        <div className="w-full max-w-md animate-fade-in">
           <div className="text-center mb-10">
-            <motion.div
-              whileHover={{ rotate: 15, scale: 1.15, y: -5 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-24 h-24 bg-gradient-to-br from-primary via-primary/90 to-secondary rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 shadow-premium relative group cursor-pointer"
-            >
+            <div className="w-24 h-24 bg-gradient-to-br from-primary via-primary/90 to-secondary rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 shadow-premium relative group cursor-pointer active:scale-95 transition-transform">
               <div className="absolute inset-0 bg-white/20 rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity" />
               <Sparkles className="h-12 w-12 text-white" />
-              <motion.div
-                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute -top-2 -right-2 bg-secondary text-white p-1.5 rounded-full shadow-lg"
-              >
+              <div className="absolute -top-2 -right-2 bg-secondary text-white p-1.5 rounded-full shadow-lg animate-pulse">
                 <Heart className="h-4 w-4 fill-current" />
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
             <h1 className="text-5xl font-black tracking-tighter text-foreground mb-3 flex items-center justify-center gap-0.5">
-              <SplitText text="Med" as="span" />
-              <GradientText>Wallet</GradientText>
+              <span>Med</span>
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Wallet</span>
             </h1>
             <p className="text-muted-foreground font-bold flex items-center justify-center gap-2 uppercase tracking-[0.2em] text-[10px]">
               {t('auth.tagline')} <Star className="h-3 w-3 text-gold fill-gold" aria-hidden="true" />
             </p>
-            <div className="flex items-center justify-center mt-2">
-              <TextMorph words={[
-                t('auth.text_morph_health'),
-                t('auth.text_morph_pharmacy'),
-                t('auth.text_morph_wellness'),
-                t('auth.text_morph_consult')
-              ]} className="text-xs font-bold text-primary/60 uppercase tracking-[0.3em]" />
-            </div>
+            <p className="text-xs font-bold text-primary/60 uppercase tracking-[0.3em]">
+              {t('auth.text_morph_health')}
+            </p>
           </div>
 
-          {/* Auth Card com Vidro Reforçado */}
-          <motion.div
-            layout
+          <div
             className="glass-card p-1 border-white/40 dark:border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]"
           >
             <div className="bg-white/40 dark:bg-card/40 backdrop-blur-xl rounded-[calc(var(--radius)-4px)] p-8 relative overflow-hidden">
@@ -492,25 +397,19 @@ export default function Auth() {
                   </TabsTrigger>
                 </TabsList>
 
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={tab}
-                    initial={{ x: 20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -20, opacity: 0 }}
-                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                  >
+                <div key={tab} className="animate-fade-in">
                     {GOOGLE_AUTH_ENABLED && (
                       <>
-                        <ShimmerButton
+                        <Button
                           onClick={handleGoogle}
                           disabled={loading || cooldownRemaining > 0}
+                          variant="outline"
                           aria-label={t('auth.continue_with_google')}
                           className="w-full h-12 rounded-2xl font-black mb-4 flex items-center justify-center gap-3 border-2 border-white/30 min-h-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                           <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2 14-5.4l-6.5-5.3C29.5 34.9 26.9 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.5 5.3C41.7 35.1 44 30 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg>
                           {t('auth.continue_with_google')}
-                        </ShimmerButton>
+                        </Button>
                         <div className="mb-6 flex items-center gap-2 text-[10px] uppercase tracking-widest font-black text-muted-foreground" role="separator" aria-orientation="horizontal">
                           <span className="flex-1 h-px bg-border" aria-hidden="true" /> {t('auth.or_divider')} <span className="flex-1 h-px bg-border" aria-hidden="true" />
                         </div>
@@ -554,7 +453,6 @@ export default function Auth() {
                           {errors.password && <p className="text-[10px] text-destructive font-black ml-2 uppercase animate-bounce-in">{errors.password}</p>}
                         </div>
 
-                        <MagneticWrapper className="w-full">
                           <Button
                             type="submit"
                             className="w-full h-14 rounded-2xl font-black text-lg shadow-premium hover:shadow-primary/30 transition-all bg-primary hover:bg-primary/95 group relative overflow-hidden"
@@ -563,7 +461,6 @@ export default function Auth() {
                             <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                             {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">{t('auth.access_wallet')} <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
                           </Button>
-                        </MagneticWrapper>
                       </form>
                     ) : (
                       <form onSubmit={handleRegister} className="space-y-5">
@@ -642,7 +539,6 @@ export default function Auth() {
                         <UserTypeSelector value={userType} onChange={(ut) => { setUserType(ut); if (errors.userType) setErrors(prev => { const c = { ...prev }; delete c.userType; return c; }); }} />
                         {errors.userType && <p className="text-[10px] text-destructive font-black ml-2 uppercase animate-bounce-in">{errors.userType}</p>}
 
-                        <MagneticWrapper className="w-full">
                           <Button
                             type="submit"
                             className="w-full h-14 rounded-2xl font-black text-lg shadow-premium hover:shadow-primary/30 transition-all bg-primary hover:bg-primary/95 group relative overflow-hidden"
@@ -651,25 +547,19 @@ export default function Auth() {
                             <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                             {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <span className="flex items-center gap-3 relative z-10">{t('auth.create_account')} <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" /></span>}
                           </Button>
-                        </MagneticWrapper>
                       </form>
                     )}
-                  </motion.div>
-                </AnimatePresence>
+                  </div>
               </Tabs>
             </div>
-          </motion.div>
+          </div>
 
           {referralCode && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-6 p-5 rounded-[2rem] bg-secondary/10 border-2 border-secondary/20 text-center backdrop-blur-md"
-            >
+            <div className="mt-6 p-5 rounded-[2rem] bg-secondary/10 border-2 border-secondary/20 text-center backdrop-blur-md animate-fade-in">
               <p className="text-xs font-black text-secondary flex items-center justify-center gap-3 uppercase tracking-wider">
                 <Zap className="h-4 w-4 fill-current" /> {t('auth.invite_activated')}: <span className="bg-secondary text-white px-3 py-1 rounded-full">{referralCode}</span>
               </p>
-            </motion.div>
+            </div>
           )}
 
           <p className="text-center text-[9px] text-muted-foreground mt-10 px-10 leading-relaxed font-black uppercase tracking-[0.15em] opacity-60">
@@ -677,9 +567,8 @@ export default function Auth() {
             <br />
             MedWallet MZ © {new Date().getFullYear()} — Feito com <Heart className="h-2 w-2 inline text-destructive fill-current" /> em Moçambique.
           </p>
-        </motion.div>
+        </div>
       </div>
-      </Spotlight>
     </div>
   );
 }

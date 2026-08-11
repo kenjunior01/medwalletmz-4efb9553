@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Backup Rules — MedWallet
+  NÃO fazer backup de dados sensíveis (tokens, dados locais)
+  Apenas preferências de UI e configurações
+-->
+<full-backup-content>
+    <!-- Excluir dados sensíveis do backup -->
+    <exclude domain="sharedpref" path="com.supabase" />
+    <exclude domain="sharedpref" path="auth" />
+    <exclude domain="database" path="supabase.db" />
+    <exclude domain="file" path="cache/" />
+</full-backup-content>

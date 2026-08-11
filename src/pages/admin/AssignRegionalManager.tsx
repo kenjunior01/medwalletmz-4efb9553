@@ -92,7 +92,7 @@ export default function AssignRegionalManager() {
       const { data, error } = await (supabase as any)
         .from('user_roles')
         .select('user_id, role, profiles!user_id(full_name, email, avatar_url, managed_province)')
-        .eq('role', 'regional_manager');
+        .eq('role', 'provincial_manager');
       if (error) throw error;
       return ((data || []) as any[]).map((r: any) => ({
         province_id: r.profiles?.managed_province,
@@ -145,7 +145,7 @@ export default function AssignRegionalManager() {
         // 1. Add regional_manager role
         const { error: roleError } = await (supabase as any)
           .from('user_roles')
-          .upsert({ user_id: selectedUserId, role: 'regional_manager', country_id: 'mz' }, { onConflict: 'user_id,role' });
+          .upsert({ user_id: selectedUserId, role: 'provincial_manager', country_id: 'mz' }, { onConflict: 'user_id,role' });
         if (roleError) throw roleError;
 
         // 2. Upsert manager_permissions

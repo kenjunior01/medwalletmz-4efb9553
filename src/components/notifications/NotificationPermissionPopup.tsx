@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Bell, X, Check } from "@/components/icons/lucide-compat";
-import { LottieAnimation } from "@/components/lottie";
-import { FloatingParticles, GradientText, ShimmerButton, SplitText } from "@/components/ui/premium";
 import { usePopupCoordinator } from "@/components/layout/PopupCoordinator";
 
 const STORAGE_KEY = "medwallet_notif_prompt_dismissed";
-const SHOW_DELAY = 5000;
-const AUTO_DISMISS = 15000;
+const SHOW_DELAY = 8000;
+const AUTO_DISMISS = 12000;
 
 /* ------------------------------------------------------------------ */
 /*  Hook: notification permission state                                */
@@ -34,46 +31,7 @@ function useNotificationEligible() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Animated ringing bell (replaced with Lottie)                       */
-/* ------------------------------------------------------------------ */
-function AnimatedBell() {
-  return <LottieAnimation src="notification" width={40} height={40} />;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Success checkmark (shown briefly after enabling)                   */
-/* ------------------------------------------------------------------ */
-function SuccessState() {
-  return (
-    <motion.div
-      className="flex flex-col items-center gap-3 py-2"
-      initial={{ scale: 0.6, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.8, opacity: 0 }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
-    >
-      <div className="flex items-center gap-2">
-        <motion.span
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-green-500 shadow-lg shadow-emerald-500/30"
-          initial={{ rotate: -90 }}
-          animate={{ rotate: 0 }}
-          transition={{ type: "spring", stiffness: 200, damping: 15 }}
-        >
-          <Check className="h-5 w-5 text-white" strokeWidth={3} />
-        </motion.span>
-        <LottieAnimation src="success" width={32} height={32} />
-      </div>
-      <SplitText
-        text="Notificações activadas!"
-        className="text-sm font-black text-emerald-600 dark:text-emerald-400"
-        as="span"
-      />
-    </motion.div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Main Component                                                     */
+/*  Main Component — Pure CSS, zero framer-motion, zero Lottie          */
 /* ------------------------------------------------------------------ */
 export default function NotificationPermissionPopup() {
   const eligible = useNotificationEligible();
@@ -115,7 +73,7 @@ export default function NotificationPermissionPopup() {
     persist();
     if (result === "granted") {
       setSucceeded(true);
-      setTimeout(dismiss, 1600);
+      setTimeout(dismiss, 1200);
     } else {
       dismiss();
     }
@@ -126,83 +84,49 @@ export default function NotificationPermissionPopup() {
     dismiss();
   };
 
-  /* ---------- render ---------- */
+  if (!visible) return null;
+
   return (
-    <AnimatePresence onExitComplete={() => setSucceeded(false)}>
-      {visible && (
-        <>
-          {/* ---- Mobile: Bottom Sheet ---- */}
-          <motion.div
-            className="fixed inset-x-0 bottom-0 z-[9999] flex flex-col items-center px-4 pb-4 md:hidden"
-            initial={{ y: "100%", opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: "100%", opacity: 0 }}
-            transition={{
-              type: "spring",
-              stiffness: 320,
-              damping: 30,
-              mass: 0.8,
-            }}
-          >
-            {/* Scrim */}
-            <motion.div
-              className="fixed inset-0 -top-4 bg-black/30 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={handleDismiss}
-              aria-hidden
-            />
+    <>
+      {/* Scrim */}
+      <div
+        className="fixed inset-0 z-[9998] bg-black/25 backdrop-blur-sm"
+        onClick={handleDismiss}
+        aria-hidden
+      />
 
-            {/* Sheet card */}
-            <motion.div
-              role="dialog"
-              aria-label="Permissão de notificações"
-              className="relative z-10 w-full max-w-[320px] overflow-hidden rounded-2xl bg-white/90 p-4 shadow-2xl shadow-black/10 backdrop-blur-xl dark:bg-gray-900/90"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <FloatingParticles count={8} className="opacity-40" />
+      {/* Mobile: Bottom Sheet (CSS-only slide-up) */}
+      <div className="fixed inset-x-0 bottom-0 z-[9999] flex flex-col items-center px-4 pb-4 md:hidden notif-sheet-enter">
+        <div
+          role="dialog"
+          aria-label="Permissão de notificações"
+          className="relative z-10 w-full max-w-[340px] overflow-hidden rounded-2xl bg-card p-5 shadow-xl border border-border/50"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <PopupContent
+            succeeded={succeeded}
+            onEnable={handleEnable}
+            onDismiss={handleDismiss}
+          />
+        </div>
+      </div>
 
-              {/* Drag handle */}
-              <span className="mx-auto mb-4 block h-1 w-10 rounded-full bg-gray-300 dark:bg-gray-600" />
-
-              <PopupContent
-                succeeded={succeeded}
-                onEnable={handleEnable}
-                onDismiss={handleDismiss}
-              />
-            </motion.div>
-          </motion.div>
-
-          {/* ---- Desktop: Bottom-Right Toast Card ---- */}
-          <motion.div
-            className="pointer-events-none fixed bottom-6 right-6 z-[9999] hidden md:block"
-            initial={{ y: 80, x: 40, opacity: 0, scale: 0.92 }}
-            animate={{ y: 0, x: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 60, x: 40, opacity: 0, scale: 0.92, transition: { duration: 0.25 } }}
-            transition={{
-              type: "spring",
-              stiffness: 280,
-              damping: 26,
-            }}
-          >
-            <div className="pointer-events-auto relative w-[300px] overflow-hidden rounded-2xl bg-white/90 p-4 shadow-2xl shadow-black/10 backdrop-blur-xl dark:bg-gray-900/90">
-              <FloatingParticles count={8} className="opacity-40" />
-              <PopupContent
-                succeeded={succeeded}
-                onEnable={handleEnable}
-                onDismiss={handleDismiss}
-              />
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+      {/* Desktop: Bottom-Right Toast Card (CSS-only fade-in) */}
+      <div className="pointer-events-none fixed bottom-6 right-6 z-[9999] hidden md:block notif-toast-enter">
+        <div className="pointer-events-auto relative w-[300px] overflow-hidden rounded-2xl bg-card p-5 shadow-xl border border-border/50">
+          <PopupContent
+            succeeded={succeeded}
+            onEnable={handleEnable}
+            onDismiss={handleDismiss}
+          />
+        </div>
+      </div>
+    </>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Shared inner content                                               */
+/*  Shared inner content — pure HTML, zero animation libs               */
 /* ------------------------------------------------------------------ */
 interface PopupContentProps {
   succeeded: boolean;
@@ -216,65 +140,57 @@ function PopupContent({ succeeded, onEnable, onDismiss }: PopupContentProps) {
       {/* Close button */}
       <button
         onClick={onDismiss}
-        className="absolute right-3 top-3 z-10 flex h-6 w-6 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+        className="absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
         aria-label="Fechar"
       >
-        <X className="h-3 w-3" />
+        <X className="h-3.5 w-3.5" />
       </button>
 
-      {/* Gradient ocean decorative bar */}
-      <div className="mb-3 h-1 w-14 rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-teal-400" />
+      {/* Simple accent bar */}
+      <div className="mb-3 h-1 w-12 rounded-full bg-primary" />
 
-      <AnimatePresence mode="wait">
-        {succeeded ? (
-          <SuccessState key="success" />
-        ) : (
-          <motion.div
-            key="prompt"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8, transition: { duration: 0.2 } }}
-          >
-            {/* Icon */}
-            <div className="mb-2">
-              <AnimatedBell />
-            </div>
+      {succeeded ? (
+        <div className="flex flex-col items-center gap-3 py-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 shadow-md">
+            <Check className="h-5 w-5 text-white" strokeWidth={3} />
+          </div>
+          <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+            Notificações activadas!
+          </span>
+        </div>
+      ) : (
+        <div>
+          {/* Icon */}
+          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <Bell className="h-5 w-5 text-primary" />
+          </div>
 
-            {/* Copy */}
-            <h3 className="mb-1 text-sm font-bold tracking-tight text-gray-900 dark:text-white">
-              <GradientText
-                children="Fica ligado! 🔔"
-                from="#06b6d4"
-                via="#0ea5e9"
-                to="#14b8a6"
-              />
-            </h3>
-            <p className="mb-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
-              Activa as notificações para não perderes consultas e alertas de saúde.
-            </p>
+          {/* Copy */}
+          <h3 className="mb-1 text-sm font-black tracking-tight text-foreground">
+            Fica ligado!
+          </h3>
+          <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
+            Activa as notificações para não perderes consultas e alertas de saúde.
+          </p>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <ShimmerButton
-                onClick={onEnable}
-                className="flex-1 !rounded-lg !px-3 !py-2 text-xs font-semibold"
-              >
-                <Bell className="h-3.5 w-3.5" />
-                Activar
-              </ShimmerButton>
-
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={onDismiss}
-                className="rounded-lg px-3 py-2 text-xs font-medium text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
-              >
-                Agora não
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onEnable}
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground active:scale-95 transition-transform"
+            >
+              <Bell className="h-3.5 w-3.5" />
+              Activar
+            </button>
+            <button
+              onClick={onDismiss}
+              className="rounded-xl px-3 py-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            >
+              Agora não
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

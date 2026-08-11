@@ -952,10 +952,67 @@ export default function ActiveTrip() {
     setStep((prev) => Math.min(prev + 1, 4) as TripStep);
   }, []);
 
-  const handleConfirmDelivery = useCallback(() => {
+  const handleConfirmDelivery = useCallback(async () => {
+    const tripId = searchParams.get('tripId');
+    
+    // Persist delivery completion to database
+    if (tripId) {
+      try {
+        // 1. Update delivery assignment status
+        const { error: deliveryError } = await (supabase as any)
+          .from('delivery_assignments')
+          .update({
+            status: 'delivered',
+            delivered_at: new Date().toISOString(),
+          })
+          .eq('id', tripId)
+          .eq('driver_id', user?.id);
+
+        if (deliveryError) {
+          console.error('Failed to persist delivery completion:', deliveryError);
+          toast.error('Erro ao confirmar entrega na base de dados');
+          return; // Don't proceed if DB update fails
+        }
+
+        // 2. Fetch delivery to get order_id and earnings for crediting
+        const { data: deliveryData } = await (supabase as any)
+          .from('delivery_assignments')
+          .select('order_id, driver_earnings')
+          .eq('id', tripId)
+          .maybeSingle();
+
+        if (deliveryData?.order_id) {
+          // 3. Update the order status to delivered
+          await (supabase as any)
+            .from('orders')
+            .update({ status: 'delivered', delivered_at: new Date().toISOString() })
+            .eq('id', deliveryData.order_id);
+        }
+
+        // 4. Credit rider earnings to wallet using atomic RPC
+        if (deliveryData?.driver_earnings && user?.id) {
+          const { error: creditError } = await supabase.rpc('wallet_credit', {
+            _user_id: user.id,
+            _amount: deliveryData.driver_earnings,
+            _type: 'credit',
+            _ref_id: tripId,
+            _description: `Ganhos de entrega - Ordem ${trip?.orderNumber || tripId}`,
+          });
+          if (creditError) {
+            console.warn('Failed to credit rider wallet (manual reconciliation needed):', creditError);
+            // Non-blocking: delivery is already confirmed, earnings can be reconciled later
+          }
+        }
+      } catch (e) {
+        console.error('Error completing delivery:', e);
+        toast.error('Erro ao processar entrega. Tente novamente.');
+        return;
+      }
+    }
+    
     setCompleted(true);
     if (timerRef.current) clearInterval(timerRef.current);
-  }, []);
+  }, [searchParams, user?.id, trip?.orderNumber]);
 
   const handleCancelTrip = useCallback(() => {
     setShowCancelDialog(false);

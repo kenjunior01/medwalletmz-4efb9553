@@ -13,6 +13,8 @@ import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, G
 import { useCountry } from '@/contexts/CountryContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useManagedCountry } from '@/hooks/useManagedCountry';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
 
 type AppRole = 'customer' | 'store_owner' | 'driver' | 'admin' | 'doctor' | 'clinic' | 'country_manager' | 'provincial_manager' | 'regional_ceo' | 'regional_manager' | 'hospital' | 'lab' | 'pharmacy' | 'veterinary' | 'insurance';
 
@@ -51,6 +53,8 @@ export default function AdminUsers() {
   const queryClient = useQueryClient();
   const { hasRole, roles: currentUserRoles } = useAuth();
   const { country, allCountries } = useCountry();
+  const { managedCountryId, canManage } = useManagedCountry();
+  const { managedProvinceId, isProvincialManager } = useManagedProvince();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
@@ -62,18 +66,36 @@ export default function AdminUsers() {
   const isAdmin = currentUserRoles.includes('admin');
   const isManager = currentUserRoles.includes('country_manager');
 
+  // Determine effective scope: non-admins are restricted to their managed country/province
+  const effectiveCountryId = isAdmin ? null : (managedCountryId || country?.id);
+  const effectiveProvinceId = isProvincialManager ? managedProvinceId : null;
+
+  // Don't render if user has no management role
+  if (!canManage) {
+    return (
+      <div className="p-8 flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <Shield className="h-12 w-12 text-destructive" />
+        <h1 className="text-xl font-bold">Acesso Negado</h1>
+        <p className="text-muted-foreground">Apenas gestores podem aceder a esta página.</p>
+      </div>
+    );
+  }
+
   const { data: users, isLoading } = useQuery({
-    queryKey: ['admin-users', search, roleFilter, country?.id],
+    queryKey: ['admin-users', search, roleFilter, effectiveCountryId, effectiveProvinceId],
     queryFn: async () => {
       // Fetch profiles via admin RPC
-      // RPC has no arguments — filter by country client-side below.
       const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full');
       if (profilesError) throw profilesError;
       let profiles: any[] = profilesRaw || [];
 
-      // Managers should only see users in their country
-      if (isManager && !isAdmin && country?.id) {
-        profiles = profiles.filter((p: any) => p.country_id === country.id);
+      // Non-admin managers: filter by managed country
+      if (effectiveCountryId) {
+        profiles = profiles.filter((p: any) => p.country_id === effectiveCountryId);
+      }
+      // Provincial managers: further restrict to their province
+      if (effectiveProvinceId) {
+        profiles = profiles.filter((p: any) => p.province_id === effectiveProvinceId);
       }
 
       if (search) {
@@ -84,13 +106,13 @@ export default function AdminUsers() {
         );
       }
 
-      // Fetch user roles - filtered by country if manager
+      // Fetch user roles - scoped to managed country
       let rQuery = (supabase as any)
         .from('user_roles')
         .select('user_id, role, country_id');
 
-      if (country?.id) {
-        rQuery = rQuery.eq('country_id', country.id);
+      if (effectiveCountryId) {
+        rQuery = rQuery.eq('country_id', effectiveCountryId);
       }
 
       const { data: allRoles, error: rolesError } = await rQuery;
@@ -125,9 +147,14 @@ export default function AdminUsers() {
 
   const addRoleMutation = useMutation({
     mutationFn: async ({ userId, role, countryId }: { userId: string; role: AppRole; countryId?: string | null }) => {
+      // SECURITY: Managers can only assign roles in their own country
+      const effectiveCountryId = (isManager && !isAdmin) ? country?.id : countryId;
+      if (isManager && !isAdmin && !effectiveCountryId) {
+        throw new Error('Sem país atribuído ao gestor');
+      }
       const { error } = await (supabase as any)
         .from('user_roles')
-        .insert({ user_id: userId, role, country_id: countryId });
+        .insert({ user_id: userId, role, country_id: effectiveCountryId });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -146,11 +173,16 @@ export default function AdminUsers() {
 
   const removeRoleMutation = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
-      const { error } = await (supabase as any)
+      let q = (supabase as any)
         .from('user_roles')
         .delete()
         .eq('user_id', userId)
         .eq('role', role);
+      // SECURITY: Managers can only remove roles in their own country
+      if (isManager && !isAdmin && country?.id) {
+        q = q.eq('country_id', country.id);
+      }
+      const { error } = await q;
       if (error) throw error;
     },
     onSuccess: () => {

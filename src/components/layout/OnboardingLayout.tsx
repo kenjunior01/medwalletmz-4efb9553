@@ -3,6 +3,7 @@ import { ArrowLeft, Globe, Heart, Sparkles } from "@/components/icons/lucide-com
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import AnimatedBackground from '@/components/brand/AnimatedBackground';
 
 interface OnboardingLayoutProps {
   children: React.ReactNode;
@@ -29,6 +30,9 @@ export function OnboardingLayout({
 
   return (
     <div className="min-h-[100dvh] bg-background flex flex-col relative overflow-x-hidden font-sans selection:bg-primary/20">
+      {/* Animated Background para onboarding */}
+      <AnimatedBackground variant="onboarding" className="fixed inset-0" />
+
       {/* Background Decorativo */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] animate-pulse" />

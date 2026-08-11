@@ -12,7 +12,9 @@ export default defineConfig(({ mode }) => ({
     hmr: { overlay: false },
   },
   optimizeDeps: {
-    include: ["@number-flow/react", "react", "react-dom", "framer-motion", "date-fns"],
+    include: ["@number-flow/react", "react", "react-dom", "date-fns"],
+    // Heavy libs excluded from pre-bundle — loaded lazily per page
+    exclude: ["@tsparticles/react", "@tsparticles/slim", "gsap", "@gsap/react", "lottie-react", "framer-motion"],
   },
   resolve: {
     alias: {
@@ -26,11 +28,18 @@ export default defineConfig(({ mode }) => ({
     minify: 'esbuild',
     cssMinify: true,
     sourcemap: false,
-    chunkSizeWarningLimit: 800,
+    chunkSizeWarningLimit: 500,
     commonjsOptions: {
       transformMixedEsModules: true,
     },
     rollupOptions: {
+      external: [
+        '@capacitor/core', '@capacitor/haptics', '@capacitor/status-bar',
+        '@capacitor/app', '@capacitor/push-notifications', '@capacitor/splash-screen',
+        '@capacitor/network', '@capacitor/device', '@capacitor/filesystem',
+        '@capacitor/storage', '@capacitor/geolocation', '@capacitor/camera',
+        'firebase/app', 'firebase/messaging',
+      ],
       output: {
         // Chunks estratégicos para melhor cache do browser:
         // - vendor-react: React, ReactDOM, Router (muda raramente)
@@ -42,14 +51,16 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
           'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-motion': ['framer-motion'],
-          'vendor-ui': [
+          'vendor-motion': ['framer-motion', 'gsap', '@gsap/react'],
+        'vendor-ui': [
             'class-variance-authority',
             'clsx',
             'tailwind-merge',
             'date-fns',
             'sonner',
             'zod',
+            'vaul',
+            'embla-carousel-react',
             '@radix-ui/react-dialog',
             '@radix-ui/react-dropdown-menu',
             '@radix-ui/react-tooltip',
@@ -57,7 +68,24 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-tabs',
             '@radix-ui/react-accordion',
             '@radix-ui/react-slot',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-progress',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-toggle',
+            '@radix-ui/react-toggle-group',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-collapsible',
+            '@radix-ui/react-avatar',
           ],
+            // Heavy libs that should only load in their specific pages
+          'vendor-charts': ['recharts'],
+          'vendor-pdf': ['jspdf', 'jspdf-autotable'],
+          'vendor-maps': ['leaflet', 'react-leaflet'],
+          'vendor-video': ['@daily-co/daily-js'],
+          'vendor-analytics': ['posthog-js'],
+          'vendor-xlsx': ['xlsx'],
         },
       }
     }

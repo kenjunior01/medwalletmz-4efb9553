@@ -1,43 +1,46 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { bottomNavByRole, sidebarByRole } from "@/config/navigation";
-import { usePrimaryRole } from "@/hooks/usePrimaryRole";
-import { useUserType } from "@/hooks/useUserType";
-import { Menu, X, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope, Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutDashboard, ShieldCheck, CheckCircle2, Plus, Home, Bike, Heart, Users, Megaphone, Gift, Wallet, UserPlus } from '@/components/icons/lucide-compat';
-import { useState, useMemo, useRef, useEffect } from "react";
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { bottomNavByRole, sidebarByRole } from '@/config/navigation';
+import { usePrimaryRole } from '@/hooks/usePrimaryRole';
+import { useUserType } from '@/hooks/useUserType';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
-import { BentoGrid, BentoCard } from "@/components/ui/design-system";
+  Menu, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope,
+  Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown,
+  ChevronUp, Home, Bike, Heart, Users, Megaphone, Gift, Wallet, UserPlus, CheckCircle2, Plus
+} from '@/components/icons/lucide-compat';
+import {
+  Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
+} from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
 import { ViralShareSheet } from '@/components/growth/ViralShareSheet';
-import { useCountry } from "@/contexts/CountryContext";
-import { useLocation as useAppLocation } from "@/contexts/LocationContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from 'framer-motion';
+import { useCountry } from '@/contexts/CountryContext';
+import { useLocation as useAppLocation } from '@/contexts/LocationContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 
 /** Professional institution roles with their metadata */
 const INSTITUTION_ROLES = [
-  { role: "doctor" as const, icon: Stethoscope, color: "text-blue-500", bgColor: "bg-blue-500/10", borderColor: "border-blue-500/20", gradient: "from-blue-500/5 to-blue-500/10", dashboard: "/doctor/dashboard", register: "/doctor/register" },
-  { role: "clinic" as const, icon: Building2, color: "text-gold", bgColor: "bg-gold/10", borderColor: "border-gold/20", gradient: "from-gold/5 to-gold/10", dashboard: "/clinic/dashboard", register: "/clinic/register" },
-  { role: "store_owner" as const, icon: Store, color: "text-green-500", bgColor: "bg-green-500/10", borderColor: "border-green-500/20", gradient: "from-green-500/5 to-green-500/10", dashboard: "/store/dashboard", register: "/store/register" },
-  { role: "lab" as const, icon: FlaskConical, color: "text-cyan-500", bgColor: "bg-cyan-500/10", borderColor: "border-cyan-500/20", gradient: "from-cyan-500/5 to-cyan-500/10", dashboard: "/lab/dashboard", register: "/lab/register" },
-  { role: "driver" as const, icon: Truck, color: "text-orange-500", bgColor: "bg-orange-500/10", borderColor: "border-orange-500/20", gradient: "from-orange-500/5 to-orange-500/10", dashboard: "/driver/dashboard", register: "/driver/register" },
+  { role: 'doctor' as const, icon: Stethoscope, color: 'text-blue-500', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20', gradient: 'from-blue-500/5 to-blue-500/10', dashboard: '/doctor/dashboard', register: '/doctor/register' },
+  { role: 'clinic' as const, icon: Building2, color: 'text-gold', bgColor: 'bg-gold/10', borderColor: 'border-gold/20', gradient: 'from-gold/5 to-gold/10', dashboard: '/clinic/dashboard', register: '/clinic/register' },
+  { role: 'store_owner' as const, icon: Store, color: 'text-green-500', bgColor: 'bg-green-500/10', borderColor: 'border-green-500/20', gradient: 'from-green-500/5 to-green-500/10', dashboard: '/store/dashboard', register: '/store/register' },
+  { role: 'lab' as const, icon: FlaskConical, color: 'text-cyan-500', bgColor: 'bg-cyan-500/10', borderColor: 'border-cyan-500/20', gradient: 'from-cyan-500/5 to-cyan-500/10', dashboard: '/lab/dashboard', register: '/lab/register' },
+  { role: 'driver' as const, icon: Truck, color: 'text-orange-500', bgColor: 'bg-orange-500/10', borderColor: 'border-orange-500/20', gradient: 'from-orange-500/5 to-orange-500/10', dashboard: '/driver/dashboard', register: '/driver/register' },
 ] as const;
 
 const ROLE_LABELS: Record<string, string> = {
-  doctor: "Médico",
-  clinic: "Clínica",
-  hospital: "Hospital",
-  store_owner: "Farmácia/Loja",
-  lab: "Laboratório",
-  driver: "Condutor",
-  veterinary: "Veterinário",
+  doctor: 'Médico', clinic: 'Clínica', hospital: 'Hospital', store_owner: 'Farmácia/Loja',
+  lab: 'Laboratório', driver: 'Condutor', veterinary: 'Veterinário',
+};
+
+/** Lightweight haptic — no-op on web, uses Capacitor Haptics on native */
+const haptic = (style: 'light' | 'medium' | 'heavy' = 'light') => {
+  try {
+    const { Haptics, ImpactStyle } = (window as any).Capacitor?.Plugins || {};
+    if (Haptics) {
+      Haptics.impact({ style: ImpactStyle?.[style === 'heavy' ? 'Heavy' : style === 'medium' ? 'Medium' : 'Light'] || 'Light' });
+    }
+  } catch { /* web fallback — silent */ }
 };
 
 export function BottomNav() {
@@ -50,16 +53,31 @@ export function BottomNav() {
   const [open, setOpen] = useState(false);
   const [institutionsOpen, setInstitutionsOpen] = useState(true);
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
+
+  // Sliding pill indicator
   const navRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+
+  const updatePill = useCallback(() => {
+    const container = navRef.current;
+    if (!container) return;
+    const activeBtn = container.querySelector('[data-active="true"]') as HTMLElement;
+    if (!activeBtn) { setPillStyle(s => ({ ...s, opacity: 0 })); return; }
+    const containerRect = container.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+    setPillStyle({
+      left: btnRect.left - containerRect.left,
+      width: btnRect.width,
+      opacity: 1,
+    });
+  }, []);
+
+  useEffect(() => { updatePill(); }, [location.pathname, updatePill]);
 
   const navItems = bottomNavByRole[role] ?? bottomNavByRole.customer;
   const allItems = sidebarByRole[role] ?? sidebarByRole.customer;
-
   const { userType } = useUserType();
 
-  // Override bottom nav for specific user types
   const TYPE_NAV: Record<string, typeof navItems> = {
     rider: [
       { path: '/', icon: Home, label: 'common.home', highlight: false },
@@ -82,392 +100,255 @@ export function BottomNav() {
   };
 
   const finalNavItems = userType && TYPE_NAV[userType] ? TYPE_NAV[userType] : navItems;
-
-  // Filter out items already in bottom nav to avoid duplicates in "More"
   const bottomPaths = new Set(finalNavItems.map(i => i.path));
   const moreItems = allItems.filter(i => !bottomPaths.has(i.path));
 
-  // Group moreItems by group
   const groups = moreItems.reduce((acc, item) => {
-    const group = item.group || "Outros";
+    const group = item.group || 'Outros';
     if (!acc[group]) acc[group] = [];
     acc[group].push(item);
     return acc;
   }, {} as Record<string, typeof moreItems>);
 
-  // Compute user's active institution roles
   const activeInstitutionRoles = useMemo(() => {
     if (!user) return [];
     return INSTITUTION_ROLES.filter(ir => hasRole(ir.role));
   }, [user, hasRole]);
 
-  // Calculate the morphing pill position
   const displayItems = finalNavItems.slice(0, 4);
-
-  useEffect(() => {
-    const idx = displayItems.findIndex(({ path }) => {
-      if (path === '/') return location.pathname === '/';
-      return location.pathname.startsWith(path);
-    });
-    if (idx >= 0) {
-      setActiveIndex(idx);
-      const navEl = navRef.current;
-      if (!navEl) return;
-      const buttons = navEl.querySelectorAll('[data-mw-nav-item]');
-      const btn = buttons[idx] as HTMLElement;
-      if (btn) {
-        const navRect = navEl.getBoundingClientRect();
-        const btnRect = btn.getBoundingClientRect();
-        setPillStyle({
-          left: btnRect.left - navRect.left + btnRect.width / 2 - 20,
-          width: 40,
-          opacity: 1,
-        });
-      }
-    }
-  }, [location.pathname, displayItems]);
 
   return (
     <>
-    {/* Floating Invite Button */}
-    {user && (
-      <button
-        onClick={() => setShareSheetOpen(true)}
-        className="fixed bottom-20 right-3 z-40 h-14 w-14 rounded-full bg-gradient-to-br from-teal-500 to-indigo-600 text-white shadow-xl shadow-teal-500/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform mw-tap-bounce"
-        aria-label="Convida Amigos"
-      >
-        <UserPlus className="h-6 w-6" />
-      </button>
-    )}
-    <ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} />
-    <nav className="fixed bottom-0 left-0 right-0 z-40 mw-bottomnav bg-background/80 border-t border-border/30 safe-area-bottom relative">
-      {/* Glowing top edge shimmer line */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] mw-shimmer-line" />
+      {/* Floating Invite Button — smaller, no gradient glow */}
+      {user && (
+        <button
+          onClick={() => setShareSheetOpen(true)}
+          className="fixed bottom-20 right-3 z-40 h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-95 transition-transform no-tap-target"
+          aria-label="Convida Amigos"
+        >
+          <UserPlus className="h-5 w-5" />
+        </button>
+      )}
+      <ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} />
 
-      {/* Gradient reflection at the bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background/40 to-transparent pointer-events-none" />
+      {/* Bottom nav — native feel with sliding pill indicator */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border/50 safe-area-bottom">
+        <div ref={navRef} className="relative flex items-center justify-around py-1.5 px-2 max-w-md mx-auto">
+          {/* Sliding pill indicator — CSS transition */}
+          <div
+            className="absolute top-1 h-[calc(100%-8px)] rounded-xl bg-primary/10 transition-all duration-300 ease-out pointer-events-none"
+            style={{ left: pillStyle.left, width: pillStyle.width, opacity: pillStyle.opacity }}
+          />
+          {displayItems.map(({ path, icon: Icon, label, highlight }, idx) => {
+            const isActive = location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
+            const translatedLabel = t(label);
 
-      <div ref={navRef} className="flex items-end justify-around py-1.5 px-1 relative max-w-md mx-auto">
-        {/* Morphing glow pill indicator */}
-        <AnimatePresence>
-          {pillStyle.opacity > 0 && (
-            <motion.div
-              className="absolute top-0 h-[2px] rounded-full mw-shimmer-line"
-              animate={{ left: pillStyle.left, width: pillStyle.width, opacity: pillStyle.opacity }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              style={{ boxShadow: '0 0 12px var(--region-logo-primary, #0D9488)' }}
-            />
-          )}
-        </AnimatePresence>
+            if (highlight) {
+              return (
+                <NavLink
+                  key={path}
+                  to={path}
+                  data-active={isActive || undefined}
+                  aria-label={translatedLabel}
+                  onClick={() => haptic('medium')}
+                  className="flex flex-col items-center -mt-5 mx-1 mb-0.5 no-tap-target relative z-10"
+                >
+                  <div className={cn(
+                    'h-12 w-12 rounded-full flex items-center justify-center shadow-md transition-all duration-200',
+                    'bg-primary text-primary-foreground',
+                    isActive ? 'scale-105' : 'active:scale-95'
+                  )}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-[9px] font-bold mt-1 text-primary">{translatedLabel}</span>
+                </NavLink>
+              );
+            }
 
-        {displayItems.map(({ path, icon: Icon, label, highlight }, idx) => {
-          const isActive = location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
-          const translatedLabel = t(label);
-          if (highlight) {
             return (
               <NavLink
                 key={path}
                 to={path}
-                data-mw-nav-item
-                aria-label={translatedLabel}
-                className="flex flex-col items-center -mt-6 mx-1 mb-0.5 no-tap-target relative"
-              >
-                {/* Bubble particles behind active center item */}
-                {isActive && (
-                  <>
-                    <span className="mw-particle text-[10px]" style={{ top: -8, left: 4, animationDelay: '0s', color: 'var(--region-logo-primary, #0D9488)' }}>●</span>
-                    <span className="mw-particle text-[8px]" style={{ top: -4, right: 2, animationDelay: '1.5s', color: 'var(--region-logo-secondary, #6366F1)' }}>●</span>
-                    <span className="mw-particle text-[6px]" style={{ bottom: 4, left: 0, animationDelay: '3s', color: 'var(--region-logo-accent, #F59E0B)' }}>●</span>
-                  </>
+                data-active={isActive || undefined}
+                onClick={() => haptic('light')}
+                className={cn(
+                  'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors duration-150 flex-1 no-tap-target relative z-10',
+                  isActive ? 'text-primary' : 'text-muted-foreground'
                 )}
-                <div className={cn(
-                  "h-14 w-14 rounded-full flex items-center justify-center shadow-premium transition-all duration-300 ring-4 ring-background mw-tap-bounce",
-                  "bg-gradient-to-br from-primary via-primary/90 to-secondary text-primary-foreground",
-                  isActive && "mw-center-pulse",
-                  isActive ? "scale-110 ring-primary/20" : "hover:scale-105 active:scale-95"
-                )}>
-                  <Icon className="h-6 w-6" />
+              >
+                <div className="p-1.5 rounded-xl">
+                  <Icon className="h-5 w-5" />
                 </div>
-                <span className="text-[9px] font-black mt-1 text-primary uppercase tracking-tighter">{translatedLabel}</span>
+                <span className={cn(
+                  'text-[9px] font-semibold',
+                  isActive && 'text-primary font-bold'
+                )}>{translatedLabel}</span>
               </NavLink>
             );
-          }
-          return (
-            <NavLink
-              key={path}
-              to={path}
-              data-mw-nav-item
-              className={cn(
-                "flex flex-col items-center gap-1 px-2 py-1.5 rounded-2xl transition-all duration-300 flex-1 relative mw-tap-bounce",
-                isActive
-                  ? "text-primary translate-y-[-2px] mw-nav-active"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {/* Active glow behind icon */}
-              {isActive && (
-                <div
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-20 blur-xl pointer-events-none"
-                  style={{ background: 'var(--region-logo-primary, #0D9488)' }}
-                />
-              )}
-              <div
+          })}
+
+          {/* More Button */}
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <button
                 className={cn(
-                  "p-2 rounded-xl transition-all duration-300 relative",
-                  isActive && "bg-primary/10 shadow-sm mw-nav-glow"
+                  'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors duration-150 flex-1 no-tap-target',
+                  open ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
-                <Icon
-                  className={cn(
-                    "h-5 w-5 transition-transform duration-300",
-                    isActive && "scale-110"
-                  )}
-                />
-              </div>
-              <span className={cn(
-                "text-[9px] font-black uppercase tracking-tight",
-                isActive && "text-primary"
-              )}>{translatedLabel}</span>
-            </NavLink>
-          );
-        })}
-
-        {/* More Button */}
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <button
-              data-mw-nav-item
-              className={cn(
-                "flex flex-col items-center gap-1 px-2 py-1.5 rounded-2xl transition-all duration-300 flex-1 relative mw-tap-bounce",
-                open ? "text-primary translate-y-[-2px]" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {open && (
-                <div
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full opacity-20 blur-xl pointer-events-none"
-                  style={{ background: 'var(--region-logo-primary, #0D9488)' }}
-                />
-              )}
-              <div className={cn("p-2 rounded-xl transition-all duration-300 relative", open && "bg-primary/10 shadow-sm mw-nav-glow")}>
-                <Menu className={cn("h-5 w-5 transition-transform duration-300", open && "scale-110")} />
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-tight">{t('common.more') || 'Mais'}</span>
-            </button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="rounded-t-[2.5rem] px-0 pb-10 max-h-[92vh] overflow-y-auto border-t-2 border-primary/20 shadow-2xl">
-            <div className="px-6">
-              <SheetHeader className="mb-6 flex flex-row items-center justify-between space-y-0">
-                <SheetTitle className="text-2xl font-black flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
-                    <Sparkles className="h-6 w-6 text-primary" />
-                  </div>
-                  {t('bottomnav.hub_title') || 'MedWallet Hub'}
-                </SheetTitle>
-              </SheetHeader>
-
-              {/* User Context Quick Card */}
-              <div className="bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/10 rounded-3xl p-4 mb-6 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-border">
-                    {country?.id === 'MZ' ? '🇲🇿' : country?.id === 'BR' ? '🇧🇷' : <Globe className="h-5 w-5" />}
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground">{t('bottomnav.current_location') || 'Localização Atual'}</p>
-                    <p className="font-black text-sm">{city}, {country?.name}</p>
-                  </div>
+                <div className={cn('p-1.5 rounded-xl transition-colors duration-150', open && 'bg-primary/10')}>
+                  <Menu className="h-5 w-5" />
                 </div>
-                <Button variant="ghost" size="sm" className="rounded-xl font-bold text-primary hover:bg-primary/10" onClick={() => { setOpen(false); navigate('/profile'); }}>
-                  {t('bottomnav.change') || 'Alterar'}
-                </Button>
-              </div>
+                <span className='text-[9px] font-semibold'>{t('common.more') || 'Mais'}</span>
+              </button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="rounded-t-2xl px-0 pb-10 max-h-[85vh] overflow-y-auto border-t border-border/50">
+              <div className="px-5">
+                <SheetHeader className="mb-5 flex flex-row items-center justify-between space-y-0">
+                  <SheetTitle className="text-lg font-bold flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    {t('bottomnav.hub_title') || 'MedWallet Hub'}
+                  </SheetTitle>
+                </SheetHeader>
 
-              {/* ═══════════════════════════════════════════════ */}
-              {/* MY INSTITUTIONS — Bento Grid Hub Section       */}
-              {/* ═══════════════════════════════════════════════ */}
-              <div className="mb-8">
-                <button
-                  onClick={() => setInstitutionsOpen(!institutionsOpen)}
-                  className="flex items-center gap-2 w-full mb-4 px-2"
-                >
-                  <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                    <Briefcase className="h-3.5 w-3.5 text-primary-foreground" />
+                {/* User Context Quick Card */}
+                <div className="bg-muted/50 border border-border/50 rounded-2xl p-3.5 mb-5 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-full bg-background flex items-center justify-center shadow-sm border border-border">
+                      {country?.id === 'MZ' ? '🇲🇿' : country?.id === 'BR' ? '🇧🇷' : <Globe className="h-4 w-4" />}
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground">{t('bottomnav.current_location') || 'Localização'}</p>
+                      <p className="font-bold text-sm">{city}, {country?.name}</p>
+                    </div>
                   </div>
-                  <h3 className="text-[10px] uppercase font-black tracking-[0.3em] text-primary flex-1 text-left">
-                    {t('bottomnav.my_institutions') || 'As Minhas Instituições'}
-                  </h3>
-                  {institutionsOpen ? (
-                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </button>
+                  <Button variant="ghost" size="sm" className="rounded-lg text-xs text-primary hover:bg-primary/10" onClick={() => { setOpen(false); navigate('/profile'); }}>
+                    {t('bottomnav.change') || 'Alterar'}
+                  </Button>
+                </div>
 
-                {institutionsOpen && (
-                  <>
-                    {/* Active Institution Cards — Bento Grid */}
-                    {activeInstitutionRoles.length > 0 ? (
-                      <div className="grid grid-cols-2 gap-2.5 mb-3">
-                        {activeInstitutionRoles.map((inst) => {
-                          const Icon = inst.icon;
-                          return (
-                            <button
-                              key={inst.role}
-                              onClick={() => {
-                                navigate(inst.dashboard);
-                                setOpen(false);
-                              }}
-                              className={cn(
-                                "relative overflow-hidden rounded-2xl border p-4 text-left transition-all group active:scale-[0.98]",
-                                "bg-gradient-to-br " + inst.gradient + " " + inst.borderColor,
-                                "hover:shadow-md hover:border-primary/30"
-                              )}
-                            >
-                              {/* Glow accent */}
-                              <div className={cn(
-                                "absolute -top-6 -right-6 h-20 w-20 rounded-full opacity-20 blur-xl",
-                                inst.bgColor
-                              )} />
-
-                              <div className="relative">
-                                <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center mb-3 border", inst.bgColor, inst.borderColor)}>
-                                  <Icon className={cn("h-5 w-5", inst.color)} />
-                                </div>
-                                <p className="font-black text-sm leading-tight">
-                                  {ROLE_LABELS[inst.role] || inst.role}
-                                </p>
-                                <div className="flex items-center gap-1.5 mt-2">
-                                  <Badge
-                                    variant="outline"
-                                    className={cn(
-                                      "text-[9px] px-1.5 py-0 h-4 rounded-full border",
-                                      "bg-emerald-500/10 text-emerald-600 border-emerald-500/30"
-                                    )}
-                                  >
-                                    <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />
-                                    {t('bottomnav.active') || 'Activo'}
-                                  </Badge>
-                                </div>
-                                <div className="flex items-center gap-1 mt-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <span className="text-[10px] font-bold">{t('bottomnav.open_dashboard') || 'Painel'}</span>
-                                  <ChevronRight className="h-3 w-3" />
-                                </div>
-                              </div>
-                            </button>
-                          );
-                        })}
-
-                        {/* If not all roles are active, show join card */}
-                        {activeInstitutionRoles.length < INSTITUTION_ROLES.length && (
-                          <button
-                            onClick={() => {
-                              setOpen(false);
-                              navigate('/profile');
-                            }}
-                            className="relative overflow-hidden rounded-2xl border border-dashed border-primary/20 p-4 text-left transition-all group active:scale-[0.98] hover:border-primary/40"
-                          >
-                            <div className="absolute -top-4 -right-4 h-16 w-16 rounded-full bg-primary/5 blur-lg" />
-                            <div className="relative">
-                              <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center mb-3">
-                                <Plus className="h-5 w-5 text-primary" />
-                              </div>
-                              <p className="font-black text-sm leading-tight text-primary">
-                                {t('bottomnav.add_institution') || 'Adicionar'}
-                              </p>
-                              <p className="text-[10px] text-muted-foreground mt-1 leading-snug">
-                                {t('bottomnav.add_institution_desc') || 'Mais papéis profissionais'}
-                              </p>
-                            </div>
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      /* No institution roles — Join as Professional card */
-                      <button
-                        onClick={() => {
-                          setOpen(false);
-                          navigate('/profile');
-                        }}
-                        className="w-full relative overflow-hidden rounded-2xl p-5 text-left transition-all group active:scale-[0.99]"
-                      >
-                        {/* Gradient background */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 rounded-2xl" />
-                        <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-primary/10 blur-xl" />
-                        <div className="absolute -bottom-6 -left-6 h-20 w-20 rounded-full bg-secondary/10 blur-xl" />
-
-                        <div className="relative flex items-center gap-4">
-                          <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
-                            <Stethoscope className="h-7 w-7 text-primary-foreground" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-black text-base leading-tight">
-                              {t('bottomnav.join_professional') || 'Entrar como Profissional'}
-                            </p>
-                            <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
-                              {t('bottomnav.join_professional_desc') || 'Registe a sua clínica, farmácia, laboratório ou comece como médico ou condutor'}
-                            </p>
-                            <div className="flex items-center gap-1 mt-2.5 text-primary">
-                              <span className="text-[11px] font-bold">{t('bottomnav.explore_roles') || 'Explorar papéis'}</span>
-                              <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
-
-              <div className="space-y-8">
-                {Object.entries(groups).map(([group, items]) => (
-                  <div key={group} className="space-y-4">
-                    <h3 className="text-[10px] uppercase font-black tracking-[0.3em] text-primary/40 px-2">
-                      {group}
+                {/* My Institutions */}
+                <div className="mb-6">
+                  <button
+                    onClick={() => setInstitutionsOpen(!institutionsOpen)}
+                    className="flex items-center gap-2 w-full mb-3 px-1"
+                  >
+                    <div className="h-6 w-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Briefcase className="h-3 w-3 text-primary" />
+                    </div>
+                    <h3 className="text-[10px] uppercase font-bold tracking-wider text-primary flex-1 text-left">
+                      {t('bottomnav.my_institutions') || 'As Minhas Instituições'}
                     </h3>
-                    <div className="grid grid-cols-1 gap-2.5">
-                      {items.map((item) => (
-                        <button
-                          key={item.path}
-                          onClick={() => {
-                            navigate(item.path);
-                            setOpen(false);
-                          }}
-                          className="flex items-center justify-between p-4 rounded-2xl bg-card border border-border hover:border-primary/30 hover:bg-primary/[0.02] active:bg-primary/[0.05] transition-all group"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="h-11 w-11 rounded-2xl bg-muted/50 border border-border flex items-center justify-center shadow-sm group-hover:text-primary group-hover:bg-primary/5 group-hover:border-primary/20 transition-all">
-                              <item.icon className="h-5 w-5" />
-                            </div>
-                            <span className="font-black text-sm tracking-tight">{t(item.label)}</span>
-                          </div>
-                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                    {institutionsOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                  </button>
 
-                {/* Emergency Block */}
-                <div className="pt-4">
-                   <button
-                    onClick={() => { setOpen(false); navigate('/health/triage'); }}
-                    className="w-full flex items-center gap-4 p-5 rounded-3xl bg-destructive/10 border-2 border-destructive/20 text-destructive group"
-                   >
-                    <div className="h-12 w-12 rounded-2xl bg-destructive text-white flex items-center justify-center shadow-lg shadow-destructive/30">
-                      <PhoneCall className="h-6 w-6" />
+                  {institutionsOpen && (
+                    <>
+                      {activeInstitutionRoles.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-2 mb-3">
+                          {activeInstitutionRoles.map((inst) => {
+                            const Icon = inst.icon;
+                            return (
+                              <button
+                                key={inst.role}
+                                onClick={() => { navigate(inst.dashboard); setOpen(false); }}
+                                className={cn(
+                                  'rounded-xl border p-3 text-left transition-all active:scale-[0.98]',
+                                  'bg-gradient-to-br ' + inst.gradient + ' ' + inst.borderColor,
+                                )}
+                              >
+                                <div className={cn('h-9 w-9 rounded-lg flex items-center justify-center mb-2 border', inst.bgColor, inst.borderColor)}>
+                                  <Icon className={cn('h-4 w-4', inst.color)} />
+                                </div>
+                                <p className="font-bold text-sm leading-tight">{ROLE_LABELS[inst.role] || inst.role}</p>
+                                <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 rounded-full border bg-emerald-500/10 text-emerald-600 border-emerald-500/30 mt-1.5">
+                                  <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />
+                                  {t('bottomnav.active') || 'Activo'}
+                                </Badge>
+                              </button>
+                            );
+                          })}
+                          {activeInstitutionRoles.length < INSTITUTION_ROLES.length && (
+                            <button
+                              onClick={() => { setOpen(false); navigate('/profile'); }}
+                              className="rounded-xl border border-dashed border-primary/20 p-3 text-left active:scale-[0.98]"
+                            >
+                              <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/15 flex items-center justify-center mb-2">
+                                <Plus className="h-4 w-4 text-primary" />
+                              </div>
+                              <p className="font-bold text-sm text-primary">{t('bottomnav.add_institution') || 'Adicionar'}</p>
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => { setOpen(false); navigate('/profile'); }}
+                          className="w-full rounded-xl p-4 text-left active:scale-[0.99]"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                              <Stethoscope className="h-5 w-5 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold text-sm">{t('bottomnav.join_professional') || 'Entrar como Profissional'}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">
+                                {t('bottomnav.join_professional_desc') || 'Registe a sua clínica, farmácia, laboratório ou comece como médico'}
+                              </p>
+                            </div>
+                            <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                          </div>
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                <div className="space-y-6">
+                  {Object.entries(groups).map(([group, items]) => (
+                    <div key={group} className="space-y-2">
+                      <h3 className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground/60 px-1">{group}</h3>
+                      <div className="space-y-1">
+                        {items.map((item) => (
+                          <button
+                            key={item.path}
+                            onClick={() => { navigate(item.path); setOpen(false); }}
+                            className="flex items-center justify-between p-3 rounded-xl bg-card border border-border/50 hover:border-primary/20 active:bg-muted transition-colors w-full"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="h-10 w-10 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-center">
+                                <item.icon className="h-4.5 w-4.5" />
+                              </div>
+                              <span className="font-semibold text-sm">{t(item.label)}</span>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex-1 text-left">
-                      <p className="font-black text-lg leading-none">{t('bottomnav.emergency') || 'Emergência'}</p>
-                      <p className="text-xs font-bold opacity-80 mt-1">{t('bottomnav.emergency_desc') || 'Triagem imediata com IA'}</p>
-                    </div>
-                    <ChevronRight className="h-5 w-5 opacity-50 group-hover:translate-x-1 transition-transform" />
-                   </button>
+                  ))}
+
+                  {/* Emergency Block */}
+                  <div className="pt-2">
+                    <button
+                      onClick={() => { setOpen(false); navigate('/health/triage'); }}
+                      className="w-full flex items-center gap-3 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive"
+                    >
+                      <div className="h-10 w-10 rounded-xl bg-destructive text-white flex items-center justify-center">
+                        <PhoneCall className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="font-bold text-sm">{t('bottomnav.emergency') || 'Emergência'}</p>
+                        <p className="text-[10px] opacity-80 mt-0.5">{t('bottomnav.emergency_desc') || 'Triagem imediata com IA'}</p>
+                      </div>
+                      <ChevronRight className="h-4 w-4 opacity-50" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
-    </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </nav>
     </>
   );
 }

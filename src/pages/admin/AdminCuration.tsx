@@ -40,7 +40,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { LogoUpload } from '@/components/upload/LogoUpload';
+import { LogoUpload } from '@/components/upload';
 import {
   Dialog,
   DialogContent,

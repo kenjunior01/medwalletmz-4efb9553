@@ -1,30 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  MedWallet MZ — AndroidManifest.xml
+
+  Funcionalidades:
+  - App Links (verificação digital via assetlinks.json)
+  - Deep links via scheme (medwallet://)
+  - Permissões granulares Android 13+ (API 33)
+  - Permissões Android 14+ (API 34) — foreground services
+  - Network security hardened
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="false">
 
+        <!-- ========================================
+             ACTIVITY PRINCIPAL
+             ======================================== -->
         <activity
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density|mcc|mnc"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
+            android:persistableMode="persistNever"
+            android:enableOnBackInvokedCallback="true">
 
+            <!-- Launcher -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Deep link handler para OAuth callback -->
+            <!-- ========================================
+                 APP LINKS (Android 6+)
+                 Verificação digital via .well-known/assetlinks.json
+                 hospedado em medwalletmz.online
+                 ======================================== -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -32,8 +57,20 @@
                 <data android:scheme="https" android:host="medwalletmz.online" />
             </intent-filter>
 
+            <!-- Deep link via custom scheme (fallback)
+                 Uso: medwallet://register?role=driver -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="medwallet" />
+            </intent-filter>
+
         </activity>
 
+        <!-- ========================================
+             FILE PROVIDER (camera, ficheiros)
+             ======================================== -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -41,59 +78,87 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- ========================================
+             PUSH NOTIFICATIONS (FCM)
+             ======================================== -->
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
     </application>
 
     <!-- =========================================================================
-         PERMISSÕES NECESSÁRIAS PARA O MEDWALLET
+         PERMISSÕES
+         Organizadas por categoria com comentários de justificação
          ========================================================================= -->
 
-    <!-- Networking -->
+    <!-- === NETWORKING === -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Camera — para upload de receitas, exames e fotos de perfil -->
+    <!-- === CAMERA — Upload de receitas, fotos de perfil, fotos de veículos === -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
 
-    <!-- Storage — para guardar imagens e PDFs (receitas, exames) -->
+    <!-- === STORAGE (Android 13+ granular) === -->
+    <!-- Legado: apenas até API 32 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
-    <!-- Android 13+ (API 33): permissões granulares para imagens/vídeos/áudio -->
+    <!-- Android 13+ (API 33+): permissões granulares -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
-    <!-- Geolocalização — para farmácias próximas e serviços de entrega -->
+    <!-- === GEOLOCATION — Farmácias próximas, rastreamento de entregas === -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature android:name="android.hardware.location.network" android:required="false" />
 
-    <!-- Notificações push (FCM) -->
+    <!-- === NOTIFICAÇÕES === -->
+    <!-- Android 13+: permissão explícita para notificações -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Serviços de notificação -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Android 14+ (API 34): foreground service types -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
-    <!-- Vibração — para notificações e lembretes de medicamentos -->
+    <!-- === HAPTICS — Feedback tátil em notificações e confirmações === -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- Biometria — para futura autenticação por impressão digital -->
+    <!-- === BIOMETRIA — Autenticação por impressão digital/face === -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
-    <!-- Microfone — para video-consultações -->
+    <!-- === MICROFONE — Video-consultas, mensagens de voz === -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
-    <!-- Bluetooth — para futuros dispositivos médicos (termómetros, oxímetros) -->
-    <uses-permission android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" />
+    <!-- === BLUETOOTH LE — Dispositivos médicos (termómetros, oxímetros) === -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- === BOOT — Lembretes de medicamentos e consultas === -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- === VIBRATION PATTERN (Android 12+) === -->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
 </manifest>

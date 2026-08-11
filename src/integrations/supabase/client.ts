@@ -2,29 +2,44 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://pfqruzusjjxyidhqkiob.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXJ1enVzamp4eWlkaHFraW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NTYwODMsImV4cCI6MjA5NzMzMjA4M30.zPcOEd5AKFg5KHa3xdhJPBFOphkWpf-huTvWh_V_f50";
+// SECURITY: Credentials must be provided via environment variables only.
+// Hard-coded fallbacks are intentionally removed to prevent credential leakage.
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  console.warn("Supabase credentials missing. Check your environment variables.");
+  console.error(
+    "CRITICAL: Supabase credentials missing. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY environment variables."
+  );
+  // In development, show a visible error so developers don't miss this.
+  if (import.meta.env.DEV) {
+    document.body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#111;color:#fff;font-family:sans-serif;text-align:center;padding:2rem">
+        <div>
+          <h1 style="color:#ef4444;font-size:1.5rem">Configuração Necessária</h1>
+          <p style="color:#a1a1aa;margin:1rem 0">Crie um ficheiro <code>.env.local</code> na raiz do projecto com:</p>
+          <pre style="background:#1a1a2e;padding:1rem;border-radius:8px;text-align:left;font-size:0.85rem;overflow-x:auto">VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key</pre>
+          <p style="color:#71717a;margin-top:1rem;font-size:0.85rem">Consulte o README ou o administrador do projecto.</p>
+        </div>
+      </div>`;
+  }
 }
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-// =============================================================================
-// CONFIGURAÇÃO CRÍTICA PARA OAUTH VIA LOVABLE CLOUD
-// =============================================================================
 export const supabase = createClient<Database>(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
+  SUPABASE_URL!,
+  SUPABASE_PUBLISHABLE_KEY!,
   {
     auth: {
       storage: typeof window !== 'undefined' ? window.localStorage : undefined,
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      flowType: 'implicit',
+      // SECURITY: Use PKCE flow instead of implicit to prevent token interception
+      flowType: 'pkce',
     }
   }
 );

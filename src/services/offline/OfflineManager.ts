@@ -1,14 +1,15 @@
 // =============================================================================
 // MedWallet — OfflineManager Service
 // =============================================================================
-// Manages offline data caching and sync queue using localStorage.
-// Designed for PWA offline-first scenarios where Supabase is unreachable.
+// Manages offline data caching and sync queue.
+// Sensitive data (prescriptions, profile) is encrypted using AES-GCM before
+// being stored in localStorage, keyed by the user's session token.
 //
 // Storage keys:
-//   mz_offline_queue     — JSON array of pending mutations
-//   mz_offline_profile   — JSON object of cached user profile
-//   mz_offline_prescriptions — JSON array of cached prescriptions
-//   mz_offline_wallet    — JSON number (cached wallet balance)
+//   mz_offline_queue     — JSON array of pending mutations (non-sensitive)
+//   mz_offline_profile   — AES-GCM encrypted JSON of cached user profile
+//   mz_offline_prescriptions — AES-GCM encrypted JSON array of cached prescriptions
+//   mz_offline_wallet    — JSON number (cached wallet balance — non-sensitive)
 //   mz_offline_last_sync — ISO timestamp string
 // =============================================================================
 
@@ -39,6 +40,89 @@ const STORAGE_KEYS = {
   wallet: 'mz_offline_wallet',
   lastSync: 'mz_offline_last_sync',
 } as const;
+
+/** Keys prefixed with this are sensitive and must be encrypted */
+const ENCRYPTED_KEYS = new Set([STORAGE_KEYS.profile, STORAGE_KEYS.prescriptions]);
+
+// ── Encryption Helpers (AES-GCM via Web Crypto API) ───────────────────────
+
+/** Derive a 256-bit AES key from the user's access token */
+async function deriveKey(): Promise<CryptoKey | null> {
+  try {
+    if (typeof window === 'undefined' || !window.crypto?.subtle) return null;
+    // Get the current session token from localStorage (Supabase stores it here)
+    const authData = localStorage.getItem('sb-pfqruzusjjxyidhqkiob-auth-token');
+    if (!authData) return null;
+    const parsed = JSON.parse(authData);
+    const token = parsed?.access_token;
+    if (!token) return null;
+
+    // Import token as raw key material
+    const encoder = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(token.slice(0, 64)), // Use first 64 chars of token
+      'PBKDF2',
+      false,
+      ['deriveKey']
+    );
+
+    // Derive AES-256-GCM key
+    return crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        salt: encoder.encode('medwallet-offline-v1'), // Fixed salt for deterministic derivation
+        iterations: 100000,
+        hash: 'SHA-256',
+      },
+      keyMaterial,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
+  } catch {
+    return null;
+  }
+}
+
+/** Encrypt a JSON-serializable value, returns base64 string */
+async function encrypt<T>(value: T): Promise<string> {
+  const key = await deriveKey();
+  if (!key) {
+    // Fallback: if encryption not available, store with a prefix warning
+    console.warn('[OfflineManager] Encryption unavailable, storing as plaintext (dev only)');
+    return 'PLAIN:' + JSON.stringify(value);
+  }
+  const iv = crypto.getRandomValues(new Uint8Array(12)); // 96-bit IV for AES-GCM
+  const encoded = new TextEncoder().encode(JSON.stringify(value));
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+  // Combine IV + ciphertext and base64 encode
+  const combined = new Uint8Array(iv.length + ciphertext.byteLength);
+  combined.set(iv, 0);
+  combined.set(new Uint8Array(ciphertext), iv.length);
+  return btoa(String.fromCharCode(...combined));
+}
+
+/** Decrypt a value that was encrypted with encrypt() */
+async function decrypt<T>(encrypted: string): Promise<T | null> {
+  try {
+    // Handle plaintext fallback
+    if (encrypted.startsWith('PLAIN:')) {
+      return JSON.parse(encrypted.slice(6)) as T;
+    }
+    const key = await deriveKey();
+    if (!key) return null;
+
+    const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
+    const iv = combined.slice(0, 12);
+    const ciphertext = combined.slice(12);
+    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+    return JSON.parse(new TextDecoder().decode(decrypted)) as T;
+  } catch {
+    console.warn('[OfflineManager] Failed to decrypt data (key may have changed after login)');
+    return null;
+  }
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -222,7 +306,7 @@ class OfflineManager {
     safeSetItem(STORAGE_KEYS.queue, this.queue);
   }
 
-  // ── Cache Critical Data ────────────────────────────────────────────────
+  // ── Cache Critical Data (sensitive data is encrypted) ──────────────────
 
   async cacheProfile(userId: string): Promise<void> {
     try {
@@ -233,8 +317,10 @@ class OfflineManager {
         .maybeSingle();
 
       if (data) {
-        safeSetItem(STORAGE_KEYS.profile, data);
-        console.log('[OfflineManager] Profile cached');
+        // SECURITY: Encrypt profile before storing in localStorage
+        const encrypted = await encrypt(data);
+        localStorage.setItem(STORAGE_KEYS.profile, encrypted);
+        console.log('[OfflineManager] Profile cached (encrypted)');
       }
     } catch (err) {
       console.warn('[OfflineManager] Failed to cache profile:', err);
@@ -251,8 +337,10 @@ class OfflineManager {
         .limit(50);
 
       if (data) {
-        safeSetItem(STORAGE_KEYS.prescriptions, data);
-        console.log('[OfflineManager] Prescriptions cached:', data.length);
+        // SECURITY: Encrypt prescriptions before storing in localStorage
+        const encrypted = await encrypt(data);
+        localStorage.setItem(STORAGE_KEYS.prescriptions, encrypted);
+        console.log('[OfflineManager] Prescriptions cached (encrypted):', data.length);
       }
     } catch (err) {
       console.warn('[OfflineManager] Failed to cache prescriptions:', err);
@@ -282,18 +370,115 @@ class OfflineManager {
       this.cacheProfile(userId),
       this.cachePrescriptions(userId),
       this.cacheWalletBalance(userId),
+      this.cacheNearbyFacilities(),
     ]);
     safeSetItem(STORAGE_KEYS.lastSync, new Date().toISOString());
   }
 
-  // ── Retrieve Cached Data ───────────────────────────────────────────────
+  // ── Extended Cache: Facilities & Doctors (stale-while-revalidate) ──────
 
-  getCachedProfile(): Record<string, any> | null {
-    return safeGetItem<Record<string, any> | null>(STORAGE_KEYS.profile, null);
+  private facilityCache: any[] | null = null;
+  private facilityCacheTime = 0;
+  private doctorCache: any[] | null = null;
+  private doctorCacheTime = 0;
+  private static CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+  /** Cache nearby health facilities (non-sensitive, no encryption).
+   * Stores in memory + localStorage with timestamp for SWR. */
+  async cacheNearbyFacilities(city?: string): Promise<void> {
+    try {
+      const query = supabase
+        .from('health_facilities' as any)
+        .select('id, name, type, latitude, longitude, address, phone, is_verified, rating, image_url')
+        .eq('is_active', true)
+        .limit(100);
+
+      if (city) (query as any).eq('city', city);
+
+      const { data } = await query;
+      if (data && data.length > 0) {
+        this.facilityCache = data;
+        this.facilityCacheTime = Date.now();
+        safeSetItem('mz_offline_facilities', data);
+        safeSetItem('mz_offline_facilities_ts', String(Date.now()));
+      }
+    } catch (err) {
+      console.warn('[OfflineManager] Failed to cache facilities:', err);
+    }
   }
 
-  getCachedPrescriptions(): Record<string, any>[] | null {
-    return safeGetItem<Record<string, any>[] | null>(STORAGE_KEYS.prescriptions, null);
+  /** Get cached facilities — returns in-memory cache for instant access. */
+  getCachedFacilities(): any[] | null {
+    if (this.facilityCache) return this.facilityCache;
+    const cached = safeGetItem<any[] | null>('mz_offline_facilities', null);
+    if (cached) this.facilityCache = cached;
+    return cached;
+  }
+
+  /** Check if facility cache is stale (>5 min) and should be refreshed. */
+  isFacilityCacheStale(): boolean {
+    const ts = this.facilityCacheTime || parseInt(safeGetItem('mz_offline_facilities_ts', '0'), 10);
+    return Date.now() - ts > OfflineManager.CACHE_TTL;
+  }
+
+  /** Cache top doctors with stale-while-revalidate. */
+  async cacheTopDoctors(countryId?: string): Promise<void> {
+    try {
+      let query = supabase
+        .from('doctor_profiles' as any)
+        .select('id, user_id, rating, consultation_fee, is_available, medical_specialties(name, icon)')
+        .eq('is_available', true)
+        .order('rating', { ascending: false })
+        .limit(20);
+
+      if (countryId) (query as any).eq('country_id', countryId);
+
+      const { data } = await (query as any);
+      if (data && data.length > 0) {
+        this.doctorCache = data;
+        this.doctorCacheTime = Date.now();
+        safeSetItem('mz_offline_doctors', data);
+        safeSetItem('mz_offline_doctors_ts', String(Date.now()));
+      }
+    } catch (err) {
+      console.warn('[OfflineManager] Failed to cache doctors:', err);
+    }
+  }
+
+  /** Get cached doctors — returns in-memory cache for instant access. */
+  getCachedDoctors(): any[] | null {
+    if (this.doctorCache) return this.doctorCache;
+    const cached = safeGetItem<any[] | null>('mz_offline_doctors', null);
+    if (cached) this.doctorCache = cached;
+    return cached;
+  }
+
+  /** Check if doctor cache is stale. */
+  isDoctorCacheStale(): boolean {
+    const ts = this.doctorCacheTime || parseInt(safeGetItem('mz_offline_doctors_ts', '0'), 10);
+    return Date.now() - ts > OfflineManager.CACHE_TTL;
+  }
+
+  // ── Retrieve Cached Data (decrypts automatically) ──────────────────────
+
+  async getCachedProfile(): Promise<Record<string, any> | null> {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.profile);
+      if (!raw) return null;
+      return await decrypt<Record<string, any>>(raw);
+    } catch {
+      return null;
+    }
+  }
+
+  async getCachedPrescriptions(): Promise<Record<string, any>[] | null> {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.prescriptions);
+      if (!raw) return null;
+      return await decrypt<Record<string, any>[]>(raw);
+    } catch {
+      return null;
+    }
   }
 
   getCachedWalletBalance(): number | null {
@@ -308,7 +493,7 @@ class OfflineManager {
     });
     this.queue = [];
     this.persistQueue();
-    console.log('[OfflineManager] Cache cleared');
+    console.log('[OfflineManager] Cache cleared (including encrypted data)');
   }
 
   // ── Queue Info ─────────────────────────────────────────────────────────

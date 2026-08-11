@@ -2,50 +2,164 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CAPACITOR_DEBUG</key>
-	<string>$(CAPACITOR_DEBUG)</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>CFBundleDisplayName</key>
-        <string>medwalletmz</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
-	</array>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true/>
+    <!-- ========================================
+         IDENTIFICAÇÃO DA APP
+         ======================================== -->
+    <key>CFBundleDevelopmentRegion</key>
+    <string>pt</string>
+    <key>CFBundleDisplayName</key>
+    <string>MedWallet</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$(MARKETING_VERSION)</string>
+    <key>CFBundleVersion</key>
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+
+    <!-- ========================================
+         INTERFACE
+         ======================================== -->
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+    <key>UIMainStoryboardFile</key>
+    <string>Main</string>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <true/>
+    <key>UIStatusBarStyle</key>
+    <string>UIStatusBarStyleLightContent</string>
+
+    <!-- Orientações suportadas -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+    </array>
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+
+    <!-- ========================================
+         PERMISSÕES DE CÂMERA
+         Upload de receitas, exames, fotos de perfil
+         ======================================== -->
+    <key>NSCameraUsageDescription</key>
+    <string>MedWallet precisa da câmara para tirar fotos de receitas médicas, documentos de identificação e fotografias de perfil.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>MedWallet precisa do microfone para video-consultas com médicos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>MedWallet precisa de acesso à galeria para selecionar imagens de receitas, exames e documentos.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>MedWallet precisa de acesso para guardar imagens de receitas e documentos na sua galeria.</string>
+
+    <!-- ========================================
+         GEOLOCALIZAÇÃO
+         Farmácias próximas, rastreamento de entregas
+         ======================================== -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>MedWallet usa a sua localização para encontrar farmácias e clínicas próximas e para rastrear entregas em tempo real.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>MedWallet usa a sua localização em segundo plano para enviar lembretes de consultas e notificar sobre entregas próximas.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>MedWallet usa a sua localização em segundo plano para rastrear entregas ativas e enviar atualizações ao cliente.</string>
+
+    <!-- ========================================
+         NOTIFICAÇÕES PUSH
+         Lembretes de medicamentos, consultas, entregas
+         ======================================== -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>remote-notification</string>
+        <string>location</string>
+    </array>
+
+    <!-- ========================================
+         FACE ID / BIOMETRIA
+         Autenticação rápida e segura
+         ======================================== -->
+    <key>NSFaceIDUsageDescription</key>
+    <string>MedWallet usa Face ID para autenticação rápida e segura da sua conta.</string>
+
+    <!-- ========================================
+         APP TRANSPORT SECURITY
+         (HTTPS obrigatório, localhost para dev)
+         ======================================== -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>localhost</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSExceptionMinimumTLSVersion</key>
+                <string>TLSv1.2</string>
+            </dict>
+        </dict>
+    </dict>
+
+    <!-- ========================================
+         ASSOCIATED DOMAINS (Universal Links)
+         Para verificar, adicionar ao Apple Developer:
+         applinks:medwalletmz.online
+         ======================================== -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>medwallet</string>
+            </array>
+            <key>CFBundleURLName</key>
+            <string>mz.medwallet.app</string>
+        </dict>
+    </array>
+
+    <!-- ========================================
+         APP GROUPS (partilha de dados entre app e extensões)
+         ======================================== -->
+    <!-- Descomentar quando adicionar widget ou share extension -->
+    <!-- <key>CFBundleDevelopmentRegion</key> -->
+
+    <!-- ========================================
+         OUTRAS CONFIGURAÇÕES
+         ======================================== -->
+    <!-- Cor de fundo do status bar -->
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <true/>
+    <key>UIStatusBarTintParameters</key>
+    <dict>
+        <key>UINavigationBar</key>
+        <dict>
+            <key>Style</key>
+            <string>UIBarStyleBlack</string>
+            <key>Translucent</key>
+            <false/>
+        </dict>
+    </dict>
+
+    <!-- Fontes customizadas (opcional) -->
+    <key>UIAppFonts</key>
+    <array>
+        <string>Inter-Regular.ttf</string>
+        <string>Inter-Bold.ttf</string>
+        <string>Inter-Black.ttf</string>
+    </array>
+
 </dict>
 </plist>

@@ -6,6 +6,7 @@ import { offlineManager } from '@/services/offline/OfflineManager';
 // =============================================================================
 // Wraps OfflineManager singleton into reactive state.
 // Provides online/offline status, queue size, and sync trigger.
+// Note: getCachedProfile and getCachedPrescriptions are now async (encrypted).
 // =============================================================================
 
 interface OfflineModeState {
@@ -19,11 +20,11 @@ interface OfflineModeState {
   lastSyncTime: Date | null;
   /** Manually trigger queue processing */
   syncNow: () => Promise<{ success: number; failed: number }>;
-  /** Shorthand: get cached profile data */
-  getCachedProfile: () => Record<string, any> | null;
-  /** Shorthand: get cached prescriptions */
-  getCachedPrescriptions: () => Record<string, any>[] | null;
-  /** Shorthand: get cached wallet balance */
+  /** Shorthand: get cached profile data (async — encrypted) */
+  getCachedProfile: () => Promise<Record<string, any> | null>;
+  /** Shorthand: get cached prescriptions (async — encrypted) */
+  getCachedPrescriptions: () => Promise<Record<string, any>[] | null>;
+  /** Shorthand: get cached wallet balance (sync — non-sensitive) */
   getCachedWalletBalance: () => number | null;
 }
 
@@ -75,12 +76,13 @@ export function useOfflineMode(): OfflineModeState {
     }
   }, [isSyncing]);
 
-  const getCachedProfile = useCallback(() => {
-    return offlineManager.getCachedProfile();
+  // These are now async because sensitive data is encrypted at rest
+  const getCachedProfile = useCallback(async () => {
+    return await offlineManager.getCachedProfile();
   }, []);
 
-  const getCachedPrescriptions = useCallback(() => {
-    return offlineManager.getCachedPrescriptions();
+  const getCachedPrescriptions = useCallback(async () => {
+    return await offlineManager.getCachedPrescriptions();
   }, []);
 
   const getCachedWalletBalance = useCallback(() => {

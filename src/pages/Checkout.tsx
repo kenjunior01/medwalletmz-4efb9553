@@ -265,16 +265,19 @@ export default function Checkout() {
 
       const isInstant = paymentMethod === 'wallet' || paymentMethod === 'apple_pay' || paymentMethod === 'google_pay';
 
-      // Debit wallet if the user chose it
+      // Debit wallet atomically if the user chose it
+      // Uses checkout_debit_order for atomic debit + order status update
       if (paymentMethod === 'wallet') {
-        const { error: walletErr } = await supabase.rpc('wallet_debit', {
+        const { data: debitResult, error: walletErr } = await (supabase as any).rpc('checkout_debit_order', {
           _user_id: user.id,
+          _order_id: order.id,
           _amount: total,
-          _service_type: 'pharmacy_order',
-          _ref_id: order.id,
-          _description: `Pedido farmácia #${String(order.id).slice(0, 8)}`,
+          _description: `Pedido farmacia #${String(order.id).slice(0, 8)}`,
         });
         if (walletErr) throw walletErr;
+        if (debitResult && !debitResult.success) {
+          throw new Error(debitResult.error_message || 'Falha no pagamento da carteira');
+        }
       }
 
       // Create payment record

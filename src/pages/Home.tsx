@@ -4,7 +4,6 @@ import {
   Plus, Calendar, ShieldCheck, Building2,
   BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse
 } from '@/components/icons/lucide-compat';
-import { EnableNotificationsBanner } from "@/components/notifications/EnableNotificationsBanner";
 import { FreeTrialBanner } from "@/components/monetization/FreeTrialBanner";
 import { FollowUpReminders } from "@/components/health/FollowUpReminders";
 import { NearbyProvidersWidget } from "@/components/home/NearbyProvidersWidget";
@@ -24,6 +23,9 @@ import { EmergencySOS } from "@/components/health/EmergencySOS";
 import { RoleHero } from "@/components/home/RoleHero";
 import { UserTypeHero } from "@/components/home/UserTypeHero";
 import { RoleBasedHome } from "@/components/home/RoleBasedHome";
+// Heavy imports removed from Home for mobile performance:
+// - EnableNotificationsBanner (rendered elsewhere), MagneticWrapper, ShimmerCard,
+//   GradientText, PulseRing, FloatingParticles, NumberTicker (all from premium/)
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserRoles } from "@/hooks/useUserRole";
@@ -34,10 +36,8 @@ import { useWallet } from "@/hooks/useWallet";
 import { useCountry } from "@/contexts/CountryContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FloatingParticles, NumberTicker, GradientText, MagneticWrapper, PulseRing, ShimmerCard } from "@/components/ui/premium";
 import { Skeleton } from "@/components/ui/skeleton";
-import { motion, AnimatePresence } from "framer-motion";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -108,7 +108,9 @@ export default function Home() {
   const [isListening, setIsListening] = useState(false);
   const [activeTab, setActiveTab] = useState<'today' | 'discover'>(user ? 'today' : 'discover');
 
-  const startVoiceSearch = () => {
+  // Lazy voice search — only instantiates SpeechRecognition API on user tap
+  const startVoiceSearch = useCallback(() => {
+    // Dynamic import of SpeechRecognition API (not available on all browsers)
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       toast.error(t('home.voice_not_supported'));
@@ -123,6 +125,8 @@ export default function Home() {
 
     const recognition = new SpeechRecognition();
     recognition.lang = country?.id === 'MZ' ? 'pt-MZ' : country?.id === 'BR' ? 'pt-BR' : 'pt-PT';
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
@@ -140,7 +144,7 @@ export default function Home() {
     };
 
     recognition.start();
-  };
+  }, [country?.id, navigate, t]);
 
   return (
     <>
@@ -162,7 +166,7 @@ export default function Home() {
           <MeddyChat />
         </div>
       ) : (
-        <div className="animate-fade-in space-y-6">
+        <div className="animate-fade-in space-y-6 stagger-children">
         {/* ============ USER TYPE HERO (personalizado por tipo) ============ */}
         <UserTypeHero />
 
@@ -172,14 +176,14 @@ export default function Home() {
         ) : (
           <section className="relative px-4 pt-3">
             <div
-              className="relative rounded-[2.5rem] overflow-hidden gradient-ocean p-7 text-white shadow-premium min-h-[220px] flex flex-col justify-center"
+              className="relative rounded-[2rem] overflow-hidden gradient-ocean p-7 text-white min-h-[220px] flex flex-col justify-center"
               style={country?.branding_config?.home_banner_url ? {
                 backgroundImage: `linear-gradient(to bottom right, rgba(0,0,0,0.6), rgba(0,0,0,0.3)), url(${country.branding_config.home_banner_url})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
               } : {}}
             >
-              <FloatingParticles count={12} className="opacity-50" />
+              {/* FloatingParticles removed — was 12 animated framer-motion elements on every home load */}
               <div className="relative z-10">
                 <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.25em] opacity-80 mb-2">
                   <Sparkles className="h-3.5 w-3.5" /> {greet()}{user ? `, ${profileLoading ? <Skeleton className="inline-block h-4 w-20 bg-white/20" /> : firstName}` : ''}
@@ -213,7 +217,7 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
-              <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/20 rounded-full blur-[80px] -mr-10 -mt-10" />
+              {/* Decorative glow blob removed — blur(80px) is GPU-heavy on mobile */}
             </div>
           </section>
         )}
@@ -222,8 +226,7 @@ export default function Home() {
         {user && !isProvider && !isAdmin && <MeddyWelcomeCard />}
 
         {/* ============ ENABLE NOTIFICATIONS BANNER (outside tabs) ============ */}
-        <EnableNotificationsBanner />
-
+        
         {/* Onboarding leve para visitantes/pacientes: mostrar como registar como profissional */}
         {!isProvider && !isAdmin && <VisitorProOnboarding />}
 
@@ -273,56 +276,49 @@ export default function Home() {
         </div>
 
         {/* ============ TAB CONTENT ============ */}
-        <AnimatePresence mode="wait">
+        {/* AnimatePresence removed — CSS page transitions handle this */ }
           {activeTab === 'today' ? (
-            <motion.div
-              key="today"
-              role="tabpanel"
-              id="today-panel"
-              aria-labelledby="today-tab"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-6"
-            >
+            <div
+            role="tabpanel"
+            id="today-panel"
+            aria-labelledby="today-tab"
+            className="space-y-6"
+          >
               {/* WALLET & UPCOMING CONSULTATION */}
               <section className="px-4 grid grid-cols-2 gap-4">
                 {user ? (
                   walletLoading ? (
-                    <ShimmerCard className="h-40 bg-gradient-to-br from-primary/20 to-primary/5" lines={2} />
+                    <div className="h-40 rounded-2xl bg-muted animate-pulse" />
                   ) : (
-                    <motion.button
-                      whileTap={{ scale: 0.98 }}
+                    <button
                       onClick={() => navigate('/wallet')}
                       aria-label={`${t('home.wallet_card')} - ${wallet?.balance ?? 0} ${country?.currency_code || 'MZN'}`}
-                      className="bento-card p-5 bg-gradient-to-br from-primary to-primary/80 text-white flex flex-col justify-between h-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                      className="bento-card p-5 bg-gradient-to-br from-primary to-primary/80 text-white flex flex-col justify-between h-40 active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                     >
                       <div>
                         <p className="text-[10px] uppercase font-bold tracking-widest opacity-70">{t('home.wallet_card')}</p>
                         <div className="flex items-baseline gap-1 mt-1">
-                          <NumberTicker value={Number(wallet?.balance ?? 0)} className="text-3xl font-black" prefix="" suffix="" />
+                          <span className="text-3xl font-black tabular-nums">{Number(wallet?.balance ?? 0).toLocaleString()}</span>
                           <span className="text-xs font-bold opacity-80">{country?.currency_code || 'MZN'}</span>
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] opacity-60">{t('wallet.secure_instant')}</span>
                         <div className="relative">
-                          <PulseRing color="rgba(255,255,255,0.6)" />
+                          {/* PulseRing removed */ }
                           <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur">
                             <Plus className="h-4 w-4" />
                           </div>
                         </div>
                       </div>
-                    </motion.button>
+                    </button>
                   )
                 ) : null}
 
                 {upcomingLoading && user ? (
-                  <ShimmerCard className="h-40" lines={2} />
+                  <div className="h-40 rounded-2xl bg-muted animate-pulse" />
                 ) : (
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
+                  <button
                     onClick={() => navigate(upcoming ? `/health/consultation/${upcoming.id}` : '/health/doctors')}
                     aria-label={upcoming ? t('health.upcoming_consultation') : t('health.new_consultation')}
                     className={cn(
@@ -353,7 +349,7 @@ export default function Home() {
                     <div className={cn('h-8 w-8 rounded-full flex items-center justify-center shadow-sm', upcoming ? 'bg-secondary text-white' : 'bg-white text-muted-foreground border')}>
                       <Calendar className="h-4 w-4" />
                     </div>
-                  </motion.button>
+                  </button>
                 )}
               </section>
 
@@ -362,23 +358,23 @@ export default function Home() {
                 <button
                   onClick={() => navigate('/health/triage')}
                   aria-label={`${t('health.urgent')} - ${t('health.meddy_now')}`}
-                  className="w-full bg-primary text-white p-6 rounded-[2rem] shadow-premium relative overflow-hidden text-left group active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
+                  className="w-full bg-primary text-white p-6 rounded-[2rem] shadow-md relative overflow-hidden text-left group active:scale-95 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
                 >
                   <div className="relative z-10 flex items-center justify-between">
                     <div className="max-w-[70%]">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge className="bg-secondary text-white border-0 font-bold uppercase tracking-widest text-[9px]">{t('health.urgent')}</Badge>
-                        <h2 className="text-2xl font-black"><GradientText>{t('health.meddy_now')}</GradientText></h2>
+                        <h2 className="text-2xl font-black"><span className="text-gradient-premium">{t('health.meddy_now')}</span></h2>
                       </div>
                       <p className="text-white/80 text-xs font-bold leading-relaxed">
                         {t('health.meddy_now_desc')}
                       </p>
                     </div>
-                    <div className="h-14 w-14 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:bg-white/20 transition-colors">
+                    <div className="h-14 w-14 rounded-full bg-white/15 flex items-center justify-center border border-white/20 transition-colors">
                       <ShieldCheck className="h-7 w-7 text-secondary" aria-hidden="true" />
                     </div>
                   </div>
-                  <div className="absolute -right-10 -bottom-10 h-40 w-40 bg-secondary/10 rounded-full blur-3xl" />
+                  <div className="absolute -right-10 -bottom-10 h-40 w-40 bg-secondary/10 rounded-full blur-none opacity-30" />
                 </button>
               </section>
 
@@ -387,19 +383,14 @@ export default function Home() {
               <PillTracker />
 
               <FollowUpReminders />
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
-              key="discover"
-              role="tabpanel"
-              id="discover-panel"
-              aria-labelledby="discover-tab"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-6"
-            >
+            <div
+            role="tabpanel"
+            id="discover-panel"
+            aria-labelledby="discover-tab"
+            className="space-y-6"
+          >
               {/* QUICK PILLARS (The 5 Main Actions) */}
               <section className="px-4">
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
@@ -416,14 +407,14 @@ export default function Home() {
                       aria-label={c.label}
                       className="group flex flex-col items-center gap-2 no-tap-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl"
                     >
-                      <MagneticWrapper>
+                      
                         <div className={cn(
                           'h-14 w-full min-h-[44px] rounded-2xl flex flex-col items-center justify-center transition-all group-hover:scale-105 active:scale-95 shadow-sm border-2',
                           c.bgClass
                         )}>
                           <c.icon className={cn('h-6 w-6', c.textClass)} aria-hidden="true" />
                         </div>
-                      </MagneticWrapper>
+                      
                       <span className="text-[11px] font-black text-center leading-tight text-foreground/80">{c.label}</span>
                     </button>
                   ))}
@@ -442,7 +433,7 @@ export default function Home() {
                 <div className="bento-card p-5 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent border-amber-500/20 relative overflow-hidden">
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
                   <div className="relative flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0 shadow-glow">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0 ">
                       <Crown className="h-6 w-6 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -545,7 +536,8 @@ export default function Home() {
                       )}
                     </div>
                   </div>
-                  <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-secondary/10 rounded-full blur-[100px]" />
+                  {/* Decorative gradient blob — hidden on touch devices to avoid GPU compositing */}
+                  <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] hidden [@media(hover:hover)]:block" />
                 </div>
               </section>
 
@@ -557,7 +549,7 @@ export default function Home() {
                   className="w-full bento-card p-5 text-left bg-gold/5 border-gold/20 relative overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
                 >
                   <div className="relative flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-gold flex items-center justify-center shrink-0 shadow-glow">
+                    <div className="h-12 w-12 rounded-2xl bg-gold flex items-center justify-center shrink-0 ">
                       <MapPinPlus className="h-6 w-6 text-gold-foreground" />
                     </div>
                     <div className="flex-1">
@@ -571,9 +563,9 @@ export default function Home() {
                   </div>
                 </button>
               </section>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        
         <MeddyChat />
       </div>
       )}

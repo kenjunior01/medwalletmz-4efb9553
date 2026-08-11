@@ -1,13 +1,10 @@
 import { useMemo, useEffect, useState, useCallback } from "react";
-import { MapPin, ChevronDown, Globe, Languages } from "@/components/icons/lucide-compat";
-import { MedWalletLogo } from "@/components/brand";
+import { MapPin, ChevronDown, Globe, Languages, Bell } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation as useAppLocation } from "@/contexts/LocationContext";
 import { useCountry, getCountriesByRegion } from "@/contexts/CountryContext";
-import { useNavigate } from "react-router-dom";
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,13 +14,11 @@ import {
 import { NotificationsPanel } from "@/components/notifications/NotificationsPanel";
 import { cn } from "@/lib/utils";
 
-function getGreeting(): { text: string; emoji: string; gradient: string; css: string } {
+function getGreeting(): { text: string; emoji: string } {
   const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12)
-    return { text: "Bom dia", emoji: "\u2600\ufe0f", gradient: "from-amber-400 to-orange-500", css: "linear-gradient(90deg,#fbbf24,#f97316)" };
-  if (hour >= 12 && hour < 18)
-    return { text: "Boa tarde", emoji: "\ud83c\udf24\ufe0f", gradient: "from-orange-400 to-rose-500", css: "linear-gradient(90deg,#fb923c,#f43f5e)" };
-  return { text: "Boa noite", emoji: "\ud83c\udf19", gradient: "from-indigo-500 to-purple-600", css: "linear-gradient(90deg,#6366f1,#9333ea)" };
+  if (hour >= 5 && hour < 12) return { text: "Bom dia", emoji: "\u2600\ufe0f" };
+  if (hour >= 12 && hour < 18) return { text: "Boa tarde", emoji: "\ud83c\udf24\ufe0f" };
+  return { text: "Boa noite", emoji: "\ud83c\udf19" };
 }
 
 export function Header() {
@@ -31,18 +26,26 @@ export function Header() {
   const { country, allCountries, setCountryById, locale, setLocale, t } = useCountry();
   const greeting = useMemo(() => getGreeting(), []);
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [localeKey, setLocaleKey] = useState(0);
 
-  const { scrollY } = useScroll();
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    setIsScrolled(latest > 20);
-  });
+  // Lightweight scroll detection — no framer-motion
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 10);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleLocaleChange = useCallback((l: string) => {
     setLocale(l);
-    setLocaleKey((k) => k + 1);
   }, [setLocale]);
 
   const cities = useMemo(() => {
@@ -66,28 +69,22 @@ export function Header() {
   }, [cities, selectedCity, setSelectedCity]);
 
   return (
-    <motion.header
+    <header
       className={cn(
-        "sticky top-0 z-40 glass-header mw-glass border-b border-border/50 safe-area-top relative overflow-hidden transition-all duration-300",
-        isScrolled && "border-border/80"
+        "sticky top-0 z-40 border-b border-border/50 safe-area-top",
+        isScrolled
+          ? "bg-background shadow-sm"
+          : "bg-background"
       )}
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <div className="mw-header-mesh" />
-      <motion.div
-        className="absolute inset-0 bg-background/0 pointer-events-none"
-        animate={{ backgroundColor: isScrolled ? "hsl(var(--background) / 0.85)" : "hsl(var(--background) / 0)" }}
-        transition={{ duration: 0.3 }}
-      />
-      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 max-w-7xl mx-auto relative z-10">
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 max-w-7xl mx-auto">
+        {/* Location selector */}
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1.5 hover:bg-primary/10 rounded-xl transition-all min-w-0">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <MapPin className="h-4 w-4 text-primary" />
+              <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1.5 hover:bg-muted rounded-xl transition-colors min-w-0">
+                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <MapPin className="h-3.5 w-3.5 text-primary" />
                 </div>
                 <div className="flex flex-col items-start min-w-0">
                   <span className="text-[10px] text-muted-foreground font-medium leading-tight truncate">{t("header.deliver_at")}</span>
@@ -96,38 +93,37 @@ export function Header() {
                 <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-52 mw-glass rounded-xl p-1">
+            <DropdownMenuContent align="start" className="w-52 rounded-xl p-1">
               {cities.map((city) => (
-                <DropdownMenuItem key={city} onClick={() => setSelectedCity(city)} className={`rounded-lg py-2.5 px-3 cursor-pointer transition-all ${city === selectedCity ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>
+                <DropdownMenuItem key={city} onClick={() => setSelectedCity(city)} className={`rounded-lg py-2.5 px-3 cursor-pointer ${city === selectedCity ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>
                   <MapPin className="h-4 w-4 mr-2" />{city}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 flex-col items-center pointer-events-none">
-          <span className="text-[10px] font-semibold flex items-center gap-1 leading-none" style={{ background: greeting.css, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+
+        {/* Center — greeting (desktop only) */}
+        <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-2 pointer-events-none">
+          <span className="text-xs text-muted-foreground font-semibold">
             {greeting.emoji} {t(`header.greetings.${greeting.text.toLowerCase().replace(" ", "_")}`)}
           </span>
-          <div className="mw-logo-breathe">
-            <MedWalletLogo size={120} variant="compact" animated showText={false} className="h-8" />
-          </div>
         </div>
-        <span className="md:hidden text-xs bg-primary/10 px-2 py-0.5 rounded-full">
+
+        {/* Mobile greeting pill */}
+        <span className="md:hidden text-xs bg-primary/5 px-2.5 py-0.5 rounded-full text-muted-foreground">
           {greeting.emoji} {greeting.text.split(",")[0]}
         </span>
+
+        {/* Right actions */}
         <div className="flex items-center gap-0.5 shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label={t("header.select_language")} className="h-9 w-9 rounded-xl hover:bg-primary/10 no-tap-target" data-size="icon">
-                <AnimatePresence mode="wait">
-                  <motion.div key={localeKey} initial={{ rotateY: -90, opacity: 0 }} animate={{ rotateY: 0, opacity: 1 }} exit={{ rotateY: 90, opacity: 0 }} transition={{ duration: 0.3 }}>
-                    <Languages className="h-4 w-4 text-muted-foreground" />
-                  </motion.div>
-                </AnimatePresence>
+              <Button variant="ghost" size="icon" aria-label={t("header.select_language")} className="h-9 w-9 rounded-xl hover:bg-muted no-tap-target" data-size="icon">
+                <Languages className="h-4 w-4 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44 mw-glass rounded-xl p-1">
+            <DropdownMenuContent align="end" className="w-44 rounded-xl p-1">
               {country && country.supported_locales.length > 1 && (
                 <div className="pb-1 mb-1 border-b border-border/50">
                   <p className="text-[10px] font-bold uppercase text-muted-foreground px-2 pt-1 tracking-wider">Idioma</p>
@@ -160,7 +156,6 @@ export function Header() {
           <NotificationsPanel />
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] mw-shimmer-line" style={{ boxShadow: isScrolled ? '0 0 8px var(--region-logo-primary, #0D9488), 0 0 16px var(--region-logo-secondary, #6366F1)' : 'none', transition: 'box-shadow 0.3s ease' }} />
-    </motion.header>
+    </header>
   );
 }

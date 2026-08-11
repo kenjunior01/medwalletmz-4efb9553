@@ -13,15 +13,14 @@ import {
   User, Stethoscope, Store, Building2, FlaskConical, Truck,
   ChevronRight, CheckCircle2, ShieldCheck, Sparkles, Heart,
   Info, Loader2, MapPin, Phone, Mail, FileText, Camera, Database,
-  Bike, Car, PawPrint
+  Bike, Car, PawPrint, ImageIcon
 } from "@/components/icons/lucide-compat";
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LicenseUpload } from '@/components/upload/LicenseUpload';
-import { LogoUpload } from '@/components/upload/LogoUpload';
+import { LicenseUpload, LogoUpload, VehiclePhotoUpload } from '@/components/upload';
 
 type Role = 'customer' | 'doctor' | 'store_owner' | 'clinic' | 'laboratory' | 'driver' | 'insurance' | 'veterinary';
 
@@ -213,6 +212,12 @@ export default function RegistrationWizard() {
     vehicleYear: '',
     licenseCartaUrl: '',
     licenseViaturaUrl: '',
+
+    // Vehicle photos
+    vehiclePhotoFront: null as string | null,
+    vehiclePhotoSide: null as string | null,
+    vehiclePhotoBack: null as string | null,
+    vehiclePhotoInterior: null as string | null,
   });
 
   useEffect(() => {
@@ -401,6 +406,7 @@ export default function RegistrationWizard() {
         navigate('/insurance/dashboard');
       }
       else if (selectedRole === 'driver') {
+        // 1. Atualizar perfil basico
         const { error: pErr } = await supabase.from('profiles').upsert({
           user_id: user.id,
           vehicle_type: formData.vehicleType,
@@ -418,6 +424,24 @@ export default function RegistrationWizard() {
           avatar_url: formData.avatarUrl || user.user_metadata?.avatar_url || null,
         }, { onConflict: 'user_id' });
         if (pErr) throw pErr;
+
+        // 2. Registar veiculo na tabela driver_vehicles (funcao atomica)
+        const { data: vehicleId, error: vErr } = await supabase.rpc('register_driver_vehicle', {
+          p_driver_id: user.id,
+          p_vehicle_type: formData.vehicleType,
+          p_brand: formData.vehicleBrand,
+          p_model: formData.vehicleModel,
+          p_color: formData.vehicleColor,
+          p_year: formData.vehicleYear ? parseInt(formData.vehicleYear) : null,
+          p_license_plate: formData.licensePlate || null,
+          p_photo_front: formData.vehiclePhotoFront,
+          p_photo_side: formData.vehiclePhotoSide,
+          p_photo_back: formData.vehiclePhotoBack,
+          p_license_carta_url: formData.licenseCartaUrl || null,
+          p_license_viatura_url: formData.licenseViaturaUrl || null,
+        });
+        if (vErr) console.warn('Vehicle table error (non-blocking):', vErr);
+
         await supabase.from('user_roles').upsert({ user_id: user.id, role: 'driver', country_id: country?.id || 'MZ' }, { onConflict: 'user_id,role,country_id' });
         await refreshRoles();
         navigate('/driver/dashboard');
@@ -993,12 +1017,67 @@ export default function RegistrationWizard() {
             )}
 
             <Button className="w-full h-16 rounded-[2rem] font-black text-lg shadow-premium mt-8" onClick={nextStep}>
-              {selectedRole === 'driver' ? 'Documentos do Condutor' : 'Continuar para Documentos'} <ChevronRight className="ml-2 h-5 w-5" />
+              {selectedRole === 'driver' ? 'Fotos do Veiculo' : 'Continuar para Documentos'} <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         );
 
-      case 5: // Verification
+      case 5: // Vehicle Photos (only for drivers)
+        return (
+          <div className="space-y-6 animate-in slide-in-from-right duration-500">
+            <div className="bg-primary/5 p-6 rounded-3xl border border-primary/10 flex items-center gap-4 mb-8">
+              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                <ImageIcon className="h-7 w-7 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-xl font-black">Fotos do Veiculo</h2>
+                <p className="text-xs text-muted-foreground uppercase font-black tracking-widest">
+                  Frente e traseira obrigatórias para {formData.vehicleType === 'bicycle' ? 'bicicleta' : formData.vehicleType === 'motorcycle' ? 'mota' : 'carro'}
+                </p>
+              </div>
+            </div>
+
+            {formData.vehicleType === 'bicycle' ? (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex gap-3">
+                <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-bold text-blue-800">Bicicletas não necessitam de fotos do veículo</p>
+                  <p className="text-[10px] text-blue-700/70 mt-0.5">Pode avançar directamente para os documentos.</p>
+                </div>
+              </div>
+            ) : (
+              <VehiclePhotoUpload
+                driverId={user?.id}
+                photos={{
+                  front: formData.vehiclePhotoFront,
+                  side: formData.vehiclePhotoSide,
+                  back: formData.vehiclePhotoBack,
+                  interior: formData.vehiclePhotoInterior,
+                }}
+                onChange={(p) => {
+                  handleInputChange('vehiclePhotoFront', p.front);
+                  handleInputChange('vehiclePhotoSide', p.side);
+                  handleInputChange('vehiclePhotoBack', p.back);
+                  handleInputChange('vehiclePhotoInterior', p.interior);
+                }}
+                required={formData.vehicleType !== 'bicycle' ? ['front', 'back'] : []}
+              />
+            )}
+
+            <Button
+              className="w-full h-16 rounded-[2rem] font-black text-lg shadow-premium mt-8"
+              onClick={nextStep}
+              disabled={
+                formData.vehicleType !== 'bicycle' &&
+                (!formData.vehiclePhotoFront || !formData.vehiclePhotoBack)
+              }
+            >
+              Documentos do Condutor <ChevronRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        );
+
+      case 6: // Verification
         return (
           <div className="space-y-6 animate-in slide-in-from-right duration-500">
             <ShadcnCard className="p-6 border-2 border-primary/20 bg-primary/5 rounded-[2rem]">
@@ -1096,7 +1175,7 @@ export default function RegistrationWizard() {
       title={selectedRole ? `Registo de ${roleOptions.find(r => r.id === selectedRole)?.title}` : "Bem-vindo ao MedWallet"}
       subtitle={selectedRole ? "Complete o seu perfil profissional" : "Escolha como deseja usar a plataforma"}
       step={step}
-      totalSteps={selectedRole === 'customer' ? 1 : 5}
+      totalSteps={selectedRole === 'customer' ? 1 : (selectedRole === 'driver' ? 6 : 5)}
       onBack={() => step > 1 ? setStep(step - 1) : navigate(-1)}
       countryName={country?.name}
     >

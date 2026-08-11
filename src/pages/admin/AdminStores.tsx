@@ -68,7 +68,9 @@ export default function AdminStores() {
 
   const createMutation = useMutation({
     mutationFn: async (data: StoreFormData) => {
-      const { error } = await supabase.from('stores').insert(data);
+      // SECURITY: Always scope insert to managed country
+      const payload = { ...data, country_id: managedCountryId };
+      const { error } = await supabase.from('stores').insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -84,8 +86,14 @@ export default function AdminStores() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: StoreFormData }) => {
-      const { error } = await supabase.from('stores').update(data).eq('id', id);
+      let q = supabase.from('stores').update(data).eq('id', id);
+      // Scope: non-admin managers can only update stores in their country
+      if (!isGlobalAdmin && managedCountryId) {
+        q = q.eq('country_id', managedCountryId);
+      }
+      const { error, count } = await q;
       if (error) throw error;
+      if (count === 0) throw new Error('Loja não encontrada ou fora do seu escopo.');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-stores'] });
@@ -101,7 +109,12 @@ export default function AdminStores() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('stores').delete().eq('id', id);
+      let q = supabase.from('stores').delete().eq('id', id);
+      // SECURITY: Non-admin managers can only delete stores in their country
+      if (!isGlobalAdmin && managedCountryId) {
+        q = q.eq('country_id', managedCountryId);
+      }
+      const { error } = await q;
       if (error) throw error;
     },
     onSuccess: () => {

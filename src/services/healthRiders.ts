@@ -255,7 +255,7 @@ export async function updateDeliveryStatus(deliveryId: string, status: DeliveryS
     .eq('id', deliveryId);
   if (error) throw new Error(error.message);
 
-  // If delivered, update rider stats
+  // If delivered, update rider stats using atomic SQL to prevent race conditions
   if (status === 'delivered') {
     const { data: delivery } = await supabase
       .from('health_deliveries')
@@ -263,17 +263,27 @@ export async function updateDeliveryStatus(deliveryId: string, status: DeliveryS
       .eq('id', deliveryId)
       .maybeSingle();
     if (delivery?.rider_id) {
-      const { data: rider } = await supabase
-        .from('health_riders')
-        .select('total_deliveries, total_earnings_mzn, total_distance_km')
-        .eq('id', delivery.rider_id)
-        .maybeSingle();
-      if (rider) {
-        await supabase.from('health_riders').update({
-          total_deliveries: (rider.total_deliveries ?? 0) + 1,
-          total_earnings_mzn: (rider.total_earnings_mzn ?? 0) + (delivery.rider_earnings ?? 0),
-          total_distance_km: (rider.total_distance_km ?? 0) + (delivery.estimated_distance_km ?? 0),
-        }).eq('id', delivery.rider_id);
+      // Use atomic increment via RPC to avoid read-modify-write race conditions
+      const { error: rpcError } = await supabase.rpc('increment_rider_stats', {
+        _rider_id: delivery.rider_id,
+        _earnings: delivery.rider_earnings ?? 0,
+        _distance: delivery.estimated_distance_km ?? 0,
+      });
+      // Fallback to direct update if RPC doesn't exist yet
+      if (rpcError) {
+        console.warn('increment_rider_stats RPC not found, using direct update (may have race condition)');
+        const { data: rider } = await supabase
+          .from('health_riders')
+          .select('total_deliveries, total_earnings_mzn, total_distance_km')
+          .eq('id', delivery.rider_id)
+          .maybeSingle();
+        if (rider) {
+          await supabase.from('health_riders').update({
+            total_deliveries: (rider.total_deliveries ?? 0) + 1,
+            total_earnings_mzn: (rider.total_earnings_mzn ?? 0) + (delivery.rider_earnings ?? 0),
+            total_distance_km: (rider.total_distance_km ?? 0) + (delivery.estimated_distance_km ?? 0),
+          }).eq('id', delivery.rider_id);
+        }
       }
     }
   }
@@ -362,7 +372,7 @@ export function computeDeliveryFee(distanceKm: number, packageType: PackageType,
   const perKm = 15; // MZN per km
   const coldChainSurcharge = PACKAGE_LABELS[packageType].cold ? 30 : 0;
   const fee = baseFee + (distanceKm * perKm) + coldChainSurcharge;
-  const riderShare = 0.7; // 70% to rider, 30% to platform
+  const riderShare = 0.8; // 80% to rider, 20% to platform (standardized across codebase)
   return {
     fee: Math.round(fee),
     rider_earnings: Math.round(fee * riderShare),

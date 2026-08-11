@@ -3449,6 +3449,7 @@ export type Database = {
           country_id: string | null
           created_at: string
           default_city: string | null
+          driver_selfie_url: string | null
           emola_number: string | null
           full_name: string | null
           health_certified: boolean
@@ -3466,7 +3467,12 @@ export type Database = {
           referred_by: string | null
           updated_at: string
           user_id: string
+          vehicle_brand: string | null
+          vehicle_color: string | null
+          vehicle_model: string | null
+          vehicle_photo_urls: string[] | null
           vehicle_type: string | null
+          vehicle_year: number | null
           verified_at: string | null
         }
         Insert: {
@@ -3474,6 +3480,7 @@ export type Database = {
           country_id?: string | null
           created_at?: string
           default_city?: string | null
+          driver_selfie_url?: string | null
           emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
@@ -3491,7 +3498,12 @@ export type Database = {
           referred_by?: string | null
           updated_at?: string
           user_id: string
+          vehicle_brand?: string | null
+          vehicle_color?: string | null
+          vehicle_model?: string | null
+          vehicle_photo_urls?: string[] | null
           vehicle_type?: string | null
+          vehicle_year?: number | null
           verified_at?: string | null
         }
         Update: {
@@ -3499,6 +3511,7 @@ export type Database = {
           country_id?: string | null
           created_at?: string
           default_city?: string | null
+          driver_selfie_url?: string | null
           emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
@@ -3516,8 +3529,88 @@ export type Database = {
           referred_by?: string | null
           updated_at?: string
           user_id?: string
+          vehicle_brand?: string | null
+          vehicle_color?: string | null
+          vehicle_model?: string | null
+          vehicle_photo_urls?: string[] | null
           vehicle_type?: string | null
+          vehicle_year?: number | null
           verified_at?: string | null
+        }
+        Relationships: []
+      }
+      driver_vehicles: {
+        Row: {
+          brand: string
+          color: string | null
+          created_at: string
+          driver_id: string
+          id: string
+          inspection_url: string | null
+          insurance_url: string | null
+          is_primary: boolean
+          is_verified: boolean
+          license_carta_url: string | null
+          license_plate: string | null
+          license_viatura_url: string | null
+          model: string
+          photo_back: string | null
+          photo_front: string | null
+          photo_interior: string | null
+          photo_side: string | null
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+          vehicle_type: string
+          year: number | null
+        }
+        Insert: {
+          brand: string
+          color?: string | null
+          created_at?: string
+          driver_id: string
+          id?: string
+          inspection_url?: string | null
+          insurance_url?: string | null
+          is_primary?: boolean
+          is_verified?: boolean
+          license_carta_url?: string | null
+          license_plate?: string | null
+          license_viatura_url?: string | null
+          model: string
+          photo_back?: string | null
+          photo_front?: string | null
+          photo_interior?: string | null
+          photo_side?: string | null
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          vehicle_type: string
+          year?: number | null
+        }
+        Update: {
+          brand?: string
+          color?: string | null
+          created_at?: string
+          driver_id?: string
+          id?: string
+          inspection_url?: string | null
+          insurance_url?: string | null
+          is_primary?: boolean
+          is_verified?: boolean
+          license_carta_url?: string | null
+          license_plate?: string | null
+          license_viatura_url?: string | null
+          model?: string
+          photo_back?: string | null
+          photo_front?: string | null
+          photo_interior?: string | null
+          photo_side?: string | null
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          vehicle_type?: string
+          year?: number | null
         }
         Relationships: []
       }

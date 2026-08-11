@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  FileProvider Paths — MedWallet
+  Usado pelo plugin Camera e Filesystem para partilhar ficheiros
+  entre a app e outras apps (camera nativa, WhatsApp, email)
+-->
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-path name="my_images" path="." />
-    <cache-path name="my_cache_images" path="." />
+    <!-- Fotos tiradas pela camera -->
+    <external-path name="medwallet_photos" path="Pictures/MedWallet" />
+    <!-- Ficheiros internos (cache) -->
+    <cache-path name="medwallet_cache" path="." />
+    <!-- Ficheiros temporários -->
+    <files-path name="medwallet_files" path="." />
+    <!-- Ficheiros externos (downloads de receitas, etc) -->
+    <external-files-path name="medwallet_downloads" path="Download/MedWallet" />
 </paths>

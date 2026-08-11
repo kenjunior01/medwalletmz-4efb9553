@@ -249,7 +249,19 @@ const queryClient = new QueryClient({
 });
 
 // Initializing the app
-const App = () => (
+// useAppLifecycle handles: back button, network monitoring, app foreground/background
+import { useAppLifecycle } from './hooks/useAppLifecycle';
+
+const App = () => {
+  useAppLifecycle({
+    onForeground: () => {
+      // Refresh data when app comes back to foreground
+      // React Query handles cache invalidation automatically
+      console.log('[MedWallet] App foreground');
+    },
+  });
+
+  return (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <LocationProvider>
@@ -569,7 +581,8 @@ const App = () => (
       </CountryProvider>
     </LocationProvider>
   </AuthProvider>
-</QueryClientProvider>
+  </QueryClientProvider>
 );
+};
 
 export default App;

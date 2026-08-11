@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { useCountry } from '@/contexts/CountryContext';
 import { notificationService } from '@/services/notifications';
 import { NotificationTemplates, resolveTemplate } from '@/services/notifications/NotificationTemplates';
+import { fcmService } from '@/services/fcm/FcmService';
 import type {
   NotificationPayload,
   NotificationPermissionStatus,
@@ -177,6 +178,21 @@ export function useNotifications() {
   const clearBadge = useCallback(async () => {
     await notificationService.clearBadge();
   }, []);
+
+  // ---- Initialize FCM for push notifications (native + web) ----
+  const fcmInitializedRef = useRef(false);
+  useEffect(() => {
+    if (!user || permission !== 'granted' || fcmInitializedRef.current) return;
+    fcmInitializedRef.current = true;
+    fcmService.init(user.id).then(() => {
+      console.info('[useNotifications] FCM initialized for user');
+    }).catch(() => {
+      // FCM is best-effort — don't break the app if it fails
+      console.info('[useNotifications] FCM not available (no Firebase config)');
+    });
+    // Cleanup FCM on unmount
+    return () => { fcmService.destroy(); fcmInitializedRef.current = false; };
+  }, [user, permission]);
 
   // ---- Supabase Realtime subscriptions (preserved from original hook) ----
   useEffect(() => {

@@ -6,6 +6,7 @@ import {
   Truck, Zap, Video,
 } from '@/components/icons/lucide-compat';
 import { SEOHead } from '@/components/seo';
+import AnimatedBackground from '@/components/brand/AnimatedBackground';
 
 /* ────────────────────────────────────────────
    Animated Counter Hook (pure CSS-driven via IntersectionObserver)
@@ -90,7 +91,9 @@ export default function Landing() {
   const [email, setEmail] = useState('');
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+    <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden relative">
+      {/* Animated Background */}
+      <AnimatedBackground variant="hero" className="fixed inset-0" />
       <SEOHead
         title="MedWallet MZ — A Tua Saúde, Na Tua Mão"
         description="Primeira super-app de saúde de Moçambique. Consultas online, farmácia delivery, carteira digital M-Pesa/e-Mola e muito mais. Disponível em todas as 12 províncias."

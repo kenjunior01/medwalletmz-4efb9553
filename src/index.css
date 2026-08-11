@@ -113,8 +113,16 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
+  /* ═══════════════════════════════════════════════════════════════
+     NATIVE APP FEEL — Core mobile optimizations
+     ═══════════════════════════════════════════════════════════════ */
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    /* Prevent rubber-banding on non-scrollable areas */
+    overscroll-behavior: none;
   }
 
   body {
@@ -122,18 +130,32 @@
     font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 15px;
     line-height: 1.55;
+    /* Prevent pull-to-refresh from bouncing the whole page */
+    overscroll-behavior-y: contain;
+    /* Smooth momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ensure scrollable containers feel native */
+  main, [role="main"], .overflow-y-auto, .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
   }
 
   h1, h2, h3, h4, h5 {
     @apply font-black tracking-tight text-foreground;
   }
 
-  /* Tap targets for mobile — exclui botões de ícone explícitos */
+  /* Tap targets for mobile */
   @media (pointer: coarse) {
     button:not(.no-tap-target):not([data-size="icon"]):not(.size-icon),
     [role="button"]:not(.no-tap-target),
     a:not(.no-tap-target) {
       min-height: 44px;
+    }
+    /* Faster touch response */
+    * {
+      touch-action: manipulation;
     }
   }
 
@@ -143,21 +165,17 @@
   .safe-area-left   { padding-left: env(safe-area-inset-left); }
   .safe-area-right  { padding-right: env(safe-area-inset-right); }
 
-  /* Padding-bottom com safe-area + offset customizável (para FABs) */
   .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
   .pt-safe { padding-top: env(safe-area-inset-top); }
   .mb-safe { margin-bottom: env(safe-area-inset-bottom); }
 
-  /* Posicionamento de FABs que respeita o home indicator iOS/Android.
-     Uso: className="bottom-fab" + tailwind 'right-4'/'left-4' */
   .fab-safe-bottom {
-    bottom: calc(env(safe-area-inset-bottom) + 5rem); /* 80px padrão */
+    bottom: calc(env(safe-area-inset-bottom) + 5rem);
   }
   .fab-safe-bottom-lg {
-    bottom: calc(env(safe-area-inset-bottom) + 6rem); /* 96px acima do BottomNav */
+    bottom: calc(env(safe-area-inset-bottom) + 6rem);
   }
 
-  /* Opt-out explícito do min-height 44px para FABs pequenos e icon buttons */
   .no-tap-target { min-height: auto !important; }
 }
 
@@ -373,9 +391,15 @@
 .no-h-scrollbar::-webkit-scrollbar { display: none; }
 .no-h-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Data Saver */
-html.data-saver .blur-3xl, html.data-saver .blur-2xl, html.data-saver .float-orb { display: none !important; }
-html.data-saver * { animation: none !important; transition: none !important; }
+/* Data Saver — hide heavy blur blobs, keep essential transitions */
+html.data-saver .blur-3xl,
+html.data-saver .blur-2xl,
+html.data-saver .float-orb,
+html.data-saver .animatedbackground,
+html.data-saver .aurorabackground { display: none !important; }
+html.data-saver .mw-shimmer-line,
+html.data-saver .mw-particle,
+html.data-saver .mw-header-mesh { display: none !important; }
 
 /* ============================================================
    Compliance Command Center · Dark theme override
@@ -908,9 +932,10 @@ html.data-saver * { animation: none !important; transition: none !important; }
   );
 }
 
-/* Smooth transitions when switching provinces */
-[data-province] * {
-  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.3s ease, box-shadow 0.4s ease;
+/* Smooth transitions for province/country — targeted, NOT wildcard */
+[data-province] .province-transition,
+[data-country] .country-transition {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
 }
 
 /* ── Region-specific decorative background patterns ───────────────────── */
@@ -949,27 +974,49 @@ html.data-saver * { animation: none !important; transition: none !important; }
   );
 }
 
-/* Smooth transitions when switching regions */
-[data-country] * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+/* Smooth transitions for country — targeted, NOT wildcard */
+/* (handled by .country-transition class) */
+
+/* On mobile/touch: kill all decorative animations for 60fps */
+@media (hover: none) and (pointer: coarse) {
+  .mw-shimmer-line,
+  .mw-particle,
+  .mw-center-pulse,
+  .mw-province-orb,
+  .mw-header-mesh,
+  .mw-logo-breathe,
+  .mw-breathe,
+  .mw-ecg-line,
+  .animate-breathe,
+  .animate-pulse-glow,
+  .float-orb,
+  .glow-teal,
+  .glow-indigo,
+  .text-shimmer,
+  .nav-indicator,
+  .animate-gradient-shift,
+  .animate-float,
+  .animate-shimmer,
+  .animate-mw-orb-float,
+  .animate-mw-wave-shift,
+  .animate-mw-wave-shift-reverse,
+  .animate-mw-beam-drift,
+  .animate-mw-beam-drift-slow,
+  .animate-mw-dot-pulse {
+    animation: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .mw-shimmer-line {
+    background: hsl(var(--primary) / 0.2) !important;
+    height: 1px !important;
+  }
+  .mw-nav-glow {
+    filter: none !important;
+  }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   PREMIUM ANIMATIONS — Global domination visual effects
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Animated gradient shift for header accent line */
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.animate-gradient-shift {
-  background-size: 200% 200%;
-  animation: gradient-shift 4s ease infinite;
-}
-
-/* Glassmorphism premium — enhanced */
+/* Glassmorphism premium */
 .glass-premium {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px) saturate(180%);
@@ -981,21 +1028,25 @@ html.data-saver * { animation: none !important; transition: none !important; }
   border-color: rgba(99, 102, 241, 0.15);
 }
 
-/* Glow effects for active elements */
-.glow-teal {
-  box-shadow: 0 0 15px rgba(20, 184, 166, 0.3), 0 0 30px rgba(20, 184, 166, 0.1);
-}
-.glow-indigo {
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.3), 0 0 30px rgba(99, 102, 241, 0.1);
+/* Glow effects — desktop only */
+@media (hover: hover) {
+  .glow-teal {
+    box-shadow: 0 0 15px rgba(20, 184, 166, 0.3), 0 0 30px rgba(20, 184, 166, 0.1);
+  }
+  .glow-indigo {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3), 0 0 30px rgba(99, 102, 241, 0.1);
+  }
 }
 
-/* Breathing animation for CTAs */
+/* Breathing — desktop only */
 @keyframes breathe {
   0%, 100% { box-shadow: 0 0 10px rgba(20, 184, 166, 0.2); transform: scale(1); }
   50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); transform: scale(1.02); }
 }
-.animate-breathe {
-  animation: breathe 3s ease-in-out infinite;
+@media (hover: hover) {
+  .animate-breathe {
+    animation: breathe 3s ease-in-out infinite;
+  }
 }
 
 /* Shimmer text effect */
@@ -1432,6 +1483,72 @@ html.data-saver * { animation: none !important; transition: none !important; }
   );
 }
 
+/* ===== ANIMATED BACKGROUND (Mobile-first, GPU-optimized) ===== */
+
+/* Orb float — usa CSS custom properties para personalizar por orb */
+@keyframes mw-orb-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  25% { transform: translate3d(calc(var(--mw-orb-dx) * 0.5), calc(var(--mw-orb-dy) * -0.6), 0) scale(1.04); }
+  50% { transform: translate3d(var(--mw-orb-dx), var(--mw-orb-dy), 0) scale(1.08); }
+  75% { transform: translate3d(calc(var(--mw-orb-dx) * -0.4), calc(var(--mw-orb-dy) * 0.8), 0) scale(1.02); }
+}
+.animate-mw-orb-float {
+  animation: mw-orb-float var(--mw-orb-dur, 22s) ease-in-out infinite;
+}
+
+/* Wave shift — rotacao lenta para gradiente conico */
+@keyframes mw-wave-shift {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(15deg) scale(1.1); }
+}
+.animate-mw-wave-shift {
+  animation: mw-wave-shift 30s ease-in-out infinite;
+}
+@keyframes mw-wave-shift-reverse {
+  0%, 100% { transform: rotate(0deg) scale(1.05); }
+  50% { transform: rotate(-12deg) scale(1); }
+}
+.animate-mw-wave-shift-reverse {
+  animation: mw-wave-shift-reverse 24s ease-in-out infinite;
+}
+
+/* Beam drift — linhas de luz cinematicas */
+@keyframes mw-beam-drift {
+  0% { transform: translateX(-30%) rotate(12deg); }
+  100% { transform: translateX(30%) rotate(12deg); }
+}
+.animate-mw-beam-drift {
+  animation: mw-beam-drift 22s linear infinite;
+}
+@keyframes mw-beam-drift-slow {
+  0% { transform: translateX(30%) rotate(-6deg); }
+  100% { transform: translateX(-30%) rotate(-6deg); }
+}
+.animate-mw-beam-drift-slow {
+  animation: mw-beam-drift-slow 38s linear infinite;
+}
+
+/* Dot pulse — pontos de textura que piscam */
+@keyframes mw-dot-pulse {
+  0%, 100% { opacity: 0.04; transform: scale(1); }
+  50% { opacity: 0.15; transform: scale(1.5); }
+}
+.animate-mw-dot-pulse {
+  animation: mw-dot-pulse var(--mw-dot-dur, 5s) ease-in-out infinite;
+}
+
+/* Disable animated background on reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-mw-orb-float,
+  .animate-mw-wave-shift,
+  .animate-mw-wave-shift-reverse,
+  .animate-mw-beam-drift,
+  .animate-mw-beam-drift-slow,
+  .animate-mw-dot-pulse {
+    animation: none !important;
+  }
+}
+
 /* Enhanced accessibility: disable v2 animations */
 @media (prefers-reduced-motion: reduce) {
   .mw-shimmer-line,
@@ -1440,5 +1557,215 @@ html.data-saver * { animation: none !important; transition: none !important; }
   .mw-particle,
   .mw-nav-glow {
     animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NATIVE PAGE TRANSITIONS — CSS only, zero JS
+   ═══════════════════════════════════════════════════════════════════════════ */
+.page-enter {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE PERFORMANCE — Kill expensive effects on touch devices
+   Strava-like: flat, fast, no blur compositing
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (pointer: coarse) {
+  .glass,
+  .glass-header {
+    background: hsl(var(--background));
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid hsl(var(--border));
+  }
+  .neu-card, .neu-btn, .neu-inset {
+    box-shadow: 0 1px 3px hsl(var(--foreground) / 0.08);
+  }
+  .panel-shell::before {
+    display: none;
+  }
+  .gradient-border::before {
+    display: none;
+  }
+  .shadow-premium {
+    box-shadow: var(--shadow-md);
+  }
+  .bento-card {
+    box-shadow: var(--shadow-sm);
+    border-radius: 1.25rem;
+  }
+  .lift-on-hover:hover {
+    transform: none;
+    box-shadow: var(--shadow-md);
+  }
+  .blur-3xl, .blur-2xl {
+    filter: blur(0px) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NATIVE SCROLL FEEL — Momentum, no bounce, smooth rail
+   ═══════════════════════════════════════════════════════════════════════════ */
+* {
+  scroll-padding-top: env(safe-area-inset-top);
+}
+
+/* Native-feeling horizontal scroll for tab strips and carousels */
+.no-h-scrollbar,
+[role="tablist"] {
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+[role="tablist"] > * {
+  scroll-snap-align: center;
+}
+
+/* Remove all decorative blur from buttons on mobile */
+@media (pointer: coarse) {
+  button, [role="button"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BOTTOM SHEET — Native drag handle
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-side="bottom"] {
+  padding-top: 0 !important;
+}
+[data-side="bottom"]::before {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 4px;
+  border-radius: 999px;
+  background: hsl(var(--muted-foreground) / 0.3);
+  margin: 8px auto 4px;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NOTIFICATION POPUP — CSS-only enter animations (zero framer-motion)
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes notif-sheet-slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.notif-sheet-enter {
+  animation: notif-sheet-slide-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes notif-toast-fade-in {
+  from { transform: translateY(24px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.notif-toast-enter {
+  animation: notif-toast-fade-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE PERFORMANCE v2 — Disable all remaining heavy effects on touch
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (pointer: coarse) {
+  /* Kill all infinite animations on mobile — they drain GPU/battery */
+  .animate-pulse-glow,
+  .animate-sos-pulse-glow,
+  .animate-float,
+  .animate-shimmer,
+  .text-shimmer,
+  .animate-breathe,
+  .nav-indicator,
+  .animate-gradient-shift,
+  .glow-teal, .glow-indigo,
+  .mw-shimmer-line,
+  .mw-breathe,
+  .mw-center-pulse,
+  .mw-particle,
+  .mw-logo-breathe,
+  .mw-testimonial,
+  .mw-nav-glow,
+  .mw-pulse-ring {
+    animation: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+
+  /* Flatten glass to solid backgrounds on touch devices */
+  .glass-premium,
+  .mw-glass,
+  .glass-header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Reduce bottom nav blur to minimal on mobile */
+  .mw-bottomnav {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  /* Kill province orbs — blur(80px) is extremely expensive */
+  .mw-province-orb,
+  .float-orb {
+    display: none !important;
+  }
+
+  /* Kill animated background orbs/waves/beams/dots on touch */
+  .animate-mw-orb-float,
+  .animate-mw-wave-shift,
+  .animate-mw-wave-shift-reverse,
+  .animate-mw-beam-drift,
+  .animate-mw-beam-drift-slow,
+  .animate-mw-dot-pulse {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  /* Content-visibility for off-screen sections */
+  .space-y-6 > section,
+  .space-y-6 > div {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SMOOTH SCROLL — Native momentum on all scrollable containers
+   ═══════════════════════════════════════════════════════════════════════════ */
+.overflow-y-auto, .overflow-auto, .overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STAGGERED CONTENT REVEAL — Strava-like sequential fade-in
+   ═══════════════════════════════════════════════════════════════════════════ */
+.stagger-children > * {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: fade-in 0.3s ease-out both;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 40ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 80ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 160ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(n+7) { animation-delay: 240ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-children > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
 }

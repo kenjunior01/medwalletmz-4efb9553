@@ -5,24 +5,67 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Wallet, Plus, Search, ArrowDownCircle, ArrowUpCircle } from "@/components/icons/lucide-compat";
+import { Wallet, Plus, Search, ArrowDownCircle, ArrowUpCircle, ShieldAlert } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+import { useManagedCountry } from '@/hooks/useManagedCountry';
+import { useManagedProvince } from '@/hooks/useManagedProvince';
+
+/** Roles that should NEVER be filtered to — only full admin sees these */
+const PRIVILEGED_WRITE_ROLES = ['admin', 'country_manager', 'provincial_manager', 'regional_ceo', 'regional_manager'];
 
 export default function AdminWallets() {
+  const { userRoles } = useAuth();
+  const isAdmin = userRoles?.some(r => r.role === 'admin');
+  const { managedCountryId, canManage } = useManagedCountry();
+  const { managedProvinceId, isProvincialManager } = useManagedProvince();
   const [search, setSearch] = useState('');
   const [creditOpen, setCreditOpen] = useState<any>(null);
   const [amt, setAmt] = useState('');
   const [desc, setDesc] = useState('');
 
+  // SECURITY: Provincial managers should NOT be able to credit arbitrary wallets
+  const canCredit = canManage && (isAdmin || userRoles?.some(r => r.role === 'country_manager'));
+
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['admin-wallets', search],
+    queryKey: ['admin-wallets', search, managedCountryId, managedProvinceId],
     queryFn: async () => {
-      const { data: wallets } = await supabase
+      let query = supabase
         .from('wallets')
         .select('user_id, balance_mzn, total_deposited, total_spent, updated_at')
         .order('balance_mzn', { ascending: false })
         .limit(100);
+      
+      // Provincial managers: filter by province (via profiles join)
+      if (isProvincialManager && managedProvinceId) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('province_id', managedProvinceId);
+        if (profiles && profiles.length > 0) {
+          const userIds = profiles.map(p => p.user_id);
+          query = query.in('user_id', userIds);
+        } else {
+          return [];
+        }
+      }
+      // Country managers only see their country's wallets (via profiles join)
+      else if (!isAdmin && managedCountryId) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('country_id', managedCountryId);
+        if (profiles && profiles.length > 0) {
+          const userIds = profiles.map(p => p.user_id);
+          query = query.in('user_id', userIds);
+        } else {
+          return [];
+        }
+      }
+      
+      const { data: wallets } = await query;
       const ids = (wallets || []).map(w => w.user_id);
+      if (ids.length === 0) return [];
       const { data: profs } = await (supabase.rpc as any)('list_profiles_admin', { _ids: ids });
       return (wallets || []).map(w => ({
         ...w,
@@ -36,8 +79,19 @@ export default function AdminWallets() {
   }), { bal: 0, dep: 0, spent: 0 });
 
   const credit = async () => {
+    if (!canCredit) {
+      toast.error('Sem permissão para creditar carteiras');
+      return;
+    }
     const v = parseFloat(amt);
     if (!v || !creditOpen) return;
+
+    // SECURITY: Prevent crediting privileged accounts (admin, managers) to avoid fraud
+    if (creditOpen.profile?.roles?.some((r: any) => PRIVILEGED_WRITE_ROLES.includes(r.role))) {
+      toast.error('Não é possível creditar carteiras de gestores/administradores');
+      return;
+    }
+
     const { error } = await supabase.rpc('wallet_credit', {
       _user_id: creditOpen.user_id, _amount: v, _type: 'credit', _ref_id: null,
       _description: desc || 'Crédito administrativo',
@@ -46,6 +100,17 @@ export default function AdminWallets() {
     toast.success('Crédito aplicado');
     setCreditOpen(null); setAmt(''); setDesc(''); refetch();
   };
+
+  // Don't render if user has no management role at all
+  if (!canManage) {
+    return (
+      <div className="p-8 flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <ShieldAlert className="h-12 w-12 text-destructive" />
+        <h1 className="text-xl font-bold">Acesso Negado</h1>
+        <p className="text-muted-foreground">Apenas gestores podem aceder a esta página.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
@@ -91,25 +156,29 @@ export default function AdminWallets() {
                       Dep: {Number(w.total_deposited).toLocaleString()} • Gasto: {Number(w.total_spent).toLocaleString()}
                     </p>
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => setCreditOpen(w)}>
-                    <Plus className="h-3 w-3 mr-1" /> Creditar
-                  </Button>
+                  {canCredit && (
+                    <Button size="sm" variant="outline" onClick={() => setCreditOpen(w)}>
+                      <Plus className="h-3 w-3 mr-1" /> Creditar
+                    </Button>
+                  )}
                 </div>
               ))}
             </div>}
         </CardContent>
       </Card>
 
-      <Dialog open={!!creditOpen} onOpenChange={() => setCreditOpen(null)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Creditar {creditOpen?.profile?.full_name}</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <Input type="number" placeholder="Valor MZN" value={amt} onChange={e => setAmt(e.target.value)} />
-            <Input placeholder="Descrição (opcional)" value={desc} onChange={e => setDesc(e.target.value)} />
-            <Button className="w-full" onClick={credit}>Aplicar crédito</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {canCredit && (
+        <Dialog open={!!creditOpen} onOpenChange={() => setCreditOpen(null)}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle>Creditar {creditOpen?.profile?.full_name}</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <Input type="number" placeholder="Valor MZN" value={amt} onChange={e => setAmt(e.target.value)} />
+              <Input placeholder="Descrição (opcional)" value={desc} onChange={e => setDesc(e.target.value)} />
+              <Button className="w-full" onClick={credit}>Aplicar crédito</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
