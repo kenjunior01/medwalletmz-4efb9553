@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Search, UserPlus, Globe, User, Mail, Shield, Check,
@@ -291,20 +291,20 @@ export default function AssignCountryManager() {
         })}
       </div>
 
-      {/* Assignment Sheet */}
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent side="bottom" className="max-h-[85vh] rounded-t-2xl">
-          <SheetHeader className="px-4 pt-4 pb-2">
-            <SheetTitle className="flex items-center gap-2">
+      {/* Assignment Drawer */}
+      <Drawer open={sheetOpen} onOpenChange={(open) => { if (!open) setSheetOpen(false); }} snapPoints={[0.5, 0.85]}>
+        <DrawerContent className="max-h-[85vh]">
+          <DrawerHeader className="px-4 pt-4 pb-2">
+            <DrawerTitle className="flex items-center gap-2">
               <span className="text-xl">{COUNTRY_FLAGS[selectedCountryId || ''] || '🌍'}</span>
               {selectedCountry?.name || 'País'}
-            </SheetTitle>
-            <SheetDescription>
+            </DrawerTitle>
+            <DrawerDescription>
               {managersMap.has(selectedCountryId || '')
                 ? 'Já existe um gestor. Pode substituir seleccionando um novo utilizador.'
                 : 'Seleccione um utilizador e defina as permissões.'}
-            </SheetDescription>
-          </SheetHeader>
+            </DrawerDescription>
+          </DrawerHeader>
 
           <div className="px-4 pb-6 space-y-4 overflow-y-auto max-h-[60vh]">
             {/* User search */}
@@ -385,8 +385,8 @@ export default function AssignCountryManager() {
               {assigning ? 'A atribuir...' : 'Confirmar Atribuição'}
             </Button>
           </div>
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
     </motion.div>
   );
 }

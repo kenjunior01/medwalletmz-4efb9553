@@ -16,7 +16,7 @@ import {
 } from "@/components/icons/lucide-compat";
 import {
   PanelShell, NeuCard, BentoCard, BentoGrid, GlassCard,
-  LayeredOrbs, StatusBadge,
+  StatusBadge,
 } from '@/components/ui/design-system';
 import NumberFlow from '@number-flow/react';
 
@@ -181,7 +181,6 @@ export default function PharmacyProfile() {
       <main className="p-4 space-y-5 max-w-2xl mx-auto">
         {/* Hero */}
         <PanelShell className="p-6">
-          <LayeredOrbs variant="ocean" />
           <div className="flex items-start gap-4">
             <div className="relative">
               <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-pharmacy to-pharmacy/60 flex items-center justify-center overflow-hidden">

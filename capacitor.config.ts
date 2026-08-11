@@ -43,7 +43,7 @@ const config: CapacitorConfig = {
     ? {
         server: {
           androidScheme: 'https',
-          url: 'http://192.168.1.100:5173',
+          url: process.env.CAP_DEV_URL || 'http://10.0.2.2:5173',
           cleartext: true,
         },
       }

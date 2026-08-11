@@ -15,8 +15,9 @@ import { toast } from 'sonner';
 import NumberFlow from '@number-flow/react';
 import {
   PanelShell, NeuCard, BentoCard, BentoGrid, GlassCard,
-  LayeredOrbs, StatusBadge, SkipLink,
+  StatusBadge, SkipLink,
 } from '@/components/ui/design-system';
+import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 
 const ICONS: Record<string, any> = {
   deposit: ArrowDownCircle, debit: ArrowUpCircle, credit: ArrowDownCircle,
@@ -72,6 +73,10 @@ export default function Wallet() {
     const { data } = await supabase.from('wallet_transactions').select('*')
       .eq('user_id', user.id).order('created_at', { ascending: false }).limit(50);
     setTx(data || []);
+  };
+
+  const refreshAll = async () => {
+    await Promise.all([loadTx()]);
   };
 
   useEffect(() => {
@@ -221,10 +226,10 @@ export default function Wallet() {
         <h1 className="font-bold text-lg">{t('wallet.title')}</h1>
       </header>
 
+      <PullToRefresh onRefresh={refreshAll}>
       <main id="main" className="p-4 space-y-5">
         {/* Hero — panel-shell com orbs + saldo animado */}
         <PanelShell className="p-6">
-          <LayeredOrbs variant="ocean" />
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <WalletIcon className="h-4 w-4" aria-hidden="true" /> {t('wallet.available_balance')}
           </div>
@@ -313,6 +318,7 @@ export default function Wallet() {
           )}
         </section>
       </main>
+      </PullToRefresh>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">

@@ -8,7 +8,7 @@ import { Calendar, MessageCircle, DollarSign, Users, Stethoscope, CalendarClock 
 import NumberFlow from '@number-flow/react';
 import {
   PanelShell, NeuCard, BentoCard, BentoGrid, GlassCard,
-  LayeredOrbs, StatusBadge, SkipLink,
+  StatusBadge, SkipLink,
 } from '@/components/ui/design-system';
 
 export default function DoctorDashboard() {
@@ -84,7 +84,6 @@ export default function DoctorDashboard() {
       <main id="main" className="p-4 space-y-5">
         {/* Hero panel */}
         <PanelShell className="p-6">
-          <LayeredOrbs variant="ocean" />
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wide">Bem-vindo(a)</p>
