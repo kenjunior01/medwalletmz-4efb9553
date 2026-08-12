@@ -6,7 +6,9 @@
  * Tables: support_circles, support_circle_members, support_circle_messages
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 import { geminiStructured, isGeminiConfigured } from '@/lib/gemini';
 
 export interface SupportCircle {

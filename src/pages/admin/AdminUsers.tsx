@@ -29,7 +29,7 @@ interface UserWithRoles {
   roles: { role: AppRole; country_id?: string | null }[];
 }
 
-const roleLabels: Record<AppRole, string> = {
+const roleLabels: Partial<Record<AppRole, string>> = {
   customer: 'Cliente',
   store_owner: 'Lojista',
   driver: 'Entregador',
@@ -39,7 +39,7 @@ const roleLabels: Record<AppRole, string> = {
   country_manager: 'Gestor de País'
 };
 
-const roleColors: Record<AppRole, string> = {
+const roleColors: Partial<Record<AppRole, string>> = {
   customer: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   store_owner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   driver: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',

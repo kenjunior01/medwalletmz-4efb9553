@@ -10,7 +10,9 @@
  * Uso: useAppLifecycle() no App.tsx
  */
 import { useEffect, useRef, useCallback } from 'react';
-import { App, Network, StatusBar } from '@capacitor/core';
+import { App } from '@capacitor/app';
+import { Network } from '@capacitor/network';
+import { StatusBar } from '@capacitor/status-bar';
 import { toast } from 'sonner';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -51,7 +53,7 @@ export function useAppLifecycle({
   useEffect(() => {
     const setStatusBar = async () => {
       try {
-        await StatusBar.setStyle({ style: statusBarStyle });
+        await StatusBar.setStyle({ style: statusBarStyle as any });
         await StatusBar.setBackgroundColor({ color: '#047857' });
       } catch {
         // Web — não tem status bar nativa

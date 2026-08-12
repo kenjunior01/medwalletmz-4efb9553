@@ -3,7 +3,9 @@
  * Uses Gemini Vision to extract data from prescription/lab result photos.
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 import { geminiAnalyzeImage, geminiStructured, isGeminiConfigured } from '@/lib/gemini';
 
 export type ScanType = 'prescription' | 'lab_result' | 'medicine_label' | 'doctor_note' | 'vaccine_card' | 'other';

@@ -252,7 +252,8 @@ const queryClient = new QueryClient({
 // useAppLifecycle handles: back button, network monitoring, app foreground/background
 import { useAppLifecycle } from './hooks/useAppLifecycle';
 
-const App = () => {
+// Precisa de estar DENTRO do <BrowserRouter> (usa hooks de rota)
+const AppLifecycle = () => {
   useAppLifecycle({
     onForeground: () => {
       // Refresh data when app comes back to foreground
@@ -260,7 +261,10 @@ const App = () => {
       console.log('[MedWallet] App foreground');
     },
   });
+  return null;
+};
 
+const App = () => {
   return (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -273,6 +277,7 @@ const App = () => {
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
+                <AppLifecycle />
                 <PageViewTracker />
                 <OAuthCallbackHandler>
                 <Suspense fallback={<LoadingScreen />}>

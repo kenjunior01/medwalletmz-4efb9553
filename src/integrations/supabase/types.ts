@@ -339,6 +339,45 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string | null
+          id: number
+          ip_address: unknown
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string | null
+          id?: number
+          ip_address?: unknown
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string | null
+          id?: number
+          ip_address?: unknown
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       blood_donation_campaigns: {
         Row: {
           address: string | null
@@ -442,6 +481,13 @@ export type Database = {
             columns: ["request_id"]
             isOneToOne: false
             referencedRelation: "blood_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blood_donation_matches_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "blood_requests_public"
             referencedColumns: ["id"]
           },
         ]
@@ -620,6 +666,127 @@ export type Database = {
           target_value?: number
           title?: string
           xp_reward?: number
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          attachment_name: string | null
+          attachment_type: string | null
+          attachment_url: string | null
+          body: string | null
+          created_at: string
+          id: string
+          kind: string
+          metadata: Json
+          sender_id: string
+          thread_id: string
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          metadata?: Json
+          sender_id: string
+          thread_id: string
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          metadata?: Json
+          sender_id?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "chat_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_participants: {
+        Row: {
+          created_at: string
+          id: string
+          last_read_at: string
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_read_at?: string
+          role?: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_read_at?: string
+          role?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_participants_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "chat_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_threads: {
+        Row: {
+          context_id: string | null
+          context_type: string | null
+          created_at: string
+          created_by: string
+          id: string
+          kind: string
+          last_message: string | null
+          last_message_at: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          kind?: string
+          last_message?: string | null
+          last_message_at?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          kind?: string
+          last_message?: string | null
+          last_message_at?: string
+          title?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -897,7 +1064,10 @@ export type Database = {
           fee: number
           id: string
           notes: string | null
+          paid_at: string | null
           patient_id: string
+          payment_method: string
+          payment_status: string
           reason: string | null
           scheduled_at: string
           status: string
@@ -913,7 +1083,10 @@ export type Database = {
           fee?: number
           id?: string
           notes?: string | null
+          paid_at?: string | null
           patient_id: string
+          payment_method?: string
+          payment_status?: string
           reason?: string | null
           scheduled_at: string
           status?: string
@@ -929,7 +1102,10 @@ export type Database = {
           fee?: number
           id?: string
           notes?: string | null
+          paid_at?: string | null
           patient_id?: string
+          payment_method?: string
+          payment_status?: string
           reason?: string | null
           scheduled_at?: string
           status?: string
@@ -1335,6 +1511,7 @@ export type Database = {
           current_latitude: number | null
           current_longitude: number | null
           delivered_at: string | null
+          driver_earnings: number | null
           driver_id: string
           id: string
           order_id: string
@@ -1346,6 +1523,7 @@ export type Database = {
           current_latitude?: number | null
           current_longitude?: number | null
           delivered_at?: string | null
+          driver_earnings?: number | null
           driver_id: string
           id?: string
           order_id: string
@@ -1357,6 +1535,7 @@ export type Database = {
           current_latitude?: number | null
           current_longitude?: number | null
           delivered_at?: string | null
+          driver_earnings?: number | null
           driver_id?: string
           id?: string
           order_id?: string
@@ -1372,6 +1551,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      driver_vehicles: {
+        Row: {
+          brand: string
+          color: string | null
+          created_at: string | null
+          driver_id: string
+          id: string
+          inspection_url: string | null
+          insurance_url: string | null
+          is_primary: boolean | null
+          is_verified: boolean | null
+          license_carta_url: string | null
+          license_plate: string | null
+          license_viatura_url: string | null
+          model: string
+          photo_back: string | null
+          photo_front: string | null
+          photo_interior: string | null
+          photo_side: string | null
+          updated_at: string | null
+          vehicle_type: string
+          verified_at: string | null
+          verified_by: string | null
+          year: number | null
+        }
+        Insert: {
+          brand: string
+          color?: string | null
+          created_at?: string | null
+          driver_id: string
+          id?: string
+          inspection_url?: string | null
+          insurance_url?: string | null
+          is_primary?: boolean | null
+          is_verified?: boolean | null
+          license_carta_url?: string | null
+          license_plate?: string | null
+          license_viatura_url?: string | null
+          model: string
+          photo_back?: string | null
+          photo_front?: string | null
+          photo_interior?: string | null
+          photo_side?: string | null
+          updated_at?: string | null
+          vehicle_type: string
+          verified_at?: string | null
+          verified_by?: string | null
+          year?: number | null
+        }
+        Update: {
+          brand?: string
+          color?: string | null
+          created_at?: string | null
+          driver_id?: string
+          id?: string
+          inspection_url?: string | null
+          insurance_url?: string | null
+          is_primary?: boolean | null
+          is_verified?: boolean | null
+          license_carta_url?: string | null
+          license_plate?: string | null
+          license_viatura_url?: string | null
+          model?: string
+          photo_back?: string | null
+          photo_front?: string | null
+          photo_interior?: string | null
+          photo_side?: string | null
+          updated_at?: string | null
+          vehicle_type?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          year?: number | null
+        }
+        Relationships: []
       }
       email_send_log: {
         Row: {
@@ -1565,6 +1819,128 @@ export type Database = {
         }
         Relationships: []
       }
+      health_deliveries: {
+        Row: {
+          accepted_at: string | null
+          cancel_reason: string | null
+          cancelled_at: string | null
+          country_code: string
+          created_at: string
+          currency: string
+          customer_name: string
+          customer_phone: string
+          customer_user_id: string | null
+          delivered_at: string | null
+          delivery_fee: number
+          dropoff_address: string | null
+          dropoff_location: Json | null
+          dropoff_name: string | null
+          dropoff_phone: string | null
+          estimated_distance_km: number | null
+          estimated_duration_min: number | null
+          id: string
+          package_description: string | null
+          package_type: string
+          picked_up_at: string | null
+          pickup_address: string | null
+          pickup_location: Json | null
+          pickup_name: string
+          pickup_type: string
+          platform_fee: number
+          rated_at: string | null
+          rating: number | null
+          rating_comment: string | null
+          requires_cold_chain: boolean
+          requires_signature: boolean
+          rider_earnings: number
+          rider_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          country_code?: string
+          created_at?: string
+          currency?: string
+          customer_name: string
+          customer_phone: string
+          customer_user_id?: string | null
+          delivered_at?: string | null
+          delivery_fee?: number
+          dropoff_address?: string | null
+          dropoff_location?: Json | null
+          dropoff_name?: string | null
+          dropoff_phone?: string | null
+          estimated_distance_km?: number | null
+          estimated_duration_min?: number | null
+          id?: string
+          package_description?: string | null
+          package_type?: string
+          picked_up_at?: string | null
+          pickup_address?: string | null
+          pickup_location?: Json | null
+          pickup_name: string
+          pickup_type?: string
+          platform_fee?: number
+          rated_at?: string | null
+          rating?: number | null
+          rating_comment?: string | null
+          requires_cold_chain?: boolean
+          requires_signature?: boolean
+          rider_earnings?: number
+          rider_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          country_code?: string
+          created_at?: string
+          currency?: string
+          customer_name?: string
+          customer_phone?: string
+          customer_user_id?: string | null
+          delivered_at?: string | null
+          delivery_fee?: number
+          dropoff_address?: string | null
+          dropoff_location?: Json | null
+          dropoff_name?: string | null
+          dropoff_phone?: string | null
+          estimated_distance_km?: number | null
+          estimated_duration_min?: number | null
+          id?: string
+          package_description?: string | null
+          package_type?: string
+          picked_up_at?: string | null
+          pickup_address?: string | null
+          pickup_location?: Json | null
+          pickup_name?: string
+          pickup_type?: string
+          platform_fee?: number
+          rated_at?: string | null
+          rating?: number | null
+          rating_comment?: string | null
+          requires_cold_chain?: boolean
+          requires_signature?: boolean
+          rider_earnings?: number
+          rider_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_deliveries_rider_id_fkey"
+            columns: ["rider_id"]
+            isOneToOne: false
+            referencedRelation: "health_riders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       health_facilities: {
         Row: {
           address: Json | null
@@ -1634,6 +2010,359 @@ export type Database = {
           joy_coins_referred?: number
           joy_coins_referrer?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      health_riders: {
+        Row: {
+          accepts_cold_chain: boolean
+          available_zones: string[]
+          bank_account: Json | null
+          country_code: string
+          created_at: string
+          current_location: Json | null
+          full_name: string
+          id: string
+          id_document_url: string | null
+          is_online: boolean
+          is_verified: boolean
+          languages: string[]
+          last_online_at: string | null
+          license_url: string | null
+          max_delivery_distance_km: number
+          mobile_money_number: string | null
+          national_id: string | null
+          onboarding_progress: number
+          onboarding_step: string
+          phone: string
+          rating: number
+          rejection_reason: string | null
+          total_deliveries: number
+          total_distance_km: number
+          total_earnings_mzn: number
+          updated_at: string
+          user_id: string
+          vehicle_color: string | null
+          vehicle_document_url: string | null
+          vehicle_plate: string | null
+          vehicle_type: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          accepts_cold_chain?: boolean
+          available_zones?: string[]
+          bank_account?: Json | null
+          country_code?: string
+          created_at?: string
+          current_location?: Json | null
+          full_name: string
+          id?: string
+          id_document_url?: string | null
+          is_online?: boolean
+          is_verified?: boolean
+          languages?: string[]
+          last_online_at?: string | null
+          license_url?: string | null
+          max_delivery_distance_km?: number
+          mobile_money_number?: string | null
+          national_id?: string | null
+          onboarding_progress?: number
+          onboarding_step?: string
+          phone: string
+          rating?: number
+          rejection_reason?: string | null
+          total_deliveries?: number
+          total_distance_km?: number
+          total_earnings_mzn?: number
+          updated_at?: string
+          user_id: string
+          vehicle_color?: string | null
+          vehicle_document_url?: string | null
+          vehicle_plate?: string | null
+          vehicle_type?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          accepts_cold_chain?: boolean
+          available_zones?: string[]
+          bank_account?: Json | null
+          country_code?: string
+          created_at?: string
+          current_location?: Json | null
+          full_name?: string
+          id?: string
+          id_document_url?: string | null
+          is_online?: boolean
+          is_verified?: boolean
+          languages?: string[]
+          last_online_at?: string | null
+          license_url?: string | null
+          max_delivery_distance_km?: number
+          mobile_money_number?: string | null
+          national_id?: string | null
+          onboarding_progress?: number
+          onboarding_step?: string
+          phone?: string
+          rating?: number
+          rejection_reason?: string | null
+          total_deliveries?: number
+          total_distance_km?: number
+          total_earnings_mzn?: number
+          updated_at?: string
+          user_id?: string
+          vehicle_color?: string | null
+          vehicle_document_url?: string | null
+          vehicle_plate?: string | null
+          vehicle_type?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
+      health_worker_bookings: {
+        Row: {
+          address: string | null
+          cancel_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          completed_at: string | null
+          confirmed_at: string | null
+          country_code: string
+          created_at: string
+          currency: string
+          customer_name: string
+          customer_phone: string
+          customer_user_id: string | null
+          duration_minutes: number
+          fee: number
+          id: string
+          linked_consultation_id: string | null
+          linked_prescription_id: string | null
+          location: Json | null
+          notes_for_worker: string | null
+          payment_status: string
+          platform_fee: number
+          rated_at: string | null
+          rating: number | null
+          rating_comment: string | null
+          reason: string | null
+          scheduled_at: string
+          service_type: string
+          started_at: string | null
+          status: string
+          symptoms: string[]
+          updated_at: string
+          worker_earnings: number
+          worker_id: string
+        }
+        Insert: {
+          address?: string | null
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          completed_at?: string | null
+          confirmed_at?: string | null
+          country_code?: string
+          created_at?: string
+          currency?: string
+          customer_name: string
+          customer_phone: string
+          customer_user_id?: string | null
+          duration_minutes?: number
+          fee?: number
+          id?: string
+          linked_consultation_id?: string | null
+          linked_prescription_id?: string | null
+          location?: Json | null
+          notes_for_worker?: string | null
+          payment_status?: string
+          platform_fee?: number
+          rated_at?: string | null
+          rating?: number | null
+          rating_comment?: string | null
+          reason?: string | null
+          scheduled_at: string
+          service_type?: string
+          started_at?: string | null
+          status?: string
+          symptoms?: string[]
+          updated_at?: string
+          worker_earnings?: number
+          worker_id: string
+        }
+        Update: {
+          address?: string | null
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          completed_at?: string | null
+          confirmed_at?: string | null
+          country_code?: string
+          created_at?: string
+          currency?: string
+          customer_name?: string
+          customer_phone?: string
+          customer_user_id?: string | null
+          duration_minutes?: number
+          fee?: number
+          id?: string
+          linked_consultation_id?: string | null
+          linked_prescription_id?: string | null
+          location?: Json | null
+          notes_for_worker?: string | null
+          payment_status?: string
+          platform_fee?: number
+          rated_at?: string | null
+          rating?: number | null
+          rating_comment?: string | null
+          reason?: string | null
+          scheduled_at?: string
+          service_type?: string
+          started_at?: string | null
+          status?: string
+          symptoms?: string[]
+          updated_at?: string
+          worker_earnings?: number
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_worker_bookings_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "health_worker_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      health_worker_profiles: {
+        Row: {
+          availability_hours: Json
+          base_address: string | null
+          base_location: Json | null
+          bio: string | null
+          certificates: Json
+          conditions_treated: string[]
+          consultation_fee: number
+          country_code: string
+          created_at: string
+          currency: string
+          full_name: string
+          home_visit_fee: number
+          home_visits_enabled: boolean
+          id: string
+          id_document_url: string | null
+          is_available: boolean
+          is_verified: boolean
+          languages: string[]
+          license_number: string | null
+          license_url: string | null
+          onboarding_progress: number
+          onboarding_step: string
+          profession: string
+          profile_photo_url: string | null
+          rating: number
+          rejection_reason: string | null
+          response_time_avg_min: number | null
+          service_radius_km: number
+          service_zones: string[]
+          specialization: string | null
+          telehealth_enabled: boolean
+          telehealth_fee: number
+          total_bookings: number
+          total_earnings: number
+          updated_at: string
+          user_id: string
+          verification_notes: string | null
+          verified_at: string | null
+          verified_by: string | null
+          years_of_experience: number | null
+        }
+        Insert: {
+          availability_hours?: Json
+          base_address?: string | null
+          base_location?: Json | null
+          bio?: string | null
+          certificates?: Json
+          conditions_treated?: string[]
+          consultation_fee?: number
+          country_code?: string
+          created_at?: string
+          currency?: string
+          full_name: string
+          home_visit_fee?: number
+          home_visits_enabled?: boolean
+          id?: string
+          id_document_url?: string | null
+          is_available?: boolean
+          is_verified?: boolean
+          languages?: string[]
+          license_number?: string | null
+          license_url?: string | null
+          onboarding_progress?: number
+          onboarding_step?: string
+          profession?: string
+          profile_photo_url?: string | null
+          rating?: number
+          rejection_reason?: string | null
+          response_time_avg_min?: number | null
+          service_radius_km?: number
+          service_zones?: string[]
+          specialization?: string | null
+          telehealth_enabled?: boolean
+          telehealth_fee?: number
+          total_bookings?: number
+          total_earnings?: number
+          updated_at?: string
+          user_id: string
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          years_of_experience?: number | null
+        }
+        Update: {
+          availability_hours?: Json
+          base_address?: string | null
+          base_location?: Json | null
+          bio?: string | null
+          certificates?: Json
+          conditions_treated?: string[]
+          consultation_fee?: number
+          country_code?: string
+          created_at?: string
+          currency?: string
+          full_name?: string
+          home_visit_fee?: number
+          home_visits_enabled?: boolean
+          id?: string
+          id_document_url?: string | null
+          is_available?: boolean
+          is_verified?: boolean
+          languages?: string[]
+          license_number?: string | null
+          license_url?: string | null
+          onboarding_progress?: number
+          onboarding_step?: string
+          profession?: string
+          profile_photo_url?: string | null
+          rating?: number
+          rejection_reason?: string | null
+          response_time_avg_min?: number | null
+          service_radius_km?: number
+          service_zones?: string[]
+          specialization?: string | null
+          telehealth_enabled?: boolean
+          telehealth_fee?: number
+          total_bookings?: number
+          total_earnings?: number
+          updated_at?: string
+          user_id?: string
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          years_of_experience?: number | null
         }
         Relationships: []
       }
@@ -2329,6 +3058,134 @@ export type Database = {
           },
         ]
       }
+      manager_application_messages: {
+        Row: {
+          application_id: string
+          body: string
+          created_at: string
+          id: string
+          is_staff: boolean
+          sender_id: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          body: string
+          created_at?: string
+          id?: string
+          is_staff?: boolean
+          sender_id: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          is_staff?: boolean
+          sender_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manager_application_messages_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "manager_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      manager_applications: {
+        Row: {
+          answers: Json
+          country_id: string | null
+          created_at: string
+          current_occupation: string | null
+          cv_url: string | null
+          email: string | null
+          experience_years: number
+          full_name: string
+          has_transport: boolean
+          id: string
+          languages: string[]
+          linkedin: string | null
+          max_score: number
+          motivation: string | null
+          phase_scores: Json
+          phone: string | null
+          province: string | null
+          quiz_score: number
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          simulation: Json
+          status: string
+          target_region: string | null
+          updated_at: string
+          user_id: string
+          weekly_hours: number
+        }
+        Insert: {
+          answers?: Json
+          country_id?: string | null
+          created_at?: string
+          current_occupation?: string | null
+          cv_url?: string | null
+          email?: string | null
+          experience_years?: number
+          full_name: string
+          has_transport?: boolean
+          id?: string
+          languages?: string[]
+          linkedin?: string | null
+          max_score?: number
+          motivation?: string | null
+          phase_scores?: Json
+          phone?: string | null
+          province?: string | null
+          quiz_score?: number
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          simulation?: Json
+          status?: string
+          target_region?: string | null
+          updated_at?: string
+          user_id: string
+          weekly_hours?: number
+        }
+        Update: {
+          answers?: Json
+          country_id?: string | null
+          created_at?: string
+          current_occupation?: string | null
+          cv_url?: string | null
+          email?: string | null
+          experience_years?: number
+          full_name?: string
+          has_transport?: boolean
+          id?: string
+          languages?: string[]
+          linkedin?: string | null
+          max_score?: number
+          motivation?: string | null
+          phase_scores?: Json
+          phone?: string | null
+          province?: string | null
+          quiz_score?: number
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          simulation?: Json
+          status?: string
+          target_region?: string | null
+          updated_at?: string
+          user_id?: string
+          weekly_hours?: number
+        }
+        Relationships: []
+      }
       maternal_profiles: {
         Row: {
           anc_visits_done: number | null
@@ -2774,6 +3631,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          country_id: string | null
           created_at: string
           delivery_address: string | null
           delivery_fee: number
@@ -2791,6 +3649,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          country_id?: string | null
           created_at?: string
           delivery_address?: string | null
           delivery_fee?: number
@@ -2808,6 +3667,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          country_id?: string | null
           created_at?: string
           delivery_address?: string | null
           delivery_fee?: number
@@ -2879,6 +3739,66 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      payment_receipts: {
+        Row: {
+          amount_paid: number
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          currency: string
+          discount_amount: number
+          gross_amount: number
+          id: string
+          metadata: Json
+          net_payout: number
+          payee_id: string | null
+          payer_id: string
+          payment_method: string
+          receipt_number: string
+          reference_id: string | null
+          service_type: string
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          discount_amount?: number
+          gross_amount?: number
+          id?: string
+          metadata?: Json
+          net_payout?: number
+          payee_id?: string | null
+          payer_id: string
+          payment_method?: string
+          receipt_number: string
+          reference_id?: string | null
+          service_type?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          discount_amount?: number
+          gross_amount?: number
+          id?: string
+          metadata?: Json
+          net_payout?: number
+          payee_id?: string | null
+          payer_id?: string
+          payment_method?: string
+          receipt_number?: string
+          reference_id?: string | null
+          service_type?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -3446,16 +4366,21 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          city: string | null
           country_id: string | null
           created_at: string
           default_city: string | null
           driver_selfie_url: string | null
+          email: string | null
+          email_prefs: Json
           emola_number: string | null
           full_name: string | null
           health_certified: boolean
           id: string
+          is_active: boolean | null
           is_available: boolean | null
           is_verified_driver: boolean
+          last_login: string | null
           license_carta_url: string | null
           license_plate: string | null
           license_viatura_url: string | null
@@ -3463,10 +4388,13 @@ export type Database = {
           mpesa_number: string | null
           onboarding_completed: boolean
           phone: string | null
+          province_id: string | null
           referral_code: string | null
           referred_by: string | null
+          total_earnings_mzn: number | null
           updated_at: string
           user_id: string
+          user_type: string | null
           vehicle_brand: string | null
           vehicle_color: string | null
           vehicle_model: string | null
@@ -3477,16 +4405,21 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          city?: string | null
           country_id?: string | null
           created_at?: string
           default_city?: string | null
           driver_selfie_url?: string | null
+          email?: string | null
+          email_prefs?: Json
           emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
           id?: string
+          is_active?: boolean | null
           is_available?: boolean | null
           is_verified_driver?: boolean
+          last_login?: string | null
           license_carta_url?: string | null
           license_plate?: string | null
           license_viatura_url?: string | null
@@ -3494,10 +4427,13 @@ export type Database = {
           mpesa_number?: string | null
           onboarding_completed?: boolean
           phone?: string | null
+          province_id?: string | null
           referral_code?: string | null
           referred_by?: string | null
+          total_earnings_mzn?: number | null
           updated_at?: string
           user_id: string
+          user_type?: string | null
           vehicle_brand?: string | null
           vehicle_color?: string | null
           vehicle_model?: string | null
@@ -3508,16 +4444,21 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          city?: string | null
           country_id?: string | null
           created_at?: string
           default_city?: string | null
           driver_selfie_url?: string | null
+          email?: string | null
+          email_prefs?: Json
           emola_number?: string | null
           full_name?: string | null
           health_certified?: boolean
           id?: string
+          is_active?: boolean | null
           is_available?: boolean | null
           is_verified_driver?: boolean
+          last_login?: string | null
           license_carta_url?: string | null
           license_plate?: string | null
           license_viatura_url?: string | null
@@ -3525,10 +4466,13 @@ export type Database = {
           mpesa_number?: string | null
           onboarding_completed?: boolean
           phone?: string | null
+          province_id?: string | null
           referral_code?: string | null
           referred_by?: string | null
+          total_earnings_mzn?: number | null
           updated_at?: string
           user_id?: string
+          user_type?: string | null
           vehicle_brand?: string | null
           vehicle_color?: string | null
           vehicle_model?: string | null
@@ -3536,81 +4480,6 @@ export type Database = {
           vehicle_type?: string | null
           vehicle_year?: number | null
           verified_at?: string | null
-        }
-        Relationships: []
-      }
-      driver_vehicles: {
-        Row: {
-          brand: string
-          color: string | null
-          created_at: string
-          driver_id: string
-          id: string
-          inspection_url: string | null
-          insurance_url: string | null
-          is_primary: boolean
-          is_verified: boolean
-          license_carta_url: string | null
-          license_plate: string | null
-          license_viatura_url: string | null
-          model: string
-          photo_back: string | null
-          photo_front: string | null
-          photo_interior: string | null
-          photo_side: string | null
-          updated_at: string
-          verified_at: string | null
-          verified_by: string | null
-          vehicle_type: string
-          year: number | null
-        }
-        Insert: {
-          brand: string
-          color?: string | null
-          created_at?: string
-          driver_id: string
-          id?: string
-          inspection_url?: string | null
-          insurance_url?: string | null
-          is_primary?: boolean
-          is_verified?: boolean
-          license_carta_url?: string | null
-          license_plate?: string | null
-          license_viatura_url?: string | null
-          model: string
-          photo_back?: string | null
-          photo_front?: string | null
-          photo_interior?: string | null
-          photo_side?: string | null
-          updated_at?: string
-          verified_at?: string | null
-          verified_by?: string | null
-          vehicle_type: string
-          year?: number | null
-        }
-        Update: {
-          brand?: string
-          color?: string | null
-          created_at?: string
-          driver_id?: string
-          id?: string
-          inspection_url?: string | null
-          insurance_url?: string | null
-          is_primary?: boolean
-          is_verified?: boolean
-          license_carta_url?: string | null
-          license_plate?: string | null
-          license_viatura_url?: string | null
-          model?: string
-          photo_back?: string | null
-          photo_front?: string | null
-          photo_interior?: string | null
-          photo_side?: string | null
-          updated_at?: string
-          verified_at?: string | null
-          verified_by?: string | null
-          vehicle_type?: string
-          year?: number | null
         }
         Relationships: []
       }
@@ -3640,6 +4509,72 @@ export type Database = {
           id?: string
           p256dh?: string
           user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          action: string
+          blocked: boolean
+          count: number
+          created_at: string | null
+          id: number
+          key_hash: string
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          action: string
+          blocked?: boolean
+          count?: number
+          created_at?: string | null
+          id?: number
+          key_hash: string
+          window_end?: string
+          window_start?: string
+        }
+        Update: {
+          action?: string
+          blocked?: boolean
+          count?: number
+          created_at?: string | null
+          id?: number
+          key_hash?: string
+          window_end?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      referral_free_rewards: {
+        Row: {
+          created_at: string
+          free_until: string
+          id: string
+          milestone_index: number
+          months_granted: number
+          referrals_required: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          free_until: string
+          id?: string
+          milestone_index: number
+          months_granted?: number
+          referrals_required?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          free_until?: string
+          id?: string
+          milestone_index?: number
+          months_granted?: number
+          referrals_required?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -4248,8 +5183,11 @@ export type Database = {
           created_at: string
           id: string
           paid_at: string | null
+          professional_bonus_mzn: number
+          professional_bonus_paid: boolean
           referral_code: string
           referred_id: string
+          referred_role: string | null
           referrer_id: string
           status: string
         }
@@ -4260,8 +5198,11 @@ export type Database = {
           created_at?: string
           id?: string
           paid_at?: string | null
+          professional_bonus_mzn?: number
+          professional_bonus_paid?: boolean
           referral_code: string
           referred_id: string
+          referred_role?: string | null
           referrer_id: string
           status?: string
         }
@@ -4272,8 +5213,11 @@ export type Database = {
           created_at?: string
           id?: string
           paid_at?: string | null
+          professional_bonus_mzn?: number
+          professional_bonus_paid?: boolean
           referral_code?: string
           referred_id?: string
+          referred_role?: string | null
           referrer_id?: string
           status?: string
         }
@@ -4284,6 +5228,7 @@ export type Database = {
           country_id: string | null
           created_at: string
           id: string
+          province_id: string | null
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
@@ -4291,6 +5236,7 @@ export type Database = {
           country_id?: string | null
           created_at?: string
           id?: string
+          province_id?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
@@ -4298,6 +5244,7 @@ export type Database = {
           country_id?: string | null
           created_at?: string
           id?: string
+          province_id?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
@@ -4448,6 +5395,132 @@ export type Database = {
           },
         ]
       }
+      vision_scans: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          detected_date: string | null
+          detected_doctor: string | null
+          detected_facility: string | null
+          detected_medications: Json | null
+          detected_next_appointment: string | null
+          detected_results: Json | null
+          detected_test_name: string | null
+          extracted_data: Json | null
+          id: string
+          image_url: string | null
+          language_detected: string | null
+          linked_lab_order_id: string | null
+          linked_prescription_id: string | null
+          model_used: string | null
+          scan_type: string
+          user_corrections: Json | null
+          user_id: string
+          was_corrected: boolean
+          was_reviewed_by_user: boolean
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          detected_date?: string | null
+          detected_doctor?: string | null
+          detected_facility?: string | null
+          detected_medications?: Json | null
+          detected_next_appointment?: string | null
+          detected_results?: Json | null
+          detected_test_name?: string | null
+          extracted_data?: Json | null
+          id?: string
+          image_url?: string | null
+          language_detected?: string | null
+          linked_lab_order_id?: string | null
+          linked_prescription_id?: string | null
+          model_used?: string | null
+          scan_type: string
+          user_corrections?: Json | null
+          user_id: string
+          was_corrected?: boolean
+          was_reviewed_by_user?: boolean
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          detected_date?: string | null
+          detected_doctor?: string | null
+          detected_facility?: string | null
+          detected_medications?: Json | null
+          detected_next_appointment?: string | null
+          detected_results?: Json | null
+          detected_test_name?: string | null
+          extracted_data?: Json | null
+          id?: string
+          image_url?: string | null
+          language_detected?: string | null
+          linked_lab_order_id?: string | null
+          linked_prescription_id?: string | null
+          model_used?: string | null
+          scan_type?: string
+          user_corrections?: Json | null
+          user_id?: string
+          was_corrected?: boolean
+          was_reviewed_by_user?: boolean
+        }
+        Relationships: []
+      }
+      voice_journals: {
+        Row: {
+          ai_insight: string | null
+          ai_summary: string | null
+          audio_url: string
+          created_at: string
+          detected_keywords: string[] | null
+          detected_mood: string | null
+          detected_symptoms: string[] | null
+          duration_seconds: number
+          id: string
+          processing_status: string
+          recorded_at: string
+          transcript: string | null
+          transcript_confidence: number | null
+          transcript_language: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_insight?: string | null
+          ai_summary?: string | null
+          audio_url: string
+          created_at?: string
+          detected_keywords?: string[] | null
+          detected_mood?: string | null
+          detected_symptoms?: string[] | null
+          duration_seconds?: number
+          id?: string
+          processing_status?: string
+          recorded_at?: string
+          transcript?: string | null
+          transcript_confidence?: number | null
+          transcript_language?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_insight?: string | null
+          ai_summary?: string | null
+          audio_url?: string
+          created_at?: string
+          detected_keywords?: string[] | null
+          detected_mood?: string | null
+          detected_symptoms?: string[] | null
+          duration_seconds?: number
+          id?: string
+          processing_status?: string
+          recorded_at?: string
+          transcript?: string | null
+          transcript_confidence?: number | null
+          transcript_language?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       wallet_transactions: {
         Row: {
           amount: number
@@ -4455,6 +5528,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          idempotency_key: string | null
           metadata: Json | null
           payment_method: string | null
           reference_id: string | null
@@ -4469,6 +5543,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          idempotency_key?: string | null
           metadata?: Json | null
           payment_method?: string | null
           reference_id?: string | null
@@ -4483,6 +5558,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          idempotency_key?: string | null
           metadata?: Json | null
           payment_method?: string | null
           reference_id?: string | null
@@ -4627,6 +5703,81 @@ export type Database = {
       }
     }
     Views: {
+      blood_donors_public: {
+        Row: {
+          blood_type: string | null
+          city: string | null
+          is_active: boolean | null
+          is_available: boolean | null
+          neighborhood: string | null
+        }
+        Insert: {
+          blood_type?: string | null
+          city?: string | null
+          is_active?: boolean | null
+          is_available?: boolean | null
+          neighborhood?: string | null
+        }
+        Update: {
+          blood_type?: string | null
+          city?: string | null
+          is_active?: boolean | null
+          is_available?: boolean | null
+          neighborhood?: string | null
+        }
+        Relationships: []
+      }
+      blood_requests_public: {
+        Row: {
+          blood_type: string | null
+          city: string | null
+          created_at: string | null
+          deadline: string | null
+          id: string | null
+          status: string | null
+          units_needed: number | null
+          units_received: number | null
+          urgency: string | null
+        }
+        Insert: {
+          blood_type?: string | null
+          city?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          id?: string | null
+          status?: string | null
+          units_needed?: number | null
+          units_received?: number | null
+          urgency?: string | null
+        }
+        Update: {
+          blood_type?: string | null
+          city?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          id?: string | null
+          status?: string | null
+          units_needed?: number | null
+          units_received?: number | null
+          urgency?: string | null
+        }
+        Relationships: []
+      }
+      pending_verifications: {
+        Row: {
+          country_code: string | null
+          created_at: string | null
+          details: Json | null
+          entity_id: string | null
+          full_name: string | null
+          kind: string | null
+          onboarding_progress: number | null
+          onboarding_step: string | null
+          phone: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       platform_settings_public: {
         Row: {
           key: string | null
@@ -4662,13 +5813,72 @@ export type Database = {
         Args: { p_id: string; p_notes?: string }
         Returns: Json
       }
+      award_referral_bonus: {
+        Args: {
+          _bonus_coins?: number
+          _bonus_mzn?: number
+          _referred_id: string
+          _referrer_id: string
+        }
+        Returns: Json
+      }
       book_consultation_atomic: {
-        Args: { _coupon_id?: string; _reason?: string; _slot_id: string }
+        Args: {
+          _coupon_id?: string
+          _reason?: string
+          _slot_id: string
+          _use_wallet?: boolean
+        }
         Returns: Json
       }
       bootstrap_admin: { Args: never; Returns: Json }
+      check_rate_limit: {
+        Args: {
+          _action: string
+          _block_minutes?: number
+          _identifier: string
+          _max_attempts?: number
+          _window_minutes?: number
+        }
+        Returns: Json
+      }
+      checkout_debit_order: {
+        Args: {
+          _amount: number
+          _description?: string
+          _order_id: string
+          _user_id: string
+        }
+        Returns: Json
+      }
+      claim_referral_free_months: { Args: never; Returns: Json }
+      cleanup_expired_rate_limits: { Args: never; Returns: number }
+      clear_rate_limit: {
+        Args: { _action?: string; _identifier: string }
+        Returns: undefined
+      }
       confirm_mpesa_payment: {
         Args: { _id: string; _mpesa_tx_id?: string }
+        Returns: Json
+      }
+      count_patient_referrals: { Args: { _user_id: string }; Returns: number }
+      create_order_atomic: {
+        Args: {
+          _delivery_address: string
+          _delivery_fee: number
+          _is_priority?: boolean
+          _items?: Json
+          _notes?: string
+          _payment_method?: string
+          _payment_phone?: string
+          _prescription_id?: string
+          _priority_level?: number
+          _requires_cold_chain?: boolean
+          _store_id: string
+          _subtotal: number
+          _total: number
+          _user_id: string
+        }
         Returns: Json
       }
       delete_email: {
@@ -4700,19 +5910,78 @@ export type Database = {
         }
       }
       gen_prescription_code: { Args: never; Returns: string }
+      get_audit_log: {
+        Args: {
+          _action?: string
+          _limit?: number
+          _offset?: number
+          _user_id?: string
+        }
+        Returns: {
+          action: string
+          actor_id: string
+          created_at: string
+          id: number
+          new_data: Json
+          old_data: Json
+          record_id: string
+          table_name: string
+        }[]
+      }
+      get_doctor_license: {
+        Args: { _doctor_id: string }
+        Returns: {
+          license_number: string
+          license_url: string
+        }[]
+      }
+      get_driver_vehicles: {
+        Args: { p_driver_id: string }
+        Returns: {
+          brand: string
+          color: string
+          id: string
+          is_primary: boolean
+          is_verified: boolean
+          license_plate: string
+          model: string
+          photo_back: string
+          photo_front: string
+          photo_interior: string
+          photo_side: string
+          vehicle_type: string
+          year: number
+        }[]
+      }
+      get_or_create_direct_thread: {
+        Args: {
+          _context_id?: string
+          _context_type?: string
+          _kind?: string
+          _other: string
+          _title?: string
+        }
+        Returns: string
+      }
       get_profile_private: {
         Args: { _user_id: string }
         Returns: {
           avatar_url: string | null
+          city: string | null
           country_id: string | null
           created_at: string
           default_city: string | null
+          driver_selfie_url: string | null
+          email: string | null
+          email_prefs: Json
           emola_number: string | null
           full_name: string | null
           health_certified: boolean
           id: string
+          is_active: boolean | null
           is_available: boolean | null
           is_verified_driver: boolean
+          last_login: string | null
           license_carta_url: string | null
           license_plate: string | null
           license_viatura_url: string | null
@@ -4720,11 +5989,19 @@ export type Database = {
           mpesa_number: string | null
           onboarding_completed: boolean
           phone: string | null
+          province_id: string | null
           referral_code: string | null
           referred_by: string | null
+          total_earnings_mzn: number | null
           updated_at: string
           user_id: string
+          user_type: string | null
+          vehicle_brand: string | null
+          vehicle_color: string | null
+          vehicle_model: string | null
+          vehicle_photo_urls: string[] | null
           vehicle_type: string | null
+          vehicle_year: number | null
           verified_at: string | null
         }[]
         SetofOptions: {
@@ -4734,6 +6011,25 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_profiles_for_manager: {
+        Args: { _limit?: number; _role?: string; _search?: string }
+        Returns: {
+          avatar_url: string
+          city: string
+          country_id: string
+          created_at: string
+          email: string
+          full_name: string
+          is_active: boolean
+          onboarding_completed: boolean
+          phone: string
+          province_id: string
+          roles: Json
+          total_earnings_mzn: number
+          user_id: string
+          user_type: string
+        }[]
+      }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
@@ -4742,6 +6038,7 @@ export type Database = {
         Args: { _audience: string; _user_id: string }
         Returns: boolean
       }
+      has_free_premium: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -4754,6 +6051,50 @@ export type Database = {
         Returns: boolean
       }
       is_professional: { Args: { _user_id: string }; Returns: boolean }
+      is_thread_participant: {
+        Args: { _thread: string; _user: string }
+        Returns: boolean
+      }
+      issue_payment_receipt: {
+        Args: {
+          _commission_rate: number
+          _currency: string
+          _discount: number
+          _gross: number
+          _metadata?: Json
+          _paid: number
+          _payee: string
+          _payer: string
+          _payment_method: string
+          _reference_id: string
+          _service_type: string
+        }
+        Returns: {
+          amount_paid: number
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          currency: string
+          discount_amount: number
+          gross_amount: number
+          id: string
+          metadata: Json
+          net_payout: number
+          payee_id: string | null
+          payer_id: string
+          payment_method: string
+          receipt_number: string
+          reference_id: string | null
+          service_type: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payment_receipts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       lab_order_set_result: {
         Args: { _order_id: string; _result_url: string }
         Returns: Json
@@ -4766,47 +6107,93 @@ export type Database = {
           user_id: string
         }[]
       }
-      list_profiles_admin: {
-        Args: { _ids: string[] }
+      list_profiles_admin:
+        | {
+            Args: { _ids: string[] }
+            Returns: {
+              full_name: string
+              phone: string
+              user_id: string
+            }[]
+          }
+        | {
+            Args: {
+              _country_id?: string
+              _ids?: string[]
+              _limit?: number
+              _offset?: number
+              _province_id?: string
+              _search?: string
+            }
+            Returns: {
+              avatar_url: string
+              city: string
+              country_id: string
+              created_at: string
+              email: string
+              full_name: string
+              is_active: boolean
+              phone: string
+              province_id: string
+              roles: Json
+              user_id: string
+              user_type: string
+            }[]
+          }
+      list_profiles_admin_full: {
+        Args: {
+          _country_id?: string
+          _limit?: number
+          _province_id?: string
+          _role_filter?: string
+          _search?: string
+        }
         Returns: {
+          avatar_url: string
+          city: string
+          country_id: string
+          created_at: string
+          email: string
           full_name: string
+          is_active: boolean
+          last_login: string
+          license_plate: string
+          onboarding_completed: boolean
           phone: string
+          province_id: string
+          roles: Json
+          total_earnings_mzn: number
           user_id: string
+          user_type: string
+          vehicle_type: string
         }[]
       }
-      list_profiles_admin_full: {
-        Args: never
+      login_rate_check: { Args: { _email: string }; Returns: Json }
+      manager_performance_ranking: {
+        Args: { _days?: number }
         Returns: {
-          avatar_url: string | null
-          country_id: string | null
-          created_at: string
-          default_city: string | null
-          emola_number: string | null
-          full_name: string | null
-          health_certified: boolean
-          id: string
-          is_available: boolean | null
-          is_verified_driver: boolean
-          license_carta_url: string | null
-          license_plate: string | null
-          license_viatura_url: string | null
-          mkesh_number: string | null
-          mpesa_number: string | null
-          onboarding_completed: boolean
-          phone: string | null
-          referral_code: string | null
-          referred_by: string | null
-          updated_at: string
+          active_users: number
+          ape_visits: number
+          art_adherence: number
+          consultations_completed: number
+          country_id: string
+          declining: boolean
+          email: string
+          full_name: string
+          manager_commission: number
+          new_users: number
+          province_id: string
+          revenue: number
+          revenue_previous: number
+          revenue_recent: number
+          role: string
+          scope_label: string
+          score: number
+          total_users: number
           user_id: string
-          vehicle_type: string | null
-          verified_at: string | null
+          users_previous: number
+          users_recent: number
         }[]
-        SetofOptions: {
-          from: "*"
-          to: "profiles"
-          isOneToOne: false
-          isSetofReturn: true
-        }
       }
       mark_consultation_completed: { Args: { _id: string }; Returns: Json }
       moderate_ad: {
@@ -4838,6 +6225,7 @@ export type Database = {
         }
         Returns: Json
       }
+      professional_min_balance: { Args: never; Returns: number }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -4849,6 +6237,25 @@ export type Database = {
       redeem_coupon: {
         Args: { _coupon_id: string; _user_id: string }
         Returns: undefined
+      }
+      redeem_referral_code: { Args: { p_code: string }; Returns: Json }
+      referral_free_status: { Args: never; Returns: Json }
+      register_driver_vehicle: {
+        Args: {
+          p_brand: string
+          p_color?: string
+          p_driver_id: string
+          p_license_carta_url?: string
+          p_license_plate?: string
+          p_license_viatura_url?: string
+          p_model: string
+          p_photo_back?: string
+          p_photo_front?: string
+          p_photo_side?: string
+          p_vehicle_type: string
+          p_year?: number
+        }
+        Returns: string
       }
       reject_mpesa_payment: {
         Args: { _id: string; _reason: string }
@@ -4874,6 +6281,35 @@ export type Database = {
       }
       resolve_withdrawal: {
         Args: { _action: string; _id: string; _notes?: string }
+        Returns: Json
+      }
+      rider_credit_earnings: {
+        Args: {
+          _amount: number
+          _delivery_assignment_id?: string
+          _description?: string
+          _rider_user_id: string
+        }
+        Returns: Json
+      }
+      update_vehicle_photos: {
+        Args: {
+          p_driver_id: string
+          p_photo_back?: string
+          p_photo_front?: string
+          p_photo_interior?: string
+          p_photo_side?: string
+          p_vehicle_id: string
+        }
+        Returns: boolean
+      }
+      validate_checkout_amounts: {
+        Args: {
+          _delivery_fee: number
+          _item_count?: number
+          _subtotal: number
+          _total: number
+        }
         Returns: Json
       }
       validate_coupon: {
@@ -4969,6 +6405,11 @@ export type Database = {
         | "veterinary"
         | "hospital"
         | "lab"
+        | "provincial_manager"
+        | "regional_ceo"
+        | "regional_manager"
+        | "pharmacist"
+        | "promoter"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -5108,6 +6549,11 @@ export const Constants = {
         "veterinary",
         "hospital",
         "lab",
+        "provincial_manager",
+        "regional_ceo",
+        "regional_manager",
+        "pharmacist",
+        "promoter",
       ],
     },
   },

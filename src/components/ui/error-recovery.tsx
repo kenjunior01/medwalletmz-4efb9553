@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MWAlertTriangle, MWRefreshCw } from '@/components/icons/lucide-compat';
+import { AlertTriangle as MWAlertTriangle, RefreshCw as MWRefreshCw } from '@/components/icons/lucide-compat';
 import { Button } from '@/components/ui/button';
 
 interface ErrorRecoveryProps {

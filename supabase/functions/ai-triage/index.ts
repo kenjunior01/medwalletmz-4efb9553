@@ -1,4 +1,5 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { createLogger, getRequestId, requestIdHeaders } from '../_shared/log.ts';
 
 // =====================================================================
 // AI TRIAGE — PRIORIDADE MÁXIMA: LOVABLE AI GATEWAY
@@ -380,38 +381,48 @@ Adapta ao contexto local: ${config.health_system}. Em emergência recomenda ${co
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  const requestId = getRequestId(req, 'ai-triage');
+  const logger = createLogger('ai-triage', requestId);
+  const jsonHeaders = { ...corsHeaders, ...requestIdHeaders(requestId), 'Content-Type': 'application/json' };
+  const startedAt = Date.now();
+
   try {
     // NÃO exigir auth na triagem — é funcionalidade pública de saúde
     // (qualquer pessoa deve conseguir fazer triagem, mesmo sem login)
 
     const { symptoms, age, duration, country = 'MZ' } = await req.json();
     if (!symptoms || typeof symptoms !== 'string') {
+      logger.warn('Pedido inválido: symptoms em falta');
       return new Response(JSON.stringify({ error: 'symptoms obrigatório' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400, headers: jsonHeaders,
       });
     }
 
     const config = COUNTRY_CONFIGS[country] || COUNTRY_CONFIGS.MZ;
+    logger.info('Triagem iniciada', { country, age, duration, symptomsLength: symptoms.length });
 
     // CAMADA 1 (PRIORITÁRIA): Lovable AI Gateway
     const lovableResult = await triageWithLovable(symptoms, age, duration, config);
     if (lovableResult) {
-      return new Response(JSON.stringify(lovableResult), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      logger.info('Triagem concluída via Lovable AI', { ms: Date.now() - startedAt });
+      return new Response(JSON.stringify({ ...lovableResult, _request_id: requestId }), {
+        headers: jsonHeaders,
       });
     }
 
     // CAMADA 2 (fallback): Regras clínicas locais
     const localResult = localTriage(symptoms, age, duration, config);
+    logger.warn('Lovable AI indisponível — fallback local', { ms: Date.now() - startedAt });
     return new Response(JSON.stringify({
       ...localResult,
       _provider: 'local_rules',
       _note: 'Lovable AI indisponível — usando triagem local de fallback.',
-    }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      _request_id: requestId,
+    }), { headers: jsonHeaders });
 
   } catch (e) {
-    console.error('triage err', e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'Erro' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    logger.error('Erro na triagem', e);
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'Erro', request_id: requestId }),
+      { status: 500, headers: jsonHeaders });
   }
 });

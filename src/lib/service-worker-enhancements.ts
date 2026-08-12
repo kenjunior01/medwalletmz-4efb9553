@@ -17,7 +17,7 @@ export function registerServiceWorkerHandlers() {
         console.log('[SW] Background sync complete');
         break;
       case 'APP_INSTALLED':
-        if (typeof gtag !== 'undefined') {
+        if (typeof (window as any).gtag !== 'undefined') {
           (window as any).gtag?.('event', 'pwa_install', {
             event_category: 'engagement',
             event_label: 'native_install',

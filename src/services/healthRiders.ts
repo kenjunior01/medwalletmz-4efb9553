@@ -8,7 +8,9 @@
  * Tables: health_riders, health_deliveries, rider_earnings_daily
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 
 export type VehicleType = 'bicycle' | 'motorbike' | 'car' | 'foot';
 export type RiderOnboardingStep = 'basics' | 'vehicle' | 'documents' | 'payment' | 'review' | 'completed';

@@ -9,7 +9,9 @@
  * Tables: ecosystem_bookings, health_worker_bookings (linked), health_deliveries (linked)
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 
 /* ============================================================
  * Types

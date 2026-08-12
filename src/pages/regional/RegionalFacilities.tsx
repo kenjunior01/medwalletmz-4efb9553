@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 /* ─── Types ───────────────────────────────────────────────────────────────── */
 
-type FacilityRole = 'clinic' | 'hospital' | 'lab' | 'store_owner';
+type FacilityRole = 'clinic' | 'hospital' | 'lab' | 'store_owner' | 'pharmacy';
 type VerificationStatus = 'verified' | 'pending' | 'suspended';
 
 interface Facility {
@@ -59,6 +59,7 @@ const fadeUp = {
 /* ─── Helpers ─────────────────────────────────────────────────────────────── */
 
 const ROLE_LABELS: Record<FacilityRole, string> = {
+  pharmacy: 'Farmácia',
   clinic: 'Clínica',
   hospital: 'Hospital',
   lab: 'Laboratório',
@@ -66,6 +67,7 @@ const ROLE_LABELS: Record<FacilityRole, string> = {
 };
 
 const ROLE_ICONS: Record<FacilityRole, React.ElementType> = {
+  pharmacy: Pill,
   clinic: Stethoscope,
   hospital: Building2,
   lab: FlaskConical,
@@ -73,6 +75,7 @@ const ROLE_ICONS: Record<FacilityRole, React.ElementType> = {
 };
 
 const ROLE_COLORS: Record<FacilityRole, string> = {
+  pharmacy: 'bg-emerald-500/10 text-emerald-600',
   clinic: 'bg-teal-500/10 text-teal-600',
   hospital: 'bg-rose-500/10 text-rose-600',
   lab: 'bg-amber-500/10 text-amber-600',

@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { offlineManager } from '@/services/offline/OfflineManager';
 import { identifyUser, resetAnalytics } from '@/services/analytics';
+import { logError, logInfo, logWarn, newRequestId } from '@/lib/logger';
 
 type AppRole =
   | 'customer'
@@ -144,6 +145,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (!mounted) return;
+        logInfo('auth', `Evento de sessão: ${_event}`, { hasSession: Boolean(session), userId: session?.user?.id });
+        if (_event === 'TOKEN_REFRESHED') {
+          logInfo('auth', 'Token renovado automaticamente');
+        }
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -189,7 +194,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           offlineManager.cacheAll(data.session.user.id).catch(() => {});
         }
       } catch (err) {
-        console.error("Session load error:", err);
+        logError('auth', 'Falha ao carregar sessão inicial', err, newRequestId('sess'));
+        // 401/refresh token inválido → limpar sessão para forçar novo login limpo
+        const message = String((err as Error)?.message || '').toLowerCase();
+        if (message.includes('refresh token') || message.includes('jwt') || message.includes('401')) {
+          logWarn('auth', 'Sessão inválida — a terminar sessão local');
+          try { await supabase.auth.signOut({ scope: 'local' }); } catch { /* ignore */ }
+        }
       } finally {
         if (mounted) setLoading(false);
       }

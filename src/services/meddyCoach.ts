@@ -4,7 +4,9 @@
  * Multilingue, detecta crises emocionais.
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 import { geminiChat, geminiStructured, isGeminiConfigured } from '@/lib/gemini';
 import { useCountry } from '@/contexts/CountryContext';
 
@@ -281,7 +283,7 @@ export async function sendMessage(
     try {
       meddyReply = await geminiChat(userMessage, {
         systemPrompt: finalSystemPrompt,
-        history: geminiHistory,
+        history: geminiHistory as any,
         temperature: 0.8,
         maxOutputTokens: 250,
       });
