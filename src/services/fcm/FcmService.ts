@@ -440,7 +440,8 @@ class FcmService {
     // Se já temos instância do Firebase Messaging, usar getToken
     if (this.firebaseMessaging) {
       try {
-        const { getToken } = await import('firebase/messaging');
+        const messagingModuleSpecifier = 'firebase/messaging';
+        const { getToken } = await import(/* @vite-ignore */ messagingModuleSpecifier);
         const options: { vapidKey?: string } = {};
         if (FIREBASE_CONFIG.vapidKey) {
           options.vapidKey = FIREBASE_CONFIG.vapidKey;
