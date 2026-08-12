@@ -10,7 +10,9 @@
  * Uso: useAppLifecycle() no App.tsx
  */
 import { useEffect, useRef, useCallback } from 'react';
-import { App, Network, StatusBar } from '@capacitor/core';
+import { App } from '@capacitor/app';
+import { Network } from '@capacitor/network';
+import { StatusBar } from '@capacitor/status-bar';
 import { toast } from 'sonner';
 import { useNavigate, useLocation } from 'react-router-dom';
 
