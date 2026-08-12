@@ -398,7 +398,7 @@ export default function MzPricingPlans() {
                     )}
                     <div className="p-4">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className={cn("grid h-10 w-10 place-items-center rounded-xl text-white shadow-sm", `bg-gradient-to-br ${plan.gradient}`)}>
+                        <div className={cn("grid h-11 w-11 place-items-center rounded-xl text-white shadow-sm", `bg-gradient-to-br ${plan.gradient}`)}>
                           <Icon className="h-5 w-5" />
                         </div>
                         <div>

@@ -105,7 +105,7 @@ export function ReviewModal({
               >
                 <Star
                   className={cn(
-                    "h-10 w-10 transition-colors",
+                    "h-11 w-11 transition-colors",
                     star <= displayRating
                       ? "fill-yellow-400 text-yellow-400"
                       : "text-muted-foreground"

@@ -214,7 +214,7 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur p-4">
         <div className="max-w-md w-full text-center space-y-4">
           <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
-            <AlertTriangle className="h-10 w-10 text-destructive" />
+            <AlertTriangle className="h-11 w-11 text-destructive" />
           </div>
           <div>
             <h2 className="text-xl font-bold mb-2">Falha no Login Google</h2>

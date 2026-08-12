@@ -130,7 +130,7 @@ export default function MonetizationHub() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="p-6 text-center max-w-sm">
-          <Crown className="h-10 w-10 mx-auto text-primary mb-2" />
+          <Crown className="h-11 w-11 mx-auto text-primary mb-2" />
           <p className="font-bold">Inicia sessão para ver o teu painel</p>
           <Button className="mt-4" onClick={() => navigate('/auth')}>Entrar</Button>
         </Card>

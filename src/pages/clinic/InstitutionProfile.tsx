@@ -137,7 +137,7 @@ export default function InstitutionProfile() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-pulse space-y-3 text-center">
-          <Building2 className="h-10 w-10 mx-auto text-primary/50" />
+          <Building2 className="h-11 w-11 mx-auto text-primary/50" />
           <p className="text-sm text-muted-foreground">{t('common.loading') || 'A carregar...'}</p>
         </div>
       </div>

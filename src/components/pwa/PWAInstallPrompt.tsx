@@ -63,7 +63,7 @@ export function PWAInstallPrompt() {
           <div className="mx-auto max-w-lg p-3">
             <div className="rounded-2xl bg-gradient-to-br from-teal-600 via-indigo-600 to-purple-700 p-4 text-white shadow-2xl">
               <div className="flex items-start gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/20">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/20">
                   <Download className="h-5 w-5" />
                 </div>
                 <div className="flex-1 min-w-0">

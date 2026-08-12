@@ -132,7 +132,7 @@ export default function ConsultationRoom() {
           <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
           {!camOn && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70">
-              <VideoOff className="h-10 w-10 opacity-60" />
+              <VideoOff className="h-11 w-11 opacity-60" />
             </div>
           )}
           {mediaError && (

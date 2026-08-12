@@ -44,7 +44,7 @@ export function WeeklyLeaderboard() {
   if (!leaderboard?.length) {
     return (
       <div className="text-center py-6">
-        <Trophy className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
+        <Trophy className="h-11 w-11 text-muted-foreground mx-auto mb-2" />
         <p className="text-sm text-muted-foreground">Nenhum pedido esta semana ainda</p>
         <p className="text-xs text-muted-foreground">Seja o primeiro no ranking!</p>
       </div>

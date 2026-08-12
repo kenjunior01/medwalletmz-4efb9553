@@ -164,7 +164,7 @@ export default function HealthEducation() {
         </div>
       ) : !articles || articles.length === 0 ? (
         <div className="px-4 mt-8 text-center">
-          <BookOpen className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+          <BookOpen className="h-11 w-11 mx-auto text-muted-foreground mb-2" />
           <p className="text-sm text-muted-foreground">Sem artigos nesta categoria.</p>
         </div>
       ) : (
@@ -209,7 +209,7 @@ export default function HealthEducation() {
       <section className="px-4 mt-6">
         <Card className="p-4 bg-gradient-to-br from-primary to-secondary text-primary-foreground border-0">
           <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+            <div className="h-11 w-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
               <Stethoscope className="h-5 w-5" />
             </div>
             <div className="flex-1">
@@ -332,7 +332,7 @@ function ArticleDetail({ article, related, loading, onBack, user, navigate }: { 
         <p className="text-sm text-muted-foreground mt-2">{article.excerpt}</p>
 
         <div className="flex items-center gap-3 mt-4 pb-4 border-b">
-          <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center text-primary font-black">
+          <div className="h-11 w-11 rounded-full bg-primary/15 flex items-center justify-center text-primary font-black">
             {(article.author_name ?? "M")[0]}
           </div>
           <div className="flex-1">

@@ -238,7 +238,7 @@ export default function RegionalCEODashboard() {
             ) : (
               <Card>
                 <CardContent className="p-4 text-center">
-                  <Trophy className="h-10 w-10 mx-auto mb-2 text-amber-500" aria-hidden="true" />
+                  <Trophy className="h-11 w-11 mx-auto mb-2 text-amber-500" aria-hidden="true" />
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold">{t('regionalCEO.ranking_position')}</p>
                   <p className="text-4xl font-black my-1">#{ranking.rank}</p>
                   <p className="text-xs text-muted-foreground">{t('regionalCEO.ranking_of', { total: '9' })}</p>

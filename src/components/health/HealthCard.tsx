@@ -69,7 +69,7 @@ export function HealthCard({ patient, className }: HealthCardProps) {
           className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-muted p-8"
           style={{ aspectRatio: '1.586 / 1' }}
         >
-          <Shield className="mb-3 h-10 w-10 text-muted-foreground/40" />
+          <Shield className="mb-3 h-11 w-11 text-muted-foreground/40" />
           <p className="text-sm font-semibold text-muted-foreground">
             {t('healthWallet.no_profile')}
           </p>
@@ -222,7 +222,7 @@ export function HealthCard({ patient, className }: HealthCardProps) {
                 className="h-full w-full rounded-md"
               />
             ) : (
-              <QrCode className="h-10 w-10 text-gray-300" />
+              <QrCode className="h-11 w-11 text-gray-300" />
             )}
           </div>
           <p className="text-[8px] font-medium text-white/50">

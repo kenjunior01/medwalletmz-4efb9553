@@ -253,7 +253,7 @@ export default function Rewards() {
           <TabsContent value="referral">
             <div className="text-center py-6">
               <div className="w-20 h-20 rounded-full gradient-gold mx-auto flex items-center justify-center mb-4">
-                <Users className="h-10 w-10 text-white" />
+                <Users className="h-11 w-11 text-white" />
               </div>
               <h3 className="font-bold text-lg mb-2">Indique Amigos</h3>
               <p className="text-muted-foreground text-sm mb-4">

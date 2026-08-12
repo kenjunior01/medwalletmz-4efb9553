@@ -185,7 +185,7 @@ export default function BookConsultation() {
       <div className="min-h-screen bg-background" role="status" aria-busy="true" aria-live="polite">
         <span className="sr-only">{t('booking.loading_aria')}</span>
         <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-4 flex items-center gap-3">
-          <Skeleton className="h-10 w-10 rounded-xl" />
+          <Skeleton className="h-11 w-11 rounded-xl" />
           <Skeleton className="h-6 w-40" />
         </header>
         <div className="p-4 space-y-4">
@@ -364,7 +364,7 @@ export default function BookConsultation() {
               className="text-center p-6 rounded-xl border-2 border-dashed border-border"
               role="status"
             >
-              <Calendar className="h-10 w-10 mx-auto mb-3 text-muted-foreground/50" aria-hidden="true" />
+              <Calendar className="h-11 w-11 mx-auto mb-3 text-muted-foreground/50" aria-hidden="true" />
               <p className="text-sm font-semibold mb-1">{t('booking.no_slots_title')}</p>
               <p className="text-xs text-muted-foreground mb-4">{t('booking.no_slots_desc')}</p>
               <Button

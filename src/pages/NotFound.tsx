@@ -24,7 +24,7 @@ const NotFound = () => {
     <div className="min-h-[100dvh] flex items-center justify-center px-4 py-10 bg-gradient-to-br from-background via-primary/5 to-secondary/10">
       <div className="max-w-2xl w-full text-center">
         <div className="inline-flex items-center justify-center h-20 w-20 rounded-3xl bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-2xl mb-6 rotate-3">
-          <Compass className="h-10 w-10" />
+          <Compass className="h-11 w-11" />
         </div>
         <h1 className="text-6xl font-black tracking-tight bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">
           404

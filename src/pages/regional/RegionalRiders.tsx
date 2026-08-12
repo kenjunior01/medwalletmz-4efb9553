@@ -427,7 +427,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
         <div className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <GlassCard key={i} className="!p-4 flex items-center gap-3">
-              <div className="h-10 w-10 bg-muted animate-pulse rounded-xl" />
+              <div className="h-11 w-11 bg-muted animate-pulse rounded-xl" />
               <div className="flex-1 space-y-1">
                 <div className="h-4 w-32 bg-muted animate-pulse rounded" />
                 <div className="h-3 w-24 bg-muted animate-pulse rounded" />
@@ -557,7 +557,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                   <div className="relative flex items-center gap-3">
                     <div className="text-2xl leading-none">{getTopPerformerCrown(idx)}</div>
                     <div
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${riderAvatarColor(rider.id)}`}
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold ${riderAvatarColor(rider.id)}`}
                     >
                       {getInitial(rider.full_name)}
                     </div>

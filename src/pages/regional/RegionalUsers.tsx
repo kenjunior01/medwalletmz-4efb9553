@@ -405,7 +405,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
   if (!province) {
     return (
       <GlassCard className="!p-10 text-center">
-        <MapPin className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
+        <MapPin className="h-11 w-11 mx-auto text-muted-foreground/50 mb-3" />
         <p className="text-sm text-muted-foreground">
           {t('regional.select_province') || 'Seleccione uma província para gerir utilizadores.'}
         </p>

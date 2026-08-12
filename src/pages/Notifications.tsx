@@ -248,7 +248,7 @@ export default function NotificationsPage() {
             size="icon"
             onClick={() => navigate(-1)}
             aria-label="Voltar"
-            className="h-10 w-10 rounded-xl hover:bg-primary/10 no-tap-target"
+            className="h-11 w-11 rounded-xl hover:bg-primary/10 no-tap-target"
             data-size="icon"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -349,7 +349,7 @@ export default function NotificationsPage() {
                   >
                     <div
                       className={cn(
-                        "h-10 w-10 rounded-xl flex items-center justify-center shrink-0",
+                        "h-11 w-11 rounded-xl flex items-center justify-center shrink-0",
                         COLOR[item.type]
                       )}
                     >

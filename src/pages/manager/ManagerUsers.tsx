@@ -146,14 +146,14 @@ export default function ManagerUsers() {
         </div>
       ) : filteredUsers.length === 0 ? (
         <GlassCard className="!p-8 text-center">
-          <Users className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
+          <Users className="h-11 w-11 mx-auto text-muted-foreground/50 mb-2" />
           <p className="text-sm text-muted-foreground">{t('manager.no_users') || 'Nenhum utilizador encontrado'}</p>
         </GlassCard>
       ) : (
         <div className="space-y-2">
           {filteredUsers.map(u => (
             <GlassCard key={u.id} className="!p-3 flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted">
                 {roleIcon(u.role)}
               </div>
               <div className="flex-1 min-w-0">

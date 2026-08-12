@@ -510,7 +510,7 @@ export default function Home() {
                   aria-label={t('health.health_education')}
                   className="bento-card p-4 bg-amber-500/5 border-amber-500/20 text-left space-y-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
                 >
-                  <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                  <div className="h-11 w-11 rounded-xl bg-amber-500/20 flex items-center justify-center">
                     <BookOpen className="h-5 w-5 text-amber-600" />
                   </div>
                   <div>
@@ -524,7 +524,7 @@ export default function Home() {
                   aria-label={t('health.help_payment', { method: country?.config?.payment_methods?.[0]?.name || 'M-Pesa' })}
                   className="bento-card p-4 bg-blue-500/5 border-blue-500/20 text-left space-y-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
-                  <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <div className="h-11 w-11 rounded-xl bg-blue-500/20 flex items-center justify-center">
                     <MessageCircle className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>

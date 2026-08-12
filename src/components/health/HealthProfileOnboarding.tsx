@@ -264,7 +264,7 @@ export function HealthProfileOnboarding() {
                 className="space-y-4 text-center"
               >
                 <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                  <Sparkles className="h-10 w-10 text-primary" />
+                  <Sparkles className="h-11 w-11 text-primary" />
                 </div>
                 <h2 className="text-2xl font-black">{t('onboarding.welcome_title')}</h2>
                 <p className="text-sm text-muted-foreground">

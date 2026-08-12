@@ -219,7 +219,7 @@ export function NearbyProvidersWidget() {
                 onClick={() => navigate(target)}
                 className="snap-start shrink-0 w-44 bento-card text-left p-3"
               >
-                <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2 ${
+                <div className={`h-11 w-11 rounded-xl flex items-center justify-center mb-2 ${
                   isPharmacy ? 'bg-pharmacy/15 text-pharmacy' :
                   isHospital ? 'bg-destructive/15 text-destructive' :
                   isClinic ? 'bg-amber-500/15 text-amber-600' :

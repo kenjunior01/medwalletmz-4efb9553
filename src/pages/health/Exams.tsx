@@ -70,7 +70,7 @@ export default function Exams() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="bento-card p-8 text-center text-muted-foreground">
-          <FlaskConical className="h-10 w-10 mx-auto mb-2 opacity-40" />
+          <FlaskConical className="h-11 w-11 mx-auto mb-2 opacity-40" />
           <p className="font-semibold">
             {onlyMyCity && city ? `Sem laboratórios aprovados em ${city}.` : "Sem laboratórios registados."}
           </p>

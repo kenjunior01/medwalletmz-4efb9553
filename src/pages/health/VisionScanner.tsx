@@ -173,7 +173,7 @@ export default function VisionScanner() {
               className="text-center py-6"
             >
               <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="h-10 w-10 text-white" aria-hidden="true" />
+                <Sparkles className="h-11 w-11 text-white" aria-hidden="true" />
               </div>
               <h2 className="text-xl font-bold mb-2">{t('visionScanner.what_to_scan')}</h2>
               <p className="text-sm text-muted-foreground">{t('visionScanner.what_to_scan_desc')}</p>
@@ -257,7 +257,7 @@ export default function VisionScanner() {
               transition={{ duration: 2, repeat: Infinity }}
               className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4"
             >
-              <Sparkles className="h-10 w-10 text-white" aria-hidden="true" />
+              <Sparkles className="h-11 w-11 text-white" aria-hidden="true" />
             </motion.div>
             <p className="font-bold">{t('visionScanner.scanning')}</p>
             <p className="text-sm text-muted-foreground">{t('visionScanner.scanning_desc')}</p>
@@ -359,7 +359,7 @@ export default function VisionScanner() {
             {/* Empty result */}
             {(!scanResult?.medications?.length && !scanResult?.results?.length && !scanResult?.name) && (
               <div className="text-center p-6 rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50 dark:bg-amber-950/20">
-                <AlertCircle className="h-10 w-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
+                <AlertCircle className="h-11 w-11 mx-auto mb-3 text-amber-500" aria-hidden="true" />
                 <p className="font-bold">{t('visionScanner.no_data_extracted')}</p>
                 <p className="text-sm text-muted-foreground mt-1">{t('visionScanner.no_data_desc')}</p>
               </div>

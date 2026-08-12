@@ -217,7 +217,7 @@ export default function MicroInsurance() {
                     <div key={c.id} className="p-3 rounded-lg border border-slate-800 bg-slate-950/40 hover:border-slate-700 transition-colors">
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <div className="flex items-start gap-3 flex-1">
-                          <div className="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center text-lg shrink-0">
+                          <div className="h-11 w-11 rounded-lg bg-slate-800 flex items-center justify-center text-lg shrink-0">
                             {trigger.icon}
                           </div>
                           <div>

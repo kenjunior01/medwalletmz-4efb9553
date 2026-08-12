@@ -291,7 +291,7 @@ export default function AdminDrivers() {
                   {selectedDriver.avatar_url ? (
                     <img src={selectedDriver.avatar_url} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <Truck className="h-10 w-10 text-muted-foreground" />
+                    <Truck className="h-11 w-11 text-muted-foreground" />
                   )}
                 </div>
                 <div>

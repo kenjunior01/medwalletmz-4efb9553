@@ -604,7 +604,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                       <div className="flex items-start gap-3">
                         {/* Type icon */}
                         <div
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${roleColor}`}
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${roleColor}`}
                         >
                           <RoleIcon className="h-5 w-5" />
                         </div>

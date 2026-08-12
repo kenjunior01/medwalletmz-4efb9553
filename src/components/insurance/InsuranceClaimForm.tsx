@@ -108,7 +108,7 @@ export function InsuranceClaimForm({
   if (activePlans.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-muted-foreground/25 p-8 text-center">
-        <FileText className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
+        <FileText className="mx-auto h-11 w-11 text-muted-foreground/50 mb-3" />
         <p className="text-sm text-muted-foreground">
           {t('microInsurance.claim.no_active_plan')}
         </p>

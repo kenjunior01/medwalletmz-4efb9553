@@ -94,7 +94,7 @@ export default function Ranking() {
                 <p className="text-center text-sm text-muted-foreground py-8">{t('ranking.no_data')}</p>
               ) : rows.map((r, i) => (
                 <Card key={r.id} className="p-3 flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
+                  <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
                     {i + 1}
                   </div>
                   <div className="flex-1 min-w-0">

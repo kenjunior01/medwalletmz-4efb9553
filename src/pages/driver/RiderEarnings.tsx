@@ -649,7 +649,7 @@ export default function RiderEarnings() {
           <motion.div variants={fadeUp}>
             <GlassCard className="flex items-center justify-between bg-gray-900/80 border-gray-800">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-500/15">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-500/15">
                   <Gift className="h-5 w-5 text-pink-400" />
                 </div>
                 <div>
@@ -761,7 +761,7 @@ export default function RiderEarnings() {
                     animate={{ opacity: 1 }}
                     className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-700 bg-gray-900/50 py-12"
                   >
-                    <Package className="mb-3 h-10 w-10 text-gray-600" />
+                    <Package className="mb-3 h-11 w-11 text-gray-600" />
                     <p className="text-sm text-gray-400">Nenhuma entrega neste período</p>
                     <p className="mt-1 text-xs text-gray-600">Complete entregas para ver os ganhos aqui</p>
                   </motion.div>
@@ -779,7 +779,7 @@ export default function RiderEarnings() {
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-3">
                           {/* Icon */}
-                          <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10">
+                          <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10">
                             <Package className="h-5 w-5 text-emerald-400" />
                           </div>
 
@@ -842,7 +842,7 @@ export default function RiderEarnings() {
                   >
                     <div className="mb-2.5 flex items-start gap-3">
                       <div
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
                           completed
                             ? 'bg-emerald-500/15'
                             : inc.icon === 'flame'

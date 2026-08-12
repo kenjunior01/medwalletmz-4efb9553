@@ -740,7 +740,7 @@ function PerformanceView({ regionData, countryMetrics }: { regionData: ReturnTyp
       <div className="space-y-2">
         {leaderboard.map((entry, idx) => (
           <div key={entry.regionId} className="bento-card p-4 flex items-center gap-4">
-            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-black text-sm ${
+            <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-black text-sm ${
               idx === 0 ? 'bg-amber-500/10 text-amber-500' :
               idx === 1 ? 'bg-gray-500/10 text-gray-500' :
               idx === 2 ? 'bg-orange-500/10 text-orange-500' :

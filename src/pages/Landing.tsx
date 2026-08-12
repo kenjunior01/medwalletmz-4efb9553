@@ -221,7 +221,7 @@ export default function Landing() {
               <div className="mb-4 flex gap-1 text-yellow-400">★★★★★</div>
               <p className="text-sm leading-relaxed text-slate-300 italic">"{t.quote}"</p>
               <div className="mt-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-indigo-500 text-white font-bold text-sm">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-indigo-500 text-white font-bold text-sm">
                   {t.name[0]}
                 </div>
                 <div>

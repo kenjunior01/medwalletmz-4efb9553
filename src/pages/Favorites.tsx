@@ -136,7 +136,7 @@ export default function Favorites() {
         {favorites.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="rounded-full bg-muted p-6 mb-5">
-              <Heart className="h-10 w-10 text-muted-foreground" />
+              <Heart className="h-11 w-11 text-muted-foreground" />
             </div>
             <p className="text-lg font-medium text-muted-foreground">
               {t('favorites.empty_title')}

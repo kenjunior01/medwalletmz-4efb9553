@@ -138,7 +138,7 @@ export default function ConsultationChat() {
     <div className="min-h-screen flex flex-col bg-background">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-3 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
-        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-pharmacy to-primary flex items-center justify-center text-pharmacy-foreground font-bold">
+        <div className="h-11 w-11 rounded-full bg-gradient-to-br from-pharmacy to-primary flex items-center justify-center text-pharmacy-foreground font-bold">
           {otherName?.[0]}
         </div>
         <div className="flex-1 min-w-0">

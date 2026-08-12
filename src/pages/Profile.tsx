@@ -434,7 +434,7 @@ export default function Profile() {
             <Skeleton className="h-6 w-32 mb-2" />
             <Skeleton className="h-4 w-48" />
           </div>
-          <Skeleton className="h-10 w-10 rounded-md" />
+          <Skeleton className="h-11 w-11 rounded-md" />
         </div>
 
         {/* Trust badges skeleton */}
@@ -819,7 +819,7 @@ export default function Profile() {
                 onClick={() => navigate("/health")}
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
               >
-                <div className="h-10 w-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
                   <Heart className="h-5 w-5 text-rose-500" aria-hidden="true" />
                 </div>
                 <div className="flex-1 text-left">
@@ -834,7 +834,7 @@ export default function Profile() {
                 onClick={() => navigate("/health/records")}
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
               >
-                <div className="h-10 w-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                   <FileText className="h-5 w-5 text-cyan-500" aria-hidden="true" />
                 </div>
                 <div className="flex-1 text-left">
@@ -919,7 +919,7 @@ export default function Profile() {
                   onClick={() => navigate("/health/records")}
                   className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 >
-                  <div className="h-10 w-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                  <div className="h-11 w-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                     <FileText className="h-5 w-5 text-cyan-500" aria-hidden="true" />
                   </div>
                   <div className="flex-1 text-left">
@@ -932,7 +932,7 @@ export default function Profile() {
                   onClick={() => navigate("/health/prescriptions")}
                   className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 >
-                  <div className="h-10 w-10 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center">
+                  <div className="h-11 w-11 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center">
                     <FileCheck2 className="h-5 w-5 text-secondary" aria-hidden="true" />
                   </div>
                   <div className="flex-1 text-left">
@@ -1054,7 +1054,7 @@ export default function Profile() {
                     className="flex items-center gap-4 p-4 rounded-2xl border border-dashed border-border hover:border-primary/40 hover:bg-primary/[0.02] transition-all group active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 min-h-[80px]"
                   >
                     <div
-                      className={`h-10 w-10 rounded-xl flex items-center justify-center border ${inst.bgColor} ${inst.borderColor} shrink-0 group-hover:scale-110 transition-transform`}
+                      className={`h-11 w-11 rounded-xl flex items-center justify-center border ${inst.bgColor} ${inst.borderColor} shrink-0 group-hover:scale-110 transition-transform`}
                     >
                       <Icon className={`h-5 w-5 ${inst.color}`} aria-hidden="true" />
                     </div>
@@ -1116,7 +1116,7 @@ export default function Profile() {
                 onClick={() => toast.info(t("profilehub.password_soon"))}
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
               >
-                <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                   <Key className="h-5 w-5 text-amber-500" aria-hidden="true" />
                 </div>
                 <div className="flex-1 text-left">
@@ -1138,7 +1138,7 @@ export default function Profile() {
                 onClick={() => navigate("/wallet")}
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
               >
-                <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                   <CreditCard className="h-5 w-5 text-emerald-500" aria-hidden="true" />
                 </div>
                 <div className="flex-1 text-left">
@@ -1160,7 +1160,7 @@ export default function Profile() {
                 onClick={() => navigate("/addresses")}
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
               >
-                <div className="h-10 w-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
                   <MapPin className="h-5 w-5 text-rose-500" aria-hidden="true" />
                 </div>
                 <div className="flex-1 text-left">
@@ -1182,7 +1182,7 @@ export default function Profile() {
                 onClick={() => navigate("/legal")}
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
               >
-                <div className="h-10 w-10 rounded-xl bg-slate-500/10 border border-slate-500/20 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-slate-500/10 border border-slate-500/20 flex items-center justify-center">
                   <Lock className="h-5 w-5 text-slate-500" aria-hidden="true" />
                 </div>
                 <div className="flex-1 text-left">
@@ -1204,7 +1204,7 @@ export default function Profile() {
                 onClick={() => toast.info(t("profilehub.notifications_soon"))}
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
               >
-                <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
                   <BellRing className="h-5 w-5 text-blue-500" aria-hidden="true" />
                 </div>
                 <div className="flex-1 text-left">
@@ -1226,7 +1226,7 @@ export default function Profile() {
                 onClick={() => toast.info(t("profilehub.theme_soon"))}
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
               >
-                <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
                   <Palette className="h-5 w-5 text-purple-500" aria-hidden="true" />
                 </div>
                 <div className="flex-1 text-left">

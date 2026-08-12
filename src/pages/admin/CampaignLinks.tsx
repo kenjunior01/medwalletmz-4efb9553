@@ -459,7 +459,7 @@ export default function CampaignLinks() {
                   {/* Campaign Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 min-w-0">
-                      <div className={`h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br ${typeMeta?.color || 'from-gray-500 to-gray-600'} flex items-center justify-center text-white`}>
+                      <div className={`h-11 w-11 shrink-0 rounded-xl bg-gradient-to-br ${typeMeta?.color || 'from-gray-500 to-gray-600'} flex items-center justify-center text-white`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div className="min-w-0">

@@ -96,7 +96,7 @@ export function UserProposalsWidget({ userId }: { userId: string }) {
             const StatusIcon = meta.icon;
             return (
               <div key={p.id} className="flex items-center gap-3 p-3">
-                <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center overflow-hidden shrink-0">
+                <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center overflow-hidden shrink-0">
                   {p.image_url
                     ? <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
                     : <Icon className="h-5 w-5 text-muted-foreground" />}

@@ -88,7 +88,7 @@ export default function SuggestPlace() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center p-6">
-          <Store className="h-10 w-10 mx-auto text-primary mb-2" />
+          <Store className="h-11 w-11 mx-auto text-primary mb-2" />
           <h2 className="font-bold text-lg">{t('health.suggest_place')}</h2>
           <p className="text-sm text-muted-foreground mt-1">
             {t('profile.login_to_continue')}
@@ -353,7 +353,7 @@ export default function SuggestPlace() {
                   onChange={(e) => setImageUrl(e.target.value)}
                   placeholder="https://..."
                 />
-                <label className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-input bg-background hover:bg-accent cursor-pointer">
+                <label className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-input bg-background hover:bg-accent cursor-pointer">
                   {uploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                   <input
                     type="file"

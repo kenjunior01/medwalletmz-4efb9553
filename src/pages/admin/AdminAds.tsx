@@ -85,7 +85,7 @@ export default function AdminAds() {
         </div>
       ) : !data || data.length === 0 ? (
         <div className="bento-card p-8 text-center text-muted-foreground">
-          <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
+          <Megaphone className="h-11 w-11 mx-auto mb-2 opacity-40" />
           <p className="font-semibold">Sem anúncios {STATUSES.find(s => s.key === tab)?.label.toLowerCase()}.</p>
         </div>
       ) : (

@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Search, UserPlus, MapPin, User, Mail, Shield, Check, X,
@@ -355,21 +355,21 @@ export default function AssignRegionalManager() {
         </motion.div>
       )}
 
-      {/* ── Assignment Sheet ── */}
-      <Sheet open={sheetOpen} onOpenChange={(open) => { if (!open) closeSheet(); }}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
+      {/* ── Assignment Drawer ── */}
+      <Drawer open={sheetOpen} onOpenChange={(open) => { if (!open) closeSheet(); }} snapPoints={[0.5, 0.9]}>
+        <DrawerContent className="max-h-[90vh]">
+          <DrawerHeader className="px-4 pt-2 pb-0">
+            <DrawerTitle className="flex items-center gap-2">
               {selectedProvince && (
                 <>
                   <span>{selectedProvince.culturalSymbol}</span>
                   <span>{selectedProvince.name}</span>
                 </>
               )}
-            </SheetTitle>
-          </SheetHeader>
+            </DrawerTitle>
+          </DrawerHeader>
 
-          <div className="mt-6 space-y-6">
+          <div className="px-4 pb-6 mt-2 space-y-6 overflow-y-auto max-h-[70vh]">
             {/* Current manager info */}
             {selectedProvince && managersMap.get(selectedProvince.id) && (
               <GlassCard className="border-amber-200 bg-amber-50/50">
@@ -487,8 +487,8 @@ export default function AssignRegionalManager() {
               )}
             </Button>
           </div>
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

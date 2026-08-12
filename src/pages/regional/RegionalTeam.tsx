@@ -259,7 +259,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
       {filteredProfessionals.length === 0 ? (
         <motion.div variants={fadeUp}>
           <GlassCard className="!p-8 text-center">
-            <Filter className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+            <Filter className="h-11 w-11 mx-auto text-muted-foreground mb-2" />
             <p className="text-sm text-muted-foreground">{t('regional.no_professionals') || 'Sem profissionais nesta categoria'}</p>
           </GlassCard>
         </motion.div>
@@ -269,7 +269,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
             const Icon = getTypeIcon(item.type);
             return (
               <GlassCard key={`${item.type}-${item.id}`} className="!p-3 flex items-center gap-3">
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${getTypeColor(item.type)}`}>
+                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${getTypeColor(item.type)}`}>
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">

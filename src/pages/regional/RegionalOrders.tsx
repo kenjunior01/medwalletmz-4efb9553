@@ -389,7 +389,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
                     <TrendingUp className="h-5 w-5 text-white" />
                   </div>
                 </div>
@@ -607,7 +607,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                 className="rounded-xl border border-border/50 bg-card p-4 animate-pulse"
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-muted" />
+                  <div className="h-11 w-11 rounded-xl bg-muted" />
                   <div className="flex-1 space-y-2">
                     <div className="h-3.5 w-2/3 rounded bg-muted" />
                     <div className="h-3 w-1/2 rounded bg-muted" />
@@ -680,7 +680,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                       <div className="flex items-start gap-3">
                         {/* Status icon circle */}
                         <div
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${cfg.bg}`}
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${cfg.bg}`}
                         >
                           <StatusIcon className={`h-5 w-5 ${cfg.color}`} />
                         </div>

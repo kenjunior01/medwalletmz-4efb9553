@@ -233,7 +233,7 @@ export default function MedicalRecords() {
       <section className="p-4 space-y-3">
         {records.length === 0 ? (
           <Card className="p-6 text-center">
-            <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+            <FileText className="h-11 w-11 mx-auto text-muted-foreground mb-2" />
             <p className="font-semibold">Sem registos ainda</p>
             <p className="text-sm text-muted-foreground mt-1">Adiciona exames e receitas para ter sempre à mão.</p>
           </Card>

@@ -68,7 +68,7 @@ export default function Ads() {
                     <img src={a.image_url} className="w-full h-40 object-cover" alt={a.title} />
                   ) : (
                     <div className="w-full h-40 bg-muted flex items-center justify-center">
-                      <Megaphone className="h-10 w-10 text-muted-foreground opacity-20" />
+                      <Megaphone className="h-11 w-11 text-muted-foreground opacity-20" />
                     </div>
                   )}
                   {isHighValue && (

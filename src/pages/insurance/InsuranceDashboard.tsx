@@ -75,7 +75,7 @@ export default function InsuranceDashboard() {
   return (
     <div className="p-4 flex flex-col gap-4 animate-fade-in">
       <div className="bento-card p-5 flex items-center gap-4">
-        <Shield className="h-10 w-10 text-primary" />
+        <Shield className="h-11 w-11 text-primary" />
         <div className="flex-1">
           <h1 className="text-xl font-black">{company.name}</h1>
           <p className="text-xs text-muted-foreground">

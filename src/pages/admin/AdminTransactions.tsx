@@ -166,7 +166,7 @@ export default function AdminTransactions() {
               const isOut = ['debit', 'commission'].includes(t.type);
               return (
                 <div key={t.id} className="p-4 flex items-center gap-4 hover:bg-muted/30">
-                  <div className={`h-10 w-10 rounded-xl bg-muted flex items-center justify-center ${isOut ? 'text-destructive' : 'text-emerald'}`}>
+                  <div className={`h-11 w-11 rounded-xl bg-muted flex items-center justify-center ${isOut ? 'text-destructive' : 'text-emerald'}`}>
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">

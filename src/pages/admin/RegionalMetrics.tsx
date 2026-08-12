@@ -102,7 +102,7 @@ export default function RegionalMetrics() {
 function SummaryCard({ icon, label, value, color, bg }: { icon: React.ReactNode; label: string; value: number; color: string; bg: string }) {
   return (
     <div className="bento-card flex items-center gap-3 p-4">
-      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${bg}`}><span className={color}>{icon}</span></div>
+      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${bg}`}><span className={color}>{icon}</span></div>
       <div className="min-w-0">
         <p className="text-2xl font-black leading-none">{value}</p>
         <p className="truncate text-xs text-muted-foreground">{label}</p>

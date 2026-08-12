@@ -291,7 +291,7 @@ export default function Wallet() {
                 const st = (t.status || 'confirmed') as 'pending' | 'confirmed' | 'refunded';
                 return (
                   <NeuCard key={t.id} className="!p-3 flex items-center gap-3">
-                    <div className={`h-10 w-10 rounded-xl neu-inset flex items-center justify-center ${COLORS[t.type] || ''}`}>
+                    <div className={`h-11 w-11 rounded-xl neu-inset flex items-center justify-center ${COLORS[t.type] || ''}`}>
                       <Icon className="h-4 w-4" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">

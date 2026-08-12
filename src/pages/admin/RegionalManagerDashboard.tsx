@@ -21,7 +21,7 @@ import {
 } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { cn } from '@/lib/utils';
 
 type NavItem = { icon: any; labelKey: string; path: string; accent?: string };
@@ -155,7 +155,7 @@ export default function RegionalManagerDashboard() {
               size="icon"
               onClick={() => navigate(-1)}
               aria-label="Voltar"
-              className="h-10 w-10 rounded-xl hover:bg-primary/10 no-tap-target"
+              className="h-11 w-11 rounded-xl hover:bg-primary/10 no-tap-target"
               data-size="icon"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -167,24 +167,27 @@ export default function RegionalManagerDashboard() {
                 <p className="text-[10px] text-muted-foreground font-medium">{countryName} ({countryCode})</p>
               </div>
             </div>
-            <Sheet>
-              <SheetTrigger asChild>
+            <Drawer snapPoints={[0.5, 0.85]}>
+              <DrawerTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-xl hover:bg-primary/10 no-tap-target"
+                  aria-label="Abrir menu"
+                  className="h-11 w-11 rounded-xl hover:bg-primary/10 no-tap-target"
                   data-size="icon"
                 >
-                  <Menu className="h-4 w-4" />
+                  <Menu className="h-5 w-5" />
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-72 p-0 flex flex-col">
-                <SheetHeader className="sr-only">
-                  <SheetTitle>{t('manager.panel_label') || 'Menu do Gestor Regional'}</SheetTitle>
-                </SheetHeader>
-                <SidebarContent onNavigate={() => {}} />
-              </SheetContent>
-            </Sheet>
+              </DrawerTrigger>
+              <DrawerContent className="max-h-[85vh]">
+                <DrawerHeader className="sr-only">
+                  <DrawerTitle>{t('manager.panel_label') || 'Menu do Gestor Regional'}</DrawerTitle>
+                </DrawerHeader>
+                <div className="overflow-y-auto max-h-[70vh] px-1">
+                  <SidebarContent onNavigate={() => {}} />
+                </div>
+              </DrawerContent>
+            </Drawer>
           </div>
         </header>
 

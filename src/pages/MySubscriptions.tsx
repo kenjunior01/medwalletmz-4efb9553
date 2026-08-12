@@ -60,7 +60,7 @@ export default function MySubscriptions() {
           <p className="text-center text-muted-foreground">A carregar...</p>
         ) : subs.length === 0 ? (
           <Card className="p-6 text-center">
-            <Crown className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+            <Crown className="h-11 w-11 mx-auto text-muted-foreground mb-2" />
             <p className="font-semibold">Sem subscrições</p>
             <p className="text-sm text-muted-foreground mt-1">
               Conhece o Health Pass e desbloqueia benefícios exclusivos.

@@ -130,7 +130,7 @@ export default function LabDetail() {
 
       {exams.length === 0 ? (
         <div className="bento-card p-8 text-center text-muted-foreground">
-          <FlaskConical className="h-10 w-10 mx-auto mb-2 opacity-40" />
+          <FlaskConical className="h-11 w-11 mx-auto mb-2 opacity-40" />
           <p className="font-semibold">Este laboratório ainda não tem exames publicados.</p>
           <p className="text-xs mt-1">Contacta directamente: {lab.phone || "—"}</p>
         </div>

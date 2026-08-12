@@ -149,7 +149,7 @@ export function PillTracker() {
                 animate={med.taken ? { scale: [1, 1.2, 1] } : {}}
                 transition={{ duration: 0.3 }}
                 className={cn(
-                  'h-10 w-10 rounded-xl flex items-center justify-center transition-all',
+                  'h-11 w-11 rounded-xl flex items-center justify-center transition-all',
                   med.taken
                     ? 'bg-emerald-500 text-white'
                     : 'bg-muted hover:bg-emerald-100 text-muted-foreground'

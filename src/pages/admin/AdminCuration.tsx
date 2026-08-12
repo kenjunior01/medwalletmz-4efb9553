@@ -892,7 +892,7 @@ function ImagePreview({ proposal }: { proposal: Proposal }) {
   return (
     <Card className="overflow-hidden">
       <div className="h-52 bg-muted flex items-center justify-center">
-        {proposal.image_url ? <SafeImage src={getSafeImageUrl(proposal.image_url)} alt={proposal.name} className="w-full h-full object-cover" /> : <ImageIcon className="h-10 w-10 text-muted-foreground" />}
+        {proposal.image_url ? <SafeImage src={getSafeImageUrl(proposal.image_url)} alt={proposal.name} className="w-full h-full object-cover" /> : <ImageIcon className="h-11 w-11 text-muted-foreground" />}
       </div>
       <div className="p-3 text-xs text-muted-foreground">Imagem pública usada na listagem após aprovação.</div>
     </Card>

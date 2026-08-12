@@ -188,7 +188,7 @@ export default function HealthJournal() {
       <div className="min-h-screen bg-background" role="status" aria-busy="true" aria-live="polite">
         <span className="sr-only">{t('healthJournal.loading_aria')}</span>
         <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-4 flex items-center gap-3">
-          <Skeleton className="h-10 w-10 rounded-xl" />
+          <Skeleton className="h-11 w-11 rounded-xl" />
           <Skeleton className="h-6 w-40" />
         </header>
         <div className="p-4 space-y-4">

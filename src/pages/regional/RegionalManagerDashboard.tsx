@@ -270,7 +270,7 @@ export default function RegionalManagerDashboard() {
       <motion.div variants={fadeUp}>
         <GlassCard className="!p-4">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
               <TrendingUp className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">

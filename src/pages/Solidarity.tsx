@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 import { toast } from "sonner";
 
 export default function Solidarity() {
@@ -89,7 +90,7 @@ export default function Solidarity() {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 flex items-center gap-3 bg-background/80 px-4 py-3 backdrop-blur border-b">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-11 w-11 rounded-xl hover:bg-primary/10 no-tap-target" data-size="icon">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
@@ -100,6 +101,7 @@ export default function Solidarity() {
         </div>
       </header>
 
+      <PullToRefresh onRefresh={async () => { await refetch(); }}>
       {/* Hero */}
       <section className="px-4 pt-4">
         <Card className="bg-gradient-to-br from-primary to-secondary text-primary-foreground border-none overflow-hidden p-6 relative">
@@ -277,6 +279,7 @@ export default function Solidarity() {
           </p>
         </div>
       </section>
+      </PullToRefresh>
     </div>
   );
 }

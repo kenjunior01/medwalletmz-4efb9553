@@ -76,7 +76,7 @@ export function ReferralBanner({ onOpenShareSheet }: ReferralBannerProps) {
               <p className="text-[9px] uppercase font-bold text-muted-foreground">{t('referrals.your_code')}</p>
               <p className="font-mono font-black text-lg text-primary tracking-wider">{code}</p>
             </div>
-            <Button size="sm" variant="ghost" className="h-10 w-10 rounded-xl bg-primary/5 hover:bg-primary/10" onClick={copy} aria-label="Copiar link">
+            <Button size="sm" variant="ghost" className="h-11 w-11 rounded-xl bg-primary/5 hover:bg-primary/10" onClick={copy} aria-label="Copiar link">
               <Copy className="h-4 w-4 text-primary" />
             </Button>
           </div>

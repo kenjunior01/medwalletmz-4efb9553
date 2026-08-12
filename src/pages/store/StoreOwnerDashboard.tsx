@@ -16,7 +16,7 @@ import {
 } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { toast } from 'sonner';
 
 interface StoreData {
@@ -129,7 +129,7 @@ export default function StoreOwnerDashboard() {
               size="icon"
               onClick={() => navigate(-1)}
               aria-label="Voltar"
-              className="h-10 w-10 rounded-xl hover:bg-primary/10 no-tap-target"
+              className="h-11 w-11 rounded-xl hover:bg-primary/10 no-tap-target"
               data-size="icon"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -149,32 +149,34 @@ export default function StoreOwnerDashboard() {
                 <p className="text-[10px] text-muted-foreground uppercase font-bold capitalize">{selectedStore?.type}</p>
               </div>
             </div>
-            <Sheet>
-              <SheetTrigger asChild>
+            <Drawer snapPoints={[0.5, 0.85]}>
+              <DrawerTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
                   aria-label="Abrir menu"
-                  className="h-10 w-10 rounded-xl hover:bg-primary/10 no-tap-target"
+                  className="h-11 w-11 rounded-xl hover:bg-primary/10 no-tap-target"
                   data-size="icon"
                 >
-                  <Menu className="h-4 w-4" />
+                  <Menu className="h-5 w-5" />
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-72 p-0 flex flex-col">
-                <SheetHeader className="sr-only">
-                  <SheetTitle>Menu da Farmácia</SheetTitle>
-                </SheetHeader>
-                <StoreSidebarContent
-                  selectedStore={selectedStore}
-                  stores={stores}
-                  onSelectStore={setSelectedStore}
-                  menuItems={menuItems}
-                  location={location}
-                  onSignOut={handleSignOut}
-                />
-              </SheetContent>
-            </Sheet>
+              </DrawerTrigger>
+              <DrawerContent className="max-h-[85vh]">
+                <DrawerHeader className="sr-only">
+                  <DrawerTitle>Menu da Farmácia</DrawerTitle>
+                </DrawerHeader>
+                <div className="overflow-y-auto max-h-[70vh] px-1">
+                  <StoreSidebarContent
+                    selectedStore={selectedStore}
+                    stores={stores}
+                    onSelectStore={setSelectedStore}
+                    menuItems={menuItems}
+                    location={location}
+                    onSignOut={handleSignOut}
+                  />
+                </div>
+              </DrawerContent>
+            </Drawer>
           </div>
         </header>
 

@@ -140,7 +140,7 @@ export default function Settings() {
       >
         <span className="sr-only">{t("settings.loading")}</span>
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur border-b px-4 py-3 flex items-center gap-3">
-          <Skeleton className="h-10 w-10 rounded-md" />
+          <Skeleton className="h-11 w-11 rounded-md" />
           <Skeleton className="h-5 w-32" />
         </header>
         <div className="p-4 space-y-6">
@@ -265,7 +265,7 @@ export default function Settings() {
               {/* Notifications toggle */}
               <div className="flex items-center justify-between p-4 min-h-[64px]">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center">
                     <Bell className="h-5 w-5 text-primary" aria-hidden="true" />
                   </div>
                   <div className="space-y-0.5">
@@ -285,7 +285,7 @@ export default function Settings() {
               {/* Dark mode toggle */}
               <div className="flex items-center justify-between p-4 min-h-[64px]">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                  <div className="h-11 w-11 rounded-xl bg-purple-500/10 flex items-center justify-center">
                     <Moon className="h-5 w-5 text-purple-500" aria-hidden="true" />
                   </div>
                   <div className="space-y-0.5">
@@ -325,7 +325,7 @@ export default function Settings() {
                 aria-label={t("settings.region_button_aria")}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+                  <div className="h-11 w-11 rounded-xl bg-secondary/10 flex items-center justify-center">
                     <Globe className="h-5 w-5 text-secondary" aria-hidden="true" />
                   </div>
                   <div className="space-y-0.5 text-left">
@@ -353,7 +353,7 @@ export default function Settings() {
                     aria-label={t("settings.delete_account_button_aria")}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+                      <div className="h-11 w-11 rounded-xl bg-destructive/10 flex items-center justify-center">
                         <Trash2 className="h-5 w-5" aria-hidden="true" />
                       </div>
                       <div className="space-y-0.5 text-left">
@@ -411,7 +411,7 @@ export default function Settings() {
                 className="w-full flex items-center gap-3 p-4 min-h-[64px] hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 aria-label={t("profile.menu.help")}
               >
-                <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
                   <LifeBuoy className="h-5 w-5 text-blue-500" aria-hidden="true" />
                 </div>
                 <div className="flex-1 text-left">

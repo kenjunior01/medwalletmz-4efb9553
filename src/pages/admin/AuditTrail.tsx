@@ -179,7 +179,7 @@ export default function AuditTrail() {
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-start gap-3">
                       {/* Icon */}
-                      <div className={`h-10 w-10 rounded-lg border ${severityClass} flex items-center justify-center text-lg shrink-0`}>
+                      <div className={`h-11 w-11 rounded-lg border ${severityClass} flex items-center justify-center text-lg shrink-0`}>
                         {meta.icon}
                       </div>
 

@@ -36,7 +36,7 @@ export default function ProtectedRoute({ allowedRoles, children }: ProtectedRout
       <div className="flex items-center justify-center min-h-screen bg-background p-4">
         <Card className="max-w-md w-full p-6 flex flex-col items-center gap-4 text-center">
           <div className="rounded-full bg-destructive/10 p-4">
-            <Shield className="h-10 w-10 text-destructive" />
+            <Shield className="h-11 w-11 text-destructive" />
           </div>
           <h1 className="text-2xl font-semibold text-foreground">Acesso Negado</h1>
           <p className="text-muted-foreground">

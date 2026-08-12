@@ -56,7 +56,7 @@ export default function Insurance() {
           <Sparkles className="h-4 w-4 text-primary animate-pulse" />
         </div>
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shrink-0">
+          <div className="h-11 w-11 rounded-xl bg-primary flex items-center justify-center shrink-0">
             <Smartphone className="h-5 w-5 text-white" />
           </div>
           <div className="flex-1">

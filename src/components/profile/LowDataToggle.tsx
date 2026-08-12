@@ -8,7 +8,7 @@ export function LowDataToggle() {
   const { t } = useCountry();
   return (
     <div className="bento-card p-4 flex items-start gap-3">
-      <div className="h-10 w-10 rounded-xl bg-secondary/15 flex items-center justify-center shrink-0">
+      <div className="h-11 w-11 rounded-xl bg-secondary/15 flex items-center justify-center shrink-0">
         <Gauge className="h-5 w-5 text-secondary" />
       </div>
       <div className="flex-1 min-w-0">

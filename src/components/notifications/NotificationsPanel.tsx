@@ -255,7 +255,7 @@ export function NotificationsPanel() {
           variant="ghost"
           size="icon"
           aria-label="Notificações"
-          className="relative hover:bg-primary/10 rounded-xl transition-all h-10 w-10 no-tap-target"
+          className="relative hover:bg-primary/10 rounded-xl transition-all h-11 w-11 no-tap-target"
           data-size="icon"
         >
           <Bell className="h-4 w-4" />
@@ -298,7 +298,7 @@ export function NotificationsPanel() {
             </div>
           ) : items.length === 0 ? (
             <div className="py-12 px-4 text-center">
-              <Bell className="h-10 w-10 mx-auto text-muted-foreground/40 mb-2" />
+              <Bell className="h-11 w-11 mx-auto text-muted-foreground/40 mb-2" />
               <p className="text-sm font-bold">Sem notificações</p>
               <p className="text-xs text-muted-foreground mt-1">
                 As novidades de consultas, pedidos e receitas aparecem aqui.

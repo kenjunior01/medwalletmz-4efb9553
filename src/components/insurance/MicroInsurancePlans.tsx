@@ -234,7 +234,7 @@ export function MicroInsurancePlans() {
                 {/* Icon + type badge */}
                 <div className="flex items-start justify-between mb-3">
                   <div
-                    className="h-10 w-10 rounded-xl flex items-center justify-center"
+                    className="h-11 w-11 rounded-xl flex items-center justify-center"
                     style={{ background: `${plan.color}20` }}
                   >
                     <PlanIcon name={plan.icon} className="h-5 w-5" style={{ color: plan.color }} />

@@ -553,7 +553,7 @@ export default function HealthEducationHub() {
 
         {filtered.length === 0 && (
           <div className="mt-10 text-center text-muted-foreground">
-            <BookOpen className="mx-auto h-10 w-10 mb-2 opacity-30" />
+            <BookOpen className="mx-auto h-11 w-11 mb-2 opacity-30" />
             <p className="text-sm">Nenhum artigo encontrado para "{search}".</p>
           </div>
         )}

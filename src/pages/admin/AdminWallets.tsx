@@ -143,7 +143,7 @@ export default function AdminWallets() {
             <div className="divide-y">
               {data?.map(w => (
                 <div key={w.user_id} className="p-4 flex items-center gap-4 hover:bg-muted/30">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center">
                     <Wallet className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">

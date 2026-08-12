@@ -165,7 +165,7 @@ export default function BloodHub() {
           ) : (
             <Card className="p-8 text-center space-y-6 shadow-premium border-none">
               <div className="w-20 h-20 bg-red-500/10 rounded-[2.5rem] flex items-center justify-center mx-auto relative group">
-                <Droplet className="h-10 w-10 text-red-500 group-hover:scale-110 transition-transform" />
+                <Droplet className="h-11 w-11 text-red-500 group-hover:scale-110 transition-transform" />
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
@@ -187,7 +187,7 @@ export default function BloodHub() {
           )}
 
           <div className="bg-amber-500/5 border-2 border-amber-500/10 rounded-2xl p-5 flex gap-4">
-            <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+            <div className="h-11 w-11 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
               <Zap className="h-5 w-5 text-amber-600" />
             </div>
             <div className="space-y-1">
@@ -246,7 +246,7 @@ export default function BloodHub() {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                      <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl" onClick={() => shareRequest(r)}>
+                      <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl" onClick={() => shareRequest(r)}>
                         <Share2 className="h-4 w-4" />
                       </Button>
                       {donor?.blood_type === r.blood_type && donor?.is_available && (
@@ -342,7 +342,7 @@ export default function BloodHub() {
               {matches.map((m) => (
                 <Card key={m.id} className="p-4 flex items-center justify-between border-none shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                    <div className="h-11 w-11 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                       <CheckCircle2 className="h-5 w-5 text-emerald-600" />
                     </div>
                     <div>

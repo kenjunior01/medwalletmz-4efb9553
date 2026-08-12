@@ -37,7 +37,7 @@ export default function DoctorPatients() {
         {patients.length === 0 && <p className="text-muted-foreground text-sm">Ainda não tens pacientes.</p>}
         {patients.map(p => (
           <Card key={p.user_id}><CardContent className="p-3 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"><User className="h-5 w-5" /></div>
+            <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center"><User className="h-5 w-5" /></div>
             <div className="flex-1">
               <p className="font-semibold text-sm">{p.full_name || 'Paciente'}</p>
               <p className="text-xs text-muted-foreground">Última: {new Date(p.last).toLocaleDateString('pt-PT')}</p>

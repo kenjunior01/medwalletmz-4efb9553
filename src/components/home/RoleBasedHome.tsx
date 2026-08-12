@@ -76,7 +76,7 @@ function ActionButton({ icon: Icon, label, to, delay = 0, highlight = false }: {
             : 'hover:bg-white/5'
         )}
       >
-        <div className={cn('h-10 w-10 rounded-xl flex items-center justify-center', highlight ? 'bg-white/20' : 'bg-white/10')}>
+        <div className={cn('h-11 w-11 rounded-xl flex items-center justify-center', highlight ? 'bg-white/20' : 'bg-white/10')}>
           <Icon className="h-5 w-5 text-white" />
         </div>
         <span className="text-sm font-semibold text-white flex-1">{label}</span>
@@ -320,7 +320,7 @@ function WorkerHome() {
                 className="px-4 py-3 flex items-center gap-3"
               >
                 <div className={cn(
-                  'h-10 w-10 rounded-xl flex items-center justify-center',
+                  'h-11 w-11 rounded-xl flex items-center justify-center',
                   b.status === 'requested' ? 'bg-amber-500/20' : 'bg-emerald-500/20'
                 )}>
                   <Stethoscope className={cn(
@@ -437,7 +437,7 @@ function PromoterHome() {
           </div>
           <button
             onClick={handleCopy}
-            className="h-10 w-10 rounded-xl bg-amber-500 hover:bg-amber-600 flex items-center justify-center transition shrink-0"
+            className="h-11 w-11 rounded-xl bg-amber-500 hover:bg-amber-600 flex items-center justify-center transition shrink-0"
             aria-label={t('roleHome.promoter.shareLink') ?? 'Copiar link'}
           >
             {copied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4 text-white" />}
@@ -493,7 +493,7 @@ function PromoterHome() {
                 transition={{ delay: 0.3 + i * 0.05 }}
                 className="px-4 py-3 flex items-center gap-3"
               >
-                <div className="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-emerald-500/20 flex items-center justify-center">
                   <Check className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div className="flex-1 min-w-0">

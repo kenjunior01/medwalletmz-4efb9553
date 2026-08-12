@@ -134,7 +134,7 @@ export function OAuthBrokerRedirect() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="flex flex-col items-center gap-4 text-center max-w-md">
         <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center">
-          <AlertTriangle className="h-10 w-10 text-destructive" />
+          <AlertTriangle className="h-11 w-11 text-destructive" />
         </div>
         <div>
           <h2 className="text-xl font-bold mb-2">Não foi possível atualizar a app</h2>

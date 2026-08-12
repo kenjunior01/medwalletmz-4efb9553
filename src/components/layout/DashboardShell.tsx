@@ -26,12 +26,12 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Menu, LogOut, ChevronLeft, Sparkles } from "@/components/icons/lucide-compat";
 import { cn } from "@/lib/utils";
 
@@ -143,7 +143,7 @@ export function DashboardShell({
               size="icon"
               onClick={() => navigate(-1)}
               aria-label="Voltar"
-              className="h-10 w-10 rounded-xl hover:bg-primary/10 no-tap-target"
+              className="h-11 w-11 rounded-xl hover:bg-primary/10 no-tap-target"
               data-size="icon"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -156,25 +156,27 @@ export function DashboardShell({
                 </p>
               )}
             </div>
-            <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-              <SheetTrigger asChild>
+            <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} snapPoints={[0.5, 0.85]}>
+              <DrawerTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
                   aria-label="Abrir menu"
-                  className="h-10 w-10 rounded-xl hover:bg-primary/10 no-tap-target"
+                  className="h-11 w-11 rounded-xl hover:bg-primary/10 no-tap-target"
                   data-size="icon"
                 >
-                  <Menu className="h-4 w-4" />
+                  <Menu className="h-5 w-5" />
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-72 p-0 flex flex-col">
-                <SheetHeader className="sr-only">
-                  <SheetTitle>{title} — Menu</SheetTitle>
-                </SheetHeader>
-                <SidebarContent onNavigate={() => setDrawerOpen(false)} />
-              </SheetContent>
-            </Sheet>
+              </DrawerTrigger>
+              <DrawerContent className="max-h-[85vh]">
+                <DrawerHeader className="sr-only">
+                  <DrawerTitle>{title} — Menu</DrawerTitle>
+                </DrawerHeader>
+                <div className="overflow-y-auto max-h-[70vh] px-1">
+                  <SidebarContent onNavigate={() => setDrawerOpen(false)} />
+                </div>
+              </DrawerContent>
+            </Drawer>
           </div>
         </header>
 

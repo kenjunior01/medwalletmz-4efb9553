@@ -1035,7 +1035,7 @@ function WorkerBookingCard({
       className="rounded-2xl border border-slate-800 bg-slate-900 p-4"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/20 text-xl">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-500/20 text-xl">
           {svc.emoji}
         </div>
         <div className="flex-1 min-w-0">

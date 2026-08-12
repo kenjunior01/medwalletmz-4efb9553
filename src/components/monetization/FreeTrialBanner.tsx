@@ -93,7 +93,7 @@ export function FreeTrialBanner() {
           {!user ? (
             // Guest — grátis para sempre
             <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/20">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/20">
                 <Gift className="h-5 w-5" />
               </div>
               <div className="flex-1 min-w-0">
@@ -119,7 +119,7 @@ export function FreeTrialBanner() {
           ) : (
             // Profissional sem subscrição
             <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/20">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/20">
                 <Crown className="h-5 w-5" />
               </div>
               <div className="flex-1 min-w-0">

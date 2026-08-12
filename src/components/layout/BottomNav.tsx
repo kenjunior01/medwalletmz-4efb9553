@@ -315,7 +315,7 @@ export function BottomNav() {
                             className="flex items-center justify-between p-3 rounded-xl bg-card border border-border/50 hover:border-primary/20 active:bg-muted transition-colors w-full"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-center">
+                              <div className="h-11 w-11 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-center">
                                 <item.icon className="h-4.5 w-4.5" />
                               </div>
                               <span className="font-semibold text-sm">{t(item.label)}</span>
@@ -333,7 +333,7 @@ export function BottomNav() {
                       onClick={() => { setOpen(false); navigate('/health/triage'); }}
                       className="w-full flex items-center gap-3 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive"
                     >
-                      <div className="h-10 w-10 rounded-xl bg-destructive text-white flex items-center justify-center">
+                      <div className="h-11 w-11 rounded-xl bg-destructive text-white flex items-center justify-center">
                         <PhoneCall className="h-5 w-5" />
                       </div>
                       <div className="flex-1 text-left">

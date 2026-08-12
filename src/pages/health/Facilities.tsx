@@ -432,7 +432,7 @@ export default function Facilities() {
               ) : sorted.length === 0 ? (
                 /* Empty state with suggestions */
                 <div className="bento-card p-8 text-center text-muted-foreground" role="status">
-                  <tp.icon className="h-10 w-10 mx-auto mb-2 opacity-40" aria-hidden="true" />
+                  <tp.icon className="h-11 w-11 mx-auto mb-2 opacity-40" aria-hidden="true" />
                   <p className="font-semibold mb-1">
                     {onlyMyCity && city
                       ? t("facilities.empty_in_city", { type: meta.label.toLowerCase(), city })

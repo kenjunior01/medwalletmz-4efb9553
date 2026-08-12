@@ -123,7 +123,7 @@ export default function FacilityExplorer() {
                   )}
                 </div>
               </div>
-              <div className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center border shrink-0">
+              <div className="h-11 w-11 rounded-full bg-slate-50 flex items-center justify-center border shrink-0">
                 {icons[f.type] || <Building2 className="h-5 w-5 text-slate-400" />}
               </div>
             </Card>

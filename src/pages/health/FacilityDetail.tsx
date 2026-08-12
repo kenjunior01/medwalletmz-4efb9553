@@ -186,7 +186,7 @@ export default function FacilityDetail() {
                             <h2 className="text-lg font-black">Localização e Contacto</h2>
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3 p-3 bento-card border-transparent bg-muted/30">
-                                    <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                                    <div className="h-11 w-11 rounded-xl bg-white flex items-center justify-center shadow-sm">
                                         <MapPin className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -213,7 +213,7 @@ export default function FacilityDetail() {
 
                                 {facility.phone && (
                                     <div className="flex items-center gap-3 p-3 bento-card border-transparent bg-muted/30">
-                                        <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                                        <div className="h-11 w-11 rounded-xl bg-white flex items-center justify-center shadow-sm">
                                             <Phone className="h-5 w-5 text-secondary" />
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -244,7 +244,7 @@ export default function FacilityDetail() {
                                 {services.map((s: any) => (
                                     <div key={s.id} className="bento-card p-4 flex items-center justify-between border-transparent bg-muted/30">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-secondary/10 flex items-center justify-center">
+                                            <div className="h-11 w-11 rounded-full bg-secondary/10 flex items-center justify-center">
                                                 <Activity className="h-5 w-5 text-secondary" />
                                             </div>
                                             <div>

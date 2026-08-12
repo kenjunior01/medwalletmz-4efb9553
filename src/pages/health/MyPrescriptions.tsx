@@ -224,7 +224,7 @@ export default function MyPrescriptions() {
       {/* EMPTY FILTER */}
       {loadState === 'success' && list.length > 0 && filteredList.length === 0 && (
         <div className="text-center p-8 rounded-2xl border-2 border-dashed border-border" role="status">
-          <Search className="h-10 w-10 mx-auto mb-3 text-muted-foreground/50" aria-hidden="true" />
+          <Search className="h-11 w-11 mx-auto mb-3 text-muted-foreground/50" aria-hidden="true" />
           <p className="font-semibold mb-1">{t('prescriptions.empty_filter_title')}</p>
           <p className="text-sm text-muted-foreground mb-3">{t('prescriptions.empty_filter_desc')}</p>
           <Button

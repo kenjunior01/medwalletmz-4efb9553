@@ -280,7 +280,7 @@ export default function NotificationCenter() {
                 variant="ghost"
                 size="icon"
                 onClick={load}
-                className="rounded-xl h-10 w-10"
+                className="rounded-xl h-11 w-11"
                 aria-label="Atualizar"
               >
                 <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
@@ -290,7 +290,7 @@ export default function NotificationCenter() {
                   variant="ghost"
                   size="icon"
                   onClick={markAllRead}
-                  className="rounded-xl h-10 w-10"
+                  className="rounded-xl h-11 w-11"
                   aria-label="Marcar tudo como lido"
                 >
                   <CheckCheck className="h-4 w-4 text-secondary" />
@@ -351,7 +351,7 @@ export default function NotificationCenter() {
             <div className="space-y-2">
               {[1, 2, 3, 4, 5].map((i) => (
                 <Card key={i} className="p-4 flex gap-3 animate-pulse">
-                  <div className="h-10 w-10 rounded-xl bg-muted" />
+                  <div className="h-11 w-11 rounded-xl bg-muted" />
                   <div className="flex-1 space-y-2">
                     <div className="h-3 bg-muted rounded w-1/2" />
                     <div className="h-2.5 bg-muted/60 rounded w-3/4" />
@@ -367,9 +367,9 @@ export default function NotificationCenter() {
             >
               <div className="h-20 w-20 rounded-3xl bg-muted/40 flex items-center justify-center mx-auto mb-4">
                 {showUnreadOnly ? (
-                  <CheckCheck className="h-10 w-10 text-secondary" />
+                  <CheckCheck className="h-11 w-11 text-secondary" />
                 ) : (
-                  <BellOff className="h-10 w-10 text-muted-foreground/50" />
+                  <BellOff className="h-11 w-11 text-muted-foreground/50" />
                 )}
               </div>
               <h3 className="font-black text-lg">

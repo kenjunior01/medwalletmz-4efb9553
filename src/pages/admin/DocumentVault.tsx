@@ -192,7 +192,7 @@ function DocumentRow({ doc, onVerify, isPending }: { doc: ComplianceDocument; on
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         {/* Left: identity */}
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${
+          <div className={`h-11 w-11 rounded-lg flex items-center justify-center shrink-0 ${
             isExpired ? 'bg-red-950/50 text-red-400' : isCritical ? 'bg-orange-950/50 text-orange-400' : 'bg-slate-800 text-slate-400'
           }`}>
             <FileText className="h-5 w-5" />

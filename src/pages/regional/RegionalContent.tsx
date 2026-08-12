@@ -283,7 +283,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
       {filteredItems.length === 0 ? (
         <motion.div variants={fadeUp}>
           <GlassCard className="!p-8 text-center">
-            <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+            <FileText className="h-11 w-11 mx-auto text-muted-foreground mb-2" />
             <p className="text-sm text-muted-foreground">
               {loading ? 'A carregar...' : 'Sem conteúdo publicado'}
             </p>
@@ -297,7 +297,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
             return (
               <GlassCard key={item.id} className={`!p-3 ${!item.is_active ? 'opacity-50' : ''}`}>
                 <div className="flex items-start gap-3">
-                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${config.bgColor}`}>
+                  <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${config.bgColor}`}>
                     <Icon className={`h-4 w-4 ${config.color}`} />
                   </div>
                   <div className="flex-1 min-w-0">

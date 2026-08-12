@@ -230,7 +230,7 @@ export default function ManageCountryPermissions() {
       <div className="space-y-3">
         {filteredManagers.length === 0 ? (
           <GlassCard className="!p-8 text-center">
-            <Users className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+            <Users className="h-11 w-11 mx-auto text-muted-foreground mb-2" />
             <p className="text-sm text-muted-foreground">Nenhum gestor encontrado.</p>
           </GlassCard>
         ) : (

@@ -17,7 +17,7 @@ export function EnableNotificationsBanner() {
   return (
     <div className="px-4">
       <Card className="p-3 flex items-center gap-3 bg-primary/5 border-primary/20">
-        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+        <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <Bell className="h-5 w-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">

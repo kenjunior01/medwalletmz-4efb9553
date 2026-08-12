@@ -130,7 +130,7 @@ export default function Partners() {
           {cases.map((c) => (
             <Card key={c.title} className="p-4">
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
                   <c.icon className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
@@ -150,7 +150,7 @@ export default function Partners() {
       <section className="px-4 pt-5">
         <Card className="p-4 bg-amber-500/10 border-amber-500/30">
           <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+            <div className="h-11 w-11 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
               <Sparkles className="h-5 w-5 text-amber-600" />
             </div>
             <div className="flex-1">
