@@ -13,7 +13,8 @@ import {
   Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger,
 } from '@/components/ui/drawer';
 import { Badge } from '@/components/ui/badge';
-import { ViralShareSheet } from '@/components/growth/ViralShareSheet';
+import { lazy, Suspense } from 'react';
+const ViralShareSheet = lazy(() => import('@/components/growth/ViralShareSheet').then(m => ({ default: m.ViralShareSheet })));
 import { useCountry } from '@/contexts/CountryContext';
 import { useLocation as useAppLocation } from '@/contexts/LocationContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -129,7 +130,7 @@ export function BottomNav() {
           <UserPlus className="h-5 w-5" />
         </button>
       )}
-      <ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} />
+      <Suspense fallback={null}><ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} /></Suspense>
 
       {/* Bottom nav — native feel with sliding pill indicator */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border/50 safe-area-bottom">

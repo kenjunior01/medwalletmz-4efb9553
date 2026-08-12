@@ -68,11 +68,16 @@ function fallbackSpeak(text: string, languageCode: string) {
 }
 
 function base64ToBlob(base64: string, type: string) {
-  const binStr = atob(base64);
-  const len = binStr.length;
-  const arr = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    arr[i] = binStr.charCodeAt(i);
+  const chunkSize = 8192;
+  const len = base64.length;
+  const arr = new Uint8Array(len * 0.75);
+  let offset = 0;
+  for (let i = 0; i < len; i += chunkSize) {
+    const chunk = base64.slice(i, i + chunkSize);
+    const binStr = atob(chunk);
+    for (let j = 0; j < binStr.length; j++) {
+      arr[offset++] = binStr.charCodeAt(j);
+    }
   }
-  return new Blob([arr], { type });
+  return new Blob([arr.buffer.slice(0, offset)], { type });
 }

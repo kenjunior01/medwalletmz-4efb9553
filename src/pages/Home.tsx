@@ -4,11 +4,14 @@ import {
   Plus, Calendar, ShieldCheck, Building2,
   BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse
 } from '@/components/icons/lucide-compat';
-import { ViralShareSheet } from "@/components/growth/ViralShareSheet";
-import { MeddyChat } from "@/components/meddy/MeddyChat";
 import { RoleHero } from "@/components/home/RoleHero";
-import { UserTypeHero } from "@/components/home/UserTypeHero";
-import { RoleBasedHome } from "@/components/home/RoleBasedHome";
+
+/* ── Lazy-loaded heavy/conditional components ── */
+const ViralShareSheet = lazy(() => import("@/components/growth/ViralShareSheet").then(m => ({ default: m.ViralShareSheet })));
+const MeddyChat = lazy(() => import("@/components/meddy/MeddyChat").then(m => ({ default: m.MeddyChat })));
+const UserTypeHero = lazy(() => import("@/components/home/UserTypeHero").then(m => ({ default: m.UserTypeHero })));
+const RoleBasedHome = lazy(() => import("@/components/home/RoleBasedHome").then(m => ({ default: m.RoleBasedHome })));
+
 
 /* ── Lazy-loaded below-fold components (code-split per chunk) ── */
 const FreeTrialBanner = lazy(() => import("@/components/monetization/FreeTrialBanner").then(m => ({ default: m.FreeTrialBanner })));
@@ -197,14 +200,14 @@ export default function Home() {
       {/* ============ ROLE-BASED HOME (non-patient types get their own experience) ============ */}
       {userType && userType !== 'patient' ? (
         <div className="animate-fade-in min-h-screen bg-slate-950 pt-4">
-          <RoleBasedHome />
-          <MeddyChat />
+          <LazySuspense><RoleBasedHome /></LazySuspense>
+          <LazySuspense><MeddyChat /></LazySuspense>
         </div>
       ) : (
         <PullToRefresh onRefresh={handleRefresh}>
         <div className="animate-fade-in space-y-6 stagger-children">
         {/* ============ USER TYPE HERO (personalizado por tipo) ============ */}
-        <UserTypeHero />
+        <LazySuspense><UserTypeHero /></LazySuspense>
 
         {/* ============ HERO SECTION ============ */}
         {showRoleHero ? (
@@ -535,7 +538,7 @@ export default function Home() {
               </section>
 
               <LazyMount><LazySuspense><ReferralBanner onOpenShareSheet={() => setShareSheetOpen(true)} /></LazySuspense></LazyMount>
-              <ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} />
+              <LazySuspense><ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} /></LazySuspense>
 
               <LazyMount><LazySuspense><KlipyBanner query={`${country?.name || 'mozambique'} healthcare`} /></LazySuspense></LazyMount>
 
@@ -602,7 +605,7 @@ export default function Home() {
             </div>
           )}
         
-        <MeddyChat />
+        <LazySuspense><MeddyChat /></LazySuspense>
       </div>
         </PullToRefresh>
       )}
