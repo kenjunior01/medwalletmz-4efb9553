@@ -251,6 +251,7 @@ const queryClient = new QueryClient({
 // Initializing the app
 // useAppLifecycle handles: back button, network monitoring, app foreground/background
 import { useAppLifecycle } from './hooks/useAppLifecycle';
+import { isSupabaseConfigured } from './integrations/supabase/client';
 
 // Precisa de estar DENTRO do <BrowserRouter> (usa hooks de rota)
 const AppLifecycle = () => {
@@ -264,7 +265,50 @@ const AppLifecycle = () => {
   return null;
 };
 
+// -----------------------------------------------------------------------
+// GUARD: Supabase credentials missing — show friendly screen instead of
+// letting AuthContext crash with a blank white screen.
+// -----------------------------------------------------------------------
+
 const App = () => {
+  if (!isSupabaseConfigured) {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        minHeight: '100vh', background: '#0a0f1f', color: '#fff',
+        fontFamily: 'system-ui, -apple-system, sans-serif', textAlign: 'center',
+        padding: '2rem', flexDirection: 'column', gap: '1rem',
+      }}>
+        <div style={{
+          width: 80, height: 80, borderRadius: '50%',
+          background: 'rgba(239,68,68,0.15)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          marginBottom: '0.5rem',
+        }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h1 style={{ color: "#ef4444", fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>Configuracao Necessaria</h1>
+        <p style={{ color: "#a1a1aa", maxWidth: 400, lineHeight: 1.6, margin: 0 }}>
+          As variaveis de ambiente do Supabase nao estao configuradas neste deploy.<br/>
+          Configure <code style={{ background: "#1a1a2e", padding: '2px 6px', borderRadius: 4, fontSize: '0.85rem' }}>VITE_SUPABASE_URL</code> e <code style={{ background: "#1a1a2e", padding: '2px 6px', borderRadius: 4, fontSize: '0.85rem' }}>VITE_SUPABASE_PUBLISHABLE_KEY</code> no painel da plataforma de deploy.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          style={{
+            marginTop: '1rem', padding: '12px 24px', background: '#047857',
+            color: '#fff', border: 'none', borderRadius: 12, cursor: 'pointer',
+            fontWeight: 700, fontSize: '1rem',
+          }}
+        >
+          Tentar Novamente
+        </button>
+      </div>
+    );
+  }
+
   return (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
