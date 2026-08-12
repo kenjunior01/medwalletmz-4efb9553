@@ -39,6 +39,7 @@ export interface GeminiChatOptions {
 }
 
 export interface GeminiStructuredOptions<T> extends GeminiChatOptions {
+  models?: string[]; // ordem de preferência de modelos (opcional)
   schema?: Record<string, unknown>; // JSON schema leve (apenas para documentação)
   fallback: T; // valor retornado quando API falha
 }

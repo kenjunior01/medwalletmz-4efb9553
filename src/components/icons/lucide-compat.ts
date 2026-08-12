@@ -482,3 +482,4 @@ export const CircleDollarSign = MWWallet;
 export const ToggleLeft = MWTarget;
 export const ToggleRight = MWTarget;
 export const FileEdit = MWPencil;
+export const PiggyBank = MWWallet;

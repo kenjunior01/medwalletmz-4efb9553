@@ -283,7 +283,7 @@ export async function sendMessage(
     try {
       meddyReply = await geminiChat(userMessage, {
         systemPrompt: finalSystemPrompt,
-        history: geminiHistory,
+        history: geminiHistory as any,
         temperature: 0.8,
         maxOutputTokens: 250,
       });

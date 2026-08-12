@@ -377,8 +377,10 @@ class FcmService {
     let firebaseMessagingMod: FirebaseMessagingModule;
 
     try {
-      firebaseAppMod = await import('firebase/app');
-      firebaseMessagingMod = await import('firebase/messaging');
+      const appSpecifier = 'firebase/app';
+      const messagingSpecifier = 'firebase/messaging';
+      firebaseAppMod = await import(/* @vite-ignore */ appSpecifier);
+      firebaseMessagingMod = await import(/* @vite-ignore */ messagingSpecifier);
     } catch {
       console.info(
         '[FcmService] Firebase SDK não disponível no web. ' +

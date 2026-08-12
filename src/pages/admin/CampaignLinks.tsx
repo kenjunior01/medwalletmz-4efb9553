@@ -212,7 +212,7 @@ export default function CampaignLinks() {
 
       const fullUrl = `${baseUrl}/?${params.toString()}`;
 
-      const { error } = await supabase.from('campaign_links').insert({
+      const { error } = await (supabase as any).from('campaign_links').insert({
         name: data.name,
         description: data.description,
         type: data.type,
