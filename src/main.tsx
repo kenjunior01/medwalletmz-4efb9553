@@ -4,14 +4,11 @@ import App from "./App";
 import "./index.css";
 import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { registerServiceWorkerHandlers } from "./lib/service-worker-enhancements";
 import { logError, SESSION_ID } from "./lib/logger";
 
 // Garantir que React está disponível globalmente se alguma lib antiga precisar
 if (typeof window !== 'undefined') {
   (window as any).React = React;
-  // Register enhanced SW handlers (background sync, connectivity)
-  registerServiceWorkerHandlers();
   console.info(`[MedWallet] sessão de diagnóstico: ${SESSION_ID} — use window.__medwalletLogs para ver os logs`);
   window.addEventListener('unhandledrejection', (event) => {
     logError('global', 'Promessa rejeitada sem tratamento', event.reason);

@@ -4,23 +4,39 @@ import { useLocation } from '@/contexts/LocationContext';
 import { hexToHslComponents } from '@/lib/colors';
 import { RegionThemeProvider } from '@/themes/RegionThemeProvider';
 
-// Translations store
+// Translations — only pt is loaded eagerly (default locale).
+// All other locales are loaded on-demand via dynamic import().
 import pt from '@/i18n/pt.json';
-import ptBR from '@/i18n/pt-BR.json';
-import en from '@/i18n/en.json';
-import hi from '@/i18n/hi.json';
-import es from '@/i18n/es.json';
-import fr from '@/i18n/fr.json';
-import af from '@/i18n/af.json';
-import sw from '@/i18n/sw.json';
-import am from '@/i18n/am.json';
-import emk from '@/i18n/emk.json';
-import tsn from '@/i18n/tsn.json';
-import seh from '@/i18n/seh.json';
-import elo from '@/i18n/elo.json';
-import chw from '@/i18n/chw.json';
 
-const translations: Record<string, any> = { pt, 'pt-BR': ptBR, en, hi, es, fr, af, sw, am, emk, tsn, seh, elo, chw };
+const translations: Record<string, any> = { pt };
+
+const localeLoaders: Record<string, () => Promise<any>> = {
+  'pt-BR': () => import('@/i18n/pt-BR.json'),
+  en: () => import('@/i18n/en.json'),
+  hi: () => import('@/i18n/hi.json'),
+  es: () => import('@/i18n/es.json'),
+  fr: () => import('@/i18n/fr.json'),
+  af: () => import('@/i18n/af.json'),
+  sw: () => import('@/i18n/sw.json'),
+  am: () => import('@/i18n/am.json'),
+  emk: () => import('@/i18n/emk.json'),
+  tsn: () => import('@/i18n/tsn.json'),
+  seh: () => import('@/i18n/seh.json'),
+  elo: () => import('@/i18n/elo.json'),
+  chw: () => import('@/i18n/chw.json'),
+};
+
+async function ensureLocale(locale: string) {
+  if (translations[locale]) return;
+  const loader = localeLoaders[locale];
+  if (loader) {
+    try {
+      translations[locale] = (await loader()).default;
+    } catch {
+      console.warn(`[i18n] Failed to load locale: ${locale}`);
+    }
+  }
+}
 
 export interface Country {
   id: string; // ISO Code e.g. 'MZ', 'BR'
@@ -551,22 +567,27 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   const [country, setCountry] = useState<Country | null>(null);
   const [allCountries, setAllCountries] = useState<Country[]>(STATIC_COUNTRIES);
   const [locale, setLocale] = useState(() => {
+    let detected = 'pt';
     try {
       const saved = localStorage.getItem('appLocale');
-      if (saved) return saved;
-    } catch (e) {
-      console.warn('LocalStorage blocked', e);
+      if (saved) { detected = saved; }
+      else {
+        const detectedCountry = STATIC_COUNTRIES.find(c => c.id === gpsCountry);
+        if (detectedCountry) detected = detectedCountry.default_locale;
+        else {
+          const browserLang = navigator.language.split('-')[0];
+          const map: Record<string, string> = {
+            'pt': 'pt', 'en': 'en', 'hi': 'hi', 'es': 'es', 'fr': 'fr', 'af': 'af'
+          };
+          detected = map[browserLang] || 'en';
+        }
+      }
+    } catch {
+      detected = 'pt';
     }
-
-    // Default to detected country's locale, falling back to browser language
-    const detectedCountry = STATIC_COUNTRIES.find(c => c.id === gpsCountry);
-    if (detectedCountry) return detectedCountry.default_locale;
-
-    const browserLang = navigator.language.split('-')[0];
-    const map: Record<string, string> = {
-      'pt': 'pt', 'en': 'en', 'hi': 'hi', 'es': 'es', 'fr': 'fr', 'af': 'af'
-    };
-    return map[browserLang] || 'en';
+    // Fire-and-forget preload for non-pt locales
+    if (detected !== 'pt') ensureLocale(detected);
+    return detected;
   });
   const [loading, setLoading] = useState(true);
 
@@ -601,6 +622,8 @@ export function CountryProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem('appLocale', locale);
+    // Preload the selected locale translation if not already loaded
+    ensureLocale(locale);
   }, [locale]);
 
   useEffect(() => {

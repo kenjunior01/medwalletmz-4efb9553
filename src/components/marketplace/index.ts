@@ -1,1 +1,0 @@
-export { HealthMarketplace } from './HealthMarketplace';

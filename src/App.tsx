@@ -16,9 +16,7 @@ import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
 import { OAuthBrokerRedirect } from "@/components/auth/OAuthBrokerRedirect";
 import { PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
 import { OfflineIndicator } from "@/components/offline";
-import { DeepLinkHandler } from "@/components/growth/DeepLinkHandler";
-import { PageViewTracker } from "@/services/PageViewTracker";
-
+const DeepLinkHandler = lazy(() => import("@/components/growth/DeepLinkHandler").then(m => ({ default: m.DeepLinkHandler })));
 // =========================================================================
 // CODE-SPLITTING COM React.lazy
 // =========================================================================
@@ -33,7 +31,7 @@ const Home = lazy(() => import("./pages/Home"));
 const Landing = lazy(() => import("./pages/Landing"));
 const Auth = lazy(() => import("./pages/Auth"));
 const RegistrationWizard = lazy(() => import("./pages/RegistrationWizard"));
-import NotFound from "./pages/NotFound";
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 // ---- Páginas principais (lazy-loaded) ----
 const Pharmacy = lazy(() => import("./pages/Pharmacy"));
@@ -248,22 +246,8 @@ const queryClient = new QueryClient({
   },
 });
 
-// Initializing the app
-// useAppLifecycle handles: back button, network monitoring, app foreground/background
-import { useAppLifecycle } from './hooks/useAppLifecycle';
 import { isSupabaseConfigured } from './integrations/supabase/client';
 
-// Precisa de estar DENTRO do <BrowserRouter> (usa hooks de rota)
-const AppLifecycle = () => {
-  useAppLifecycle({
-    onForeground: () => {
-      // Refresh data when app comes back to foreground
-      // React Query handles cache invalidation automatically
-      console.log('[MedWallet] App foreground');
-    },
-  });
-  return null;
-};
 
 // -----------------------------------------------------------------------
 // GUARD: Supabase credentials missing — show friendly screen instead of
@@ -321,8 +305,6 @@ const App = () => {
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
-                <AppLifecycle />
-                <PageViewTracker />
                 <OAuthCallbackHandler>
                 <Suspense fallback={<LoadingScreen />}>
                 <Routes>
@@ -621,7 +603,7 @@ const App = () => {
                 <OfflineIndicator />
                 <PWAUpdateToast />
                 {/* Deep link handler — checks URL params on every page load */}
-                <DeepLinkHandler />
+                <Suspense fallback={null}><DeepLinkHandler /></Suspense>
               </BrowserRouter>
             </TooltipProvider>
           </DataSaverProvider>
