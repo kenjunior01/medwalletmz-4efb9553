@@ -26,6 +26,8 @@ export interface OfflineQueueItem {
   data: Record<string, any>;
   timestamp: number;
   synced: boolean;
+  retryCount: number;
+  nextRetryAt: number;
 }
 
 type SyncResult = {
@@ -143,12 +145,20 @@ function uint8ToBase64(bytes: Uint8Array): string {
   return result;
 }
 
-/** Convert base64 to Uint8Array */
+/** Convert base64 to Uint8Array — chunked atob for large strings */
 function base64ToUint8(base64: string): Uint8Array {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
+  const chunkSize = 8192;
+  const totalLen = base64.length;
+  // Calculate decoded length efficiently without decoding
+  const binaryLen = Math.ceil(totalLen / 4) * 3 - (base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0);
+  const bytes = new Uint8Array(binaryLen);
+  let offset = 0;
+  for (let i = 0; i < totalLen; i += chunkSize) {
+    const chunk = base64.slice(i, Math.min(i + chunkSize, totalLen));
+    const binary = atob(chunk);
+    for (let j = 0; j < binary.length; j++) {
+      bytes[offset++] = binary.charCodeAt(j);
+    }
   }
   return bytes;
 }
@@ -222,6 +232,13 @@ class OfflineManager {
       window.addEventListener('offline', () => {
         this._isOnline = false;
       });
+
+      // Retry timer: check for due retries every 30s
+      setInterval(() => {
+        if (this._isOnline && this.queue.some(i => !i.synced && i.retryCount > 0 && i.retryCount < 3 && i.nextRetryAt <= Date.now())) {
+          this.processQueue();
+        }
+      }, 30_000);
     }
   }
 
@@ -245,6 +262,8 @@ class OfflineManager {
       data,
       timestamp: Date.now(),
       synced: false,
+      retryCount: 0,
+      nextRetryAt: 0,
     };
 
     this.queue.push(item);
@@ -254,13 +273,18 @@ class OfflineManager {
   }
 
   /** Process pending mutations against Supabase. Called automatically on reconnect.
-   * Groups mutations by table+type for batch efficiency. */
+   * Groups mutations by table+type for batch efficiency.
+   * Failed items get exponential backoff retry (max 3 retries). */
   async processQueue(): Promise<SyncResult> {
     if (!this._isOnline) {
       return { success: 0, failed: 0 };
     }
 
-    const pending = this.queue.filter((item) => !item.synced);
+    const now = Date.now();
+    const MAX_RETRIES = 3;
+    const pending = this.queue.filter((item) =>
+      !item.synced && (item.nextRetryAt === 0 || item.nextRetryAt <= now) && item.retryCount < MAX_RETRIES
+    );
     if (pending.length === 0) {
       return { success: 0, failed: 0 };
     }
@@ -288,7 +312,11 @@ class OfflineManager {
           result.value.synced = true;
           success++;
         } else {
-          console.error(`[OfflineManager] Mutation error (${batch[j].id}):`, result.reason);
+          const item = batch[j];
+          item.retryCount++;
+          // Exponential backoff: 2s, 8s, 32s
+          item.nextRetryAt = now + Math.pow(4, item.retryCount) * 500;
+          console.error(`[OfflineManager] Mutation error (${item.id}), retry ${item.retryCount}/${MAX_RETRIES} at ${new Date(item.nextRetryAt).toISOString()}`);
           failed++;
         }
       }
