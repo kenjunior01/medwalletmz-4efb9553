@@ -1,5 +1,6 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useCallback } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { BottomNav } from "./BottomNav";
 import { Header } from "./Header";
 import { OfflineBanner } from "./OfflineBanner";
@@ -11,6 +12,7 @@ import { PopupCoordinatorProvider } from "./PopupCoordinator";
 import { useDeviceType } from "@/hooks/useDeviceType";
 import { useCapacitor } from "@/hooks/useCapacitor";
 import { PageTransition } from "./PageTransition";
+import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 import { cn } from "@/lib/utils";
 
 // Lazy-load notification popup — was loading framer-motion + Lottie + FloatingParticles on every page
@@ -44,6 +46,12 @@ export function AppLayout() {
   const location = useLocation();
   const device = useDeviceType();
   const isMobile = device === "mobile";
+  const queryClient = useQueryClient();
+
+  const handleRefresh = useCallback(async () => {
+    // Invalidate all active queries for the current page
+    await queryClient.invalidateQueries({ refetchType: 'active' });
+  }, [queryClient]);
 
   // Scroll to top on route change — native app feel
   useEffect(() => {
@@ -61,9 +69,17 @@ export function AppLayout() {
           <div className="flex-1 w-full max-w-7xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
             <main className={cn("flex-1 min-w-0", isMobile && "pb-20")}>
               <Suspense fallback={<LoadingScreen />}>
-                <PageTransition>
-                  <Outlet />
-                </PageTransition>
+                {isMobile ? (
+                  <PullToRefresh onRefresh={handleRefresh}>
+                    <PageTransition>
+                      <Outlet />
+                    </PageTransition>
+                  </PullToRefresh>
+                ) : (
+                  <PageTransition>
+                    <Outlet />
+                  </PageTransition>
+                )}
               </Suspense>
             </main>
             {device === "desktop" && <DesktopRail />}

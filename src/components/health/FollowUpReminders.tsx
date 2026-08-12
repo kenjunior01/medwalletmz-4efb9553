@@ -156,7 +156,7 @@ export function FollowUpReminders() {
                   {t('health.reminder_of')} {new Date(f.due_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
                 </p>
               </div>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => dismiss(f.id)}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 min-h-11 min-w-11" onClick={() => dismiss(f.id)}>
                 <X className="h-3 w-3" />
               </Button>
             </div>

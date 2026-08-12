@@ -53,7 +53,7 @@ export function MorningGreeting() {
       >
         <Card className="p-5 border-2 border-primary/20 shadow-premium gradient-mesh overflow-hidden">
           <div className="absolute top-0 right-0 p-2">
-            <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full" onClick={dismiss}>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full min-h-11 min-w-11" onClick={dismiss}>
               <X className="h-4 w-4" />
             </Button>
           </div>

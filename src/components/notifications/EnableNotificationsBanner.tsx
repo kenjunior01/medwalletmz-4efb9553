@@ -27,7 +27,7 @@ export function EnableNotificationsBanner() {
         <Button size="sm" onClick={request}>{t('enableNotifications.activate')}</Button>
         <button
           onClick={() => { localStorage.setItem('notif-banner-dismissed', '1'); setDismissed(true); }}
-          className="text-muted-foreground hover:text-foreground"
+          className="h-11 w-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted"
         >
           <X className="h-4 w-4" />
         </button>

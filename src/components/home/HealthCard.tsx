@@ -29,43 +29,43 @@ export function HealthCard() {
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => navigate('/health/consultations')}
-          className="flex items-center justify-center gap-1.5 text-xs text-pharmacy hover:text-pharmacy/80 transition py-1.5 rounded-lg border border-pharmacy/30 bg-pharmacy/5"
+          className="flex items-center justify-center gap-1.5 text-xs text-pharmacy hover:text-pharmacy/80 transition py-3 rounded-lg border border-pharmacy/30 bg-pharmacy/5 min-h-11"
         >
           <MessageCircle className="h-3 w-3" /> {t('healthCard.consultations')}
         </button>
         <button
           onClick={() => navigate('/health/doctors')}
-          className="flex items-center justify-center gap-1.5 text-xs text-primary hover:text-primary/80 transition py-1.5 rounded-lg border border-primary/30 bg-primary/5"
+          className="flex items-center justify-center gap-1.5 text-xs text-primary hover:text-primary/80 transition py-3 min-h-11 rounded-lg border border-primary/30 bg-primary/5"
         >
           <CalendarCheck className="h-3 w-3" /> {t('healthCard.schedule')}
         </button>
         <button
           onClick={() => navigate('/health/triage')}
-          className="flex items-center justify-center gap-1.5 text-xs text-primary hover:text-primary/80 transition py-1.5 rounded-lg border border-primary/30 bg-primary/5"
+          className="flex items-center justify-center gap-1.5 text-xs text-primary hover:text-primary/80 transition py-3 min-h-11 rounded-lg border border-primary/30 bg-primary/5"
         >
           <Sparkles className="h-3 w-3" /> {t('healthCard.meddy_consult')}
         </button>
         <button
           onClick={() => navigate('/health/records')}
-          className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition py-1.5 rounded-lg border border-border"
+          className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition py-3 min-h-11 rounded-lg border border-border"
         >
           <FolderHeart className="h-3 w-3" /> {t('healthCard.exams')}
         </button>
         <button
           onClick={() => navigate('/health/prescriptions')}
-          className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition py-1.5 rounded-lg border border-border"
+          className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition py-3 min-h-11 rounded-lg border border-border"
         >
           <FileText className="h-3 w-3" /> {t('healthCard.prescriptions')}
         </button>
         <button
           onClick={() => navigate('/health/plans')}
-          className="flex items-center justify-center gap-1.5 text-xs text-gold hover:text-gold/80 transition py-1.5 rounded-lg border border-gold/30 bg-gold/5"
+          className="flex items-center justify-center gap-1.5 text-xs text-gold hover:text-gold/80 transition py-3 min-h-11 rounded-lg border border-gold/30 bg-gold/5"
         >
           <Crown className="h-3 w-3" /> {t('healthCard.health_pass')}
         </button>
         <button
           onClick={() => navigate('/referrals')}
-          className="col-span-2 flex items-center justify-center gap-1.5 text-xs text-pharmacy hover:text-pharmacy/80 transition py-1.5 rounded-lg border border-pharmacy/30 bg-pharmacy/5"
+          className="col-span-2 flex items-center justify-center gap-1.5 text-xs text-pharmacy hover:text-pharmacy/80 transition py-3 min-h-11 rounded-lg border border-pharmacy/30 bg-pharmacy/5"
         >
           <Gift className="h-3 w-3" /> {t('healthCard.invite_friends')}
         </button>

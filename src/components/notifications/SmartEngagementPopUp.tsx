@@ -225,7 +225,7 @@ export function SmartEngagementPopUp() {
 
             <button
               onClick={() => { setShow(false); logAction('dismissed'); }}
-              className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+              className="absolute top-2 right-2 h-11 w-11 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted"
             >
               <X className="h-4 w-4" />
             </button>
