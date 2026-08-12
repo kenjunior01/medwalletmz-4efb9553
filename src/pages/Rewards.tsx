@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, Coins, Trophy, Flame, Star, Gift, Users, ChevronRight, Lock, Target } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,16 @@ import { WeeklyChallenges } from "@/components/gamification/WeeklyChallenges";
 export default function Rewards() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
+  const refreshRewards = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['user-gamification-full'] }),
+      queryClient.invalidateQueries({ queryKey: ['all-achievements'] }),
+      queryClient.invalidateQueries({ queryKey: ['user-achievements-full'] }),
+      queryClient.invalidateQueries({ queryKey: ['joy-transactions'] }),
+    ]);
+  };
 
   const { data: gamification } = useQuery({
     queryKey: ['user-gamification-full', user?.id],
@@ -166,6 +177,7 @@ export default function Rewards() {
       </div>
 
       {/* Tabs */}
+      <PullToRefresh onRefresh={refreshRewards}>
       <div className="px-4 mt-6">
         <Tabs defaultValue="achievements" className="w-full">
           <TabsList className="w-full grid grid-cols-4 mb-4">
@@ -270,6 +282,7 @@ export default function Rewards() {
           </TabsContent>
         </Tabs>
       </div>
+      </PullToRefresh>
     </div>
   );
 }

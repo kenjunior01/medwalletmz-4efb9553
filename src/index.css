@@ -150,8 +150,13 @@
   @media (pointer: coarse) {
     button:not(.no-tap-target):not([data-size="icon"]):not(.size-icon),
     [role="button"]:not(.no-tap-target),
-    a:not(.no-tap-target) {
+    a:not(.no-tap-target),
+    select:not(.no-tap-target),
+    [role="option"]:not(.no-tap-target),
+    input[type="checkbox"]:not(.no-tap-target),
+    input[type="radio"]:not(.no-tap-target) {
       min-height: 44px;
+      min-width: 44px;
     }
     /* Faster touch response */
     * {
@@ -176,7 +181,7 @@
     bottom: calc(env(safe-area-inset-bottom) + 6rem);
   }
 
-  .no-tap-target { min-height: auto !important; }
+  .no-tap-target { min-height: auto !important; min-width: auto !important; }
 }
 
 @layer utilities {

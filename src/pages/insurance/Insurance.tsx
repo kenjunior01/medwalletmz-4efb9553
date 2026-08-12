@@ -1,6 +1,7 @@
 import { Seo } from "@/components/Seo";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 import { useNavigate } from "react-router-dom";
 import { Shield, MapPin, Plus, CheckCircle2, Globe, Sparkles, Smartphone, ChevronRight } from "@/components/icons/lucide-compat";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +19,7 @@ export default function Insurance() {
   const [onlyMyCity, setOnlyMyCity] = useState<boolean>(() => localStorage.getItem("filter_only_my_city") !== "0");
   useEffect(() => { localStorage.setItem("filter_only_my_city", onlyMyCity ? "1" : "0"); }, [onlyMyCity]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["insurance-companies", city, onlyMyCity],
     queryFn: async () => {
       let q = supabase
@@ -36,6 +37,7 @@ export default function Insurance() {
   return (
     <>
       <Seo title="Seguros de saúde em Moçambique | MedWallet" description="Compare planos de seguros de saúde disponíveis em Moçambique." path="/health/insurance" />
+    <PullToRefresh onRefresh={() => refetch()}>
     <div className="p-4 flex flex-col gap-4 animate-fade-in">
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -132,6 +134,7 @@ export default function Insurance() {
         </div>
       )}
     </div>
+    </PullToRefresh>
     </>
   );
 }

@@ -19,6 +19,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { useLocation as useAppLocation } from '@/contexts/LocationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { useCapacitor } from '@/hooks/useCapacitor';
 
 /** Professional institution roles with their metadata */
 const INSTITUTION_ROLES = [
@@ -34,15 +35,7 @@ const ROLE_LABELS: Record<string, string> = {
   lab: 'Laboratório', driver: 'Condutor', veterinary: 'Veterinário',
 };
 
-/** Lightweight haptic — no-op on web, uses Capacitor Haptics on native */
-const haptic = (style: 'light' | 'medium' | 'heavy' = 'light') => {
-  try {
-    const { Haptics, ImpactStyle } = (window as any).Capacitor?.Plugins || {};
-    if (Haptics) {
-      Haptics.impact({ style: ImpactStyle?.[style === 'heavy' ? 'Heavy' : style === 'medium' ? 'Medium' : 'Light'] || 'Light' });
-    }
-  } catch { /* web fallback — silent */ }
-};
+
 
 export function BottomNav() {
   const location = useLocation();
@@ -51,6 +44,7 @@ export function BottomNav() {
   const { country, t } = useCountry();
   const { city } = useAppLocation();
   const { hasRole, user } = useAuth();
+  const { haptic } = useCapacitor();
   const [open, setOpen] = useState(false);
   const [institutionsOpen, setInstitutionsOpen] = useState(true);
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
@@ -137,8 +131,13 @@ export function BottomNav() {
         <div ref={navRef} className="relative flex items-center justify-around py-1.5 px-2 max-w-md mx-auto">
           {/* Sliding pill indicator — CSS transition */}
           <div
-            className="absolute top-1 h-[calc(100%-8px)] rounded-xl bg-primary/10 transition-all duration-300 ease-out pointer-events-none"
-            style={{ left: pillStyle.left, width: pillStyle.width, opacity: pillStyle.opacity }}
+            className="absolute top-1 h-[calc(100%-8px)] rounded-xl bg-primary/10 pointer-events-none"
+            style={{
+              left: pillStyle.left,
+              width: pillStyle.width,
+              opacity: pillStyle.opacity,
+              transition: 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease',
+            }}
           />
           {displayItems.map(({ path, icon: Icon, label, highlight }, idx) => {
             const isActive = location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
