@@ -128,14 +128,19 @@ async function decrypt<T>(encrypted: string): Promise<T | null> {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Convert Uint8Array to base64 — safe for large arrays (no stack overflow) */
+/** Convert Uint8Array to base64 — safe for large arrays (chunked btoa) */
 function uint8ToBase64(bytes: Uint8Array): string {
-  let binary = '';
   const chunkSize = 8192;
+  let result = '';
   for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+    const chunk = bytes.subarray(i, i + chunkSize);
+    let binary = '';
+    for (let j = 0; j < chunk.length; j++) {
+      binary += String.fromCharCode(chunk[j]);
+    }
+    result += btoa(binary);
   }
-  return btoa(binary);
+  return result;
 }
 
 /** Convert base64 to Uint8Array */

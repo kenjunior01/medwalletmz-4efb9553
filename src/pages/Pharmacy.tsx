@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { haversineKm } from "@/lib/googleRoutes";
 import { MapPin } from "@/components/icons/lucide-compat";
 import { SafeImage } from "@/components/ui/safe-image";
+import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 
 // Simplify type to avoid deep instantiation errors
 type Store = any;
@@ -126,6 +127,7 @@ export default function Pharmacy() {
   return (
     <>
       <Seo title={`${t('pharmacy.title')} 24h | MedWallet`} description={t('pharmacy.subtitle')} path="/pharmacy" />
+    <PullToRefresh onRefresh={fetchPharmacies}>
     <div className="flex flex-col gap-4 p-4 animate-fade-in">
       {/* Header */}
       <div>
@@ -289,6 +291,7 @@ export default function Pharmacy() {
         )}
       </div>
     </div>
+    </PullToRefresh>
     </>
   );
 }

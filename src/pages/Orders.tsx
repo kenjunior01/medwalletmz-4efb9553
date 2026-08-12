@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReviewModal } from "@/components/reviews/ReviewModal";
+import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { StaticMapImage } from "@/components/maps/StaticMapImage";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCountry } from "@/contexts/CountryContext";
@@ -286,13 +287,11 @@ export default function Orders() {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Meus Pedidos</h1>
-        <Button variant="ghost" size="icon" onClick={fetchOrders}>
-          <RefreshCw className="h-4 w-4" />
-        </Button>
-      </div>
+    <PullToRefresh onRefresh={fetchOrders}>
+      <div className="flex flex-col gap-4 p-4 animate-fade-in">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Meus Pedidos</h1>
+        </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2">
@@ -337,5 +336,6 @@ export default function Orders() {
         onSuccess={fetchOrders}
       />
     </div>
+    </PullToRefresh>
   );
 }

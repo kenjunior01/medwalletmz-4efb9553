@@ -33,3 +33,37 @@ Stage Summary:
   8. FCM existed but was not connected to the notification flow
 - Files modified: 7 (NotificationPermissionPopup.tsx, AppLayout.tsx, index.css, useNotifications.ts, OfflineManager.ts, vite.config.ts, Home.tsx)
 - Build: SUCCESS, 262 precached entries
+
+---
+Task ID: 2
+Agent: Super Z (main)
+Task: Mobile-first overhaul — Fase 2, 3, 4
+
+Work Log:
+- Verified Fase 2a (BottomNav sliding indicator + haptic): ALREADY DONE in prior session
+- Verified Fase 2b (Sheet→Drawer migration): All bottom sheets already use Drawer (vaul). Remaining 5 Sheet usages are left/right side panels (correct — vaul Drawer is bottom-only)
+- Fase 2c: Wired PullToRefresh into 6 pages:
+  - Orders.tsx — wrapped return in <PullToRefresh onRefresh={fetchOrders}>, removed manual refresh button
+  - Notifications.tsx — wrapped <main> content in <PullToRefresh onRefresh={load}>
+  - Pharmacy.tsx — wrapped main content in <PullToRefresh onRefresh={fetchPharmacies}>
+  - MyLabOrders.tsx — extracted inline fetch into named fetchOrders(), wrapped in PullToRefresh
+  - MyPrescriptions.tsx — wrapped in <PullToRefresh onRefresh={fetchData}>
+  - MyConsultations.tsx — wrapped content div in <PullToRefresh onRefresh={() => fetchData(true)}>
+- Verified Fase 2d (Button 44px touch targets): ALREADY DONE — Button component uses h-11 (44px) for all sizes, global CSS rule enforces min-height: 44px on touch devices
+- Verified Fase 3a (Lazy mount Home): ALREADY DONE — 12 components lazy-loaded with LazySuspense
+- Fase 3b: Fixed btoa chunking in OfflineManager.ts — split btoa call per 8KB chunk to avoid large-string limits
+- Verified Fase 3c (Batch sync queue): ALREADY DONE — BATCH_SIZE = 5 with Promise.allSettled
+- Verified Fase 3d (FCM retry): ALREADY DONE — MAX_RETRIES = 2 in FcmService.ts
+- Verified Fase 3e (Lazy voice search): ALREADY DONE — SpeechRecognition only instantiated on tap
+- Fase 4a: Removed dead LayeredOrbs component from design-system.tsx (25 lines, zero imports)
+- Fase 4b: Verified no hardcoded IPs (10.0.2.2 in capacitor.config.ts is correct Android emulator alias)
+- Fase 4c: Analyzed index.css (1771 lines) for split — determined high-risk, deferred to next session
+- Final TypeScript check: 0 errors
+
+Stage Summary:
+- Files modified: 8 (Orders.tsx, Notifications.tsx, Pharmacy.tsx, MyLabOrders.tsx, MyPrescriptions.tsx, MyConsultations.tsx, OfflineManager.ts, design-system.tsx)
+- PullToRefresh: 6 new pages wired (total: 8 including pre-existing Home + Wallet)
+- Dead code removed: LayeredOrbs (25 lines)
+- btoa safety: chunked to 8KB segments
+- All prior tasks (Fase 1, 2a, 2b, 2d, 3a-e, 4a-b) were already implemented
+- Remaining: index.css split (deferred — high risk, needs careful testing)

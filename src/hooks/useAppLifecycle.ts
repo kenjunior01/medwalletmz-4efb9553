@@ -12,7 +12,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { App } from '@capacitor/app';
 import { Network } from '@capacitor/network';
-import { StatusBar } from '@capacitor/status-bar';
+import { StatusBar, Style } from '@capacitor/status-bar';
 import { toast } from 'sonner';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -53,7 +53,7 @@ export function useAppLifecycle({
   useEffect(() => {
     const setStatusBar = async () => {
       try {
-        await StatusBar.setStyle({ style: statusBarStyle as any });
+        await StatusBar.setStyle({ style: statusBarStyle });
         await StatusBar.setBackgroundColor({ color: '#047857' });
       } catch {
         // Web — não tem status bar nativa

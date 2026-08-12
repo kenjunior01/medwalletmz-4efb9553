@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ClipboardList, FlaskConical, ArrowLeft, Download, Clock, CheckCircle2, Truck, XCircle } from "@/components/icons/lucide-compat";
 import { toast } from "sonner";
+import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 
 const STATUS_META: Record<string, { label: string; icon: any; color: string }> = {
   pending: { label: "Pendente", icon: Clock, color: "bg-amber-500/20 text-amber-700 dark:text-amber-300" },
@@ -29,21 +30,22 @@ export default function MyLabOrders() {
     window.open(data.signedUrl, "_blank");
   };
 
-  useEffect(() => {
-    (async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u?.user) { nav("/auth"); return; }
-      const { data } = await supabase
-        .from("lab_exam_orders")
-        .select("*, lab:clinics(name, city, phone)")
-        .eq("user_id", u.user.id)
-        .order("created_at", { ascending: false });
-      setOrders(data || []);
-      setLoading(false);
-    })();
-  }, []);
+  const fetchOrders = async () => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u?.user) { nav("/auth"); return; }
+    const { data } = await supabase
+      .from("lab_exam_orders")
+      .select("*, lab:clinics(name, city, phone)")
+      .eq("user_id", u.user.id)
+      .order("created_at", { ascending: false });
+    setOrders(data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchOrders(); }, []);
 
   return (
+    <PullToRefresh onRefresh={fetchOrders}>
     <div className="p-4 flex flex-col gap-4 animate-fade-in">
       <Button variant="ghost" size="sm" onClick={() => nav(-1)} className="w-fit -ml-2">
         <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
@@ -106,5 +108,6 @@ export default function MyLabOrders() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }

@@ -15,9 +15,7 @@
 
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications, type Token, type PushNotificationSchema, type ActionPerformed } from '@capacitor/push-notifications';
-import { supabase as typedSupabase } from '@/integrations/supabase/client';
-// Cast para acesso a tabelas ainda não presentes nos tipos gerados
-const supabase = typedSupabase as any;
+import { supabase } from '@/integrations/supabase/client';
 
 // ---------------------------------------------------------------------------
 // Tipos
@@ -377,10 +375,8 @@ class FcmService {
     let firebaseMessagingMod: FirebaseMessagingModule;
 
     try {
-      const appSpecifier = 'firebase/app';
-      const messagingSpecifier = 'firebase/messaging';
-      firebaseAppMod = await import(/* @vite-ignore */ appSpecifier);
-      firebaseMessagingMod = await import(/* @vite-ignore */ messagingSpecifier);
+      firebaseAppMod = await import(/* @vite-ignore */ 'firebase/app');
+      firebaseMessagingMod = await import(/* @vite-ignore */ 'firebase/messaging');
     } catch {
       console.info(
         '[FcmService] Firebase SDK não disponível no web. ' +
@@ -440,8 +436,7 @@ class FcmService {
     // Se já temos instância do Firebase Messaging, usar getToken
     if (this.firebaseMessaging) {
       try {
-        const messagingModuleSpecifier = 'firebase/messaging';
-        const { getToken } = await import(/* @vite-ignore */ messagingModuleSpecifier);
+        const { getToken } = await import(/* @vite-ignore */ 'firebase/messaging');
         const options: { vapidKey?: string } = {};
         if (FIREBASE_CONFIG.vapidKey) {
           options.vapidKey = FIREBASE_CONFIG.vapidKey;

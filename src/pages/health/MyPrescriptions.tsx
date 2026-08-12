@@ -12,6 +12,7 @@ import {
   Stethoscope, ShieldCheck, ChevronRight, Calendar, Clock,
 } from '@/components/icons/lucide-compat';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { useCountry } from '@/contexts/CountryContext';
 import { cn } from '@/lib/utils';
 
@@ -78,6 +79,7 @@ export default function MyPrescriptions() {
   }), [list]);
 
   return (
+    <PullToRefresh onRefresh={fetchData}>
     <div className="flex flex-col gap-4 p-4 animate-fade-in pb-8">
       <div className="flex items-center gap-2">
         <Button
@@ -311,5 +313,6 @@ export default function MyPrescriptions() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }

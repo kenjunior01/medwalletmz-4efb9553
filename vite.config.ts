@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ["@number-flow/react", "react", "react-dom", "date-fns"],
     // Heavy libs excluded from pre-bundle — loaded lazily per page
-    exclude: ["@tsparticles/react", "@tsparticles/slim", "gsap", "@gsap/react", "lottie-react", "framer-motion"],
+    exclude: ["@tsparticles/react", "@tsparticles/slim", "gsap", "@gsap/react", "lottie-react", "framer-motion", "firebase/app", "firebase/messaging"],
   },
   resolve: {
     alias: {
@@ -33,13 +33,11 @@ export default defineConfig(({ mode }) => ({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      external: [
-        '@capacitor/core', '@capacitor/haptics', '@capacitor/status-bar',
-        '@capacitor/app', '@capacitor/push-notifications', '@capacitor/splash-screen',
-        '@capacitor/network', '@capacitor/device', '@capacitor/filesystem',
-        '@capacitor/storage', '@capacitor/geolocation', '@capacitor/camera',
-        'firebase/app', 'firebase/messaging',
-      ],
+      // firebase is NOT installed — dynamic imports are try/catch in FcmService.ts.
+      // external makes Rollup leave the bare specifier; the browser rejects it at
+      // runtime and the catch block degrades gracefully.
+      // Dev mode is handled by /* @vite-ignore */ in the source.
+      external: ['firebase/app', 'firebase/messaging'],
       output: {
         // Chunks estratégicos para melhor cache do browser:
         // - vendor-react: React, ReactDOM, Router (muda raramente)

@@ -74,6 +74,7 @@ import {
 import { pt as dateFnsPt, ptBR as dateFnsPtBR, enUS as dateFnsEnUS, hi as dateFnsHi, es as dateFnsEs, fr as dateFnsFr, af as dateFnsAf } from 'date-fns/locale';
 import type { Locale } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -695,6 +696,7 @@ export default function MyConsultations() {
         </Button>
       </header>
 
+      <PullToRefresh onRefresh={() => fetchData(true)}>
       <div className="p-4 space-y-3">
         {/* ── Calendar view ─────────────────────────────────────────────── */}
         {viewMode === 'calendar' && (
@@ -1251,6 +1253,7 @@ export default function MyConsultations() {
           </>
         )}
       </div>
+      </PullToRefresh>
     </div>
   );
 }

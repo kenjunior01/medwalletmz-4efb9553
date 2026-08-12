@@ -66,32 +66,6 @@ export const BentoGrid = ({ className, ...p }: DivProps) => (
   />
 );
 
-/** Floating background orbs — decorative depth for hero sections. */
-export function LayeredOrbs({
-  className,
-  variant = "ocean",
-}: {
-  className?: string;
-  variant?: "ocean" | "gold" | "warm";
-}) {
-  const palette: Record<string, string[]> = {
-    ocean: ["hsl(var(--secondary)/0.55)", "hsl(var(--accent)/0.4)", "hsl(var(--primary)/0.35)"],
-    gold: ["hsl(var(--gold)/0.5)", "hsl(var(--accent)/0.35)", "hsl(var(--secondary)/0.4)"],
-    warm: ["hsl(var(--terracotta)/0.5)", "hsl(var(--gold)/0.4)", "hsl(var(--primary)/0.3)"],
-  };
-  const [a, b, c] = palette[variant];
-  return (
-    <div
-      aria-hidden="true"
-      className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}
-    >
-      <span className="float-orb" style={{ width: 260, height: 260, top: -80, left: -60, background: a }} />
-      <span className="float-orb" style={{ width: 220, height: 220, bottom: -80, right: -40, background: b, animationDelay: "1.5s" }} />
-      <span className="float-orb" style={{ width: 180, height: 180, top: "40%", right: "20%", background: c, animationDelay: "3s" }} />
-    </div>
-  );
-}
-
 /** Semantic status badge with themed colors. */
 export function StatusBadge({
   status,

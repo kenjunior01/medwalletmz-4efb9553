@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotifications } from "@/hooks/useNotifications";
 import { supabase } from "@/integrations/supabase/client";
+import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -265,6 +266,7 @@ export default function NotificationsPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+        <PullToRefresh onRefresh={load}>
         {/* Ativar notificações — banner */}
         {permission !== "granted" && (
           <Card className="p-4 flex items-center gap-3 bg-primary/5 border-primary/20">
@@ -380,6 +382,7 @@ export default function NotificationsPage() {
             aparecem aqui automaticamente.
           </p>
         )}
+        </PullToRefresh>
       </main>
     </div>
   );
