@@ -286,8 +286,6 @@
 }
 
 /* Animations */
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-.animate-float { animation: float 4s ease-in-out infinite; }
 
 @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.3); } 50% { box-shadow: 0 0 20px 8px hsl(var(--primary) / 0.1); } }
 .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
@@ -295,8 +293,6 @@
 @keyframes fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 .animate-fade-in { animation: fade-in 0.35s ease-out both; }
 
-@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 @keyframes sos-pulse-glow {
   0%, 100% { box-shadow: 0 0 0 0 hsl(var(--destructive) / 0.5); }
@@ -345,23 +341,6 @@
 .press-effect:active { transform: scale(0.985); }
 
 /* Premium gradient border (for highlighted CTAs) */
-.gradient-border {
-  position: relative;
-  background: hsl(var(--card));
-  border-radius: inherit;
-}
-.gradient-border::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--gold)));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
 
 /* Hero pattern: subtle dotted background */
 .bg-dot-pattern {
@@ -370,11 +349,6 @@
 }
 
 /* Glass refinement for headers */
-.glass-header {
-  background: hsl(var(--background) / 0.85);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-}
 
 /* Focus ring: cleaner accessibility */
 *:focus-visible {
@@ -956,16 +930,6 @@ html.data-saver .mw-header-mesh { display: none !important; }
 }
 
 /* Glassmorphism premium */
-.glass-premium {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-.dark .glass-premium {
-  background: rgba(15, 23, 42, 0.6);
-  border-color: rgba(99, 102, 241, 0.15);
-}
 
 /* Glow effects — desktop only */
 @media (hover: hover) {
@@ -978,8 +942,6 @@ html.data-saver .mw-header-mesh { display: none !important; }
 }
 
 /* Breathing — desktop only */
-@keyframes breathe {
-  0%, 100% { box-shadow: 0 0 10px rgba(20, 184, 166, 0.2); transform: scale(1); }
   50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); transform: scale(1.02); }
 }
 @media (hover: hover) {
@@ -1003,12 +965,7 @@ html.data-saver .mw-header-mesh { display: none !important; }
 }
 
 /* Page transition entrance */
-@keyframes page-enter {
-  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
-}
-.animate-page-enter {
-  animation: page-enter 0.25s ease-out;
 }
 
 /* Branded text selection */
@@ -1277,19 +1234,10 @@ html.data-saver .mw-header-mesh { display: none !important; }
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (pointer: coarse) {
   .glass,
-  .glass-header {
-    background: hsl(var(--background));
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border: 1px solid hsl(var(--border));
-  }
   .neu-card, .neu-btn, .neu-inset {
     box-shadow: 0 1px 3px hsl(var(--foreground) / 0.08);
   }
   .panel-shell::before {
-    display: none;
-  }
-  .gradient-border::before {
     display: none;
   }
   .shadow-premium {
@@ -1398,12 +1346,6 @@ html.data-saver .mw-header-mesh { display: none !important; }
   }
 
   /* Flatten glass to solid backgrounds on touch devices */
-  .glass-premium,
-  .mw-glass,
-  .glass-header {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
 
   /* Reduce bottom nav blur to minimal on mobile */
   .mw-bottomnav {
