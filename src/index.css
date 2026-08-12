@@ -900,15 +900,12 @@ html.data-saver .mw-header-mesh { display: none !important; }
   .mw-logo-breathe,
   .mw-breathe,
   .mw-ecg-line,
-  .animate-breathe,
   .animate-pulse-glow,
   .float-orb,
   .glow-teal,
   .glow-indigo,
   .text-shimmer,
   .nav-indicator,
-  .animate-gradient-shift,
-  .animate-float,
   .animate-shimmer,
   .animate-mw-orb-float,
   .animate-mw-wave-shift,
@@ -941,12 +938,9 @@ html.data-saver .mw-header-mesh { display: none !important; }
   }
 }
 
-/* Breathing — desktop only */
-  50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); transform: scale(1.02); }
-}
 @media (hover: hover) {
-  .animate-breathe {
-    animation: breathe 3s ease-in-out infinite;
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
   }
 }
 
@@ -962,10 +956,6 @@ html.data-saver .mw-header-mesh { display: none !important; }
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: text-shimmer 3s linear infinite;
-}
-
-/* Page transition entrance */
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Branded text selection */
@@ -1324,12 +1314,9 @@ html.data-saver .mw-header-mesh { display: none !important; }
   /* Kill all infinite animations on mobile — they drain GPU/battery */
   .animate-pulse-glow,
   .animate-sos-pulse-glow,
-  .animate-float,
   .animate-shimmer,
   .text-shimmer,
-  .animate-breathe,
   .nav-indicator,
-  .animate-gradient-shift,
   .glow-teal, .glow-indigo,
   .mw-shimmer-line,
   .mw-breathe,
