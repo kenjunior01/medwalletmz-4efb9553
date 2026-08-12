@@ -26,6 +26,23 @@ const HealthProfileOnboarding = lazy(() => import("@/components/health/HealthPro
 const PillTracker = lazy(() => import("@/components/health/PillTracker").then(m => ({ default: m.PillTracker })));
 const EmergencySOS = lazy(() => import("@/components/health/EmergencySOS").then(m => ({ default: m.EmergencySOS })));
 
+/** IntersectionObserver-based lazy mount — defers chunk fetch until near viewport */
+function LazyMount({ children, rootMargin = '200px' }: { children: React.ReactNode; rootMargin?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { rootMargin }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [rootMargin]);
+  return <div ref={ref}>{visible ? children : null}</div>;
+}
+
 /** Lightweight Suspense wrapper — renders nothing until chunk loads */
 function LazySuspense({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={null}>{children}</Suspense>;
@@ -44,7 +61,7 @@ import { useCountry } from "@/contexts/CountryContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Fragment, useState, useCallback, lazy, Suspense } from "react";
+import { Fragment, useState, useCallback, lazy, Suspense, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { PullToRefresh } from "@/components/ui/pull-to-refresh";
@@ -242,16 +259,16 @@ export default function Home() {
         )}
 
         {/* ============ MEDDY WELCOME CARD (logged-in patients only) ============ */}
-        {user && !isProvider && !isAdmin && <LazySuspense><MeddyWelcomeCard /></LazySuspense>}
+        {user && !isProvider && !isAdmin && <LazyMount><LazySuspense><MeddyWelcomeCard /></LazySuspense></LazyMount>}
 
         {/* ============ ENABLE NOTIFICATIONS BANNER (outside tabs) ============ */}
         
         {/* Onboarding leve para visitantes/pacientes: mostrar como registar como profissional */}
-        {!isProvider && !isAdmin && <LazySuspense><VisitorProOnboarding /></LazySuspense>}
+        {!isProvider && !isAdmin && <LazyMount><LazySuspense><VisitorProOnboarding /></LazySuspense></LazyMount>}
 
         {/* ============ FREE TRIAL BANNER (outside tabs) ============ */}
         <section className="px-4">
-          <LazySuspense><FreeTrialBanner /></LazySuspense>
+          <LazyMount><LazySuspense><FreeTrialBanner /></LazySuspense></LazyMount>
         </section>
 
         {/* ============ TAB SWITCHER (Today / Discover) ============ */}
@@ -397,11 +414,11 @@ export default function Home() {
                 </button>
               </section>
 
-              <LazySuspense><AirQualityWidget /></LazySuspense>
+              <LazyMount><LazySuspense><AirQualityWidget /></LazySuspense></LazyMount>
 
-              <LazySuspense><PillTracker /></LazySuspense>
+              <LazyMount><LazySuspense><PillTracker /></LazySuspense></LazyMount>
 
-              <LazySuspense><FollowUpReminders /></LazySuspense>
+              <LazyMount><LazySuspense><FollowUpReminders /></LazySuspense></LazyMount>
             </div>
           ) : (
             <div
@@ -440,12 +457,12 @@ export default function Home() {
                 </div>
               </section>
 
-              <LazySuspense><NearbyProvidersWidget /></LazySuspense>
+              <LazyMount><LazySuspense><NearbyProvidersWidget /></LazySuspense></LazyMount>
 
-              <LazySuspense><PersonalizedForYou /></LazySuspense>
+              <LazyMount><LazySuspense><PersonalizedForYou /></LazySuspense></LazyMount>
 
               {/* ECOSYSTEM INTERCONNECTION — sintonia between user types */}
-              {user && <LazySuspense><EcosystemFlow /></LazySuspense>}
+              {user && <LazyMount><LazySuspense><EcosystemFlow /></LazySuspense></LazyMount>}
 
               {/* PLANS PREMIUM MZ (upsell) */}
               <section className="px-4">
@@ -517,10 +534,10 @@ export default function Home() {
                 </button>
               </section>
 
-              <LazySuspense><ReferralBanner onOpenShareSheet={() => setShareSheetOpen(true)} /></LazySuspense>
+              <LazyMount><LazySuspense><ReferralBanner onOpenShareSheet={() => setShareSheetOpen(true)} /></LazySuspense></LazyMount>
               <ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} />
 
-              <LazySuspense><KlipyBanner query={`${country?.name || 'mozambique'} healthcare`} /></LazySuspense>
+              <LazyMount><LazySuspense><KlipyBanner query={`${country?.name || 'mozambique'} healthcare`} /></LazySuspense></LazyMount>
 
               {/* BECOME A PROVIDER */}
               <section className="px-4">
