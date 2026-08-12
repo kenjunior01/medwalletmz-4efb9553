@@ -174,7 +174,7 @@ export default function CampaignLinks() {
     queryKey: ['admin-campaign-links', search, typeFilter],
     queryFn: async () => {
       // Using campaign_links table if it exists, otherwise local mock
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('campaign_links')
         .select('*')
         .order('created_at', { ascending: false });

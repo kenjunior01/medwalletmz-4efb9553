@@ -54,7 +54,7 @@ export default function AdminSubscriptionPlans() {
 
   const load = async () => {
     setLoading(true);
-    let query = supabase
+    let query = (supabase as any)
       .from("subscription_plans")
       .select("*")
       .order("target_audience")

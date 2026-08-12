@@ -53,7 +53,7 @@ export function useAppLifecycle({
   useEffect(() => {
     const setStatusBar = async () => {
       try {
-        await StatusBar.setStyle({ style: statusBarStyle });
+        await StatusBar.setStyle({ style: statusBarStyle as any });
         await StatusBar.setBackgroundColor({ color: '#047857' });
       } catch {
         // Web — não tem status bar nativa
