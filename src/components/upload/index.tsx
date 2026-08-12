@@ -75,6 +75,8 @@ export interface VehiclePhotoUploadProps {
   driverId?: string | null;
   photos: VehiclePhotos;
   onChange: (photos: VehiclePhotos) => void;
+  /** Slots obrigatórios (marcados com *) */
+  required?: string[];
 }
 
 const VEHICLE_SLOTS: { key: keyof VehiclePhotos; label: string; description: string }[] = [
@@ -84,13 +86,14 @@ const VEHICLE_SLOTS: { key: keyof VehiclePhotos; label: string; description: str
   { key: 'interior', label: 'Interior', description: 'Bancos e área de carga' },
 ];
 
-export function VehiclePhotoUpload({ driverId, photos, onChange }: VehiclePhotoUploadProps) {
+export function VehiclePhotoUpload({ driverId, photos, onChange, required }: VehiclePhotoUploadProps) {
+  const isRequired = (key: string) => (required ? required.includes(key) : false);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {VEHICLE_SLOTS.map((slot) => (
         <FileUploadField
           key={slot.key}
-          label={slot.label}
+          label={isRequired(slot.key) ? `${slot.label.replace(' *', '')} *` : slot.label.replace(' *', '')}
           description={slot.description}
           value={photos[slot.key]}
           bucket="licenses"
