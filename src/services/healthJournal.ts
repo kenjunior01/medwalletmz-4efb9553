@@ -3,7 +3,9 @@
  * Daily wellness diary with AI insights via Gemini.
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 import { geminiChat, isGeminiConfigured } from '@/lib/gemini';
 
 export interface JournalEntry {

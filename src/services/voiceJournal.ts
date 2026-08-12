@@ -13,7 +13,9 @@
  * Tables: voice_journals
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 import { isGeminiConfigured } from '@/lib/gemini';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;

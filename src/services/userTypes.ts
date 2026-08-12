@@ -14,7 +14,9 @@
  * RPC: set_user_primary_type(user_id, type) — atomic switch
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 
 export type UserType = 'patient' | 'health_worker' | 'rider' | 'promoter';
 

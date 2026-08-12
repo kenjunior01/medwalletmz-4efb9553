@@ -6,7 +6,9 @@
  * Tables: regional_rankings
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 
 export interface RegionalRanking {
   id?: string;

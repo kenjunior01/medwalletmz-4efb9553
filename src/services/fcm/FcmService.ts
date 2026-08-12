@@ -15,7 +15,9 @@
 
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications, type Token, type PushNotificationSchema, type ActionPerformed } from '@capacitor/push-notifications';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase as typedSupabase } from '@/integrations/supabase/client';
+// Cast para acesso a tabelas ainda não presentes nos tipos gerados
+const supabase = typedSupabase as any;
 
 // ---------------------------------------------------------------------------
 // Tipos
