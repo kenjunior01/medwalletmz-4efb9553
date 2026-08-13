@@ -31,6 +31,7 @@ import {
 } from '@/services/healthWorkers';
 import { Link } from 'react-router-dom';
 
+import { logger } from '@/lib/logger';
 type Tab = 'browse' | 'bookings';
 
 export default function HealthWorkerMarketplace() {
@@ -77,7 +78,7 @@ export default function HealthWorkerMarketplace() {
         setWorkers(result);
       }
     } catch (e: any) {
-      console.error('searchWorkers error', e);
+      logger.error('searchWorkers error', { error: e });
       setError(e?.message ?? 'Erro ao carregar profissionais');
       setWorkers(MOCK_WORKERS.filter(w => w.country_code === country.id));
     } finally {
@@ -91,7 +92,7 @@ export default function HealthWorkerMarketplace() {
       const result = await getMyBookingsAsCustomer(user.id);
       setBookings(result);
     } catch (e: any) {
-      console.error('getMyBookings error', e);
+      logger.error('getMyBookings error', { error: e });
       setBookings([]);
     }
   }, [user?.id]);
@@ -148,7 +149,7 @@ export default function HealthWorkerMarketplace() {
       setTab('bookings');
       await loadBookings();
     } catch (e: any) {
-      console.error('submitBooking error', e);
+      logger.error('submitBooking error', { error: e });
       setError(e?.message ?? 'Erro ao criar reserva');
     } finally {
       setSubmitting(false);
@@ -161,7 +162,7 @@ export default function HealthWorkerMarketplace() {
       await cancelBooking(bookingId, user.id, reason);
       await loadBookings();
     } catch (e: any) {
-      console.error('cancelBooking error', e);
+      logger.error('cancelBooking error', { error: e });
     }
   };
 
@@ -170,7 +171,7 @@ export default function HealthWorkerMarketplace() {
       await rateBooking(bookingId, rating, comment);
       await loadBookings();
     } catch (e: any) {
-      console.error('rateBooking error', e);
+      logger.error('rateBooking error', { error: e });
     }
   };
 

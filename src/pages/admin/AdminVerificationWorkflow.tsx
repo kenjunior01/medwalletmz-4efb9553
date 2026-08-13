@@ -27,6 +27,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { PROFESSION_LABELS } from '@/services/healthWorkers';
 const VEHICLE_LABELS: Record<string, { label: string; emoji: string }> = {};
 import { VEHICLE_LABELS as RIDER_VEHICLE_LABELS } from '@/services/healthRiders';
+import { logger } from '@/lib/logger';
 import {
   PendingVerification,
   getPendingVerifications,
@@ -57,7 +58,7 @@ export default function AdminVerificationWorkflow() {
       const result = await getPendingVerifications();
       setPending(result);
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
       setError(e?.message ?? 'Erro ao carregar');
       setPending([]);
     } finally {
@@ -79,7 +80,7 @@ export default function AdminVerificationWorkflow() {
       setReviewing(null);
       await load();
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
       setError(e?.message ?? 'Erro ao aprovar');
     } finally {
       setActionLoading(false);
@@ -99,7 +100,7 @@ export default function AdminVerificationWorkflow() {
       setRejectReason('');
       await load();
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
       setError(e?.message ?? 'Erro ao rejeitar');
     } finally {
       setActionLoading(false);

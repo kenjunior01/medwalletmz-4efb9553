@@ -19,6 +19,7 @@ import {
   AlertTriangle, X, Clock, Filter, RefreshCw, Volume2,
 } from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
+import { logger } from '@/lib/logger';
 import {
   VoiceJournalEntry, DetectedMood, ProcessingStatus,
   createRecordingController, RecordingController,
@@ -467,7 +468,7 @@ function VoiceEntryCard({ entry, index, onDelete, t }: { entry: VoiceJournalEntr
       const url = await getPublicAudioUrl(entry.audio_url);
       setAudioUrl(url);
     } catch (e) {
-      console.warn('Failed to load audio:', e);
+      logger.warn('Failed to load audio:', { error: e });
     } finally {
       setLoadingAudio(false);
     }
@@ -486,7 +487,7 @@ function VoiceEntryCard({ entry, index, onDelete, t }: { entry: VoiceJournalEntr
       audioRef.current.pause();
       setPlaying(false);
     } else {
-      audioRef.current.play().catch(() => {});
+      audioRef.current.play().catch((e) => { logger.debug('Audio cleanup/autoplay failed', { error: e }); });
       setPlaying(true);
     }
   };

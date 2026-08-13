@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapPin, Loader2 } from "@/components/icons/lucide-compat";
 
+import { logger } from '@/lib/logger';
 interface Props {
   value: string;
   onChange: (value: string, info?: { lat: number; lng: number; neighborhood?: string }) => void;
@@ -107,7 +108,7 @@ export function GoogleAddressInput({ value, onChange, placeholder, label = "Ende
             onChange(addr, { lat: latitude, lng: longitude, neighborhood });
           }
         } catch (e) {
-          console.error('Geocoding error', e);
+          logger.error('Geocoding error', { error: e });
         } finally {
           setIsLoading(false);
         }

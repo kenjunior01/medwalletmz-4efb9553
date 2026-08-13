@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { Plus, Search, Edit2, Trash2, Package, Loader2 } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 
+import { logger } from '@/lib/logger';
 interface Product {
   id: string;
   name: string;
@@ -69,7 +70,7 @@ export default function StoreProducts() {
       if (error) throw error;
       setProducts(data || []);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      logger.error('Error fetching products:', { error: error });
       toast.error('Erro ao carregar produtos');
     } finally {
       setLoading(false);
@@ -139,7 +140,7 @@ export default function StoreProducts() {
       setDialogOpen(false);
       fetchProducts();
     } catch (error: any) {
-      console.error('Error saving product:', error);
+      logger.error('Error saving product:', { error: error });
       toast.error('Erro ao salvar produto');
     } finally {
       setSaving(false);
@@ -159,7 +160,7 @@ export default function StoreProducts() {
       toast.success('Produto excluído!');
       fetchProducts();
     } catch (error) {
-      console.error('Error deleting product:', error);
+      logger.error('Error deleting product:', { error: error });
       toast.error('Erro ao excluir produto');
     }
   };
@@ -177,7 +178,7 @@ export default function StoreProducts() {
         p.id === product.id ? { ...p, is_available: !p.is_available } : p
       ));
     } catch (error) {
-      console.error('Error toggling availability:', error);
+      logger.error('Error toggling availability:', { error: error });
       toast.error('Erro ao atualizar disponibilidade');
     }
   };

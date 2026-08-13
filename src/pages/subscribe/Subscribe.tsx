@@ -13,6 +13,7 @@ import { ArrowLeft, Copy, Upload, CheckCircle2, Sparkles, Loader2, Phone, Hash, 
 import { toast } from 'sonner';
 import { useCountry } from '@/contexts/CountryContext';
 import { fetchPlanBySlug, type MzPlan } from '@/lib/mzPlans';
+import { logger } from '@/lib/logger';
 import {
   initiateSubscription,
   buildMpesaInstructionsForSubscription,
@@ -84,7 +85,7 @@ export default function Subscribe() {
         }
       })
       .catch((e) => {
-        console.error('[Subscribe] fetchPlanBySlug error:', e);
+        logger.error('[Subscribe] fetchPlanBySlug error:', { error: e });
         setPlanLoading(false);
       });
 

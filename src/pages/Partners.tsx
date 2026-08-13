@@ -75,7 +75,7 @@ export default function Partners() {
     if (!kind || !org || !contact || !email) return toast.error("Preenche os campos obrigatórios");
     setLoading(true);
     try {
-      const { error } = await (supabase as any).from("partner_applications").insert({
+      const { error } = await supabase.from("partner_applications").insert({
         kind, organization: org, contact_name: contact, email,
         city, message: message || null,
       });

@@ -59,7 +59,7 @@ export default function WaitlistDialog({
     if (!city) return toast.error("Cidade é necessária");
     setSubmitting(true);
     try {
-      const { error } = await (supabase as any).from("provider_waitlist").insert({
+      const { error } = await supabase.from("provider_waitlist").insert({
         user_id: user.id,
         requested_kind: kind,
         specialty_id: kind === "doctor" && selectedSpec ? selectedSpec : null,

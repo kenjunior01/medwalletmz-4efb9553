@@ -7,6 +7,7 @@
 
 import { getSpeechLocale } from '@/lib/speechLocale';
 
+import { logger } from '@/lib/logger';
 const API_KEY = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
 
 /**
@@ -19,7 +20,7 @@ export async function speakText(text: string, locale: string = 'pt') {
   const { tts, voice } = getSpeechLocale(locale);
 
   if (!API_KEY || API_KEY.includes('your_')) {
-    console.warn("Google API Key not configured for TTS, falling back to browser SpeechSynthesis");
+    logger.warn("Google API Key not configured for TTS, falling back to browser SpeechSynthesis");
     fallbackSpeak(text, tts);
     return;
   }
@@ -56,7 +57,7 @@ export async function speakText(text: string, locale: string = 'pt') {
     const audio = new Audio(audioUrl);
     await audio.play();
   } catch (error) {
-    console.error("Google TTS failed, falling back to browser:", error);
+    logger.error("Google TTS failed, falling back to browser:", { error: error });
     fallbackSpeak(text, tts);
   }
 }

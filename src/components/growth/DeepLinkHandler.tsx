@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Gift, Sparkles, MapPin, UserCheck } from '@/components/icons/lucide-compat';
 
+import { logger } from '@/lib/logger';
 const STORAGE_KEY = 'mz_deep_link_data';
 
 interface DeepLinkData {
@@ -125,7 +126,7 @@ export function DeepLinkHandler() {
           setShowWelcome(true);
           setTimeout(() => setShowWelcome(false), 5000);
         } catch (err) {
-          console.error('Error applying referral:', err);
+          logger.error('Error applying referral:', { error: err });
         }
 
         // Navigate based on role/province

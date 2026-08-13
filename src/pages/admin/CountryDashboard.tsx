@@ -34,12 +34,12 @@ export default function CountryDashboard() {
       startMonth.setDate(1);
       startMonth.setHours(0, 0, 0, 0);
       const { count: usersCount } = await supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
-      const { count: storesCount } = await (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
-      const { count: clinicsCount } = await (supabase as any).from('clinics').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
-      const { count: pendingCount } = await (supabase as any).from('place_proposals').select('id', { count: 'exact', head: true }).eq('status', 'pending').eq('country_id', countryId);
-      const { count: partnerApps } = await (supabase as any).from('partner_applications').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
+      const { count: storesCount } = await supabase.from('stores').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
+      const { count: clinicsCount } = await supabase.from('clinics').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
+      const { count: pendingCount } = await supabase.from('place_proposals').select('id', { count: 'exact', head: true }).eq('status', 'pending').eq('country_id', countryId);
+      const { count: partnerApps } = await supabase.from('partner_applications').select('id', { count: 'exact', head: true }).eq('country_id', countryId);
 
-      const { data: volumeData } = await (supabase as any).from('orders').select('total').eq('country_code', countryId).gte('created_at', startMonth.toISOString()).eq('status', 'delivered');
+      const { data: volumeData } = await supabase.from('orders').select('total').eq('country_code', countryId).gte('created_at', startMonth.toISOString()).eq('status', 'delivered');
       const totalVolume = (volumeData || []).reduce((s: number, o: any) => s + Number(o.total || 0), 0);
 
       return {
@@ -58,12 +58,12 @@ export default function CountryDashboard() {
     enabled: country?.id === 'MZ',
     queryFn: async () => {
       const [ape, tb, art, mal, mat, mpesa] = await Promise.all([
-        (supabase as any).from('ape_visits').select('id', { count: 'exact', head: true }),
-        (supabase as any).from('tb_dot_records').select('id', { count: 'exact', head: true }),
-        (supabase as any).from('art_adherence_logs').select('id', { count: 'exact', head: true }),
-        (supabase as any).from('malaria_cases').select('id', { count: 'exact', head: true }),
-        (supabase as any).from('maternal_profiles').select('id', { count: 'exact', head: true }),
-        (supabase as any).from('mpesa_manual_payments').select('id, amount_mzn', { count: 'exact' }).eq('status', 'pending'),
+        supabase.from('ape_visits').select('id', { count: 'exact', head: true }),
+        supabase.from('tb_dot_records').select('id', { count: 'exact', head: true }),
+        supabase.from('art_adherence_logs').select('id', { count: 'exact', head: true }),
+        supabase.from('malaria_cases').select('id', { count: 'exact', head: true }),
+        supabase.from('maternal_profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('mpesa_manual_payments').select('id, amount_mzn', { count: 'exact' }).eq('status', 'pending'),
       ]);
       const mpesaData = (mpesa as any).data || [];
       const mpesaPending = mpesaData.reduce((s: number, p: any) => s + Number(p.amount_mzn || 0), 0);
@@ -84,8 +84,8 @@ export default function CountryDashboard() {
     enabled: !!country?.id,
     queryFn: async () => {
       const countryId = country!.id;
-      const { data: stores } = await (supabase as any).from('stores').select('id, name, city, type').eq('country_id', countryId).limit(50);
-      const { data: clinics } = await (supabase as any).from('clinics').select('id, name, city, type').eq('country_id', countryId).limit(50);
+      const { data: stores } = await supabase.from('stores').select('id, name, city, type').eq('country_id', countryId).limit(50);
+      const { data: clinics } = await supabase.from('clinics').select('id, name, city, type').eq('country_id', countryId).limit(50);
 
       const all = [
         ...((stores || []) as any[]).map((s: any) => ({ ...s, category: 'Pharmacy' })),

@@ -17,6 +17,7 @@ import { MapPin } from "@/components/icons/lucide-compat";
 import { SafeImage } from "@/components/ui/safe-image";
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 
+import { logger } from '@/lib/logger';
 // Simplify type to avoid deep instantiation errors
 type Store = any;
 
@@ -89,7 +90,7 @@ export default function Pharmacy() {
       const unique = (data || []).filter((p: any, i: number, arr: any[]) => arr.findIndex((x: any) => x.name === p.name) === i);
       setPharmacies(unique);
     } catch (error) {
-      console.error("Erro ao carregar farmácias:", error);
+      logger.error("Erro ao carregar farmácias:", { error: error });
     } finally {
       setLoading(false);
     }

@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LicenseUpload, LogoUpload, VehiclePhotoUpload } from '@/components/upload';
 
+import { logger } from '@/lib/logger';
 type Role = 'customer' | 'doctor' | 'store_owner' | 'clinic' | 'laboratory' | 'driver' | 'insurance' | 'veterinary';
 
 interface RoleOption {
@@ -440,7 +441,7 @@ export default function RegistrationWizard() {
           p_license_carta_url: formData.licenseCartaUrl || null,
           p_license_viatura_url: formData.licenseViaturaUrl || null,
         });
-        if (vErr) console.warn('Vehicle table error (non-blocking):', vErr);
+        if (vErr) logger.warn('Vehicle table error (non-blocking):', vErr);
 
         await supabase.from('user_roles').upsert({ user_id: user.id, role: 'driver', country_id: country?.id || 'MZ' }, { onConflict: 'user_id,role,country_id' });
         await refreshRoles();
@@ -449,7 +450,7 @@ export default function RegistrationWizard() {
 
       toast.success('Registo concluído com sucesso!');
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
       toast.error(e.message || 'Erro ao processar registo');
     } finally {
       setLoading(false);

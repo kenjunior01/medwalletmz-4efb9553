@@ -19,6 +19,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { CouponInput } from '@/components/checkout/CouponInput';
 import { cn } from '@/lib/utils';
 
+import { logger } from '@/lib/logger';
 interface Slot { id: string; starts_at: string }
 
 type LoadState = 'loading' | 'success' | 'error';
@@ -72,7 +73,7 @@ export default function BookConsultation() {
       setSlots((s as Slot[]) || []);
       setLoadState('success');
     } catch (err) {
-      console.error('BookConsultation fetch error:', err);
+      logger.error('BookConsultation fetch error:', { error: err });
       setLoadState('error');
     }
   };
@@ -137,7 +138,7 @@ export default function BookConsultation() {
       // Auto-navigate after 3s
       setTimeout(() => navigate(`/health/consultation/${consId}`), 3000);
     } catch (err) {
-      console.error('BookConsultation error:', err);
+      logger.error('BookConsultation error:', { error: err });
       toast.error(t('common.error'));
       setConfirmState('form');
     } finally {

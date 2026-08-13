@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { pt } from "date-fns/locale";
 
+import { logger } from '@/lib/logger';
 interface DailyStats {
   date: string;
   orders: number;
@@ -171,7 +172,7 @@ export default function AdminReports() {
         }))
       );
     } catch (error) {
-      console.error("Erro ao carregar relatórios:", error);
+      logger.error("Erro ao carregar relatórios:", { error: error });
     } finally {
       setLoading(false);
     }

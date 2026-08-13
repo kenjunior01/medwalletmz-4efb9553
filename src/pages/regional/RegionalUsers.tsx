@@ -32,6 +32,7 @@ import NumberFlow from '@number-flow/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 /* ──────────────────────── Animation variants ──────────────────────── */
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const fadeUp = {
@@ -268,7 +269,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
 
       setUsers(mapped);
     } catch (err) {
-      console.error('Failed to load provincial users:', err);
+      logger.error('Failed to load provincial users:', { error: err });
       toast.error(t('regional.users_load_error') || 'Erro ao carregar utilizadores da província');
     } finally {
       setLoading(false);
@@ -285,12 +286,12 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
 
     try {
       const [totalRes, patientsRes, prosRes, activeTodayRes, newMonthRes, suspendedRes] = await Promise.all([
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || ''),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['patient', 'user']),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['doctor', 'rider', 'store_owner']),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', true).gte('last_sign_in_at', startOfDay),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').gte('created_at', startOfMonth),
-        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', false),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || ''),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['patient', 'user']),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['doctor', 'rider', 'store_owner']),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', true).gte('last_sign_in_at', startOfDay),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').gte('created_at', startOfMonth),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', false),
       ]);
 
       setStats({
@@ -302,7 +303,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
         suspended: suspendedRes.count ?? 0,
       });
     } catch (err) {
-      console.error('Failed to load stats:', err);
+      logger.error('Failed to load stats:', { error: err });
     }
   }, [province]);
 

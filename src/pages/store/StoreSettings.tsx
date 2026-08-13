@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useCountry } from '@/contexts/CountryContext';
 import { Save, Loader2, Trash2, AlertTriangle } from "@/components/icons/lucide-compat";
+import { logger } from '@/lib/logger';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -120,7 +121,7 @@ export default function StoreSettings() {
       toast.success('Configurações salvas!');
       refreshStores();
     } catch (error: any) {
-      console.error('Error saving settings:', error);
+      logger.error('Error saving settings:', { error: error });
       toast.error('Erro ao salvar configurações');
     } finally {
       setSaving(false);
@@ -149,7 +150,7 @@ export default function StoreSettings() {
       toast.success('Farmácia excluída com sucesso');
       navigate('/');
     } catch (error: any) {
-      console.error('Error deleting store:', error);
+      logger.error('Error deleting store:', { error: error });
       toast.error('Erro ao excluir farmácia');
     } finally {
       setDeleting(false);

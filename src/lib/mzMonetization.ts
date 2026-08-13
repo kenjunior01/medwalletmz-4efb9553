@@ -29,6 +29,7 @@ import {
 } from './mzPlans';
 import { createManualPayment, type ManualPayment } from './mpesa';
 
+import { logger } from '@/lib/logger';
 // ---------- Tipos ----------
 export interface InitiateSubscriptionResult {
   success: boolean;
@@ -229,12 +230,12 @@ export async function confirmSubscriptionPayment(opts: {
       })
       .eq('id', paymentId);
     if (error) {
-      console.error('[mzMonetization] confirmPayment error:', error);
+      logger.error('[mzMonetization] confirmPayment error:', error);
       return false;
     }
     return true;
   } catch (e) {
-    console.error('[mzMonetization] confirmPayment exception:', e);
+    logger.error('[mzMonetization] confirmPayment exception:', { error: e });
     return false;
   }
 }
@@ -259,12 +260,12 @@ export async function rejectSubscriptionPayment(opts: {
       })
       .eq('id', paymentId);
     if (error) {
-      console.error('[mzMonetization] rejectPayment error:', error);
+      logger.error('[mzMonetization] rejectPayment error:', error);
       return false;
     }
     return true;
   } catch (e) {
-    console.error('[mzMonetization] rejectPayment exception:', e);
+    logger.error('[mzMonetization] rejectPayment exception:', { error: e });
     return false;
   }
 }
@@ -328,7 +329,7 @@ export async function getUserActiveSubscription(userId: string): Promise<UserSub
       amountPaid: data.amount_paid,
     };
   } catch (e) {
-    console.error('[mzMonetization] getUserActiveSubscription exception:', e);
+    logger.error('[mzMonetization] getUserActiveSubscription exception:', { error: e });
     return { plan: null, status: 'none' };
   }
 }
@@ -357,12 +358,12 @@ export async function awardCashback(opts: {
       _reference: reference,
     });
     if (error) {
-      console.warn('[mzMonetization] awardCashback RPC falhou:', error.message);
+      logger.warn('[mzMonetization] awardCashback RPC falhou:', error.message);
       return false;
     }
     return Boolean(data);
   } catch (e) {
-    console.warn('[mzMonetization] awardCashback exception:', e);
+    logger.warn('[mzMonetization] awardCashback exception:', { error: e });
     return false;
   }
 }
@@ -395,7 +396,7 @@ export async function recordReferralSuccess(opts: {
       .maybeSingle();
     if (existing) return false;
 
-    const { data: newReferral, error } = await (supabase as any).from('user_referrals').insert({
+    const { data: newReferral, error } = await supabase.from('user_referrals').insert({
       referrer_id: referrerId,
       referred_id: referredId,
       status: 'completed',
@@ -405,7 +406,7 @@ export async function recordReferralSuccess(opts: {
     if (error) {
       // Unique constraint violation = race condition — another call already inserted
       if (error.code === '23505') return false;
-      console.warn('[mzMonetization] recordReferralSuccess falhou:', error.message);
+      logger.warn('[mzMonetization] recordReferralSuccess falhou:', error.message);
       return false;
     }
 
@@ -419,13 +420,13 @@ export async function recordReferralSuccess(opts: {
         _description: `Bónus de indicação — utilizador ${referredId.slice(0, 8)}`,
       });
       if (creditErr) {
-        console.warn('[mzMonetization] Falha ao creditar bónus referência:', creditErr.message);
+        logger.warn('[mzMonetization] Falha ao creditar bónus referência:', creditErr.message);
       }
     }
 
     return true;
   } catch (e) {
-    console.warn('[mzMonetization] recordReferralSuccess exception:', e);
+    logger.warn('[mzMonetization] recordReferralSuccess exception:', { error: e });
     return false;
   }
 }
@@ -508,7 +509,7 @@ export async function getMonetizationStats(): Promise<MonetizationStats> {
       .eq('status', 'active');
     stats.activeSubscriptions = activeSubs || 0;
   } catch (e) {
-    console.warn('[mzMonetization] getMonetizationStats exception:', e);
+    logger.warn('[mzMonetization] getMonetizationStats exception:', { error: e });
   }
 
   return stats;
@@ -549,7 +550,7 @@ export async function listPendingPaymentsForAdmin(): Promise<Array<{
       subscription_id: r.metadata?.subscription_id,
     }));
   } catch (e) {
-    console.warn('[mzMonetization] listPendingPaymentsForAdmin exception:', e);
+    logger.warn('[mzMonetization] listPendingPaymentsForAdmin exception:', { error: e });
     return [];
   }
 }
@@ -589,7 +590,7 @@ export async function listPendingSubscriptionsForAdmin(): Promise<Array<{
       plan_slug: r.plan?.slug || '',
     }));
   } catch (e) {
-    console.warn('[mzMonetization] listPendingSubscriptionsForAdmin exception:', e);
+    logger.warn('[mzMonetization] listPendingSubscriptionsForAdmin exception:', { error: e });
     return [];
   }
 }
@@ -778,12 +779,12 @@ export async function getPublicImpactStats(): Promise<PublicImpactStats> {
   };
   try {
     const [usersRes, subsRes, triagesRes] = await Promise.all([
-      (supabase as any).from('profiles').select('id', { count: 'exact', head: true }),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }),
       (supabase as any)
         .from('subscriptions')
         .select('id', { count: 'exact', head: true })
         .eq('status', 'active'),
-      (supabase as any).from('triage_sessions').select('id', { count: 'exact', head: true }),
+      supabase.from('triage_sessions').select('id', { count: 'exact', head: true }),
     ]);
 
     return {
@@ -797,7 +798,7 @@ export async function getPublicImpactStats(): Promise<PublicImpactStats> {
       lastUpdated: new Date().toISOString(),
     };
   } catch (e) {
-    console.warn('[mzMonetization] getPublicImpactStats exception:', e);
+    logger.warn('[mzMonetization] getPublicImpactStats exception:', { error: e });
     return fallback;
   }
 }

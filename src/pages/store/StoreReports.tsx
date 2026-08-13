@@ -7,6 +7,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { TrendingUp, ShoppingBag, DollarSign, Star } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 
+import { logger } from '@/lib/logger';
 interface StoreContext {
   selectedStore: {
     id: string;
@@ -133,7 +134,7 @@ export default function StoreReports() {
 
       setTopProducts(topProductsArray);
     } catch (error) {
-      console.error('Error fetching reports:', error);
+      logger.error('Error fetching reports:', { error: error });
     } finally {
       setLoading(false);
     }

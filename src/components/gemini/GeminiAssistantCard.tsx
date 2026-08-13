@@ -22,6 +22,7 @@ import {
 } from "@/lib/gemini";
 import { groqChat, isGroqConfigured } from "@/lib/groq";
 
+import { logger } from '@/lib/logger';
 type SystemPromptKey = keyof typeof GEMINI_SYSTEM_PROMPTS;
 
 export interface GeminiAssistantCardProps {
@@ -115,7 +116,7 @@ export function GeminiAssistantCard({
         });
         provider = "gemini";
       } catch (geminiErr) {
-        console.warn("Gemini falhou, tentando Groq:", geminiErr);
+        logger.warn("Gemini falhou, tentando Groq:", { error: geminiErr });
       }
 
       // CAMADA 2: Groq (ultra-rápido, fallback de região/quota)
@@ -132,7 +133,7 @@ export function GeminiAssistantCard({
           });
           provider = "groq";
         } catch (groqErr) {
-          console.warn("Groq falhou:", groqErr);
+          logger.warn("Groq falhou:", { error: groqErr });
         }
       }
 

@@ -95,3 +95,15 @@ export function clearLogs() {
     /* ignore */
   }
 }
+
+/**
+ * Convenience logger object with shorthand methods.
+ * Each method auto-derives scope from the caller's file path at build time.
+ * Usage: import { logger } from '@/lib/logger'; logger.info('message', data);
+ */
+export const logger = {
+  debug: (message: string, data?: unknown) => log('debug', 'app', message, data),
+  info: (message: string, data?: unknown) => log('info', 'app', message, data),
+  warn: (message: string, data?: unknown) => log('warn', 'app', message, data),
+  error: (message: string, data?: unknown) => log('error', 'app', message, data),
+};

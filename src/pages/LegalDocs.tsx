@@ -5,6 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from "@/components/icons/lucide-compat";
 import { useNavigate } from 'react-router-dom';
+import DOMPurify from 'dompurify';
+import { logger } from '@/lib/logger';
 
 export default function LegalDocs() {
   const { type } = useParams();
@@ -19,7 +21,7 @@ export default function LegalDocs() {
       setLoading(true);
       try {
         // Try to find the doc for specific country and language
-        let { data } = await supabase
+        let data: { content: string | null } | null = await supabase
           .from('legal_documents' as any)
           .select('content')
           .eq('country_id', country.id)
@@ -28,7 +30,7 @@ export default function LegalDocs() {
           .eq('is_active', true)
           .order('version', { ascending: false })
           .limit(1)
-          .maybeSingle() as any;
+          .maybeSingle();
 
         // Fallback to English if not found in user language
         if (!data) {
@@ -39,13 +41,13 @@ export default function LegalDocs() {
             .eq('type', type || 'terms_of_service')
             .eq('language_code', 'en')
             .limit(1)
-            .maybeSingle() as any;
+            .maybeSingle();
           data = fallback;
         }
 
-        setContent(data?.content || 'Document not found for this region.');
+        setContent(DOMPurify.sanitize(data?.content || 'Document not found for this region.'));
       } catch (e) {
-        console.error("Error fetching legal doc:", e);
+        logger.error('Error fetching legal doc', { error: e, type, country: country?.id, locale });
         setContent('Error loading document.');
       } finally {
         setLoading(false);

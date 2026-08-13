@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * Maps Premium Service
  * Google Maps routing with real-time traffic for health facilities.
@@ -76,7 +77,7 @@ export async function computeDistances(
     try {
       return await computeDistancesGoogle(origin, facilities);
     } catch (e) {
-      console.warn('[mapsPremium] Google Routes failed, falling back:', e);
+      logger.warn('[mapsPremium] Google Routes failed, falling back:', { error: e });
     }
   }
   return computeDistancesHaversine(origin, facilities);
@@ -167,7 +168,7 @@ export async function getRoute(origin: GeoPoint, destination: GeoPoint): Promise
         }
       }
     } catch (e) {
-      console.warn('[mapsPremium] Google Directions failed:', e);
+      logger.warn('[mapsPremium] Google Directions failed:', { error: e });
     }
   }
 

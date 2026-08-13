@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * Google Places API — integração com a Places API (New) do Google Maps Platform.
  *
@@ -182,13 +183,13 @@ export async function getPlaceDetails(
       },
     });
     if (!res.ok) {
-      console.warn("[googlePlaces] getPlaceDetails failed:", res.status, await res.text());
+      logger.warn("[googlePlaces] getPlaceDetails failed:", [res.status, await res.text()]);
       return null;
     }
     const data = await res.json();
     return data as PlaceDetails;
   } catch (e) {
-    console.warn("[googlePlaces] getPlaceDetails error:", e);
+    logger.warn("[googlePlaces] getPlaceDetails error:", { error: e });
     return null;
   }
 }
@@ -411,13 +412,13 @@ export async function searchNearbyHealth(options: NearbySearchOptions): Promise<
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      console.warn("[googlePlaces] searchNearbyHealth failed:", res.status);
+      logger.warn("[googlePlaces] searchNearbyHealth failed:", res.status);
       return [];
     }
     const data = await res.json();
     return (data.places as NearbyPlace[]) || [];
   } catch (e) {
-    console.warn("[googlePlaces] searchNearbyHealth error:", e);
+    logger.warn("[googlePlaces] searchNearbyHealth error:", { error: e });
     return [];
   }
 }
@@ -457,7 +458,7 @@ export async function searchTextHealth(
     const data = await res.json();
     return (data.places as NearbyPlace[]) || [];
   } catch (e) {
-    console.warn("[googlePlaces] searchTextHealth error:", e);
+    logger.warn("[googlePlaces] searchTextHealth error:", { error: e });
     return [];
   }
 }
@@ -488,7 +489,7 @@ export async function geocodeAddress(address: string, region = "MZ"): Promise<Ge
       partialMatch: r.partial_match,
     }));
   } catch (e) {
-    console.warn("[googlePlaces] geocodeAddress error:", e);
+    logger.warn("[googlePlaces] geocodeAddress error:", { error: e });
     return [];
   }
 }

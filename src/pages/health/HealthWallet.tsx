@@ -67,6 +67,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface MedicalRecord {
@@ -181,7 +182,7 @@ export function HealthWallet({ isDoctorView = false, patientId }: HealthWalletPr
     try {
       // 1. Patient profile
       const { data: ppData, error: ppErr } = await supabase
-        .from('patient_profiles' as any)
+        .from('patient_profiles')
         .select('*')
         .eq('user_id', targetUserId)
         .maybeSingle();
@@ -190,7 +191,7 @@ export function HealthWallet({ isDoctorView = false, patientId }: HealthWalletPr
 
       // 2. User profile
       const { data: upData, error: upErr } = await supabase
-        .from('profiles' as any)
+        .from('profiles')
         .select('full_name, phone, avatar_url, country_id, default_city')
         .eq('id', targetUserId)
         .maybeSingle();
@@ -199,7 +200,7 @@ export function HealthWallet({ isDoctorView = false, patientId }: HealthWalletPr
 
       // 3. Medical records
       const { data: mrData, error: mrErr } = await supabase
-        .from('medical_records' as any)
+        .from('medical_records')
         .select('*')
         .eq('patient_id', targetUserId)
         .order('issued_at', { ascending: false });
@@ -220,7 +221,7 @@ export function HealthWallet({ isDoctorView = false, patientId }: HealthWalletPr
         toast.success(t('healthWallet.refreshed'));
       }
     } catch (err) {
-      console.error('HealthWallet: failed to fetch data', err);
+      logger.error('HealthWallet: failed to fetch data', { error: err });
       if (token === fetchTokenRef.current) {
         setError(t('healthWallet.error_title'));
       }
@@ -328,7 +329,7 @@ export function HealthWallet({ isDoctorView = false, patientId }: HealthWalletPr
     setMisauSaving(true);
     try {
       const { error: upErr } = await supabase
-        .from('patient_profiles' as any)
+        .from('patient_profiles')
         .upsert(
           {
             user_id: targetUserId,

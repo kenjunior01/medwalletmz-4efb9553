@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Bell, Stethoscope, Package, FileText, Clock, CheckCheck, ChevronRight } from "@/components/icons/lucide-compat";
 import { cn } from "@/lib/utils";
 
+import { logger } from '@/lib/logger';
 type NotificationType = "consultation" | "order" | "prescription" | "reminder";
 
 interface NotificationItem {
@@ -186,7 +187,7 @@ export function NotificationsPanel() {
 
       setItems(all.slice(0, 20));
     } catch (e) {
-      console.warn("NotificationsPanel load falhou:", e);
+      logger.warn("NotificationsPanel load falhou:", { error: e });
     } finally {
       setLoading(false);
     }

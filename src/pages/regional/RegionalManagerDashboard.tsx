@@ -75,13 +75,13 @@ export default function RegionalManagerDashboard() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const [usersRes, doctorsRes, consultationsRes, ordersRes, prevOrdersRes, activeRes, revenueRes] = await Promise.all([
-      (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid),
-      (supabase as any).from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('province', pid).eq('is_verified', true),
-      (supabase as any).from('consultations').select('id', { count: 'exact', head: true }).eq('province', pid).gte('created_at', startMonth.toISOString()),
-      (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('province', pid).gte('created_at', startMonth.toISOString()),
-      (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('province', pid).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
-      (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
-      (supabase as any).from('orders').select('total').eq('province', pid).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid),
+      supabase.from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('province', pid).eq('is_verified', true),
+      supabase.from('consultations').select('id', { count: 'exact', head: true }).eq('province', pid).gte('created_at', startMonth.toISOString()),
+      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('province', pid).gte('created_at', startMonth.toISOString()),
+      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('province', pid).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', pid).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
+      supabase.from('orders').select('total').eq('province', pid).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
     ]);
 
     const totalRevenue = (revenueRes.data || []).reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);

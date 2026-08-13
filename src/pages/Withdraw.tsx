@@ -55,7 +55,7 @@ export default function Withdraw() {
   const load = async () => {
     if (!user) return;
     const [{ data: w }, { data: roles }, { data: ps }, { data: hist }] = await Promise.all([
-      supabase.from("wallets").select("balance_mzn").eq("user_id", user.id).maybeSingle() as any,
+      supabase.from("wallets").select("balance_mzn").eq("user_id", user.id).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", user.id),
       supabase.from("platform_settings").select("value").eq("key", `withdrawal_min_${currencyCode.toLowerCase()}`).maybeSingle(),
       supabase.from("withdrawal_requests").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),

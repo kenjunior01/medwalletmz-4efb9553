@@ -30,7 +30,7 @@ export function RateInstitutionDialog({ entityType, entityId, entityName, trigge
     if (!user) { toast.error('Inicia sessão para avaliar'); return; }
     if (rating === 0) { toast.error('Escolhe uma pontuação'); return; }
     setLoading(true);
-    const { error } = await (supabase as any).from('institution_reviews').upsert({
+    const { error } = await supabase.from('institution_reviews').upsert({
       entity_type: entityType,
       entity_id: entityId,
       user_id: user.id,

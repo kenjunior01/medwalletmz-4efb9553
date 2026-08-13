@@ -167,7 +167,7 @@ export default function AdminCuration() {
     queryKey: ['curation-stats', countryFilterId],
     enabled: !loading && (isAdmin || isManager),
     queryFn: async () => {
-      let q = (supabase as any).from('place_proposals').select('status');
+      let q = supabase.from('place_proposals').select('status');
       if (countryFilterId) q = q.eq('country_id', countryFilterId);
 
       const { data, error } = await q;

@@ -6,6 +6,7 @@ import { offlineManager } from '@/services/offline/OfflineManager';
 import { identifyUser, resetAnalytics } from '@/services/analytics';
 import { logError, logInfo, logWarn, newRequestId } from '@/lib/logger';
 
+import { logger } from '@/lib/logger';
 type AppRole =
   | 'customer'
   | 'store_owner'
@@ -104,9 +105,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (error) {
-      console.error('Erro a aplicar convite:', error);
+      logger.error('Erro a aplicar convite:', error);
     } else {
-      console.log('Convite aplicado com sucesso');
+      logger.info('Convite aplicado com sucesso');
     }
   }, []);
 
@@ -165,12 +166,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Auto-cache critical data for offline access on sign-in
           if (_event === 'SIGNED_IN' && session?.user) {
             offlineManager.init();
-            offlineManager.cacheAll(session.user.id).catch(() => {});
+            offlineManager.cacheAll(session.user.id).catch((e) => { logger.warn('Failed to cache data offline', { error: e }); });
             // Analytics: identify user on sign-in
             identifyUser(session.user.id, {
               email: session.user.email,
               country_id: session.user.user_metadata?.country_id,
-            }).catch(() => {});
+            }).catch((e) => { logger.warn('Analytics identify failed', { error: e }); });
           }
         }
       }
@@ -191,7 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Cache offline data for returning users
         if (data.session?.user) {
           offlineManager.init();
-          offlineManager.cacheAll(data.session.user.id).catch(() => {});
+          offlineManager.cacheAll(data.session.user.id).catch((e) => { logger.warn('Failed to cache data offline', { error: e }); });
         }
       } catch (err) {
         logError('auth', 'Falha ao carregar sessão inicial', err, newRequestId('sess'));
@@ -245,7 +246,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
           } catch (e) {
             // Fallback: insere diretamente
-            await (supabase as any).from('user_types').upsert({
+            await supabase.from('user_types').upsert({
               user_id: data.user.id,
               user_type: userType,
               is_primary: true,
@@ -253,7 +254,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch (e) {
-        console.warn('Profile update after signup failed (will retry later):', e);
+        logger.warn('Profile update after signup failed (will retry later):', { error: e });
       }
       if (referralCode) {
         await applyReferralCode(referralCode, data.user.id);
@@ -307,7 +308,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     // Analytics: reset identity on sign-out
-    resetAnalytics().catch(() => {});
+    resetAnalytics().catch((e) => { logger.warn('Analytics reset failed', { error: e }); });
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);

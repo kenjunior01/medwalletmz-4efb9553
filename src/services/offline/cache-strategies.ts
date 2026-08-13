@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 // =============================================================================
 // MedWallet — Cache Strategies for Offline-First PWA
 // =============================================================================
@@ -166,18 +167,18 @@ export async function networkFirst<T>(ctx: StrategyContext<T>): Promise<Strategy
     const data = await ctx.fetcher();
     const entry = createCacheEntry(ctx.key, data, ctx.ttl ?? CACHE_TTL.PROFILE);
     await ctx.setToCache(entry);
-    console.log(`[CacheStrategy:NetworkFirst] Fresh data for '${ctx.key}'`);
+    logger.info(`[CacheStrategy:NetworkFirst] Fresh data for '${ctx.key}'`);
     return { data, fromCache: false, backgroundRefreshed: false, cacheHit: false };
   } catch (networkErr) {
-    console.warn(`[CacheStrategy:NetworkFirst] Network failed for '${ctx.key}', trying cache...`, networkErr);
+    logger.warn(`[CacheStrategy:NetworkFirst] Network failed for '${ctx.key}', trying cache...`, { error: networkErr });
 
     if (cached) {
       const expired = isCacheEntryExpired(cached);
-      console.log(`[CacheStrategy:NetworkFirst] Cache ${expired ? 'STALE' : 'FRESH'} hit for '${ctx.key}'`);
+      logger.info(`[CacheStrategy:NetworkFirst] Cache ${expired ? 'STALE' : 'FRESH'} hit for '${ctx.key}'`);
       return { data: cached.data, fromCache: true, backgroundRefreshed: false, cacheHit: true };
     }
 
-    console.warn(`[CacheStrategy:NetworkFirst] No cache available for '${ctx.key}'`);
+    logger.warn(`[CacheStrategy:NetworkFirst] No cache available for '${ctx.key}'`);
     return { data: null, fromCache: false, backgroundRefreshed: false, cacheHit: false };
   }
 }
@@ -194,7 +195,7 @@ export async function cacheFirst<T>(ctx: StrategyContext<T>): Promise<StrategyRe
 
   // If we have fresh cached data, serve it immediately
   if (cached && !isCacheEntryExpired(cached)) {
-    console.log(`[CacheStrategy:CacheFirst] Fresh cache hit for '${ctx.key}'`);
+    logger.info(`[CacheStrategy:CacheFirst] Fresh cache hit for '${ctx.key}'`);
     return { data: cached.data, fromCache: true, backgroundRefreshed: false, cacheHit: true };
   }
 
@@ -203,14 +204,14 @@ export async function cacheFirst<T>(ctx: StrategyContext<T>): Promise<StrategyRe
     const data = await ctx.fetcher();
     const entry = createCacheEntry(ctx.key, data, ctx.ttl ?? CACHE_TTL.COUNTRY_INFO);
     await ctx.setToCache(entry);
-    console.log(`[CacheStrategy:CacheFirst] Fetched & cached '${ctx.key}'`);
+    logger.info(`[CacheStrategy:CacheFirst] Fetched & cached '${ctx.key}'`);
     return { data, fromCache: false, backgroundRefreshed: false, cacheHit: false };
   } catch (networkErr) {
-    console.warn(`[CacheStrategy:CacheFirst] Network failed for '${ctx.key}'`, networkErr);
+    logger.warn(`[CacheStrategy:CacheFirst] Network failed for '${ctx.key}'`, { error: networkErr });
 
     // Even if expired, serve stale data as last resort
     if (cached) {
-      console.log(`[CacheStrategy:CacheFirst] Serving STALE cache for '${ctx.key}'`);
+      logger.info(`[CacheStrategy:CacheFirst] Serving STALE cache for '${ctx.key}'`);
       return { data: cached.data, fromCache: true, backgroundRefreshed: false, cacheHit: true };
     }
 
@@ -229,17 +230,17 @@ export async function staleWhileRevalidate<T>(ctx: StrategyContext<T>): Promise<
 
   // If we have any cached data, serve it immediately
   if (cached) {
-    console.log(`[CacheStrategy:SWR] Serving cached '${ctx.key}' (age: ${Math.round((Date.now() - new Date(cached.cachedAt).getTime()) / 1000)}s)`);
+    logger.info(`[CacheStrategy:SWR] Serving cached '${ctx.key}' (age: ${Math.round((Date.now() - new Date(cached.cachedAt).getTime()) / 1000)}s)`);
 
     // Fire-and-forget background refresh
     ctx.fetcher()
       .then(async (freshData) => {
         const entry = createCacheEntry(ctx.key, freshData, ctx.ttl ?? CACHE_TTL.WALLET_BALANCE);
         await ctx.setToCache(entry);
-        console.log(`[CacheStrategy:SWR] Background refresh complete for '${ctx.key}'`);
+        logger.info(`[CacheStrategy:SWR] Background refresh complete for '${ctx.key}'`);
       })
       .catch((err) => {
-        console.warn(`[CacheStrategy:SWR] Background refresh failed for '${ctx.key}'`, err);
+        logger.warn(`[CacheStrategy:SWR] Background refresh failed for '${ctx.key}'`, { error: err });
       });
 
     return { data: cached.data, fromCache: true, backgroundRefreshed: false, cacheHit: true };
@@ -250,10 +251,10 @@ export async function staleWhileRevalidate<T>(ctx: StrategyContext<T>): Promise<
     const data = await ctx.fetcher();
     const entry = createCacheEntry(ctx.key, data, ctx.ttl ?? CACHE_TTL.WALLET_BALANCE);
     await ctx.setToCache(entry);
-    console.log(`[CacheStrategy:SWR] Initial fetch & cache for '${ctx.key}'`);
+    logger.info(`[CacheStrategy:SWR] Initial fetch & cache for '${ctx.key}'`);
     return { data, fromCache: false, backgroundRefreshed: false, cacheHit: false };
   } catch (networkErr) {
-    console.warn(`[CacheStrategy:SWR] Network failed for '${ctx.key}'`, networkErr);
+    logger.warn(`[CacheStrategy:SWR] Network failed for '${ctx.key}'`, { error: networkErr });
     return { data: null, fromCache: false, backgroundRefreshed: false, cacheHit: false };
   }
 }
@@ -276,7 +277,7 @@ export async function executeStrategy<T>(
       return staleWhileRevalidate(ctx);
     default: {
       const _exhaustive: never = strategy;
-      console.warn(`[CacheStrategy] Unknown strategy: ${_exhaustive}, falling back to network-first`);
+      logger.warn(`[CacheStrategy] Unknown strategy: ${_exhaustive}, falling back to network-first`);
       return networkFirst(ctx);
     }
   }
@@ -294,7 +295,7 @@ export function buildContext<T>(
 ): StrategyContext<T> | null {
   const descriptor = CACHE_TYPES[typeName];
   if (!descriptor) {
-    console.warn(`[CacheStrategy] Unknown cache type: '${typeName}'`);
+    logger.warn(`[CacheStrategy] Unknown cache type: '${typeName}'`);
     return null;
   }
 

@@ -76,6 +76,7 @@ import type { Locale } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 
+import { logger } from '@/lib/logger';
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 type ViewMode = 'calendar' | 'list';
@@ -228,7 +229,7 @@ export default function MyConsultations() {
 
       if (isRefresh) toast.success(t('myConsultations.refreshed'));
     } catch (err) {
-      console.error('MyConsultations: fetch failed', err);
+      logger.error('MyConsultations: fetch failed', { error: err });
       if (token === fetchTokenRef.current) {
         setError(t('myConsultations.error_title'));
       }

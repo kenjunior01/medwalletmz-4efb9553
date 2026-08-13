@@ -8,6 +8,7 @@ import { GlassCard, BentoCard, BentoGrid } from '@/components/ui/design-system';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { logger } from '@/lib/logger';
 import {
   Wallet,
   TrendingUp,
@@ -244,7 +245,7 @@ export default function RiderEarnings() {
       setMpesaEarnings(mpesa);
       setWalletEarnings(lifetimeTotal - mpesa);
     } catch (err) {
-      console.error('Erro ao buscar ganhos:', err);
+      logger.error('Erro ao buscar ganhos:', { error: err });
     } finally {
       setLoading(false);
     }

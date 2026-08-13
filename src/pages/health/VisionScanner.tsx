@@ -27,6 +27,7 @@ import {
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 type Stage = 'select' | 'uploading' | 'scanning' | 'review' | 'saved';
 
 const SCAN_TYPES: Array<{ type: ScanType; icon: any; labelKey: string; descKey: string; color: string }> = [
@@ -57,7 +58,7 @@ export default function VisionScanner() {
       const scans = await getScans(user.id, 10);
       setRecentScans(scans);
     } catch (err) {
-      console.error('Failed to load recent scans:', err);
+      logger.error('Failed to load recent scans:', { error: err });
     }
   }, [user]);
 
@@ -89,7 +90,7 @@ export default function VisionScanner() {
       setScanResult(result);
       setStage('review');
     } catch (err) {
-      console.error('Scan failed:', err);
+      logger.error('Scan failed:', { error: err });
       toast.error(t('visionScanner.error_scan_failed'));
       setStage('select');
     }
@@ -119,7 +120,7 @@ export default function VisionScanner() {
       toast.success(t('visionScanner.saved_to_wallet'));
       void loadRecentScans();
     } catch (err) {
-      console.error('Save failed:', err);
+      logger.error('Save failed:', { error: err });
       toast.error(t('common.error'));
     }
   };

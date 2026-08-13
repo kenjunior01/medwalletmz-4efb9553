@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
+import { logger } from '@/lib/logger';
 interface DataSaverCtx {
   enabled: boolean;
   toggle: () => void;
@@ -14,7 +15,7 @@ function detectInitial(): boolean {
     const saved = localStorage.getItem("data-saver");
     if (saved !== null) return saved === "1";
   } catch (e) {
-    console.warn('LocalStorage blocked', e);
+    logger.warn('LocalStorage blocked', { error: e });
   }
   // Respect Save-Data header / connection hint
   const conn = (navigator as any).connection;

@@ -15,6 +15,7 @@
  */
 
 import { supabase as typedSupabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 // Cast para acesso a tabelas ainda não presentes nos tipos gerados
 const supabase = typedSupabase as any;
 
@@ -90,7 +91,7 @@ export async function getUserType(userId: string): Promise<UserType> {
     if (error) throw error;
     return (data?.user_type as UserType) ?? 'patient';
   } catch (e) {
-    console.warn('getUserType failed, defaulting to patient', e);
+    logger.warn('getUserType failed, defaulting to patient', { error: e });
     return 'patient';
   }
 }
@@ -105,7 +106,7 @@ export async function setUserType(userId: string, type: UserType): Promise<void>
     if (error) throw error;
   } catch (e: any) {
     // Fallback: try direct update on profiles
-    console.warn('set_user_primary_type RPC failed, falling back', e);
+    logger.warn('set_user_primary_type RPC failed, falling back', { error: e });
     await supabase.from('profiles').update({ user_type: type }).eq('user_id', userId);
     // Best-effort insert into user_types
     await supabase.from('user_types').upsert({
@@ -142,7 +143,7 @@ export async function getPendingVerifications(): Promise<PendingVerification[]> 
     if (error) throw error;
     return (data ?? []) as PendingVerification[];
   } catch (e: any) {
-    console.warn('getPendingVerifications failed (view may not exist yet)', e);
+    logger.warn('getPendingVerifications failed (view may not exist yet)', { error: e });
     return [];
   }
 }

@@ -24,6 +24,7 @@ import {
 } from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { logger } from '@/lib/logger';
 import {
   HealthRider, HealthDelivery, RiderOnboardingStep, VehicleType, DeliveryStatus, PackageType,
   getMyRiderProfile, createRider, updateRider, updateRiderProgress,
@@ -52,7 +53,7 @@ export default function HealthRidersNetwork() {
       setRider(r);
       setView(r?.is_verified ? 'dashboard' : 'onboarding');
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     } finally {
       setLoading(false);
     }
@@ -533,7 +534,7 @@ function RiderDashboard({ rider, onChange, t }: { rider: HealthRider; onChange: 
       setHistory(hist);
       setEarnings(earn);
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     } finally {
       setLoading(false);
     }
@@ -548,7 +549,7 @@ function RiderDashboard({ rider, onChange, t }: { rider: HealthRider; onChange: 
       setOnline(!online);
       if (!online) await load();
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     } finally {
       setTogglingOnline(false);
     }

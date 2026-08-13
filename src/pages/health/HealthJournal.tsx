@@ -26,6 +26,7 @@ import {
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 const MOOD_EMOJIS = [
   { level: 1, emoji: '😞', labelKey: 'muitoMau' },
   { level: 2, emoji: '😕', labelKey: 'mau' },
@@ -58,8 +59,7 @@ function getLast30Days(): string[] {
 export default function HealthJournal() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { t, country } = useCountry();
-  const locale = country?.id === 'BR' ? 'pt-BR' : 'pt-MZ';
+  const { t, locale } = useCountry();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -118,17 +118,17 @@ export default function HealthJournal() {
       } else if (weekly.length >= 1) {
         // Generate async, don't await
         setInsightLoading(true);
-        generateWeeklyInsight(user.id, country?.id === 'BR' ? 'pt' : 'pt')
+        generateWeeklyInsight(user.id, locale)
           .then(insight => { if (insight) setAiInsight(insight); })
           .finally(() => setInsightLoading(false));
       }
     } catch (err) {
-      console.error('HealthJournal load error:', err);
+      logger.error('HealthJournal load error:', { error: err });
       toast.error(t('healthJournal.error_load'));
     } finally {
       setLoading(false);
     }
-  }, [user, country, t]);
+  }, [user, locale, t]);
 
   useEffect(() => { void loadAll(); }, [loadAll]);
 
@@ -152,7 +152,7 @@ export default function HealthJournal() {
       toast.success(t('healthJournal.saved_toast'));
       void loadAll(); // refresh streak + stats
     } catch (err) {
-      console.error('Save error:', err);
+      logger.error('Save error:', { error: err });
       toast.error(t('common.error'));
     } finally {
       setSaving(false);
@@ -163,7 +163,7 @@ export default function HealthJournal() {
     if (!user) return;
     setInsightLoading(true);
     try {
-      const insight = await generateWeeklyInsight(user.id, 'pt');
+      const insight = await generateWeeklyInsight(user.id, locale);
       if (insight) {
         setAiInsight(insight);
         toast.success(t('healthJournal.insight_refreshed'));

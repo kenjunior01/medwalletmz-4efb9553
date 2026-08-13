@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
 import { GlassCard } from '@/components/ui/design-system';
 import { Badge } from '@/components/ui/badge';
+import { logger } from '@/lib/logger';
 import {
   Power,
   MapPin,
@@ -384,7 +385,7 @@ export default function RiderMode() {
         }
       }
     } catch (err) {
-      console.error('Erro ao alterar disponibilidade:', err);
+      logger.error('Erro ao alterar disponibilidade:', { error: err });
     } finally {
       if (mountedRef.current) setToggling(false);
     }
@@ -473,7 +474,7 @@ export default function RiderMode() {
             setIsOnline(data.is_available ?? false);
           }
         })
-        .catch(() => {});
+        .catch((e) => { logger.warn('Rider mode cleanup failed', { error: e }); });
     }
 
     return () => {

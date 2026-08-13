@@ -22,6 +22,7 @@ import { speakText } from '@/lib/googleTTS';
 import { triageLocalFallback } from '@/lib/triageFallback';
 import { getSpeechLocale } from '@/lib/speechLocale';
 
+import { logger } from '@/lib/logger';
 interface TriageResult {
   severity: string;
   recommendation: string;
@@ -104,7 +105,7 @@ export default function Triage() {
       };
 
       recognition.onerror = (event: any) => {
-        console.error("Erro no reconhecimento de voz:", event.error);
+        logger.error("Erro no reconhecimento de voz:", event.error);
         setIsRecording(false);
         toast.error(t('health.audio_error') + event.error);
       };
@@ -151,7 +152,7 @@ export default function Triage() {
       }
       setNearbyDoctors(top);
     } catch (e) {
-      console.warn('nearby doctors failed', e);
+      logger.warn('nearby doctors failed', { error: e });
     }
   };
 
@@ -165,9 +166,9 @@ export default function Triage() {
           .slice(0, 3);
       };
       const [h, c, p] = await Promise.all([
-        (supabase as any).from('hospitals').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
-        (supabase as any).from('clinics').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
-        (supabase as any).from('pharmacies').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
+        supabase.from('hospitals').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
+        supabase.from('clinics').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
+        supabase.from('pharmacies').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
       ]);
       setNearbyFacilities({
         hospitals: withDist(h.data || []),
@@ -175,7 +176,7 @@ export default function Triage() {
         pharmacies: withDist(p.data || []),
       });
     } catch (e) {
-      console.warn('nearby facilities failed', e);
+      logger.warn('nearby facilities failed', { error: e });
     }
   };
 
@@ -197,7 +198,7 @@ export default function Triage() {
 
       if (error || !data || data.error) {
         // CAMADA FALLBACK: Gemini browser + regras locais (em src/lib/triageFallback.ts)
-        console.warn('Edge Function ai-triage falhou, usando fallback local:', error || data?.error);
+        logger.warn('Edge Function ai-triage falhou, usando fallback local:', error || data?.error);
         toast.info("Lovable AI indisponível — a usar modo local seguro", {
           icon: <Sparkles className="h-4 w-4" />,
         });
@@ -215,7 +216,7 @@ export default function Triage() {
       if (triageData?.suggested_specialty) findNearbyDoctors(triageData.suggested_specialty);
       findNearbyFacilities();
       if (user) {
-        await (supabase.from('triage_logs') as any).insert({
+        await supabase.from('triage_logs').insert({
           patient_id: user.id,
           symptoms,
           age: age ? Number(age) : null,
@@ -229,7 +230,7 @@ export default function Triage() {
     } catch (e: any) {
       // Último recurso: fallback local também (garante que triagem nunca falha totalmente)
       try {
-        console.warn('Triage crash, último recurso fallback local:', e);
+        logger.warn('Triage crash, último recurso fallback local:', { error: e });
         const localResult = await triageLocalFallback(
           symptoms,
           age ? Number(age) : null,

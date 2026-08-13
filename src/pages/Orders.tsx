@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 
+import { logger } from '@/lib/logger';
 interface OrderWithStore {
   id: string;
   status: string;
@@ -120,7 +121,7 @@ export default function Orders() {
       if (ordersError) throw ordersError;
       setOrders((ordersData as unknown as OrderWithStore[]) || []);
     } catch (error) {
-      console.error("Erro ao carregar pedidos:", error);
+      logger.error("Erro ao carregar pedidos:", { error: error });
       toast.error((error as any)?.message || 'Erro ao carregar pedidos');
     } finally {
       setLoading(false);

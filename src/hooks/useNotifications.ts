@@ -6,6 +6,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { notificationService } from '@/services/notifications';
 import { NotificationTemplates, resolveTemplate } from '@/services/notifications/NotificationTemplates';
 import { fcmService } from '@/services/fcm/FcmService';
+import { logger } from '@/lib/logger';
 import type {
   NotificationPayload,
   NotificationPermissionStatus,
@@ -185,10 +186,10 @@ export function useNotifications() {
     if (!user || permission !== 'granted' || fcmInitializedRef.current) return;
     fcmInitializedRef.current = true;
     fcmService.init(user.id).then(() => {
-      console.info('[useNotifications] FCM initialized for user');
+      logger.info('[useNotifications] FCM initialized for user');
     }).catch(() => {
       // FCM is best-effort — don't break the app if it fails
-      console.info('[useNotifications] FCM not available (no Firebase config)');
+      logger.info('[useNotifications] FCM not available (no Firebase config)');
     });
     // Cleanup FCM on unmount
     return () => { fcmService.destroy(); fcmInitializedRef.current = false; };

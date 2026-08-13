@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/hooks/useTheme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -294,6 +295,7 @@ const App = () => {
   }
 
   return (
+  <ThemeProvider defaultTheme="system">
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <LocationProvider>
@@ -409,7 +411,7 @@ const App = () => {
                   {/* Admin Routes — protegido ao nível da rota + guard interno em AdminDashboard */}
                   <Route path="/admin" element={
                     <Suspense fallback={<LoadingScreen />}>
-                      <ProtectedRoute allowedRoles={['admin', 'country_manager']}><AdminDashboard /></ProtectedRoute>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager']}><AdminDashboard /></ProtectedRoute>
                     </Suspense>
                   }>
                     <Route index element={<AdminHome />} />
@@ -592,9 +594,6 @@ const App = () => {
                       Ver OAuthBrokerRedirect.tsx para detalhes. */}
                   <Route path="/~oauth/*" element={<OAuthBrokerRedirect />} />
 
-                  {/* Subscription Plans — acessível para admin, country_manager, provincial_manager */}
-                  <Route path="/admin/subscription-plans" element={<ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager']}><AdminSubscriptionPlans /></ProtectedRoute>} />
-
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </Suspense>
@@ -613,6 +612,7 @@ const App = () => {
     </LocationProvider>
   </AuthProvider>
   </QueryClientProvider>
+  </ThemeProvider>
 );
 };
 

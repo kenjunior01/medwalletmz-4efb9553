@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * Google Maps Routes API helper.
  *
@@ -122,7 +123,7 @@ export async function fetchRouteDistance(
 
     return { distanceMeters, durationSeconds, polyline, via: 'google_routes' };
   } catch (e) {
-    console.warn('[google-routes] falhou', e);
+    logger.warn('[google-routes] falhou', { error: e });
     const mapboxToken = (import.meta as any).env?.VITE_MAPBOX_TOKEN;
     if (mapboxToken) return fetchMapboxRoute(origin, dest, mapboxToken);
     return null;

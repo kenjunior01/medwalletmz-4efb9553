@@ -20,6 +20,7 @@ import {
   Phone, Flag, Trash2, Smile, UserCircle2,
 } from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
+import { logger } from '@/lib/logger';
 import {
   SupportCircle, CircleMessage, ModerationResult,
   getCircles, getCircleById, createCircle, joinCircle, leaveCircle,
@@ -290,7 +291,7 @@ function CircleDetail({ circleId, onBack, t, userId, countryCode }: { circleId: 
       setMessages(msgs.reverse());
       if (userId) await markCircleRead(circleId, userId);
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     } finally {
       setLoading(false);
     }
@@ -324,7 +325,7 @@ function CircleDetail({ circleId, onBack, t, userId, countryCode }: { circleId: 
         setShowCrisis(true);
       }
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     } finally {
       setSending(false);
     }
@@ -336,7 +337,7 @@ function CircleDetail({ circleId, onBack, t, userId, countryCode }: { circleId: 
       await joinCircle(circleId, userId);
       await load();
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     }
   };
 
@@ -672,7 +673,7 @@ function CreateCircleForm({ userId, countryCode, language, onCreated, onCancel, 
       });
       onCreated(c.id!);
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     } finally {
       setSaving(false);
     }

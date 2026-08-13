@@ -15,13 +15,15 @@ if (!_hasCredentials) {
   );
 }
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
+function createDummyClient(): SupabaseClient<Database> {
+  return new Proxy({} as SupabaseClient<Database>, {
+    get(_target, prop) {
+      if (prop === 'then') return undefined; // prevent Promise resolution
+      return () => createDummyClient(); // chainable no-ops
+    }
+  });
+}
 
-/**
- * Safe Supabase client — null when credentials are missing so the app
- * can degrade gracefully instead of crashing with a blank white screen.
- */
 export const supabase: SupabaseClient<Database> = _hasCredentials
   ? createClient<Database>(SUPABASE_URL!, SUPABASE_PUBLISHABLE_KEY!, {
       auth: {
@@ -29,10 +31,9 @@ export const supabase: SupabaseClient<Database> = _hasCredentials
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
-        // SECURITY: Use PKCE flow instead of implicit to prevent token interception
         flowType: 'pkce',
       }
     })
-  : (null as unknown as SupabaseClient<Database>);
+  : createDummyClient();
 
 export const isSupabaseConfigured = _hasCredentials;

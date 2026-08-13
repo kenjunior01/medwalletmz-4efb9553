@@ -18,6 +18,7 @@ import { supabase as typedSupabase } from '@/integrations/supabase/client';
 const supabase = typedSupabase as any;
 import { isGeminiConfigured } from '@/lib/gemini';
 
+import { logger } from '@/lib/logger';
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
 const BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const AUDIO_MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash'];
@@ -125,7 +126,7 @@ export function createRecordingController(): RecordingController {
     stream?.getTracks().forEach((t) => t.stop());
     stream = null;
     if (audioContext?.state !== 'closed') {
-      audioContext?.close().catch(() => {});
+      audioContext?.close().catch((e) => { logger.debug('Audio cleanup/autoplay failed', { error: e }); });
     }
     audioContext = null;
     analyser = null;
@@ -220,7 +221,7 @@ Se não conseguires ouvir claramente, define confidence baixo e transcribe o que
       continue;
     }
   }
-  console.warn('[voiceJournal] Gemini audio analysis failed:', lastError);
+  logger.warn('[voiceJournal] Gemini audio analysis failed:', lastError);
   return null;
 }
 
@@ -266,7 +267,7 @@ export function createWebSpeechController(onResult: (r: WebSpeechResult, isFinal
         if (final) onResult({ transcript: final, language: lang, confidence: 0.9 }, true);
         else if (interim) onResult({ transcript: interim, language: lang, confidence: 0.5 }, false);
       };
-      recognition.onerror = (e: any) => console.warn('[webSpeech] error:', e.error);
+      recognition.onerror = (e: any) => logger.warn('[webSpeech] error:', e.error);
       recognition.start();
     },
     stop: () => {

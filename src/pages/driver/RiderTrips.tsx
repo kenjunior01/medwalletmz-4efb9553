@@ -28,6 +28,7 @@ import {
 } from '@/components/icons/lucide-compat';
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { logger } from '@/lib/logger';
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
@@ -262,7 +263,7 @@ export default function RiderTrips() {
       if (error) throw error;
       setTrips((data as Assignment[]) || []);
     } catch (err) {
-      console.error('Erro ao carregar entregas:', err);
+      logger.error('Erro ao carregar entregas:', { error: err });
     } finally {
       setLoading(false);
     }

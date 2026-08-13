@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 export function MeddyChat() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -68,7 +69,7 @@ export function MeddyChat() {
         setMessages([welcome]);
         setShowMoodPicker(true);
       } catch (err) {
-        console.error('Failed to start conversation:', err);
+        logger.error('Failed to start conversation:', { error: err });
         toast.error(t('common.error'));
       }
     }
@@ -109,7 +110,7 @@ export function MeddyChat() {
         setCrisisBanner(true);
       }
     } catch (err) {
-      console.error('Send message error:', err);
+      logger.error('Send message error:', { error: err });
       toast.error(t('meddyCoach.error_sending'));
     } finally {
       setLoading(false);

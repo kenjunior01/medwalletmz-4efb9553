@@ -49,6 +49,7 @@ import {
 import { useCountry } from "@/contexts/CountryContext";
 import { toast } from "sonner";
 
+import { logger } from '@/lib/logger';
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -85,7 +86,7 @@ export default function Settings() {
         }
         setLoading(false);
       } catch (err) {
-        console.error("Erro ao carregar definições:", err);
+        logger.error("Erro ao carregar definições:", { error: err });
         setError(t("settings.error_title"));
         setLoading(false);
       }
@@ -103,7 +104,7 @@ export default function Settings() {
       const merged = { ...parsed, ...next };
       localStorage.setItem("mw_settings", JSON.stringify(merged));
     } catch (err) {
-      console.error("Erro ao guardar definições:", err);
+      logger.error("Erro ao guardar definições:", { error: err });
     }
   };
 

@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
 
+import { logger } from '@/lib/logger';
 type Product = Tables<"products">;
 type Store = Tables<"stores">;
 
@@ -75,7 +76,7 @@ export default function AdminProducts() {
       setProducts((productsRes.data as ProductWithStore[]) || []);
       setStores(storesRes.data || []);
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+      logger.error("Erro ao carregar dados:", { error: error });
       toast.error("Erro ao carregar produtos");
     } finally {
       setLoading(false);
@@ -152,7 +153,7 @@ export default function AdminProducts() {
       setDialogOpen(false);
       fetchData();
     } catch (error) {
-      console.error("Erro ao salvar produto:", error);
+      logger.error("Erro ao salvar produto:", { error: error });
       toast.error("Erro ao salvar produto");
     } finally {
       setSaving(false);
@@ -169,7 +170,7 @@ export default function AdminProducts() {
       toast.success("Produto excluído!");
       fetchData();
     } catch (error) {
-      console.error("Erro ao excluir produto:", error);
+      logger.error("Erro ao excluir produto:", { error: error });
       toast.error("Erro ao excluir produto");
     }
   };
@@ -189,7 +190,7 @@ export default function AdminProducts() {
         )
       );
     } catch (error) {
-      console.error("Erro ao atualizar disponibilidade:", error);
+      logger.error("Erro ao atualizar disponibilidade:", { error: error });
       toast.error("Erro ao atualizar");
     }
   };

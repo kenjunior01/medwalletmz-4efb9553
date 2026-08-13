@@ -16,6 +16,7 @@
 import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 
+import { logger } from '@/lib/logger';
 // @capacitor/push-notifications loaded dynamically to avoid pulling it into the web bundle
 let PushNotifications: any = null;
 let pushNotificationTypes: any = null;
@@ -26,7 +27,7 @@ async function loadPushNotifications() {
       PushNotifications = mod.PushNotifications;
       pushNotificationTypes = mod;
     } catch {
-      console.info('[FcmService] @capacitor/push-notifications not available (web)');
+      logger.info('[FcmService] @capacitor/push-notifications not available (web)');
     }
   }
   return PushNotifications;
@@ -237,7 +238,7 @@ class FcmService {
         this.initialized = true;
         return; // Success — exit retry loop
       } catch (err) {
-        console.warn(`[FcmService] Init attempt ${attempt + 1} failed:`, err);
+        logger.warn(`[FcmService] Init attempt ${attempt + 1} failed:`, { error: err });
         if (attempt < MAX_RETRIES) {
           await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
         }
@@ -303,12 +304,12 @@ class FcmService {
         );
 
       if (error) {
-        console.warn('[FcmService] Erro ao guardar token no Supabase:', error.message);
+        logger.warn('[FcmService] Erro ao guardar token no Supabase:', error.message);
       } else {
         this.currentToken = token;
       }
     } catch (err) {
-      console.warn('[FcmService] Excepção ao guardar token no Supabase:', err);
+      logger.warn('[FcmService] Excepção ao guardar token no Supabase:', { error: err });
     }
   }
 
@@ -373,7 +374,7 @@ class FcmService {
     this.permissionGranted = false;
     this.currentUserId = null;
 
-    console.info('[FcmService] Serviço destruído e recursos limpos.');
+    logger.info('[FcmService] Serviço destruído e recursos limpos.');
   }
 
   // =======================================================================
@@ -393,20 +394,16 @@ class FcmService {
       firebaseAppMod = await import(/* @vite-ignore */ 'firebase/app');
       firebaseMessagingMod = await import(/* @vite-ignore */ 'firebase/messaging');
     } catch {
-      console.info(
-        '[FcmService] Firebase SDK não disponível no web. ' +
+      logger.info('[FcmService] Firebase SDK não disponível no web. ' +
         'O caminho web/PWA de FCM está desactivado. ' +
-        'Instale firebase para activar: npm install firebase'
-      );
+        'Instale firebase para activar: npm install firebase');
       return;
     }
 
     // Verificar se a configuração está preenchida
     if (!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.projectId) {
-      console.info(
-        '[FcmService] Configuração Firebase incompleta. ' +
-        'Defina VITE_FCM_API_KEY, VITE_FCM_PROJECT_ID e outras variáveis no .env'
-      );
+      logger.info('[FcmService] Configuração Firebase incompleta. ' +
+        'Defina VITE_FCM_API_KEY, VITE_FCM_PROJECT_ID e outras variáveis no .env');
       return;
     }
 
@@ -420,7 +417,7 @@ class FcmService {
       this.permissionGranted = permission === 'granted';
 
       if (!this.permissionGranted) {
-        console.info('[FcmService] Permissão de notificação negada pelo utilizador (web).');
+        logger.info('[FcmService] Permissão de notificação negada pelo utilizador (web).');
         return;
       }
 
@@ -439,7 +436,7 @@ class FcmService {
         }
       );
     } catch (err) {
-      console.warn('[FcmService] Erro na inicialização web do Firebase:', err);
+      logger.warn('[FcmService] Erro na inicialização web do Firebase:', { error: err });
     }
   }
 
@@ -462,7 +459,7 @@ class FcmService {
           return token;
         }
       } catch (err) {
-        console.warn('[FcmService] Erro ao obter token via Firebase SDK:', err);
+        logger.warn('[FcmService] Erro ao obter token via Firebase SDK:', { error: err });
       }
     }
 
@@ -504,7 +501,7 @@ class FcmService {
     try {
       const PN = await loadPushNotifications();
       if (!PN) {
-        console.info('[FcmService] Push notifications not available on this platform.');
+        logger.info('[FcmService] Push notifications not available on this platform.');
         return;
       }
 
@@ -515,7 +512,7 @@ class FcmService {
         (result as any).granted === true;
 
       if (!this.permissionGranted) {
-        console.info('[FcmService] Permissão de notificação negada pelo utilizador (nativo).');
+        logger.info('[FcmService] Permissão de notificação negada pelo utilizador (nativo).');
         return;
       }
 
@@ -532,7 +529,7 @@ class FcmService {
       // Registar listeners do Capacitor
       await this.setupNativeListeners();
     } catch (err) {
-      console.warn('[FcmService] Erro na inicialização nativa:', err);
+      logger.warn('[FcmService] Erro na inicialização nativa:', { error: err });
     }
   }
 
@@ -557,7 +554,7 @@ class FcmService {
 
       // Timeout de 10 segundos para evitar espera infinita
       const timeout = setTimeout(() => {
-        console.warn('[FcmService] Timeout ao aguardar token nativo.');
+        logger.warn('[FcmService] Timeout ao aguardar token nativo.');
         resolve(null);
       }, 10_000);
 
@@ -567,7 +564,7 @@ class FcmService {
         (token: any) => {
           clearTimeout(timeout);
           this.currentToken = token.value;
-          console.info('[FcmService] Token FCM nativo recebido.');
+          logger.info('[FcmService] Token FCM nativo recebido.');
 
           // Guardar no Supabase automaticamente
           if (this.currentUserId && token.value) {
@@ -640,7 +637,7 @@ class FcmService {
       try {
         callback(message);
       } catch (err) {
-        console.warn('[FcmService] Erro no callback de mensagem:', err);
+        logger.warn('[FcmService] Erro no callback de mensagem:', { error: err });
       }
     }
   }

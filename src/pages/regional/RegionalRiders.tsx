@@ -20,6 +20,7 @@ import NumberFlow from '@number-flow/react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 // ── Types ──────────────────────────────────────────────────────────────────
 
 type RiderStatus = 'all' | 'active' | 'inactive' | 'on_delivery' | 'pending';
@@ -275,7 +276,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
         setDeliveryStats(statsMap);
       }
     } catch (err) {
-      console.error('Failed to load riders:', err);
+      logger.error('Failed to load riders:', { error: err });
       toast.error(t('regional.riders_load_error') || 'Erro ao carregar riders');
     } finally {
       setLoading(false);

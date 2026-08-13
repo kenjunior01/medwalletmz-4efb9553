@@ -134,7 +134,7 @@ export function useMicroInsuranceProducts(countryId?: string) {
   return useQuery({
     queryKey: ['micro-insurance-products', countryId],
     queryFn: async () => {
-      let q = supabase.from('micro_insurance_products' as any).select('*').order('country_id');
+      let q = supabase.from('micro_insurance_products').select('*').order('country_id');
       if (countryId) q = q.eq('country_id', countryId);
       const { data, error } = await q;
       if (error) throw error;

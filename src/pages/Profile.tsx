@@ -42,6 +42,7 @@ import { LowDataToggle } from "@/components/profile/LowDataToggle";
 import { UserProposalsWidget } from "@/components/places/UserProposalsWidget";
 import { LanguageSelector } from "@/components/layout/LanguageSelector";
 
+import { logger } from '@/lib/logger';
 type Profile = Tables<"profiles">;
 
 /** Professional institution roles with their metadata (labels via i18n keys). */
@@ -188,7 +189,7 @@ export default function Profile() {
         setEditPhone(data.phone || "");
       }
     } catch (error) {
-      console.error("Erro ao carregar perfil:", error);
+      logger.error("Erro ao carregar perfil:", { error: error });
       setError(t("profile.error_title"));
     } finally {
       setLoading(false);
@@ -216,14 +217,14 @@ export default function Profile() {
       // Medical records (documents) count — used in the Documents tab
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const docsRes: any = await supabase
-        .from("medical_records" as any)
+        .from("medical_records")
         .select("id", { count: "exact", head: true })
         .eq("patient_id", user.id);
 
       // MISAU / patient profile check
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const ppRes: any = await supabase
-        .from("patient_profiles" as any)
+        .from("patient_profiles")
         .select("medical_id")
         .eq("user_id", user.id)
         .maybeSingle();
@@ -236,7 +237,7 @@ export default function Profile() {
       });
       setMisauLinked(Boolean(ppRes?.data?.medical_id));
     } catch (error) {
-      console.error("Erro ao carregar estatísticas:", error);
+      logger.error("Erro ao carregar estatísticas:", { error: error });
     }
   };
 
@@ -260,7 +261,7 @@ export default function Profile() {
       setEditOpen(false);
       toast.success(t("profile.update_success"));
     } catch (error) {
-      console.error("Erro ao atualizar perfil:", error);
+      logger.error("Erro ao atualizar perfil:", { error: error });
       toast.error(t("profile.update_error"));
     } finally {
       setSaving(false);
@@ -304,7 +305,7 @@ export default function Profile() {
       setProfile((prev) => (prev ? { ...prev, avatar_url: publicUrl } : null));
       toast.success(t("profile.avatar_upload_success"));
     } catch (err) {
-      console.error("Avatar upload error:", err);
+      logger.error("Avatar upload error:", { error: err });
       toast.error(t("profile.avatar_upload_error"));
     } finally {
       setAvatarUploading(false);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { logger } from '@/lib/logger';
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{
@@ -56,7 +57,7 @@ export function usePWA(): PwaState {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setCanInstall(true);
-      console.log('[PWA] App pronta para instalar');
+      logger.info('[PWA] App pronta para instalar');
     };
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
 
@@ -65,7 +66,7 @@ export function usePWA(): PwaState {
       setCanInstall(false);
       setDeferredPrompt(null);
       setIsInstalled(true);
-      console.log('[PWA] App instalada com sucesso');
+      logger.info('[PWA] App instalada com sucesso');
     };
     window.addEventListener('appinstalled', handleAppInstalled);
 
@@ -75,17 +76,17 @@ export function usePWA(): PwaState {
       // Mas podemos detectar updates via eventos
       navigator.serviceWorker.ready.then((registration) => {
         setSwRegistered(true);
-        console.log('[PWA] Service Worker ativo:', registration.scope);
+        logger.info('[PWA] Service Worker ativo:', registration.scope);
 
         // Verificar updates periodicamente
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (!newWorker) return;
-          console.log('[PWA] Nova versão descarregada, a instalar...');
+          logger.info('[PWA] Nova versão descarregada, a instalar...');
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
               // Nova versão instalada mas a antiga ainda está ativa
-              console.log('[PWA] Atualização pronta. Chama applyUpdate() para recarregar.');
+              logger.info('[PWA] Atualização pronta. Chama applyUpdate() para recarregar.');
               setUpdateAvailable(true);
             }
           });
@@ -93,15 +94,15 @@ export function usePWA(): PwaState {
 
         // Verificar updates a cada hora
         setInterval(() => {
-          registration.update().catch(() => {});
+          registration.update().catch((e) => { logger.debug('SW background update failed', { error: e }); });
         }, 60 * 60 * 1000);
       }).catch((err) => {
-        console.warn('[PWA] Service Worker falhou:', err);
+        logger.warn('[PWA] Service Worker falhou:', { error: err });
       });
 
       // Detectar quando o novo SW toma controlo
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        console.log('[PWA] Novo Service Worker assumiu controlo');
+        logger.info('[PWA] Novo Service Worker assumiu controlo');
       });
     }
 

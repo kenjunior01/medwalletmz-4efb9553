@@ -20,6 +20,7 @@ import {
 } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 
+import { logger } from '@/lib/logger';
 interface OrderItem {
   id: string;
   quantity: number;
@@ -109,7 +110,7 @@ export default function StoreOrders() {
       if (error) throw error;
       setOrders(data || []);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      logger.error('Error fetching orders:', { error: error });
       toast.error('Erro ao carregar pedidos');
     } finally {
       setLoading(false);
@@ -128,7 +129,7 @@ export default function StoreOrders() {
       toast.success(`Status atualizado para: ${getStatusLabel(newStatus)}`);
       fetchOrders();
     } catch (error) {
-      console.error('Error updating order:', error);
+      logger.error('Error updating order:', { error: error });
       toast.error('Erro ao atualizar pedido');
     }
   };

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+import { logger } from '@/lib/logger';
 export type AppRole = 'admin' | 'customer' | 'store_owner' | 'driver' | 'doctor' | 'clinic' | 'country_manager' | 'provincial_manager' | 'regional_ceo' | 'regional_manager' | 'insurance' | 'hospital' | 'lab' | 'pharmacy' | 'veterinary';
 
 export function useUserRoles() {
@@ -36,14 +37,14 @@ export function useUserRoles() {
           .eq('user_id', user.id);
         if (cancelled) return;
         if (error) {
-          console.error("Erro ao buscar papéis do utilizador:", error);
+          logger.error("Erro ao buscar papéis do utilizador:", error);
           setRoles([]);
         } else {
           setRoles((data || []).map((r: any) => r.role as AppRole));
         }
       } catch (err) {
         if (cancelled) return;
-        console.error("Erro fatal ao buscar papéis:", err);
+        logger.error("Erro fatal ao buscar papéis:", { error: err });
         setRoles([]);
       } finally {
         if (!cancelled) setLoading(false);

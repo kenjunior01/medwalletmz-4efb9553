@@ -14,6 +14,7 @@
 // =============================================================================
 
 import { supabase as typedSupabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 // Cast para acesso a tabelas ainda não presentes nos tipos gerados
 const supabase = typedSupabase as any;
 
@@ -94,7 +95,7 @@ async function encrypt<T>(value: T): Promise<string> {
   const key = await deriveKey();
   if (!key) {
     // Fallback: if encryption not available, store with a prefix warning
-    console.warn('[OfflineManager] Encryption unavailable, storing as plaintext (dev only)');
+    logger.warn('[OfflineManager] Encryption unavailable, storing as plaintext (dev only)');
     return 'PLAIN:' + JSON.stringify(value);
   }
   const iv = crypto.getRandomValues(new Uint8Array(12)); // 96-bit IV for AES-GCM
@@ -123,7 +124,7 @@ async function decrypt<T>(encrypted: string): Promise<T | null> {
     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
     return JSON.parse(new TextDecoder().decode(decrypted)) as T;
   } catch {
-    console.warn('[OfflineManager] Failed to decrypt data (key may have changed after login)');
+    logger.warn('[OfflineManager] Failed to decrypt data (key may have changed after login)');
     return null;
   }
 }
@@ -183,7 +184,7 @@ function safeSetItem(key: string, value: unknown): void {
     if (typeof window === 'undefined') return;
     localStorage.setItem(key, JSON.stringify(value));
   } catch (err) {
-    console.warn(`[OfflineManager] Failed to write ${key}:`, err);
+    logger.warn(`[OfflineManager] Failed to write ${key}:`, { error: err });
   }
 }
 
@@ -192,7 +193,7 @@ function safeRemoveItem(key: string): void {
     if (typeof window === 'undefined') return;
     localStorage.removeItem(key);
   } catch (err) {
-    console.warn(`[OfflineManager] Failed to remove ${key}:`, err);
+    logger.warn(`[OfflineManager] Failed to remove ${key}:`, { error: err });
   }
 }
 
@@ -269,7 +270,7 @@ class OfflineManager {
     this.queue.push(item);
     this.persistQueue();
 
-    console.log(`[OfflineManager] Queued ${type} on ${table}`, item.id);
+    logger.info(`[OfflineManager] Queued ${type} on ${table}`, item.id);
   }
 
   /** Process pending mutations against Supabase. Called automatically on reconnect.
@@ -289,7 +290,7 @@ class OfflineManager {
       return { success: 0, failed: 0 };
     }
 
-    console.log(`[OfflineManager] Processing ${pending.length} queued items...`);
+    logger.info(`[OfflineManager] Processing ${pending.length} queued items...`);
 
     let success = 0;
     let failed = 0;
@@ -316,7 +317,7 @@ class OfflineManager {
           item.retryCount++;
           // Exponential backoff: 2s, 8s, 32s
           item.nextRetryAt = now + Math.pow(4, item.retryCount) * 500;
-          console.error(`[OfflineManager] Mutation error (${item.id}), retry ${item.retryCount}/${MAX_RETRIES} at ${new Date(item.nextRetryAt).toISOString()}`);
+          logger.error(`[OfflineManager] Mutation error (${item.id}), retry ${item.retryCount}/${MAX_RETRIES} at ${new Date(item.nextRetryAt).toISOString()}`);
           failed++;
         }
       }
@@ -331,7 +332,7 @@ class OfflineManager {
       safeSetItem(STORAGE_KEYS.lastSync, new Date().toISOString());
     }
 
-    console.log(`[OfflineManager] Sync complete: ${success} ok, ${failed} failed`);
+    logger.info(`[OfflineManager] Sync complete: ${success} ok, ${failed} failed`);
     return { success, failed };
   }
 
@@ -384,10 +385,10 @@ class OfflineManager {
         // SECURITY: Encrypt profile before storing in localStorage
         const encrypted = await encrypt(data);
         localStorage.setItem(STORAGE_KEYS.profile, encrypted);
-        console.log('[OfflineManager] Profile cached (encrypted)');
+        logger.info('[OfflineManager] Profile cached (encrypted)');
       }
     } catch (err) {
-      console.warn('[OfflineManager] Failed to cache profile:', err);
+      logger.warn('[OfflineManager] Failed to cache profile:', { error: err });
     }
   }
 
@@ -404,10 +405,10 @@ class OfflineManager {
         // SECURITY: Encrypt prescriptions before storing in localStorage
         const encrypted = await encrypt(data);
         localStorage.setItem(STORAGE_KEYS.prescriptions, encrypted);
-        console.log('[OfflineManager] Prescriptions cached (encrypted):', data.length);
+        logger.info('[OfflineManager] Prescriptions cached (encrypted):', data.length);
       }
     } catch (err) {
-      console.warn('[OfflineManager] Failed to cache prescriptions:', err);
+      logger.warn('[OfflineManager] Failed to cache prescriptions:', { error: err });
     }
   }
 
@@ -421,10 +422,10 @@ class OfflineManager {
 
       if (data) {
         safeSetItem(STORAGE_KEYS.wallet, (data as any).balance ?? 0);
-        console.log('[OfflineManager] Wallet balance cached');
+        logger.info('[OfflineManager] Wallet balance cached');
       }
     } catch (err) {
-      console.warn('[OfflineManager] Failed to cache wallet balance:', err);
+      logger.warn('[OfflineManager] Failed to cache wallet balance:', { error: err });
     }
   }
 
@@ -452,7 +453,7 @@ class OfflineManager {
   async cacheNearbyFacilities(city?: string): Promise<void> {
     try {
       const query = supabase
-        .from('health_facilities' as any)
+        .from('health_facilities')
         .select('id, name, type, latitude, longitude, address, phone, is_verified, rating, image_url')
         .eq('is_active', true)
         .limit(100);
@@ -467,7 +468,7 @@ class OfflineManager {
         safeSetItem('mz_offline_facilities_ts', String(Date.now()));
       }
     } catch (err) {
-      console.warn('[OfflineManager] Failed to cache facilities:', err);
+      logger.warn('[OfflineManager] Failed to cache facilities:', { error: err });
     }
   }
 
@@ -489,7 +490,7 @@ class OfflineManager {
   async cacheTopDoctors(countryId?: string): Promise<void> {
     try {
       let query = supabase
-        .from('doctor_profiles' as any)
+        .from('doctor_profiles')
         .select('id, user_id, rating, consultation_fee, is_available, medical_specialties(name, icon)')
         .eq('is_available', true)
         .order('rating', { ascending: false })
@@ -505,7 +506,7 @@ class OfflineManager {
         safeSetItem('mz_offline_doctors_ts', String(Date.now()));
       }
     } catch (err) {
-      console.warn('[OfflineManager] Failed to cache doctors:', err);
+      logger.warn('[OfflineManager] Failed to cache doctors:', { error: err });
     }
   }
 
@@ -557,7 +558,7 @@ class OfflineManager {
     });
     this.queue = [];
     this.persistQueue();
-    console.log('[OfflineManager] Cache cleared (including encrypted data)');
+    logger.info('[OfflineManager] Cache cleared (including encrypted data)');
   }
 
   // ── Queue Info ─────────────────────────────────────────────────────────

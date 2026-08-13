@@ -4,6 +4,7 @@
  */
 import { supabase } from "@/integrations/supabase/client";
 
+import { logger } from '@/lib/logger';
 export interface EnvironmentalData {
   aqi: number;
   category: string;
@@ -70,7 +71,7 @@ export async function fetchEnvironmentalHealth(lat: number, lng: number): Promis
       status: "success"
     };
   } catch (error) {
-    console.error("Error fetching environmental data:", error);
+    logger.error("Error fetching environmental data:", { error: error });
     return {
       aqi: 0,
       category: "Indisponível",

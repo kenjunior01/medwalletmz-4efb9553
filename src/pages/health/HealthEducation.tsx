@@ -84,7 +84,7 @@ export default function HealthEducation() {
   // Track view (best-effort)
   useEffect(() => {
     if (!article?.id) return;
-    (supabase as any).from("article_views").insert({
+    supabase.from("article_views").insert({
       article_id: article.id,
       user_id: user?.id ?? null,
     }).then(() => {});

@@ -23,6 +23,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { BentoGrid, BentoCard, GlassCard } from '@/components/ui/design-system';
 import NumberFlow from '@number-flow/react';
+import { logger } from '@/lib/logger';
 import {
   Link2, QrCode, BarChart3, Users, TrendingUp, Copy,
   Plus, ExternalLink, Check, Calendar, Target, Globe,
@@ -212,7 +213,7 @@ export default function CampaignLinks() {
 
       const fullUrl = `${baseUrl}/?${params.toString()}`;
 
-      const { error } = await (supabase as any).from('campaign_links').insert({
+      const { error } = await supabase.from('campaign_links').insert({
         name: data.name,
         description: data.description,
         type: data.type,
@@ -228,7 +229,7 @@ export default function CampaignLinks() {
 
       if (error) {
         // If table doesn't exist, create it (or just return mock)
-        console.warn('campaign_links table not available:', error);
+        logger.warn('campaign_links table not available:', error);
         throw error;
       }
     },

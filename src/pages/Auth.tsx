@@ -12,6 +12,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserTypeSelector } from '@/components/auth/UserTypeSelector';
+import { logger } from '@/lib/logger';
 // Factory para schemas de validação com mensagens traduzidas
 const makeEmailSchema = (t: (k: string) => string) => z.string().email(t('auth.validation_invalid_email'));
 const makePasswordSchema = (t: (k: string) => string) => z.string().min(6, t('auth.validation_password_min'));
@@ -161,7 +162,7 @@ export default function Auth() {
       if (onboardingDone) navigate('/');
       else navigate('/register');
     } catch (error) {
-      console.error("Erro no redirecionamento pós-auth:", error);
+      logger.error("Erro no redirecionamento pós-auth:", { error: error });
       navigate('/register');
     }
   };
@@ -173,7 +174,7 @@ export default function Auth() {
     try {
       const { error } = await signInWithGoogle(referralCode, safeNextPath);
       if (error) {
-        console.error("Google Auth Error:", error);
+        logger.error("Google Auth Error:", error);
         toast.error(t('auth.error_google_title'), {
           description: error.message.includes('configuration')
             ? t('auth.error_google_config')

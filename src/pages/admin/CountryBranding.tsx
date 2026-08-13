@@ -27,7 +27,7 @@ export default function CountryBranding() {
       if (!country?.id) return;
 
       const { error } = await supabase
-        .from('countries' as any)
+        .from('countries')
         .update({ branding_config: config } as any)
         .eq('id', country.id);
 

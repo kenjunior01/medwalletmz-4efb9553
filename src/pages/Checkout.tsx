@@ -16,6 +16,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake, Globe, Copy, ExternalLink, CheckCircle2, Receipt, CreditCard } from "@/components/icons/lucide-compat";
 import { calculateTaxes } from '@/lib/taxEngine';
 
+import { logger } from '@/lib/logger';
 interface AppliedCoupon {
   id: string;
   code: string;
@@ -302,7 +303,7 @@ export default function Checkout() {
           .eq('id', appliedCoupon.id);
 
         if (couponError) {
-          console.error('Failed to update coupon count:', couponError);
+          logger.error('Failed to update coupon count:', couponError);
         }
 
         // Record coupon usage by user
@@ -322,7 +323,7 @@ export default function Checkout() {
       navigate(`/order/${order.id}`);
 
     } catch (error: any) {
-      console.error('Checkout error:', error);
+      logger.error('Checkout error:', { error: error });
       toast.error(error?.message || 'Erro ao processar pedido');
     } finally {
       setLoading(false);

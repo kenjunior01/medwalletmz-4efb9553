@@ -115,7 +115,7 @@ export default function Home() {
     queryKey: ['top-doctors-home', country?.id],
     queryFn: async () => {
       const query = supabase
-        .from('doctor_profiles' as any)
+        .from('doctor_profiles')
         .select('id, user_id, rating, consultation_fee, medical_specialties(name, icon)')
         .eq('is_available', true);
 

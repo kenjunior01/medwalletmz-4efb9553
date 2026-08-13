@@ -19,6 +19,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+import { logger } from '@/lib/logger';
 // ---------- Tipos ----------
 export type Billing = 'monthly' | 'quarterly' | 'yearly';
 
@@ -400,7 +401,7 @@ export async function seedMzPlans(): Promise<{ seeded: number; failed: string[] 
 
   for (const plan of MZ_ALL_PLANS) {
     try {
-      const { error } = await (supabase as any).from('subscription_plans').upsert(
+      const { error } = await supabase.from('subscription_plans').upsert(
         {
           slug: plan.slug,
           name: plan.name,
@@ -419,13 +420,13 @@ export async function seedMzPlans(): Promise<{ seeded: number; failed: string[] 
         { onConflict: 'slug' }
       );
       if (error) {
-        console.warn(`[mzPlans] seed falhou para ${plan.slug}:`, error.message);
+        logger.warn(`[mzPlans] seed falhou para ${plan.slug}:`, error.message);
         failed.push(plan.slug);
       } else {
         seeded++;
       }
     } catch (e) {
-      console.warn(`[mzPlans] seed exception para ${plan.slug}:`, e);
+      logger.warn(`[mzPlans] seed exception para ${plan.slug}:`, { error: e });
       failed.push(plan.slug);
     }
   }
@@ -472,7 +473,7 @@ export async function fetchPlanBySlug(slug: string): Promise<MzPlan | null> {
       };
     }
   } catch (e) {
-    console.warn('[mzPlans] fetchPlanBySlug BD lookup falhou, usando fallback:', e);
+    logger.warn('[mzPlans] fetchPlanBySlug BD lookup falhou, usando fallback:', { error: e });
   }
 
   // 2. Fallback: MZ_ALL_PLANS em memória
@@ -495,7 +496,7 @@ export async function fetchPlanIdBySlug(slug: string): Promise<string | null> {
       .maybeSingle();
     if (!error && data?.id) return data.id as string;
   } catch (e) {
-    console.warn('[mzPlans] fetchPlanIdBySlug falhou:', e);
+    logger.warn('[mzPlans] fetchPlanIdBySlug falhou:', { error: e });
   }
   return null;
 }

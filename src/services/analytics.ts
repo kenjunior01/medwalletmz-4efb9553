@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * MedWallet Analytics Service — Event tracking abstraction
  *
@@ -24,7 +25,7 @@ async function getPostHog(): Promise<any> {
   if (isInitialized) return posthogInstance;
 
   if (!POSTHOG_KEY || POSTHOG_KEY.includes('your_')) {
-    console.info('[Analytics] PostHog key not configured — analytics disabled');
+    logger.info('[Analytics] PostHog key not configured — analytics disabled');
     isInitialized = true;
     return null;
   }
@@ -47,10 +48,10 @@ async function getPostHog(): Promise<any> {
     });
     posthogInstance = posthog;
     isInitialized = true;
-    console.info('[Analytics] PostHog initialized successfully');
+    logger.info('[Analytics] PostHog initialized successfully');
     return posthog;
   } catch (err) {
-    console.warn('[Analytics] Failed to load PostHog, analytics disabled:', err);
+    logger.warn('[Analytics] Failed to load PostHog, analytics disabled:', { error: err });
     isInitialized = true;
     return null;
   }
@@ -68,7 +69,7 @@ export async function trackEvent(event: string, properties?: Record<string, any>
     if (!ph) return;
     ph.capture(event, properties);
   } catch (err) {
-    console.warn(`[Analytics] Failed to track "${event}":`, err);
+    logger.warn(`[Analytics] Failed to track "${event}":`, { error: err });
   }
 }
 
@@ -84,7 +85,7 @@ export async function identifyUser(userId: string, properties?: Record<string, a
     if (!ph) return;
     ph.identify(userId, properties);
   } catch (err) {
-    console.warn('[Analytics] Failed to identify user:', err);
+    logger.warn('[Analytics] Failed to identify user:', { error: err });
   }
 }
 
@@ -99,7 +100,7 @@ export async function setPersonProperties(properties: Record<string, any>) {
     if (!ph) return;
     ph.setPersonProperties(properties);
   } catch (err) {
-    console.warn('[Analytics] Failed to set person properties:', err);
+    logger.warn('[Analytics] Failed to set person properties:', { error: err });
   }
 }
 
@@ -115,7 +116,7 @@ export async function trackPageView(page: string, properties?: Record<string, an
     if (!ph) return;
     ph.capture('$pageview', { $current_url: page, ...properties });
   } catch (err) {
-    console.warn(`[Analytics] Failed to track page view "${page}":`, err);
+    logger.warn(`[Analytics] Failed to track page view "${page}":`, { error: err });
   }
 }
 
@@ -128,7 +129,7 @@ export async function resetAnalytics() {
     if (!ph) return;
     ph.reset();
   } catch (err) {
-    console.warn('[Analytics] Failed to reset:', err);
+    logger.warn('[Analytics] Failed to reset:', { error: err });
   }
 }
 
@@ -141,7 +142,7 @@ export async function optOut() {
     if (!ph) return;
     ph.opt_out_capturing();
   } catch (err) {
-    console.warn('[Analytics] Failed to opt out:', err);
+    logger.warn('[Analytics] Failed to opt out:', { error: err });
   }
 }
 
@@ -154,7 +155,7 @@ export async function optIn() {
     if (!ph) return;
     ph.opt_in_capturing();
   } catch (err) {
-    console.warn('[Analytics] Failed to opt in:', err);
+    logger.warn('[Analytics] Failed to opt in:', { error: err });
   }
 }
 

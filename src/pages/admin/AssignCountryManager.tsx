@@ -154,21 +154,21 @@ export default function AssignCountryManager() {
       setAssigning(true);
 
       // 1. Add country_manager role
-      await (supabase as any).from('user_roles').upsert({
+      await supabase.from('user_roles').upsert({
         user_id: selectedUserId,
         role: 'country_manager',
       }, { onConflict: 'user_id,role' });
 
       // 2. Update permissions
       const activePerms = Object.entries(permissions).filter(([, v]) => v).map(([k]) => k);
-      await (supabase as any).from('manager_permissions').upsert({
+      await supabase.from('manager_permissions').upsert({
         user_id: selectedUserId,
         managed_country: selectedCountryId,
         ...Object.fromEntries(PERMISSIONS.map(p => [p.key, permissions[p.key]])),
       }, { onConflict: 'user_id' });
 
       // 3. Set managed_country on profile
-      await (supabase as any).from('profiles').update({
+      await supabase.from('profiles').update({
         managed_country: selectedCountryId,
       }).eq('id', selectedUserId);
     },

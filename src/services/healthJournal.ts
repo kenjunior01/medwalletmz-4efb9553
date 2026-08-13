@@ -8,6 +8,7 @@ import { supabase as typedSupabase } from '@/integrations/supabase/client';
 const supabase = typedSupabase as any;
 import { geminiChat, isGeminiConfigured } from '@/lib/gemini';
 
+import { logger } from '@/lib/logger';
 export interface JournalEntry {
   id?: string;
   user_id?: string;
@@ -125,7 +126,7 @@ export async function generateWeeklyInsight(userId: string, language: string = '
     }
     return insight;
   } catch (err) {
-    console.error('Weekly insight error:', err);
+    logger.error('Weekly insight error:', { error: err });
     return '';
   }
 }

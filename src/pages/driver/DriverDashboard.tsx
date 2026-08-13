@@ -29,6 +29,7 @@ import {
 import { Snowflake, ShieldCheck } from "@/components/icons/lucide-compat";
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { logger } from '@/lib/logger';
 import { 
   StatWidget, 
   EarningsWidget, 
@@ -248,7 +249,7 @@ export default function DriverDashboard() {
         supabase.removeChannel(channel);
       };
     } catch (error) {
-      console.error('Error fetching driver data:', error);
+      logger.error('Error fetching driver data:', { error: error });
       toast.error('Erro ao carregar dados');
     } finally {
       setLoading(false);
@@ -276,7 +277,7 @@ export default function DriverDashboard() {
           }
         },
         (error) => {
-          console.error('Error getting location:', error);
+          logger.error('Error getting location:', error);
         },
         {
           enableHighAccuracy: true,
@@ -304,7 +305,7 @@ export default function DriverDashboard() {
       setIsOnline(newStatus);
       toast.success(newStatus ? 'Você está online!' : 'Você está offline');
     } catch (error) {
-      console.error('Error toggling status:', error);
+      logger.error('Error toggling status:', { error: error });
       toast.error('Erro ao atualizar status');
     }
   };
@@ -344,7 +345,7 @@ export default function DriverDashboard() {
       
       fetchDriverData();
     } catch (error) {
-      console.error('Error updating assignment:', error);
+      logger.error('Error updating assignment:', { error: error });
       toast.error('Erro ao atualizar status');
     }
   };

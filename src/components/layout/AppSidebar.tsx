@@ -15,11 +15,11 @@ import { useState, useMemo } from "react";
 
 /** Professional institution roles with their metadata */
 const INSTITUTION_ROLES = [
-  { role: "doctor" as const, icon: Stethoscope, color: "text-blue-500", bgColor: "bg-blue-500/10", borderColor: "border-blue-500/20", dashboard: "/doctor/dashboard", label: "Médico" },
-  { role: "clinic" as const, icon: Building2, color: "text-gold", bgColor: "bg-gold/10", borderColor: "border-gold/20", dashboard: "/clinic/dashboard", label: "Clínica" },
-  { role: "store_owner" as const, icon: Store, color: "text-green-500", bgColor: "bg-green-500/10", borderColor: "border-green-500/20", dashboard: "/store/dashboard", label: "Farmácia" },
-  { role: "lab" as const, icon: FlaskConical, color: "text-cyan-500", bgColor: "bg-cyan-500/10", borderColor: "border-cyan-500/20", dashboard: "/lab/dashboard", label: "Lab" },
-  { role: "driver" as const, icon: Truck, color: "text-orange-500", bgColor: "bg-orange-500/10", borderColor: "border-orange-500/20", dashboard: "/driver/dashboard", label: "Condutor" },
+  { role: "doctor" as const, icon: Stethoscope, color: "text-blue-500", bgColor: "bg-blue-500/10", borderColor: "border-blue-500/20", dashboard: "/doctor/dashboard", label: "nav.doctor" },
+  { role: "clinic" as const, icon: Building2, color: "text-gold", bgColor: "bg-gold/10", borderColor: "border-gold/20", dashboard: "/clinic/dashboard", label: "nav.clinic" },
+  { role: "store_owner" as const, icon: Store, color: "text-green-500", bgColor: "bg-green-500/10", borderColor: "border-green-500/20", dashboard: "/store/dashboard", label: "nav.pharmacy" },
+  { role: "lab" as const, icon: FlaskConical, color: "text-cyan-500", bgColor: "bg-cyan-500/10", borderColor: "border-cyan-500/20", dashboard: "/lab/dashboard", label: "nav.lab" },
+  { role: "driver" as const, icon: Truck, color: "text-orange-500", bgColor: "bg-orange-500/10", borderColor: "border-orange-500/20", dashboard: "/driver/dashboard", label: "nav.driver" },
 ] as const;
 
 /** Sidebar for tablet (icons only) and desktop (icons + labels grouped). */
@@ -104,7 +104,7 @@ export function AppSidebar() {
                     <NavLink
                       key={inst.role}
                       to={inst.dashboard}
-                      title={inst.label}
+                      title={t(inst.label) || inst.label}
                       className={cn(
                         "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border transition-all",
                         isActive
@@ -143,7 +143,7 @@ export function AppSidebar() {
                         <Icon className={cn("h-3.5 w-3.5", isActive ? inst.color : "text-muted-foreground")} />
                       </div>
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className={cn("truncate text-xs font-semibold", isActive && inst.color)}>{inst.label}</span>
+                        <span className={cn("truncate text-xs font-semibold", isActive && inst.color)}>{t(inst.label) || inst.label}</span>
                         <Badge
                           variant="outline"
                           className="text-[8px] h-3.5 px-1 rounded-full border bg-emerald-500/10 text-emerald-600 border-emerald-500/30 shrink-0"
@@ -165,7 +165,7 @@ export function AppSidebar() {
           <div key={group} className="mb-3">
             {!compact && (
               <p className="px-4 mb-1 text-[10px] uppercase tracking-wider font-bold text-muted-foreground">
-                {group}
+                {t(group) || group}
               </p>
             )}
             <ul className="flex flex-col">

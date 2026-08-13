@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 interface Favorite {
   id: string;
   store_id: string | null;
@@ -30,7 +31,7 @@ export function useFavorites() {
       if (error) throw error;
       setFavorites(data || []);
     } catch (error) {
-      console.error('Erro ao carregar favoritos:', error);
+      logger.error('Erro ao carregar favoritos:', { error: error });
     } finally {
       setLoading(false);
     }

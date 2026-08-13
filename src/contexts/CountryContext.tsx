@@ -8,6 +8,7 @@ import { RegionThemeProvider } from '@/themes/RegionThemeProvider';
 // All other locales are loaded on-demand via dynamic import().
 import pt from '@/i18n/pt.json';
 
+import { logger } from '@/lib/logger';
 const translations: Record<string, any> = { pt };
 
 const localeLoaders: Record<string, () => Promise<any>> = {
@@ -33,7 +34,7 @@ async function ensureLocale(locale: string) {
     try {
       translations[locale] = (await loader()).default;
     } catch {
-      console.warn(`[i18n] Failed to load locale: ${locale}`);
+      logger.warn(`[i18n] Failed to load locale: ${locale}`);
     }
   }
 }
@@ -659,12 +660,12 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   async function fetchCountries() {
     try {
       setLoading(true);
-      const { data, error } = await (supabase.from('countries' as any) as any)
+      const { data, error } = await supabase.from('countries')
         .select('*')
         .eq('is_active', true);
 
       if (error) {
-        console.warn('Countries table query failed, using static definitions:', error.message);
+        logger.warn('Countries table query failed, using static definitions:', error.message);
         const initialCountry = STATIC_COUNTRIES.find(c => c.id === gpsCountry) || STATIC_COUNTRIES[0];
         setCountry(initialCountry);
         return;
@@ -681,7 +682,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
       const initialCountry = merged.find((c: any) => c.id === savedCountryId) || merged[0] || STATIC_COUNTRIES[0];
       if (initialCountry) setCountry(initialCountry);
     } catch (error) {
-      console.error('Error fetching countries:', error);
+      logger.error('Error fetching countries:', { error: error });
       setCountry(STATIC_COUNTRIES[0]);
     } finally {
       setLoading(false);

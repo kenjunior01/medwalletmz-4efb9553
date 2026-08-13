@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Home, Stethoscope, Pill, ClipboardList, ArrowLeft, Search, Compass } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 
+import { logger } from '@/lib/logger';
 const suggestions = [
   { to: "/", label: "Início", icon: Home, tone: "from-primary/20 to-primary/5" },
   { to: "/health/doctors", label: "Médicos", icon: Stethoscope, tone: "from-secondary/20 to-secondary/5" },
@@ -17,7 +18,7 @@ const NotFound = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.warn("404:", location.pathname);
+    logger.warn("404:", location.pathname);
   }, [location.pathname]);
 
   return (

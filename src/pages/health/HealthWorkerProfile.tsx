@@ -38,6 +38,7 @@ import {
 } from '@/services/healthWorkers';
 import { cn } from '@/lib/utils';
 
+import { logger } from '@/lib/logger';
 type View = 'onboarding' | 'dashboard';
 
 const ONBOARDING_STEPS: WorkerOnboardingStep[] = ['basics', 'profession', 'credentials', 'availability', 'pricing', 'review'];
@@ -59,7 +60,7 @@ export default function HealthWorkerProfile() {
       if (w?.is_verified) setView('dashboard');
       else if (w?.onboarding_step) setStep(w.onboarding_step);
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     } finally {
       setLoading(false);
     }
@@ -200,7 +201,7 @@ function OnboardingView({
       setStep(nextStep);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
       setError(e?.message ?? 'Erro ao guardar');
     } finally {
       setSubmitting(false);
@@ -219,7 +220,7 @@ function OnboardingView({
       });
       onUpdated(w);
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
       setError(e?.message ?? 'Erro ao submeter');
     } finally {
       setSubmitting(false);
@@ -713,7 +714,7 @@ function DocumentUpload({
       const url = await uploadWorkerDocument(userId, docType, file);
       onUploaded(url);
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
       setError(e?.message ?? 'Erro no upload');
     } finally {
       setUploading(false);
@@ -786,7 +787,7 @@ function DashboardView({
       setBookings(b);
       setEarnings(e);
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     } finally {
       setLoading(false);
     }
@@ -800,7 +801,7 @@ function DashboardView({
       await toggleWorkerAvailable(worker.id, !worker.is_available);
       onUpdated({ ...worker, is_available: !worker.is_available });
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     }
   };
 
@@ -812,7 +813,7 @@ function DashboardView({
       await updateBookingStatus(bookingId, status);
       await load();
     } catch (e: any) {
-      console.error(e);
+      logger.error('Unexpected error', { error: e });
     }
   };
 

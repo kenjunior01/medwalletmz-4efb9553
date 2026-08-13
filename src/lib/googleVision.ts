@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * Google Cloud Vision API Utility
  */
@@ -6,7 +7,7 @@ const API_KEY = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY 
 
 export async function detectText(file: File): Promise<string> {
   if (!API_KEY || API_KEY.includes('your_')) {
-    console.warn("Google API Key not configured for Vision, falling back to simulation");
+    logger.warn("Google API Key not configured for Vision, falling back to simulation");
     return simulateOCR(file.name);
   }
 
@@ -42,7 +43,7 @@ export async function detectText(file: File): Promise<string> {
 
     return annotations[0].description;
   } catch (error) {
-    console.error("Google Vision failed, falling back to simulation:", error);
+    logger.error("Google Vision failed, falling back to simulation:", { error: error });
     return simulateOCR(file.name);
   }
 }

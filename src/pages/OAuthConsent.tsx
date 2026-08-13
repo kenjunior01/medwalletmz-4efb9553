@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, ShieldCheck } from "@/components/icons/lucide-compat";
 
+import { logger } from '@/lib/logger';
 export default function OAuthConsent() {
   const [params] = useSearchParams();
   const authorizationId = params.get("authorization_id") ?? "";
@@ -14,7 +15,7 @@ export default function OAuthConsent() {
 
   useEffect(() => {
     let active = true;
-    console.log("OAuthConsent: authorizationId", authorizationId);
+    logger.info("OAuthConsent: authorizationId", authorizationId);
     (async () => {
       if (!authorizationId) {
         setError("Pedido de autorização inválido (falta authorization_id).");

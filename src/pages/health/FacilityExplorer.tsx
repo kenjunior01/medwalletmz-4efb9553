@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { SafeImage } from '@/components/ui/safe-image';
 import { useNavigate } from 'react-router-dom';
 
+import { logger } from '@/lib/logger';
 const icons: Record<string, any> = {
   hospital: <Building2 className="text-red-500 h-5 w-5" />,
   pharmacy: <Pill className="text-emerald-500 h-5 w-5" />,
@@ -30,7 +31,7 @@ export default function FacilityExplorer() {
 
         // Se o filtro for 'all' ou 'pharmacy', buscamos nas 'stores'
         if (filter === 'all' || filter === 'pharmacy') {
-          let sq: any = (supabase as any).from('stores').select('*').eq('is_active', true);
+          let sq: any = supabase.from('stores').select('*').eq('is_active', true);
           if (country?.id) sq = sq.eq('country_id', country.id);
           if (filter === 'pharmacy') sq = sq.eq('type', 'pharmacy');
           const { data: stores } = await sq;
@@ -39,7 +40,7 @@ export default function FacilityExplorer() {
 
         // Se o filtro for 'all' ou um dos tipos de clínicas
         if (filter !== 'pharmacy') {
-          let cq: any = (supabase as any).from('clinics').select('*').eq('is_active', true);
+          let cq: any = supabase.from('clinics').select('*').eq('is_active', true);
           if (country?.id) cq = cq.eq('country_id', country.id);
           if (filter !== 'all') cq = cq.eq('type', filter === 'lab' ? 'laboratory' : filter);
           const { data: clinics } = await cq;
@@ -48,7 +49,7 @@ export default function FacilityExplorer() {
 
         setFacilities(allData.sort((a, b) => (b.rating || 0) - (a.rating || 0)));
       } catch (e) {
-        console.error("Erro ao carregar instituições:", e);
+        logger.error("Erro ao carregar instituições:", { error: e });
       } finally {
         setLoading(false);
       }

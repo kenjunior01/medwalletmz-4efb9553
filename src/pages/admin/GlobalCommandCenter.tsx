@@ -23,9 +23,9 @@ export default function GlobalCommandCenter() {
   const loadData = async () => {
     setLoading(true);
     const [cRes, mRes, nRes] = await Promise.all([
-      (supabase.from('countries' as any) as any).select('*').order('name'),
-      supabase.from('country_management' as any).select('*, profiles:user_id(full_name, phone)'),
-      (supabase as any).from('partner_applications').select('*').order('created_at', { ascending: false }).limit(5),
+      supabase.from('countries').select('*').order('name'),
+      supabase.from('country_management').select('*, profiles:user_id(full_name, phone)'),
+      supabase.from('partner_applications').select('*').order('created_at', { ascending: false }).limit(5),
     ]);
 
     setCountries(cRes.data || []);
@@ -33,7 +33,7 @@ export default function GlobalCommandCenter() {
     setNotifications(nRes.data || []);
 
     // Calculate real global revenue
-    const { data: ordersData } = await (supabase as any).from('orders').select('total, country_code, created_at').eq('status', 'delivered');
+    const { data: ordersData } = await supabase.from('orders').select('total, country_code, created_at').eq('status', 'delivered');
     const startMonth = new Date();
     startMonth.setDate(1); startMonth.setHours(0, 0, 0, 0);
     const startPrevMonth = new Date(startMonth); startPrevMonth.setMonth(startPrevMonth.getMonth() - 1);
@@ -64,7 +64,7 @@ export default function GlobalCommandCenter() {
       if (!userData) throw new Error("Utilizador não encontrado. Peça ao gestor para se registar primeiro.");
 
       // 2. Inserir na tabela de gestão
-      const { error } = await supabase.from('country_management' as any).insert({
+      const { error } = await supabase.from('country_management').insert({
         user_id: userData.user_id,
         country_id: countryId,
         permissions: { can_approve_doctors: true, can_view_revenue: true }
@@ -84,7 +84,7 @@ export default function GlobalCommandCenter() {
   };
 
   const removeManager = async (id: string) => {
-    const { error } = await supabase.from('country_management' as any).delete().eq('id', id);
+    const { error } = await supabase.from('country_management').delete().eq('id', id);
     if (error) toast.error("Erro ao remover");
     else {
       toast.success("Gestor removido");

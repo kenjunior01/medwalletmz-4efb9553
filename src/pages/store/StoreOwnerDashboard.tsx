@@ -19,6 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 interface StoreData {
   id: string;
   name: string;
@@ -72,7 +73,7 @@ export default function StoreOwnerDashboard() {
         navigate('/store/register');
       }
     } catch (error) {
-      console.error('Error fetching stores:', error);
+      logger.error('Error fetching stores:', { error: error });
       toast.error('Erro ao carregar farmácias');
     } finally {
       setLoading(false);

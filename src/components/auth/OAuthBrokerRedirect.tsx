@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Loader2, AlertTriangle } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 
+import { logger } from '@/lib/logger';
 /**
  * OAuthBrokerRedirect
  *
@@ -35,22 +36,22 @@ export function OAuthBrokerRedirect() {
       window.location.search +
       window.location.hash;
 
-    console.log("[OAuthBrokerRedirect] URL interceptada:", fullUrl);
+    logger.info("[OAuthBrokerRedirect] URL interceptada:", fullUrl);
 
     (async () => {
       try {
         // 1. Desregistar todos os service workers antigos
         if ('serviceWorker' in navigator) {
           const registrations = await navigator.serviceWorker.getRegistrations();
-          console.log(`[OAuthBrokerRedirect] ${registrations.length} SW(s) ativos — a desregistar...`);
+          logger.info(`[OAuthBrokerRedirect] ${registrations.length} SW(s) ativos — a desregistar...`);
 
           await Promise.all(
             registrations.map(async (reg) => {
               try {
                 await reg.unregister();
-                console.log('[OAuthBrokerRedirect] SW desregistado:', reg.scope);
+                logger.info('[OAuthBrokerRedirect] SW desregistado:', reg.scope);
               } catch (e) {
-                console.warn('[OAuthBrokerRedirect] Falha ao desregistar SW:', e);
+                logger.warn('[OAuthBrokerRedirect] Falha ao desregistar SW:', { error: e });
               }
             })
           );
@@ -59,15 +60,15 @@ export function OAuthBrokerRedirect() {
         // 2. Limpar todos os caches do Workbox/SW antigos
         if ('caches' in window) {
           const cacheKeys = await caches.keys();
-          console.log(`[OAuthBrokerRedirect] ${cacheKeys.length} cache(s) — a limpar...`);
+          logger.info(`[OAuthBrokerRedirect] ${cacheKeys.length} cache(s) — a limpar...`);
 
           await Promise.all(
             cacheKeys.map(async (key) => {
               try {
                 await caches.delete(key);
-                console.log('[OAuthBrokerRedirect] Cache removido:', key);
+                logger.info('[OAuthBrokerRedirect] Cache removido:', key);
               } catch (e) {
-                console.warn('[OAuthBrokerRedirect] Falha ao remover cache:', key, e);
+                logger.warn('[OAuthBrokerRedirect] Falha ao remover cache:', [key, e]);
               }
             })
           );
@@ -80,14 +81,14 @@ export function OAuthBrokerRedirect() {
         //    Usamos location.replace para não criar entrada no histórico.
         //    O parâmetro true (forceReload) força reload ignorando cache.
         setStatus('reloading');
-        console.log('[OAuthBrokerRedirect] A fazer reload hard do URL:', fullUrl);
+        logger.info('[OAuthBrokerRedirect] A fazer reload hard do URL:', fullUrl);
 
         // location.replace com o URL completo — o SW novo será instalado no
         // próximo carregamento e vai bypass /~oauth/ via navigateFallbackDenylist
         window.location.replace(fullUrl);
 
       } catch (e) {
-        console.error('[OAuthBrokerRedirect] Erro ao limpar SW:', e);
+        logger.error('[OAuthBrokerRedirect] Erro ao limpar SW:', { error: e });
         setStatus('error');
         setErrorMsg(e instanceof Error ? e.message : String(e));
       }

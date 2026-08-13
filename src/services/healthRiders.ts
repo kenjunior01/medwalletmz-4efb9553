@@ -9,6 +9,7 @@
  */
 
 import { supabase as typedSupabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 // Cast para acesso a tabelas ainda não presentes nos tipos gerados
 const supabase = typedSupabase as any;
 
@@ -273,7 +274,7 @@ export async function updateDeliveryStatus(deliveryId: string, status: DeliveryS
       });
       // Fallback to direct update if RPC doesn't exist yet
       if (rpcError) {
-        console.warn('increment_rider_stats RPC not found, using direct update (may have race condition)');
+        logger.warn('increment_rider_stats RPC not found, using direct update (may have race condition)');
         const { data: rider } = await supabase
           .from('health_riders')
           .select('total_deliveries, total_earnings_mzn, total_distance_km')

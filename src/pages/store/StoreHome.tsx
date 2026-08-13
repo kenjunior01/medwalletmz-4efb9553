@@ -18,6 +18,7 @@ import {
 } from "@/components/icons/lucide-compat";
 import { useNavigate } from 'react-router-dom';
 import { useCountry } from '@/contexts/CountryContext';
+import { logger } from '@/lib/logger';
 import { 
   StatWidget, 
   QuickActionWidget, 
@@ -176,7 +177,7 @@ export default function StoreHome() {
       
       setRecentOrders(orders || []);
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      logger.error('Error fetching dashboard data:', { error: error });
     } finally {
       setLoading(false);
     }

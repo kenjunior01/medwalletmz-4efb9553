@@ -16,6 +16,7 @@ import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { useCountry } from '@/contexts/CountryContext';
 import { cn } from '@/lib/utils';
 
+import { logger } from '@/lib/logger';
 type LoadState = 'loading' | 'success' | 'error';
 type FilterTab = 'all' | 'active' | 'expired';
 
@@ -48,7 +49,7 @@ export default function MyPrescriptions() {
       }
       setLoadState('success');
     } catch (err) {
-      console.error('MyPrescriptions fetch error:', err);
+      logger.error('MyPrescriptions fetch error:', { error: err });
       setLoadState('error');
     }
   };

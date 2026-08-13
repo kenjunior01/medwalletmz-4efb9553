@@ -30,6 +30,7 @@ import {
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 // ─── Types ─────────────────────────────────────────────────────────
 
 type TripStep = 1 | 2 | 3 | 4;
@@ -970,7 +971,7 @@ export default function ActiveTrip() {
           .eq('driver_id', user?.id);
 
         if (deliveryError) {
-          console.error('Failed to persist delivery completion:', deliveryError);
+          logger.error('Failed to persist delivery completion:', deliveryError);
           toast.error('Erro ao confirmar entrega na base de dados');
           return; // Don't proceed if DB update fails
         }
@@ -1000,12 +1001,12 @@ export default function ActiveTrip() {
             _description: `Ganhos de entrega - Ordem ${trip?.orderNumber || tripId}`,
           });
           if (creditError) {
-            console.warn('Failed to credit rider wallet (manual reconciliation needed):', creditError);
+            logger.warn('Failed to credit rider wallet (manual reconciliation needed):', creditError);
             // Non-blocking: delivery is already confirmed, earnings can be reconciled later
           }
         }
       } catch (e) {
-        console.error('Error completing delivery:', e);
+        logger.error('Error completing delivery:', { error: e });
         toast.error('Erro ao processar entrega. Tente novamente.');
         return;
       }

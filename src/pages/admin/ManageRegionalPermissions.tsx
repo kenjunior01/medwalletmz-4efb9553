@@ -25,6 +25,7 @@ import {
 } from '@/components/icons/lucide-compat';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
@@ -113,7 +114,7 @@ export default function ManageRegionalPermissions() {
         .in('user_id', userIds);
       if (permsErr) {
         // Table might not exist yet
-        console.warn('manager_permissions query warning:', permsErr);
+        logger.warn('manager_permissions query warning:', permsErr);
       }
 
       const permsMap = new Map<string, Record<string, boolean>>();

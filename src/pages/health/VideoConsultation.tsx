@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import DailyIframe, { DailyCall } from '@daily-co/daily-js';
+import { logger } from '@/lib/logger';
 
 export default function VideoConsultation() {
   const { id } = useParams();
@@ -76,7 +77,7 @@ export default function VideoConsultation() {
 
     return () => {
       disposed = true;
-      callRef.current?.destroy().catch(() => {});
+      callRef.current?.destroy().catch((e) => { logger.debug('Call cleanup failed', { error: e }); });
       callRef.current = null;
     };
   }, [id, user, navigate]);

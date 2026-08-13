@@ -10,6 +10,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserType, getUserType, setUserType as persistUserType } from '@/services/userTypes';
 
+import { logger } from '@/lib/logger';
 export function useUserType() {
   const { user } = useAuth();
   const [userType, setUserTypeState] = useState<UserType>('patient');
@@ -35,7 +36,7 @@ export function useUserType() {
     try {
       await persistUserType(user.id, type);
     } catch (e) {
-      console.error('Failed to persist user type', e);
+      logger.error('Failed to persist user type', { error: e });
       // revert on failure
       const previous = await getUserType(user.id);
       setUserTypeState(previous);

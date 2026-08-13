@@ -230,7 +230,7 @@ function WorkerHome() {
     queryKey: ['worker-bookings-home', user?.id],
     queryFn: async () => {
       const { data } = await supabase
-        .from('health_worker_bookings' as any)
+        .from('health_worker_bookings')
         .select('id, status, service_type, scheduled_date, customer_name, fee_amount')
         .eq('worker_id', user!.id)
         .in('status', ['confirmed', 'in_progress', 'requested'])

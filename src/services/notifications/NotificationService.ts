@@ -5,6 +5,7 @@
 
 import { Capacitor } from '@capacitor/core';
 
+import { logger } from '@/lib/logger';
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -82,7 +83,7 @@ async function getPushNotificationsPlugin() {
     PushNotificationsPlugin = mod.PushNotifications;
     return PushNotificationsPlugin;
   } catch {
-    console.warn('[NotificationService] @capacitor/push-notifications not available');
+    logger.warn('[NotificationService] @capacitor/push-notifications not available');
     return null;
   }
 }
@@ -140,7 +141,7 @@ class NotificationService {
         (result as any).granted === true
       );
     } catch (err) {
-      console.warn('[NotificationService] Permission request failed:', err);
+      logger.warn('[NotificationService] Permission request failed:', { error: err });
       return false;
     }
   }
@@ -175,7 +176,7 @@ class NotificationService {
         }
       });
     } catch (err) {
-      console.warn('[NotificationService] Capacitor registration failed:', err);
+      logger.warn('[NotificationService] Capacitor registration failed:', { error: err });
     }
   }
 
@@ -191,7 +192,7 @@ class NotificationService {
         await navigator.serviceWorker.register('/sw.js', { scope: '/' });
       }
     } catch (err) {
-      console.warn('[NotificationService] Web push registration failed:', err);
+      logger.warn('[NotificationService] Web push registration failed:', { error: err });
     }
   }
 
@@ -258,7 +259,7 @@ class NotificationService {
           n.close();
         };
       } catch (err) {
-        console.warn('[NotificationService] showLocal failed:', err);
+        logger.warn('[NotificationService] showLocal failed:', { error: err });
       }
       return;
     }
@@ -266,7 +267,7 @@ class NotificationService {
     // --- Capacitor Native (Local Notifications) ---
     const PushNotifications = await getPushNotificationsPlugin();
     if (!PushNotifications || typeof PushNotifications.schedule !== 'function') {
-      console.warn('[NotificationService] Local scheduling not supported on this native plugin');
+      logger.warn('[NotificationService] Local scheduling not supported on this native plugin');
       return;
     }
 
@@ -289,7 +290,7 @@ class NotificationService {
         ],
       });
     } catch (err) {
-      console.warn('[NotificationService] Native local notification failed:', err);
+      logger.warn('[NotificationService] Native local notification failed:', { error: err });
     }
   }
 
@@ -353,7 +354,7 @@ class NotificationService {
         ],
       });
     } catch (err) {
-      console.warn('[NotificationService] Native schedule failed:', err);
+      logger.warn('[NotificationService] Native schedule failed:', { error: err });
     }
   }
 
@@ -373,7 +374,7 @@ class NotificationService {
         try {
           await PushNotifications.cancel({ notifications: [{ id: this.hashToNumericId(id) }] });
         } catch (err) {
-          console.warn('[NotificationService] Cancel failed:', err);
+          logger.warn('[NotificationService] Cancel failed:', { error: err });
         }
       }
     }
@@ -394,7 +395,7 @@ class NotificationService {
         try {
           await PushNotifications.cancel({ notifications: [] });
         } catch (err) {
-          console.warn('[NotificationService] CancelAll failed:', err);
+          logger.warn('[NotificationService] CancelAll failed:', { error: err });
         }
       }
     }
@@ -423,7 +424,7 @@ class NotificationService {
       try {
         await PushNotifications.removeAllDeliveredNotifications();
       } catch (err) {
-        console.warn('[NotificationService] removeAllDeliveredNotifications failed:', err);
+        logger.warn('[NotificationService] removeAllDeliveredNotifications failed:', { error: err });
       }
     }
   }
@@ -484,7 +485,7 @@ class NotificationService {
       try {
         handler(payload);
       } catch (err) {
-        console.warn('[NotificationService] Tap handler error:', err);
+        logger.warn('[NotificationService] Tap handler error:', { error: err });
       }
     }
   }

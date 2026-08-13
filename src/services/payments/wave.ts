@@ -20,7 +20,7 @@ export class WaveService extends BasePaymentService {
 
   async initiatePayment(request: PaymentRequest): Promise<PaymentResponse> {
     try {
-      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+      const { data, error } = await supabase.functions.invoke('process-global-payment', {
         body: {
           provider: 'wave', action: 'initiate',
           amount: request.amount, currency: request.currency,
@@ -44,7 +44,7 @@ export class WaveService extends BasePaymentService {
 
   async verifyPayment(transactionId: string): Promise<PaymentVerification> {
     try {
-      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+      const { data, error } = await supabase.functions.invoke('process-global-payment', {
         body: { provider: 'wave', action: 'verify', transaction_id: transactionId },
       });
       if (error) return { transactionId, status: 'failed', verifiedAt: new Date().toISOString() };
@@ -56,7 +56,7 @@ export class WaveService extends BasePaymentService {
 
   async processRefund(request: RefundRequest): Promise<RefundResponse> {
     try {
-      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+      const { data, error } = await supabase.functions.invoke('process-global-payment', {
         body: { provider: 'wave', action: 'refund', transaction_id: request.transactionId, amount: request.amount, reason: request.reason },
       });
       if (error) return { success: false, status: 'failed', message: error.message, timestamp: new Date().toISOString() };
@@ -68,7 +68,7 @@ export class WaveService extends BasePaymentService {
 
   async getBalance(): Promise<BalanceResponse> {
     try {
-      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+      const { data, error } = await supabase.functions.invoke('process-global-payment', {
         body: { provider: 'wave', action: 'balance' },
       });
       if (error) return { available: 0, currency: 'XOF', pending: 0, lastUpdated: new Date().toISOString() };

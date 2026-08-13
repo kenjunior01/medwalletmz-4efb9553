@@ -28,6 +28,7 @@
 
 import { geminiChat } from "@/lib/gemini";
 import { groqChat, isGroqConfigured } from "@/lib/groq";
+import { logger } from '@/lib/logger';
 import {
   openRouterChat,
   isOpenRouterConfigured,
@@ -277,7 +278,7 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
       _provider: "gemini-browser",
     };
   } catch (e) {
-    console.warn("Triage local Gemini falhou:", e);
+    logger.warn("Triage local Gemini falhou:", { error: e });
     return null;
   }
 }
@@ -323,7 +324,7 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
       _provider: "groq-browser",
     };
   } catch (e) {
-    console.warn("Triage local Groq falhou:", e);
+    logger.warn("Triage local Groq falhou:", { error: e });
     return null;
   }
 }
@@ -369,7 +370,7 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
       _provider: "openrouter-browser",
     };
   } catch (e) {
-    console.warn("Triage local OpenRouter falhou:", e);
+    logger.warn("Triage local OpenRouter falhou:", { error: e });
     return null;
   }
 }

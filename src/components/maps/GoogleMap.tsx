@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { loadGoogleMaps } from "@/lib/googleMapsLoader";
 
+import { logger } from '@/lib/logger';
 export interface GMarker {
   id: string;
   lat: number;
@@ -67,7 +68,7 @@ export function GoogleMap({
       }
     }).catch((e) => {
       if (!cancelled) {
-        console.warn("[GoogleMap]", e);
+        logger.warn("[GoogleMap]", { error: e });
         setLoadError("Mapa indisponível neste momento. A localização e as rotas continuam acessíveis.");
       }
     });

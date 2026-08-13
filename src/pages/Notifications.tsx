@@ -31,6 +31,7 @@ import {
 } from "@/components/icons/lucide-compat";
 import { cn } from "@/lib/utils";
 
+import { logger } from '@/lib/logger';
 type NotificationType = "consultation" | "order" | "prescription" | "reminder";
 
 interface NotificationItem {
@@ -189,7 +190,7 @@ export default function NotificationsPage() {
       );
       setItems(all);
     } catch (e) {
-      console.warn("NotificationsPage load falhou:", e);
+      logger.warn("NotificationsPage load falhou:", { error: e });
     } finally {
       setLoading(false);
     }

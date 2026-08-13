@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
+import { logger } from '@/lib/logger';
 function CelebrationSticker({ userId }: { userId: string }) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
@@ -180,7 +181,7 @@ export default function OrderTracking() {
       if (error) throw error;
       setOrder((data as unknown as OrderDetails) || null);
     } catch (error) {
-      console.error('Error fetching order:', error);
+      logger.error('Error fetching order:', { error: error });
       setOrder(null);
     } finally {
       setLoading(false);
@@ -214,7 +215,7 @@ export default function OrderTracking() {
           .maybeSingle();
 
         if (profileError) {
-          console.warn('Failed to fetch driver profile:', profileError);
+          logger.warn('Failed to fetch driver profile:', profileError);
         }
 
         setDriver({ ...data, profile });
@@ -222,7 +223,7 @@ export default function OrderTracking() {
         setDriver(null);
       }
     } catch (error) {
-      console.error('Error fetching driver:', error);
+      logger.error('Error fetching driver:', { error: error });
     }
   };
 

@@ -128,10 +128,10 @@ export default function ApeDashboard() {
   const { data: stats } = useQuery({
     queryKey: ['ape-stats'],
     queryFn: async () => {
-      const { count: total } = await (supabase as any).from('ape_visits').select('id', { count: 'exact', head: true });
-      const { count: malaria } = await (supabase as any).from('ape_visits').select('id', { count: 'exact', head: true }).eq('visit_type','malaria');
-      const { count: anc } = await (supabase as any).from('ape_visits').select('id', { count: 'exact', head: true }).eq('visit_type','anc');
-      const { count: vacc } = await (supabase as any).from('ape_visits').select('id', { count: 'exact', head: true }).eq('visit_type','vaccination');
+      const { count: total } = await supabase.from('ape_visits').select('id', { count: 'exact', head: true });
+      const { count: malaria } = await supabase.from('ape_visits').select('id', { count: 'exact', head: true }).eq('visit_type','malaria');
+      const { count: anc } = await supabase.from('ape_visits').select('id', { count: 'exact', head: true }).eq('visit_type','anc');
+      const { count: vacc } = await supabase.from('ape_visits').select('id', { count: 'exact', head: true }).eq('visit_type','vaccination');
       return { total: total || 0, malaria: malaria || 0, anc: anc || 0, vacc: vacc || 0 };
     },
   });

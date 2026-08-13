@@ -26,6 +26,7 @@ import {
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
+import { logger } from '@/lib/logger';
 const KPI_ICONS: Record<string, any> = {
   active_users: Users,
   revenue_mtd: DollarSign,
@@ -79,7 +80,7 @@ export default function RegionalCEODashboard() {
       setCampaigns(c);
       setPriorityActions(p);
     } catch (err) {
-      console.error('CEO dashboard load error:', err);
+      logger.error('CEO dashboard load error:', { error: err });
       toast.error(t('regionalCEO.error_load'));
     } finally {
       setLoading(false);

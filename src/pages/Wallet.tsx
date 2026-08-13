@@ -129,7 +129,7 @@ export default function Wallet() {
             }
           }
         }
-        const { error } = await (supabase as any).from('mpesa_manual_payments').insert({
+        const { error } = await supabase.from('mpesa_manual_payments').insert({
           user_id: user?.id,
           amount_mzn: amt,
           reference,
@@ -161,7 +161,7 @@ export default function Wallet() {
           }
         }
 
-        const { error } = await (supabase as any).from('wallet_transactions').insert({
+        const { error } = await supabase.from('wallet_transactions').insert({
           user_id: user?.id,
           amount: amt,
           type: 'deposit',

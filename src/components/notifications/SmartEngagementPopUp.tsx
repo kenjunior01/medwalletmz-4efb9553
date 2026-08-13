@@ -13,6 +13,7 @@ import { useLocation } from "@/contexts/LocationContext";
 import { useCountry } from "@/contexts/CountryContext";
 import { usePopupCoordinator } from "@/components/layout/PopupCoordinator";
 
+import { logger } from '@/lib/logger';
 /**
  * SmartEngagementPopUp — Sistema de notificações "In-App" inteligentes.
  * Corrigido: Proteção contra ações indefinidas em alertas ambientais.
@@ -97,7 +98,7 @@ export function SmartEngagementPopUp() {
         }
       }
     } catch (e) {
-      console.error("Erro ao processar notificações inteligentes", e);
+      logger.error("Erro ao processar notificações inteligentes", { error: e });
     }
 
     setType(selectedType);

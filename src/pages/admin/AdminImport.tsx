@@ -138,8 +138,8 @@ export default function AdminImport() {
         }
 
         const { error } = key === 'pharmacies' || key === 'clinics' || key === 'hospitals'
-          ? await (supabase.from('place_proposals') as any).insert(payload)
-          : await (supabase.from(tpl.table as any) as any).insert(payload);
+          ? await supabase.from('place_proposals').insert(payload)
+          : await (supabase.from(tpl.table as any)).insert(payload);
 
         if (error) { failed++; errors.push(`${row.name || row.user_id}: ${error.message}`); } else created++;
       }

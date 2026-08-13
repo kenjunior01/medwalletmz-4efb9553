@@ -19,6 +19,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+import { logger } from '@/lib/logger';
 /** Número M-Pesa da empresa (configurável no Admin Platform Settings). */
 const DEFAULT_MPEESA_NUMBER = '+258840000000';
 
@@ -77,7 +78,7 @@ export async function createManualPayment(opts: {
     if (error) throw error;
     return data as ManualPayment;
   } catch (e) {
-    console.warn('[mpesa] tabela não disponível, devolvendo objeto mock:', e);
+    logger.warn('[mpesa] tabela não disponível, devolvendo objeto mock:', { error: e });
     return {
       id: `mock-${reference}`,
       reference,
@@ -135,7 +136,7 @@ export async function listPendingPayments(): Promise<ManualPayment[]> {
     if (error) throw error;
     return data || [];
   } catch (e) {
-    console.warn('[mpesa] erro ao listar pendentes:', e);
+    logger.warn('[mpesa] erro ao listar pendentes:', { error: e });
     return [];
   }
 }
@@ -159,7 +160,7 @@ export async function confirmPayment(
     if (error) throw error;
     return true;
   } catch (e) {
-    console.error('[mpesa] erro ao confirmar:', e);
+    logger.error('[mpesa] erro ao confirmar:', { error: e });
     return false;
   }
 }
@@ -181,7 +182,7 @@ export async function rejectPayment(
     if (error) throw error;
     return true;
   } catch (e) {
-    console.error('[mpesa] erro ao rejeitar:', e);
+    logger.error('[mpesa] erro ao rejeitar:', { error: e });
     return false;
   }
 }
@@ -215,7 +216,7 @@ export async function getMpesaStats(): Promise<{
       confirmedAmountToday: confirmedList.reduce((s: number, p: any) => s + Number(p.amount_mzn || 0), 0),
     };
   } catch (e) {
-    console.warn('[mpesa] erro ao obter stats:', e);
+    logger.warn('[mpesa] erro ao obter stats:', { error: e });
     return { pending: 0, pendingAmount: 0, confirmedToday: 0, confirmedAmountToday: 0 };
   }
 }

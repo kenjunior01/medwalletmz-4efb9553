@@ -151,7 +151,7 @@ export default function SuggestPlace() {
         status: "pending",
       };
 
-      const { error } = await (supabase as any).from("place_proposals").insert(payload);
+      const { error } = await supabase.from("place_proposals").insert(payload);
       if (error) throw error;
       setDone(true);
       toast.success(t('health.suggest_success_title'));

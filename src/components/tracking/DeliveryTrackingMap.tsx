@@ -8,6 +8,7 @@ import { Navigation, Clock, MapPin, Truck } from "@/components/icons/lucide-comp
 import { Button } from '@/components/ui/button';
 import { fetchRouteDistance, fmtDuration } from '@/lib/googleRoutes';
 
+import { logger } from '@/lib/logger';
 interface DriverLocation {
   lat: number;
   lng: number;
@@ -104,7 +105,7 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
         .maybeSingle();
 
       if (profileError) {
-        console.warn('Failed to fetch driver profile:', profileError);
+        logger.warn('Failed to fetch driver profile:', profileError);
       }
 
       setDriverLocation({
@@ -117,7 +118,7 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
 
       updateEstimatedTime(data.current_latitude, data.current_longitude);
     } catch (error) {
-      console.error('Error fetching driver location:', error);
+      logger.error('Error fetching driver location:', { error: error });
     } finally {
       setLoading(false);
     }

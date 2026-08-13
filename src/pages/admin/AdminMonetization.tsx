@@ -38,6 +38,7 @@ import {
 } from '@/lib/mzMonetization';
 import { seedMzPlans, MZ_ALL_PLANS, formatMZN } from '@/lib/mzPlans';
 
+import { logger } from '@/lib/logger';
 interface PendingPayment {
   id: string;
   reference: string;
@@ -99,7 +100,7 @@ export default function AdminMonetization() {
       setSubs(sub as PendingSub[]);
       setRecent(r);
     } catch (e) {
-      console.error('[AdminMonetization] refresh error:', e);
+      logger.error('[AdminMonetization] refresh error:', { error: e });
       toast.error('Erro ao carregar dados de monetização.');
     } finally {
       setLoading(false);

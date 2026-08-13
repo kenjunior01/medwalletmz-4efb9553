@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+import { logger } from '@/lib/logger';
 export interface Challenge {
   id: string;
   type: 'medication_streak' | 'consultation_count' | 'province_explorer' | 'wellness_check';
@@ -259,7 +260,7 @@ export function useGamification() {
       .from('streak_log')
       .insert({ user_id: user.id, activity_date: today });
     if (insertError) {
-      console.error('Failed to record streak:', insertError.message);
+      logger.error('Failed to record streak:', insertError.message);
       return false;
     }
     queryClient.invalidateQueries({ queryKey: ['user-gamification'] });

@@ -46,7 +46,7 @@ export default function AdminHome() {
       const countryId = country?.id;
 
       const buildQuery = (table: string) => {
-        let q: any = (supabase as any).from(table).select('id', { count: 'exact', head: true });
+        let q: any = supabase.from(table).select('id', { count: 'exact', head: true });
         if (countryId) q = q.eq('country_id', countryId);
         return q;
       };
@@ -57,7 +57,7 @@ export default function AdminHome() {
         supabase.from('profiles').select('id', { count: 'exact', head: true })
           .not('vehicle_type', 'is', null)
           .eq(countryId ? 'country_id' : 'id', countryId || 'id'), // simplistic filter for profiles
-        (supabase as any).from('consultations').select('id, status', { count: 'exact' })
+        supabase.from('consultations').select('id, status', { count: 'exact' })
           .eq(countryId ? 'country_id' : 'id', countryId || 'id'),
         buildQuery('prescriptions'),
         supabase.from('user_referrals').select('id, status', { count: 'exact' })

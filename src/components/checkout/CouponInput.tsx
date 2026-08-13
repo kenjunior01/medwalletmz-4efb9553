@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Tag, X, Loader2, Check } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 
+import { logger } from '@/lib/logger';
 interface Coupon {
   id: string;
   code: string;
@@ -64,7 +65,7 @@ export function CouponInput({ subtotal, appliedCoupon, onApplyCoupon, onRemoveCo
       setCouponCode('');
       toast.success(`Cupom "${r.code}" aplicado — desconto de ${r.discount} ${currencySymbol}`);
     } catch (error) {
-      console.error('Coupon validation error:', error);
+      logger.error('Coupon validation error:', { error: error });
       toast.error('Erro ao validar cupom');
     } finally {
       setLoading(false);

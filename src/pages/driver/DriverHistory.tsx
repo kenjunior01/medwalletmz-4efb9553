@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Package, CheckCircle, Clock, DollarSign } from "@/components/icons/lucide-compat";
 
+import { logger } from '@/lib/logger';
 interface DeliveryHistory {
   id: string;
   status: string;
@@ -70,7 +71,7 @@ export default function DriverHistory() {
       const earnings = data?.reduce((sum, d) => sum + (d.order?.delivery_fee || 0), 0) || 0;
       setTotals({ count, earnings });
     } catch (error) {
-      console.error('Error fetching history:', error);
+      logger.error('Error fetching history:', { error: error });
     } finally {
       setLoading(false);
     }

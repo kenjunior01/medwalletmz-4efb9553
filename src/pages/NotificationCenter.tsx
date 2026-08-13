@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Seo } from "@/components/Seo";
 
+import { logger } from '@/lib/logger';
 type NotificationType = "consultation" | "order" | "prescription" | "reminder";
 
 interface NotificationItem {
@@ -193,7 +194,7 @@ export default function NotificationCenter() {
       );
       setItems(all.slice(0, 50));
     } catch (e) {
-      console.warn("NotificationCenter load falhou:", e);
+      logger.warn("NotificationCenter load falhou:", { error: e });
     } finally {
       setLoading(false);
     }

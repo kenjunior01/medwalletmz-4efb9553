@@ -25,6 +25,7 @@ import { GoogleMap, type GMarker } from "@/components/maps/GoogleMap";
 import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
 import { useLocation } from "@/contexts/LocationContext";
 
+import { logger } from '@/lib/logger';
 type Institution = {
   id: string;
   name: string;
@@ -85,13 +86,13 @@ export default function IndiaInstitutionsPage() {
         { data: clinics, error: e2 },
         { data: labs, error: e3 },
       ] = await Promise.all([
-        (supabase as any).from('stores').select('id,name,type,city,address,phone,image_url,latitude,longitude,rating,description,country_id').eq('country_id','IN'),
-        (supabase as any).from('clinics').select('id,name,type,city,address,phone,email,website,image_url,latitude,longitude,is_verified,rating,description,country_id').eq('country_id','IN'),
-        (supabase as any).from('laboratories').select('id,name,city,address,phone,email,website,logo_url,latitude,longitude,rating,description,country_id').eq('country_id','IN'),
+        supabase.from('stores').select('id,name,type,city,address,phone,image_url,latitude,longitude,rating,description,country_id').eq('country_id','IN'),
+        supabase.from('clinics').select('id,name,type,city,address,phone,email,website,image_url,latitude,longitude,is_verified,rating,description,country_id').eq('country_id','IN'),
+        supabase.from('laboratories').select('id,name,city,address,phone,email,website,logo_url,latitude,longitude,rating,description,country_id').eq('country_id','IN'),
       ]);
-      if (e1) console.warn(e1);
-      if (e2) console.warn(e2);
-      if (e3) console.warn(e3);
+      if (e1) logger.warn('Unexpected warning', { error: e1 });
+      if (e2) logger.warn('Unexpected warning', { error: e2 });
+      if (e3) logger.warn('Unexpected warning', { error: e3 });
 
       const pharmacyRows: Institution[] = ((stores || []) as any[])
         .filter((s:any) => s.type === 'pharmacy')

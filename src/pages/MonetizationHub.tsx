@@ -72,7 +72,7 @@ export default function MonetizationHub() {
       let c = prof?.referral_code;
       if (!c) {
         c = genCode(user.id);
-        await (supabase as any).from('profiles').update({ referral_code: c }).eq('user_id', user.id);
+        await supabase.from('profiles').update({ referral_code: c }).eq('user_id', user.id);
       }
       setRefCode(c);
 

@@ -19,6 +19,7 @@ import {
 } from '@/components/icons/lucide-compat';
 import { toast } from 'sonner';
 
+import { logger } from '@/lib/logger';
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
@@ -159,7 +160,7 @@ export default function AssignRegionalManager() {
           .upsert(permRow, { onConflict: 'user_id,province_id' });
         if (permError) {
           // Table might not exist yet — log but don't fail the whole flow
-          console.warn('manager_permissions upsert warning:', permError);
+          logger.warn('manager_permissions upsert warning:', permError);
         }
 
         // 3. Update profiles.managed_province
@@ -178,7 +179,7 @@ export default function AssignRegionalManager() {
       closeSheet();
     },
     onError: (err: any) => {
-      console.error('Assignment error:', err);
+      logger.error('Assignment error:', err);
       toast.error('Erro ao atribuir gestor: ' + (err?.message || 'Erro desconhecido'));
     },
   });

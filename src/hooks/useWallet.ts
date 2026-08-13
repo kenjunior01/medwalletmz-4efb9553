@@ -30,7 +30,7 @@ export function useWallet() {
 
     if (!data) {
       // Ensure wallet exists - now with country_id from profile
-      const { data: profile } = await (supabase as any).from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
+      const { data: profile } = await supabase.from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
 
       const defaultCountry = profile?.country_id || 'MZ';
       const { data: country } = await (supabase as any)
@@ -40,7 +40,7 @@ export function useWallet() {
         .maybeSingle();
       const defaultCurrency = country?.currency_code || FALLBACK_CURRENCY_BY_COUNTRY[defaultCountry] || 'USD';
 
-      await (supabase as any).from('wallets').insert({
+      await supabase.from('wallets').insert({
         user_id: user.id,
         country_id: defaultCountry,
         currency: defaultCurrency,
@@ -90,8 +90,8 @@ export function useWallet() {
     if (!user) throw new Error('Sem sessão');
 
     // Auto-select best method if none provided
-    const { data: profile } = await (supabase as any).from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
-    const { data: country } = await (supabase as any).from('countries').select('config').eq('id', profile?.country_id || 'MZ').maybeSingle();
+    const { data: profile } = await supabase.from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
+    const { data: country } = await supabase.from('countries').select('config').eq('id', profile?.country_id || 'MZ').maybeSingle();
 
     const preferredMethod = method || country?.config?.payment_methods?.[0]?.id || 'wallet';
 

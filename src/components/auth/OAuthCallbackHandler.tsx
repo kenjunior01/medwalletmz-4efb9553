@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { AlertTriangle, Loader2 } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 
+import { logger } from '@/lib/logger';
 const sanitizeNextPath = (value: string | null) => {
   if (!value || !value.startsWith('/') || value.startsWith('//')) return '/';
   return value;
@@ -118,7 +119,7 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
           window.history.replaceState(null, '', window.location.pathname);
         }
       } catch (e) {
-        console.warn('[OAuthCallbackHandler] Não foi possível limpar a URL:', e);
+        logger.warn('[OAuthCallbackHandler] Não foi possível limpar a URL:', { error: e });
       }
       return;
     }
@@ -185,9 +186,7 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
     // ────────────────────────────────────────────────────────────────────────
     // Log só se houver algo suspeito no URL (ex: ?code= sem access_token)
     if (allParams.code && !hasAccessToken) {
-      console.warn(
-        '[OAuthCallbackHandler] URL tem ?code= mas sem access_token. URL:', fullPath
-      );
+      logger.warn('[OAuthCallbackHandler] URL tem ?code= mas sem access_token. URL:', fullPath);
     }
   }, []);
 

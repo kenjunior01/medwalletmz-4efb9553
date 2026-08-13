@@ -20,7 +20,7 @@ export class MPesaService extends BasePaymentService {
 
   async initiatePayment(request: PaymentRequest): Promise<PaymentResponse> {
     try {
-      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+      const { data, error } = await supabase.functions.invoke('process-global-payment', {
         body: {
           provider: 'mpesa',
           action: 'initiate',
@@ -64,7 +64,7 @@ export class MPesaService extends BasePaymentService {
 
   async verifyPayment(transactionId: string): Promise<PaymentVerification> {
     try {
-      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+      const { data, error } = await supabase.functions.invoke('process-global-payment', {
         body: {
           provider: 'mpesa',
           action: 'verify',
@@ -91,7 +91,7 @@ export class MPesaService extends BasePaymentService {
 
   async processRefund(request: RefundRequest): Promise<RefundResponse> {
     try {
-      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+      const { data, error } = await supabase.functions.invoke('process-global-payment', {
         body: {
           provider: 'mpesa',
           action: 'refund',
@@ -119,7 +119,7 @@ export class MPesaService extends BasePaymentService {
 
   async getBalance(): Promise<BalanceResponse> {
     try {
-      const { data, error } = await (supabase.functions as any).invoke('process-global-payment', {
+      const { data, error } = await supabase.functions.invoke('process-global-payment', {
         body: { provider: 'mpesa', action: 'balance' },
       });
 

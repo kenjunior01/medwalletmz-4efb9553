@@ -27,6 +27,7 @@ import {
   markMedicationTaken, markMedicationSkipped, scheduleMedicationToday,
   calculateAge, relationshipLabel, pickFamilyColor,
 } from '@/services/familyHub';
+import { logger } from '@/lib/logger';
 
 type View = 'list' | 'add' | 'detail';
 
@@ -148,7 +149,7 @@ export default function FamilyHub() {
         const created = await addFamilyMember(user.id, payload);
         // Auto-schedule today's medications if user provided them
         for (const med of payload.medications ?? []) {
-          await scheduleMedicationToday(user.id, created.id!, med, '08:00').catch(() => {});
+          await scheduleMedicationToday(user.id, created.id!, med, '08:00').catch((e) => { logger.warn('Failed to schedule medication', { error: e }); });
         }
       }
       await loadAll();

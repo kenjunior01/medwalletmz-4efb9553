@@ -20,7 +20,7 @@ export function WeeklyLeaderboard() {
     queryKey: ['weekly-leaderboard'],
     queryFn: async () => {
       const { data } = await supabase
-        .from('weekly_leaderboard' as any)
+        .from('weekly_leaderboard')
         .select('*')
         .limit(10);
       return (data as unknown as LeaderboardEntry[]) || [];

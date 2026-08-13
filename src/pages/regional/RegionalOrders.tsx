@@ -14,6 +14,7 @@ import {
 import NumberFlow from '@number-flow/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import {
   Package,
   ShoppingBag,
@@ -195,7 +196,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
 
       setOrders(enriched);
     } catch (err) {
-      console.error('Failed to load orders:', err);
+      logger.error('Failed to load orders:', { error: err });
       toast.error(t('regional.load_error') || 'Erro ao carregar encomendas');
     } finally {
       setLoading(false);

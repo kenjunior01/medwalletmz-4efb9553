@@ -8,6 +8,7 @@ import { supabase as typedSupabase } from '@/integrations/supabase/client';
 const supabase = typedSupabase as any;
 import { geminiAnalyzeImage, geminiStructured, isGeminiConfigured } from '@/lib/gemini';
 
+import { logger } from '@/lib/logger';
 export type ScanType = 'prescription' | 'lab_result' | 'medicine_label' | 'doctor_note' | 'vaccine_card' | 'other';
 
 export interface DetectedMedication {
@@ -156,7 +157,7 @@ export async function scanPrescription(file: File): Promise<{
       }
     );
   } catch (err) {
-    console.error('scanPrescription error:', err);
+    logger.error('scanPrescription error:', { error: err });
     return { medications: [] };
   }
 }
@@ -189,7 +190,7 @@ export async function scanLabResult(file: File): Promise<{
       }
     );
   } catch (err) {
-    console.error('scanLabResult error:', err);
+    logger.error('scanLabResult error:', { error: err });
     return { results: [] };
   }
 }
@@ -225,7 +226,7 @@ export async function scanMedicineLabel(file: File): Promise<{
       }
     );
   } catch (err) {
-    console.error('scanMedicineLabel error:', err);
+    logger.error('scanMedicineLabel error:', { error: err });
     return {};
   }
 }

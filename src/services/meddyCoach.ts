@@ -10,6 +10,7 @@ const supabase = typedSupabase as any;
 import { geminiChat, geminiStructured, isGeminiConfigured } from '@/lib/gemini';
 import { useCountry } from '@/contexts/CountryContext';
 
+import { logger } from '@/lib/logger';
 // ─── Types ────────────────────────────────────────────────────────────────
 
 export interface MeddyConversation {
@@ -288,7 +289,7 @@ export async function sendMessage(
         maxOutputTokens: 250,
       });
     } catch (err) {
-      console.error('Meddy Gemini error:', err);
+      logger.error('Meddy Gemini error:', { error: err });
       meddyReply = getFallbackReply(language, crisisCheck.is_crisis);
     }
   } else {

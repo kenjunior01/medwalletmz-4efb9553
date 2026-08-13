@@ -59,7 +59,7 @@ export default function Solidarity() {
 
     setLoading(true);
     try {
-      const { error } = await (supabase as any).from("medical_aid_requests").insert({
+      const { error } = await supabase.from("medical_aid_requests").insert({
         user_id: user.id,
         ...form,
         patient_age: form.patient_age ? Number(form.patient_age) : null,

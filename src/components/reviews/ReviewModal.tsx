@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
+import { logger } from '@/lib/logger';
 interface ReviewModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -75,7 +76,7 @@ export function ReviewModal({
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
-      console.error('Erro ao enviar avaliação:', error);
+      logger.error('Erro ao enviar avaliação:', { error: error });
       toast.error('Erro ao enviar avaliação');
     } finally {
       setLoading(false);

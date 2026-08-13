@@ -22,11 +22,11 @@ export default function LabDashboard() {
   useEffect(() => {
     if (!user) { nav('/auth'); return; }
     (async () => {
-      const { data: l } = await (supabase as any).from('clinics')
+      const { data: l } = await supabase.from('clinics')
         .select('*').eq('owner_id', user.id).eq('type', 'laboratory').maybeSingle();
       setLab(l);
       if (l) {
-        const { data: o } = await (supabase as any).from('lab_exam_orders')
+        const { data: o } = await supabase.from('lab_exam_orders')
           .select('*').eq('lab_id', l.id).order('created_at', { ascending: false }).limit(50);
         setOrders(o || []);
       }

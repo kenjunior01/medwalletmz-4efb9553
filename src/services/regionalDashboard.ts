@@ -277,7 +277,7 @@ export async function getPriorityActions(countryCode: string): Promise<PriorityA
 /** Fetch all countries for the global admin country selector */
 export async function getAllCountryRankings() {
   const { data, error } = await supabase
-    .from('countries' as any)
+    .from('countries')
     .select('id, name, flag_url, region');
 
   if (error) throw error;
