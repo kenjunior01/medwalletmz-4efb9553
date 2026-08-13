@@ -5,7 +5,7 @@
  * Shared SVG defs: gradients, glow filters, stroke animations.
  * Theme-aware via CSS custom properties (--region-logo-primary, etc.)
  */
-import React, { forwardRef, useId, type SVGProps, createContext, useContext } from 'react';
+import React, { forwardRef, useRef, type SVGProps, createContext, useContext } from 'react';
 
 // ─── Public Types ─────────────────────────────────────────────
 export interface MWIconProps extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
@@ -120,7 +120,8 @@ export const MWBase = forwardRef<SVGSVGElement, MWIconProps & {
     ref
   ) {
     const { w, h } = parseSize(size);
-    const id = _defsId || `mw-${useId()}`;
+    const generatedId = useRef(Math.random().toString(36).slice(2, 9)).current;
+    const id = _defsId || `mw-${generatedId}`;
 
     return (
       <svg

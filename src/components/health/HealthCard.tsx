@@ -61,25 +61,9 @@ export function HealthCard({ patient, className }: HealthCardProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const theme = getTheme(country?.id || 'MZ');
 
-  // ─── Placeholder when no patient data is provided ──────────────
-  if (!patient) {
-    return (
-      <div className={cn('flex flex-col items-center gap-3', className)}>
-        <div
-          className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-muted p-8"
-          style={{ aspectRatio: '1.586 / 1' }}
-        >
-          <Shield className="mb-3 h-11 w-11 text-muted-foreground/40" />
-          <p className="text-sm font-semibold text-muted-foreground">
-            {t('healthWallet.no_profile')}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Generate QR code from patient data
+  // Generate QR code from patient data (always called — conditionally skips inside)
   const generateQR = useCallback(async () => {
+    if (!patient) return;
     try {
       const payload = JSON.stringify({
         id: patient.medicalId,
@@ -105,6 +89,23 @@ export function HealthCard({ patient, className }: HealthCardProps) {
   useEffect(() => {
     generateQR();
   }, [generateQR]);
+
+  // ─── Placeholder when no patient data is provided ──────────────
+  if (!patient) {
+    return (
+      <div className={cn('flex flex-col items-center gap-3', className)}>
+        <div
+          className="flex h-full w-full flex-col items-center justify-center rounded-2xl bg-muted p-8"
+          style={{ aspectRatio: '1.586 / 1' }}
+        >
+          <Shield className="mb-3 h-11 w-11 text-muted-foreground/40" />
+          <p className="text-sm font-semibold text-muted-foreground">
+            {t('healthWallet.no_profile')}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const toggleFlip = () => setIsFlipped((prev) => !prev);
 

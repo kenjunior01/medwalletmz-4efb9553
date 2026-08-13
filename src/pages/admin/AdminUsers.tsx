@@ -70,19 +70,9 @@ export default function AdminUsers() {
   const effectiveCountryId = isAdmin ? null : (managedCountryId || country?.id);
   const effectiveProvinceId = isProvincialManager ? managedProvinceId : null;
 
-  // Don't render if user has no management role
-  if (!canManage) {
-    return (
-      <div className="p-8 flex flex-col items-center justify-center min-h-[50vh] gap-4">
-        <Shield className="h-12 w-12 text-destructive" />
-        <h1 className="text-xl font-bold">Acesso Negado</h1>
-        <p className="text-muted-foreground">Apenas gestores podem aceder a esta página.</p>
-      </div>
-    );
-  }
-
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users', search, roleFilter, effectiveCountryId, effectiveProvinceId],
+    enabled: canManage,
     queryFn: async () => {
       // Fetch profiles via admin RPC
       const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full');
@@ -198,6 +188,17 @@ export default function AdminUsers() {
     setSelectedUser(user);
     setIsDialogOpen(true);
   };
+
+  // Don't render if user has no management role
+  if (!canManage) {
+    return (
+      <div className="p-8 flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <Shield className="h-12 w-12 text-destructive" />
+        <h1 className="text-xl font-bold">Acesso Negado</h1>
+        <p className="text-muted-foreground">Apenas gestores podem aceder a esta página.</p>
+      </div>
+    );
+  }
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('pt-PT', {
