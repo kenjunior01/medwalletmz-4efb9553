@@ -14,8 +14,23 @@
  */
 
 import { Capacitor } from '@capacitor/core';
-import { PushNotifications, type Token, type PushNotificationSchema, type ActionPerformed } from '@capacitor/push-notifications';
 import { supabase } from '@/integrations/supabase/client';
+
+// @capacitor/push-notifications loaded dynamically to avoid pulling it into the web bundle
+let PushNotifications: any = null;
+let pushNotificationTypes: any = null;
+async function loadPushNotifications() {
+  if (!PushNotifications) {
+    try {
+      const mod = await import('@capacitor/push-notifications');
+      PushNotifications = mod.PushNotifications;
+      pushNotificationTypes = mod;
+    } catch {
+      console.info('[FcmService] @capacitor/push-notifications not available (web)');
+    }
+  }
+  return PushNotifications;
+}
 
 // ---------------------------------------------------------------------------
 // Tipos
@@ -487,8 +502,14 @@ class FcmService {
    */
   private async initNative(): Promise<void> {
     try {
+      const PN = await loadPushNotifications();
+      if (!PN) {
+        console.info('[FcmService] Push notifications not available on this platform.');
+        return;
+      }
+
       // Solicitar permissão ao utilizador
-      const result = await PushNotifications.requestPermissions();
+      const result = await PN.requestPermissions();
       this.permissionGranted =
         result.receive === 'granted' ||
         (result as any).granted === true;
@@ -499,7 +520,7 @@ class FcmService {
       }
 
       // Registar para receber notificações push
-      await PushNotifications.register();
+      await PN.register();
 
       // Obter token (é emitido via evento 'registration')
       // Também tentamos obter directamente
@@ -528,6 +549,12 @@ class FcmService {
         return;
       }
 
+      const PN = PushNotifications;
+      if (!PN) {
+        resolve(null);
+        return;
+      }
+
       // Timeout de 10 segundos para evitar espera infinita
       const timeout = setTimeout(() => {
         console.warn('[FcmService] Timeout ao aguardar token nativo.');
@@ -535,9 +562,9 @@ class FcmService {
       }, 10_000);
 
       // Registar listener temporário para o evento de registo
-      const registrationListener = PushNotifications.addListener(
+      const registrationListener = PN.addListener(
         'registration',
-        (token: Token) => {
+        (token: any) => {
           clearTimeout(timeout);
           this.currentToken = token.value;
           console.info('[FcmService] Token FCM nativo recebido.');
@@ -552,7 +579,7 @@ class FcmService {
       );
 
       // Guardar referência para cleanup
-      this.capacitorListeners.push(() => registrationListener.then(h => h?.remove()));
+      this.capacitorListeners.push(() => registrationListener.then((h: any) => h?.remove()));
     });
   }
 
@@ -562,10 +589,13 @@ class FcmService {
    * - pushNotificationActionPerformed: Utilizador tocou na notificação
    */
   private async setupNativeListeners(): Promise<void> {
+    const PN = PushNotifications;
+    if (!PN) return;
+
     // Listener para notificações recebidas (foreground)
-    const receivedListener = await PushNotifications.addListener(
+    const receivedListener = await PN.addListener(
       'pushNotificationReceived',
-      (notification: PushNotificationSchema) => {
+      (notification: any) => {
         const message: FcmMessage = {
           title: notification.title || undefined,
           body: notification.body || undefined,
@@ -578,9 +608,9 @@ class FcmService {
     this.capacitorListeners.push(() => receivedListener.remove());
 
     // Listener para acção do utilizador (toque na notificação)
-    const actionListener = await PushNotifications.addListener(
+    const actionListener = await PN.addListener(
       'pushNotificationActionPerformed',
-      (action: ActionPerformed) => {
+      (action: any) => {
         const notification = action.notification;
         const message: FcmMessage = {
           title: notification.title || undefined,
