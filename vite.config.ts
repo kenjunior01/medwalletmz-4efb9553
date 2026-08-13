@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ["@number-flow/react", "react", "react-dom", "date-fns"],
     // Heavy libs excluded from pre-bundle — loaded lazily per page
-    exclude: ["@tsparticles/react", "@tsparticles/slim", "gsap", "@gsap/react", "lottie-react", "framer-motion", "firebase/app", "firebase/messaging"],
+    exclude: ["@tsparticles/react", "gsap", "@gsap/react", "lottie-react", "framer-motion", "firebase/app", "firebase/messaging"],
   },
   resolve: {
     alias: {
@@ -76,8 +76,7 @@ export default defineConfig(({ mode }) => ({
           ],
             // Heavy libs that should only load in their specific pages
           'vendor-charts': ['recharts'],
-          'vendor-pdf': ['jspdf', 'jspdf-autotable'],
-          'vendor-maps': ['leaflet', 'react-leaflet'],
+          'vendor-pdf': ['jspdf'],
           'vendor-video': ['@daily-co/daily-js'],
           'vendor-analytics': ['posthog-js'],
           'vendor-xlsx': ['xlsx'],
