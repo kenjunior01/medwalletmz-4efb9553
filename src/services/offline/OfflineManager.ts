@@ -489,7 +489,7 @@ class OfflineManager {
   /** Cache top doctors with stale-while-revalidate. */
   async cacheTopDoctors(countryId?: string): Promise<void> {
     try {
-      let query = supabase
+      const query = supabase
         .from('doctor_profiles')
         .select('id, user_id, rating, consultation_fee, is_available, medical_specialties(name, icon)')
         .eq('is_available', true)

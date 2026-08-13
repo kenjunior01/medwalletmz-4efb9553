@@ -77,14 +77,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const normalizedCode = referralCode?.trim();
     if (!normalizedCode || !referredId) return;
 
-    // Wait a bit for the database trigger handle_new_user to create the profile
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const { data: referrerProfile } = await supabase
-      .from('profiles')
-      .select('user_id')
-      .eq('referral_code', normalizedCode)
-      .maybeSingle();
+    // Poll for profile to be created by database trigger (max 5 seconds)
+    let retries = 10;
+    while (retries-- > 0) {
+      await new Promise(r => setTimeout(r, 500));
+      const { data: referrerProfile } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('referral_code', normalizedCode)
+        .maybeSingle();
+      if (referrerProfile) break;
+    }
 
     const referrerId = referrerProfile?.user_id;
     if (!referrerId || referrerId === referredId) return;

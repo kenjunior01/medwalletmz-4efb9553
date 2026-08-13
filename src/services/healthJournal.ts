@@ -133,7 +133,7 @@ export async function generateWeeklyInsight(userId: string, language: string = '
 
 export async function getStreak(userId: string): Promise<number> {
   let streak = 0;
-  let checkDate = new Date();
+  const checkDate = new Date();
   while (true) {
     const dateStr = checkDate.toISOString().split('T')[0];
     const entry = await getEntry(userId, dateStr);

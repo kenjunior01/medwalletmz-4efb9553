@@ -26,7 +26,7 @@ export function KlipyStickerPicker({ customerId, onPick }: Props) {
     setLoading(false);
   };
 
-  useEffect(() => { if (open) fetchItems(q || undefined); /* eslint-disable-next-line */ }, [open, tab]);
+  useEffect(() => { if (open) fetchItems(q || undefined);   }, [open, tab]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

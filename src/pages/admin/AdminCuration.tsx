@@ -149,7 +149,7 @@ export default function AdminCuration() {
     queryKey: ['curation-cities', countryFilterId],
     enabled: !loading && (isAdmin || isManager),
     queryFn: async () => {
-      let q = (supabase as any)
+      let q = supabase
         .from('place_proposals')
         .select('city')
         .order('city', { ascending: true });
@@ -214,7 +214,7 @@ export default function AdminCuration() {
       if (countryFilterId) sq = sq.eq('country_id', countryFilterId);
       const { data: storesData } = await sq;
 
-      let cq = (supabase as any)
+      let cq = supabase
         .from('clinics')
         .select('id, name, address, city, phone, website, description, logo_url, latitude, longitude, created_at')
         .order('created_at', { ascending: false });
@@ -362,18 +362,18 @@ export default function AdminCuration() {
         return false;
       }
     } else if (reviewing.source_table === 'clinics') {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('clinics')
         .update({
-          name: cleaned.name,
-          address: cleaned.address,
-          city: cleaned.city,
-          phone: cleaned.phone,
-          website: cleaned.website,
-          description: cleaned.description,
-          logo_url: cleaned.image_url,
-          latitude: cleaned.latitude,
-          longitude: cleaned.longitude,
+          name: cleaned.name ?? undefined,
+          address: cleaned.address ?? undefined,
+          city: cleaned.city ?? undefined,
+          phone: cleaned.phone ?? undefined,
+          website: cleaned.website ?? undefined,
+          description: cleaned.description ?? undefined,
+          logo_url: cleaned.image_url ?? undefined,
+          latitude: cleaned.latitude ?? undefined,
+          longitude: cleaned.longitude ?? undefined,
         })
         .eq('id', reviewing.id);
       if (error) {
@@ -695,11 +695,11 @@ export default function AdminCuration() {
                     <Field label="Cidade"><Input value={draft.city ?? ''} onChange={(e) => setDraft({ ...draft, city: e.target.value })} /></Field>
                     <Field label="Morada"><Input value={draft.address ?? ''} onChange={(e) => setDraft({ ...draft, address: e.target.value })} /></Field>
                     <Field label="Telefone"><Input value={draft.phone ?? ''} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} /></Field>
-                    <Field label="Latitude"><Input inputMode="decimal" value={draft.latitude ?? ''} onChange={(e) => setDraft({ ...draft, latitude: e.target.value as any })} /></Field>
-                    <Field label="Longitude"><Input inputMode="decimal" value={draft.longitude ?? ''} onChange={(e) => setDraft({ ...draft, longitude: e.target.value as any })} /></Field>
+                    <Field label="Latitude"><Input inputMode="decimal" value={draft.latitude ?? ''} onChange={(e) => setDraft({ ...draft, latitude: e.target.value === '' ? null : Number(e.target.value) })} /></Field>
+                    <Field label="Longitude"><Input inputMode="decimal" value={draft.longitude ?? ''} onChange={(e) => setDraft({ ...draft, longitude: e.target.value === '' ? null : Number(e.target.value) })} /></Field>
                   </div>
                   <div className="flex justify-end">
-                    <GeocodeButton draft={draft} onResolved={(lat, lng, formatted) => setDraft({ ...draft, latitude: lat as any, longitude: lng as any, address: draft.address || formatted || null })} />
+                    <GeocodeButton draft={draft} onResolved={(lat, lng, formatted) => setDraft({ ...draft, latitude: lat, longitude: lng, address: draft.address || formatted || null })} />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="md:col-span-2">
@@ -963,7 +963,7 @@ function validateProposal(proposal: Proposal) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) blockers.push('Latitude e longitude válidas são obrigatórias antes de aprovar.');
 
   // Only show Mozambique specific warnings if the country is MZ
-  const isMZ = proposal.raw_payload?.country_id === 'MZ' || (proposal as any).country_id === 'MZ';
+  const isMZ = (proposal.raw_payload as Record<string, unknown> | null)?.country_id === 'MZ';
   if (isMZ) {
     if (Number.isFinite(lat) && (lat < MZ_BOUNDS.minLat || lat > MZ_BOUNDS.maxLat)) warnings.push('Latitude parece fora de Moçambique — confirma no mapa antes de aprovar.');
     if (Number.isFinite(lng) && (lng < MZ_BOUNDS.minLng || lng > MZ_BOUNDS.maxLng)) warnings.push('Longitude parece fora de Moçambique — confirma no mapa antes de aprovar.');

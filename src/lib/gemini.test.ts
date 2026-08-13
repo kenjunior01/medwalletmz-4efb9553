@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // Mock import.meta.env antes de importar o módulo
 vi.stubEnv("VITE_GEMINI_API_KEY", "test-key-1234567890abcdef");
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+ 
 const { geminiChat, geminiStructured, isGeminiConfigured, simulateGeminiResponse, GEMINI_SYSTEM_PROMPTS } =
   await import("./gemini");
 

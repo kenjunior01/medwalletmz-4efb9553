@@ -17,6 +17,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import {
   type MzPlan,
   type Billing,
@@ -109,7 +110,7 @@ export async function initiateSubscription(opts: {
   // 3. Insere subscription pendente
   let subscriptionId: string;
   try {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('subscriptions')
       .insert({
         user_id: userId,
@@ -220,7 +221,7 @@ export async function confirmSubscriptionPayment(opts: {
 }): Promise<boolean> {
   const { paymentId, mpesaTransactionId, adminId } = opts;
   try {
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('mpesa_manual_payments')
       .update({
         status: 'confirmed',
@@ -248,7 +249,7 @@ export async function rejectSubscriptionPayment(opts: {
 }): Promise<boolean> {
   const { paymentId, reason, adminId } = opts;
   try {
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('mpesa_manual_payments')
       .update({
         status: 'rejected',
@@ -256,7 +257,7 @@ export async function rejectSubscriptionPayment(opts: {
           rejection_reason: reason,
           rejected_by: adminId,
           rejected_at: new Date().toISOString(),
-        },
+        } as Json,
       })
       .eq('id', paymentId);
     if (error) {
@@ -388,7 +389,7 @@ export async function recordReferralSuccess(opts: {
 
   try {
     // Idempotência
-    const { data: existing } = await (supabase as any)
+    const { data: existing } = await supabase
       .from('user_referrals')
       .select('id')
       .eq('referrer_id', referrerId)
@@ -457,7 +458,7 @@ export async function getMonetizationStats(): Promise<MonetizationStats> {
     const todayIso = today.toISOString();
 
     // 1. M-Pesa payments: pending
-    const { data: pending } = await (supabase as any)
+    const { data: pending } = await supabase
       .from('mpesa_manual_payments')
       .select('amount_mzn')
       .eq('status', 'pending');
@@ -470,7 +471,7 @@ export async function getMonetizationStats(): Promise<MonetizationStats> {
     }
 
     // 2. M-Pesa payments: confirmed today
-    const { data: confirmedToday } = await (supabase as any)
+    const { data: confirmedToday } = await supabase
       .from('mpesa_manual_payments')
       .select('amount_mzn')
       .eq('status', 'confirmed')
@@ -484,7 +485,7 @@ export async function getMonetizationStats(): Promise<MonetizationStats> {
     }
 
     // 3. M-Pesa payments: total confirmed (all-time)
-    const { data: allConfirmed } = await (supabase as any)
+    const { data: allConfirmed } = await supabase
       .from('mpesa_manual_payments')
       .select('amount_mzn')
       .eq('status', 'confirmed');
@@ -496,14 +497,14 @@ export async function getMonetizationStats(): Promise<MonetizationStats> {
     }
 
     // 4. Subscriptions: pending
-    const { count: pendingSubs } = await (supabase as any)
+    const { count: pendingSubs } = await supabase
       .from('subscriptions')
       .select('id', { count: 'exact', head: true })
       .eq('status', 'pending');
     stats.pendingSubscriptions = pendingSubs || 0;
 
     // 5. Subscriptions: active
-    const { count: activeSubs } = await (supabase as any)
+    const { count: activeSubs } = await supabase
       .from('subscriptions')
       .select('id', { count: 'exact', head: true })
       .eq('status', 'active');
@@ -531,7 +532,7 @@ export async function listPendingPaymentsForAdmin(): Promise<Array<{
   subscription_id?: string;
 }>> {
   try {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('mpesa_manual_payments')
       .select('*')
       .eq('status', 'pending')
@@ -568,7 +569,7 @@ export async function listPendingSubscriptionsForAdmin(): Promise<Array<{
   plan_slug: string;
 }>> {
   try {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('subscriptions')
       .select(
         `
@@ -623,7 +624,7 @@ export interface FreeTrialResult {
 export async function hasUsedFreeTrial(userId: string): Promise<boolean> {
   if (!userId) return false;
   try {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('subscriptions')
       .select('id, admin_notes')
       .eq('user_id', userId)
@@ -688,7 +689,7 @@ export async function startFreeTrial(opts: {
   expiresAt.setDate(expiresAt.getDate() + FREE_TRIAL_DAYS);
 
   try {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('subscriptions')
       .insert({
         user_id: userId,
@@ -729,7 +730,7 @@ export async function startFreeTrial(opts: {
 export async function getFreeTrialDaysRemaining(userId: string): Promise<number | null> {
   if (!userId) return null;
   try {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('subscriptions')
       .select('expires_at')
       .eq('user_id', userId)
@@ -780,7 +781,7 @@ export async function getPublicImpactStats(): Promise<PublicImpactStats> {
   try {
     const [usersRes, subsRes, triagesRes] = await Promise.all([
       supabase.from('profiles').select('id', { count: 'exact', head: true }),
-      (supabase as any)
+      supabase
         .from('subscriptions')
         .select('id', { count: 'exact', head: true })
         .eq('status', 'active'),

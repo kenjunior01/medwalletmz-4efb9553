@@ -196,11 +196,12 @@ function useParticleCanvas(
             p.x += p.speedX;
             p.y += Math.sin(p.x * 0.01 + p.life * 0.02) * 1.5;
             break;
-          case 'spiral':
+          case 'spiral': {
             const angle = p.life * 0.02 + idx * 0.5;
             p.x += Math.cos(angle) * 0.3 + p.speedX * 0.3;
             p.y += Math.sin(angle) * 0.3 + p.speedY * 0.3;
             break;
+          }
           case 'mist':
             p.x += p.speedX * 0.3;
             p.y += p.speedY * 0.1;

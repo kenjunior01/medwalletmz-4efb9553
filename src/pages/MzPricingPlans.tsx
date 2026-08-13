@@ -21,7 +21,7 @@ import { Card } from "@/components/ui/card";
 import {
   Sparkles, Crown, Baby, HeartPulse, Users, Check, ArrowRight,
   Shield, Zap, Stethoscope, Pill, Clock, Star, TrendingUp, PhoneCall, X,
-  Gift, Infinity as InfinityIcon, Building2, Truck, PawPrint, FlaskConical,
+  Gift, InfinityIcon, Building2, Truck, PawPrint, FlaskConical,
 } from "@/components/icons/lucide-compat";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";

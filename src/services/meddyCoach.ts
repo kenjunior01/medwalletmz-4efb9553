@@ -278,7 +278,7 @@ export async function sendMessage(
 
   // 4. Call Gemini
   let meddyReply: string;
-  let suggestedActions: Array<{ type: string; label: string; url?: string }> = [];
+  const suggestedActions: Array<{ type: string; label: string; url?: string }> = [];
 
   if (isGeminiConfigured()) {
     try {

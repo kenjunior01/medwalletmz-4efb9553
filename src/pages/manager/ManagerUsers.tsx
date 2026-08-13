@@ -46,7 +46,7 @@ export default function ManagerUsers() {
 
   const loadUsers = async () => {
     setLoading(true);
-    let query = supabase
+    const query = supabase
       .from('profiles')
       .select('*')
       .eq('country_id', managedCountryId)
