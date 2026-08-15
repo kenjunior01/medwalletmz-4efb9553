@@ -109,7 +109,7 @@ export function useApeVisits(province?: string) {
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any;
     },
     staleTime: 15_000,
   });
@@ -121,7 +121,7 @@ export function useCreateApeVisit() {
     mutationFn: async (visit: Partial<ApeVisit>) => {
       const { data, error } = await supabase.from('ape_visits').insert(visit).select().single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['ape-visits'] });
@@ -138,7 +138,7 @@ export function useTbDotRecords(province?: string) {
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any;
     },
     staleTime: 30_000,
   });
@@ -170,7 +170,7 @@ export function useLogTbDose() {
         .select()
         .single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tb-dot-records'] });
@@ -187,7 +187,7 @@ export function useArtAdherenceLogs(province?: string) {
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any;
     },
     staleTime: 30_000,
   });
@@ -202,7 +202,7 @@ export function useMalariaCases(province?: string, limit = 100) {
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any;
     },
     staleTime: 15_000,
   });
@@ -214,7 +214,7 @@ export function useCreateMalariaCase() {
     mutationFn: async (c: Partial<MalariaCase>) => {
       const { data, error } = await supabase.from('malaria_cases').insert(c).select().single();
       if (error) throw error;
-      return data;
+      return data as any;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['malaria-case'] });
@@ -231,7 +231,7 @@ export function useMaternalProfiles(province?: string) {
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any;
     },
     staleTime: 60_000,
   });
@@ -246,7 +246,7 @@ export function useEssentialMedicines(category?: string) {
       if (category && category !== 'all') q = q.eq('category', category);
       const { data, error } = await q;
       if (error) throw error;
-      return data || [];
+      return (data || []) as any;
     },
     staleTime: 300_000,
   });
