@@ -17,6 +17,7 @@ import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
 import { OAuthBrokerRedirect } from "@/components/auth/OAuthBrokerRedirect";
 import { PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
 import { OfflineIndicator } from "@/components/offline";
+import { SupabaseConfigBanner } from '@/components/SupabaseConfigBanner';
 const DeepLinkHandler = lazy(() => import("@/components/growth/DeepLinkHandler").then(m => ({ default: m.DeepLinkHandler })));
 // =========================================================================
 // CODE-SPLITTING COM React.lazy
@@ -602,6 +603,7 @@ const App = () => {
                 </Suspense>
                 </OAuthCallbackHandler>
                 {/* Componentes PWA globais (offline indicator + update toast) */}
+                <SupabaseConfigBanner />
                 <OfflineIndicator />
                 <PWAUpdateToast />
                 {/* Deep link handler — checks URL params on every page load */}

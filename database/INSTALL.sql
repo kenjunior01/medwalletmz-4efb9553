@@ -15,16 +15,18 @@
 -- ============================================================
 
 -- Verifica se o utilizador é um administrador global
+-- QUALQUER role='admin' é gestor global (independentemente de country_id)
 CREATE OR REPLACE FUNCTION public.is_global_admin()
 RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.user_roles
-    WHERE user_id = auth.uid() AND role = 'admin' AND country_id IS NULL
+    WHERE user_id = auth.uid() AND role = 'admin'
   );
 END; $$;
 
 -- Verifica se o utilizador é gestor de um país específico
+-- Admin global pode gerir qualquer país
 CREATE OR REPLACE FUNCTION public.is_manager_of_country(p_country_id text)
 RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER AS $$
 BEGIN
@@ -32,7 +34,7 @@ BEGIN
     SELECT 1 FROM public.user_roles
     WHERE user_id = auth.uid()
     AND (
-      (role = 'admin' AND country_id IS NULL) -- Admin global pode tudo
+      (role = 'admin')
       OR (role = 'country_manager' AND country_id = p_country_id)
     )
   );

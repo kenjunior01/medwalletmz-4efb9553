@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe, LogIn } from "@/components/icons/lucide-compat";
+import { Search, Users, UserPlus, Shield, Mail, Phone, Calendar, ChevronRight, Globe, LogIn, AlertTriangle } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -74,12 +74,12 @@ export default function AdminUsers() {
   const effectiveCountryId = isAdmin ? null : (managedCountryId || country?.id);
   const effectiveProvinceId = isProvincialManager ? managedProvinceId : null;
 
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isLoading, error: queryError } = useQuery({
     queryKey: ['admin-users', search, roleFilter, countryFilterUI, effectiveCountryId, effectiveProvinceId],
     enabled: canManage,
     queryFn: async () => {
       // Fetch profiles via admin RPC
-      // - Admin global: sem parâmetro → a RPC devolve TODOS os perfis
+      // - Admin global (gestor global): sem parâmetro → a RPC devolve TODOS os perfis de todos os países
       // - Country manager: passa o country_id → a RPC devolve só desse país
       const rpcParams: any = {};
       if (!isAdmin && effectiveCountryId) {
@@ -89,7 +89,10 @@ export default function AdminUsers() {
         rpcParams.p_country_id = countryFilterUI;
       }
       const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full', rpcParams);
-      if (profilesError) throw profilesError;
+      if (profilesError) {
+        console.error('[AdminUsers] RPC list_profiles_admin_full falhou:', profilesError);
+        throw profilesError;
+      }
       let profiles: any[] = profilesRaw || [];
 
       // A filtragem por país já é feita pela RPC (segurança no servidor).
@@ -107,12 +110,14 @@ export default function AdminUsers() {
         );
       }
 
-      // Fetch user roles - scoped to managed country
+      // Fetch user roles - Admin global vê TODOS os roles; manager vê só do seu país
       let rQuery = (supabase as any)
         .from('user_roles')
         .select('user_id, role, country_id');
 
-      if (effectiveCountryId) {
+      // Para admin global, buscar todos os roles sem filtro de país
+      // Para country_manager, filtrar pelo seu país
+      if (!isAdmin && effectiveCountryId) {
         rQuery = rQuery.eq('country_id', effectiveCountryId);
       }
 
@@ -132,14 +137,14 @@ export default function AdminUsers() {
         roles: rolesMap.get(profile.user_id) || [{ role: 'customer' as AppRole }]
       }));
 
-      // Managers shouldn't see global admins
+      // Managers não devem ver outros admins globais
       if (isManager && !isAdmin) {
         usersWithRoles = usersWithRoles.filter(u => !u.roles.some(r => r.role === 'admin'));
       }
 
       // Filter by role if specified
       if (roleFilter !== 'all') {
-        return usersWithRoles.filter(u => u.roles.some(r => r.role === roleFilter));
+        usersWithRoles = usersWithRoles.filter(u => u.roles.some(r => r.role === roleFilter));
       }
 
       return usersWithRoles;
@@ -326,8 +331,25 @@ export default function AdminUsers() {
         </Select>
       </div>
 
+      {/* Error State */}
+      {queryError && (
+        <Card className="border-red-200 bg-red-50 dark:bg-red-950/20">
+          <CardContent className="p-6 text-center">
+            <AlertTriangle className="h-10 w-10 mx-auto text-red-500 mb-3" />
+            <h3 className="font-semibold text-red-700 dark:text-red-300 mb-2">Erro ao carregar utilizadores</h3>
+            <p className="text-sm text-red-600 dark:text-red-400 mb-1">
+              {(queryError as any)?.message || 'Erro desconhecido na consulta ao servidor.'}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Verifique se as variáveis VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY estão configuradas no deploy,
+              e se a migration list_profiles_admin_full foi aplicada no Supabase.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Users List */}
-      {isLoading ? (
+      {!queryError && isLoading ? (
         <div className="space-y-3">
           {Array(5).fill(0).map((_, i) => (
             <Skeleton key={i} className="h-20 w-full" />
