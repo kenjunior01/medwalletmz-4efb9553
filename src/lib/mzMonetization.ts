@@ -397,7 +397,7 @@ export async function recordReferralSuccess(opts: {
       .maybeSingle();
     if (existing) return false;
 
-    const { data: newReferral, error } = await supabase.from('user_referrals').insert({
+    const { data: newReferral, error } = await (supabase as any).from('user_referrals').insert({
       referrer_id: referrerId,
       referred_id: referredId,
       status: 'completed',
@@ -780,12 +780,12 @@ export async function getPublicImpactStats(): Promise<PublicImpactStats> {
   };
   try {
     const [usersRes, subsRes, triagesRes] = await Promise.all([
-      supabase.from('profiles').select('id', { count: 'exact', head: true }),
+      (supabase as any).from('profiles').select('id', { count: 'exact', head: true }),
       supabase
         .from('subscriptions')
         .select('id', { count: 'exact', head: true })
         .eq('status', 'active'),
-      supabase.from('triage_sessions').select('id', { count: 'exact', head: true }),
+      (supabase as any).from('triage_sessions').select('id', { count: 'exact', head: true }),
     ]);
 
     return {

@@ -46,7 +46,7 @@ export default function AdminHome() {
       const countryId = country?.id;
 
       const buildQuery = (table: string) => {
-        let q: any = supabase.from(table).select('id', { count: 'exact', head: true });
+        let q: any = (supabase as any).from(table).select('id', { count: 'exact', head: true });
         if (countryId) q = q.eq('country_id', countryId);
         return q;
       };
@@ -54,21 +54,21 @@ export default function AdminHome() {
       const [stores, products, drivers, consults, prescs, referrals] = await Promise.all([
         buildQuery('stores'),
         buildQuery('products'),
-        supabase.from('profiles').select('id', { count: 'exact', head: true })
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true })
           .not('vehicle_type', 'is', null)
           .eq(countryId ? 'country_id' : 'id', countryId || 'id'), // simplistic filter for profiles
-        supabase.from('consultations').select('id, status', { count: 'exact' })
+        (supabase as any).from('consultations').select('id, status', { count: 'exact' })
           .eq(countryId ? 'country_id' : 'id', countryId || 'id'),
         buildQuery('prescriptions'),
-        supabase.from('user_referrals').select('id, status', { count: 'exact' })
+        (supabase as any).from('user_referrals').select('id, status', { count: 'exact' })
       ]);
 
       // Specialized queries for complex stats
-      let ordersQuery: any = supabase.from('orders').select('id, status, total, created_at');
+      let ordersQuery: any = (supabase as any).from('orders').select('id, status, total, created_at');
       if (countryId) ordersQuery = ordersQuery.eq('country_id', countryId);
       const orders = await ordersQuery;
 
-      let walletsQuery: any = supabase.from('wallets').select('balance_mzn, total_deposited');
+      let walletsQuery: any = (supabase as any).from('wallets').select('balance_mzn, total_deposited');
       if (countryId) walletsQuery = walletsQuery.eq('country_id', countryId);
       const wallets = await walletsQuery;
 

@@ -30,7 +30,7 @@ export function useWallet() {
 
     if (!data) {
       // Ensure wallet exists - now with country_id from profile
-      const { data: profile } = await supabase.from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
+      const { data: profile } = await (supabase as any).from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
 
       const defaultCountry = profile?.country_id || 'MZ';
       const { data: country } = await (supabase as any)
@@ -40,7 +40,7 @@ export function useWallet() {
         .maybeSingle();
       const defaultCurrency = country?.currency_code || FALLBACK_CURRENCY_BY_COUNTRY[defaultCountry] || 'USD';
 
-      await supabase.from('wallets').insert({
+      await (supabase as any).from('wallets').insert({
         user_id: user.id,
         country_id: defaultCountry,
         currency: defaultCurrency,
@@ -90,12 +90,12 @@ export function useWallet() {
     if (!user) throw new Error('Sem sessão');
 
     // Auto-select best method if none provided
-    const { data: profile } = await supabase.from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
-    const { data: country } = await supabase.from('countries').select('config').eq('id', profile?.country_id || 'MZ').maybeSingle();
+    const { data: profile } = await (supabase as any).from('profiles').select('country_id').eq('user_id', user.id).maybeSingle();
+    const { data: country } = await (supabase as any).from('countries').select('config').eq('id', profile?.country_id || 'MZ').maybeSingle();
 
     const preferredMethod = method || country?.config?.payment_methods?.[0]?.id || 'wallet';
 
-    const { data, error } = await supabase.rpc('wallet_deposit', {
+    const { data, error } = await (supabase as any).rpc('wallet_deposit', {
       _user_id: user.id, _amount: amount, _method: preferredMethod,
     });
     if (error) throw error;
@@ -105,7 +105,7 @@ export function useWallet() {
 
   const debit = async (amount: number, serviceType: string, refId: string, description?: string) => {
     if (!user) throw new Error('Sem sessão');
-    const { data, error } = await supabase.rpc('wallet_debit', {
+    const { data, error } = await (supabase as any).rpc('wallet_debit', {
       _user_id: user.id, _amount: amount, _service_type: serviceType, _ref_id: refId,
       _description: description ?? null,
     });

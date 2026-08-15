@@ -87,14 +87,14 @@ export default function ManagerHome() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const [usersRes, doctorsRes, storesRes, clinicsRes, ordersRes, ordersPrevRes, activeUsersRes, revenueRes] = await Promise.all([
-      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId),
-      supabase.from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-      supabase.from('stores').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-      supabase.from('clinics').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startMonth.toISOString()),
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
-      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
-      supabase.from('orders').select('total').eq('country_code', countryCode).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
+      (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId),
+      (supabase as any).from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
+      (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
+      (supabase as any).from('clinics').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
+      (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startMonth.toISOString()),
+      (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
+      (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
+      (supabase as any).from('orders').select('total').eq('country_code', countryCode).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
     ]);
 
     const totalRevenue = (revenueRes.data || []).reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);

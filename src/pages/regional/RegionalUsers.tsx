@@ -286,12 +286,12 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
 
     try {
       const [totalRes, patientsRes, prosRes, activeTodayRes, newMonthRes, suspendedRes] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || ''),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['patient', 'user']),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['doctor', 'rider', 'store_owner']),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', true).gte('last_sign_in_at', startOfDay),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').gte('created_at', startOfMonth),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', false),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || ''),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['patient', 'user']),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').in('primary_role', ['doctor', 'rider', 'store_owner']),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', true).gte('last_sign_in_at', startOfDay),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').gte('created_at', startOfMonth),
+        (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('province', managedProvinceId || pid || '').eq('is_active', false),
       ]);
 
       setStats({

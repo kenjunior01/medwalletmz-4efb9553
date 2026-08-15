@@ -145,7 +145,7 @@ export default function Triage() {
       const top = list.slice(0, 3);
       const ids = top.map((d) => d.user_id);
       if (ids.length) {
-        const { data: profs } = await supabase.from('profiles').select('user_id, full_name').in('user_id', ids);
+        const { data: profs } = await (supabase as any).from('profiles').select('user_id, full_name').in('user_id', ids);
         top.forEach((d: any) => {
           d.profiles = profs?.find((p: any) => p.user_id === d.user_id) || null;
         });
@@ -166,9 +166,9 @@ export default function Triage() {
           .slice(0, 3);
       };
       const [h, c, p] = await Promise.all([
-        supabase.from('hospitals').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
-        supabase.from('clinics').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
-        supabase.from('pharmacies').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
+        (supabase as any).from('hospitals').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
+        (supabase as any).from('clinics').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
+        (supabase as any).from('pharmacies').select('id, name, city, latitude, longitude, phone, address').eq('is_active', true).limit(30),
       ]);
       setNearbyFacilities({
         hospitals: withDist(h.data || []),
@@ -216,7 +216,7 @@ export default function Triage() {
       if (triageData?.suggested_specialty) findNearbyDoctors(triageData.suggested_specialty);
       findNearbyFacilities();
       if (user) {
-        await supabase.from('triage_logs').insert({
+        await (supabase as any).from('triage_logs').insert({
           patient_id: user.id,
           symptoms,
           age: age ? Number(age) : null,

@@ -119,7 +119,7 @@ export default function ManageCountryPermissions() {
   // Toggle permission mutation
   const togglePerm = useMutation({
     mutationFn: async ({ userId, key, value }: { userId: string; key: string; value: boolean }) => {
-      await supabase.from('manager_permissions').upsert(
+      await (supabase as any).from('manager_permissions').upsert(
         { user_id: userId, [key]: value },
         { onConflict: 'user_id' }
       );
@@ -130,9 +130,9 @@ export default function ManageCountryPermissions() {
   // Remove manager mutation
   const removeManager = useMutation({
     mutationFn: async (userId: string) => {
-      await supabase.from('user_roles').delete().eq('user_id', userId).eq('role', 'country_manager');
-      await supabase.from('manager_permissions').delete().eq('user_id', userId);
-      await supabase.from('profiles').update({ managed_country: null }).eq('id', userId);
+      await (supabase as any).from('user_roles').delete().eq('user_id', userId).eq('role', 'country_manager');
+      await (supabase as any).from('manager_permissions').delete().eq('user_id', userId);
+      await (supabase as any).from('profiles').update({ managed_country: null }).eq('id', userId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['country-managers-permissions'] });

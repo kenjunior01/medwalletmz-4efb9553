@@ -105,7 +105,7 @@ export function useApeVisits(province?: string) {
   return useQuery<ApeVisit[]>({
     queryKey: ['ape-visits', province],
     queryFn: async () => {
-      let q = supabase.from('ape_visits').select('*').order('visit_date', { ascending: false }).limit(100);
+      let q = (supabase as any).from('ape_visits').select('*').order('visit_date', { ascending: false }).limit(100);
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
@@ -119,7 +119,7 @@ export function useCreateApeVisit() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (visit: Partial<ApeVisit>) => {
-      const { data, error } = await supabase.from('ape_visits').insert(visit).select().single();
+      const { data, error } = await (supabase as any).from('ape_visits').insert(visit).select().single();
       if (error) throw error;
       return data as any;
     },
@@ -134,7 +134,7 @@ export function useTbDotRecords(province?: string) {
   return useQuery<TbDotRecord[]>({
     queryKey: ['tb-dot-records', province],
     queryFn: async () => {
-      let q = supabase.from('tb_dot_records').select('*').order('start_date', { ascending: false }).limit(100);
+      let q = (supabase as any).from('tb_dot_records').select('*').order('start_date', { ascending: false }).limit(100);
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
@@ -183,7 +183,7 @@ export function useArtAdherenceLogs(province?: string) {
   return useQuery<ArtAdherenceLog[]>({
     queryKey: ['art-adherence', province],
     queryFn: async () => {
-      let q = supabase.from('art_adherence_logs').select('*').order('created_at', { ascending: false }).limit(100);
+      let q = (supabase as any).from('art_adherence_logs').select('*').order('created_at', { ascending: false }).limit(100);
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
@@ -198,7 +198,7 @@ export function useMalariaCases(province?: string, limit = 100) {
   return useQuery<MalariaCase[]>({
     queryKey: ['malaria-cases', province, limit],
     queryFn: async () => {
-      let q = supabase.from('malaria_cases').select('*').order('case_date', { ascending: false }).limit(limit);
+      let q = (supabase as any).from('malaria_cases').select('*').order('case_date', { ascending: false }).limit(limit);
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
@@ -212,7 +212,7 @@ export function useCreateMalariaCase() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (c: Partial<MalariaCase>) => {
-      const { data, error } = await supabase.from('malaria_cases').insert(c).select().single();
+      const { data, error } = await (supabase as any).from('malaria_cases').insert(c).select().single();
       if (error) throw error;
       return data as any;
     },
@@ -227,7 +227,7 @@ export function useMaternalProfiles(province?: string) {
   return useQuery<MaternalProfile[]>({
     queryKey: ['maternal-profiles', province],
     queryFn: async () => {
-      let q = supabase.from('maternal_profiles').select('*').order('edd_date', { ascending: true }).limit(100);
+      let q = (supabase as any).from('maternal_profiles').select('*').order('edd_date', { ascending: true }).limit(100);
       if (province) q = q.eq('province', province);
       const { data, error } = await q;
       if (error) throw error;
@@ -242,7 +242,7 @@ export function useEssentialMedicines(category?: string) {
   return useQuery<any[]>({
     queryKey: ['essential-medicines', category],
     queryFn: async () => {
-      let q = supabase.from('essential_medicines').select('*').order('name', { ascending: true });
+      let q = (supabase as any).from('essential_medicines').select('*').order('name', { ascending: true });
       if (category && category !== 'all') q = q.eq('category', category);
       const { data, error } = await q;
       if (error) throw error;
