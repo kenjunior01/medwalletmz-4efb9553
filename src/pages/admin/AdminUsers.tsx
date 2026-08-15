@@ -58,6 +58,7 @@ export default function AdminUsers() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [countryFilterUI, setCountryFilterUI] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<UserWithRoles | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCountryForRole, setSelectedCountryForRole] = useState<string | null>(null);
@@ -66,23 +67,33 @@ export default function AdminUsers() {
   const isAdmin = currentUserRoles.includes('admin');
   const isManager = currentUserRoles.includes('country_manager');
 
-  // Determine effective scope: non-admins are restricted to their managed country/province
+  // Determine effective scope:
+  // - Admin global (role='admin'): vê TODOS os utilizadores de todos os países
+  // - Country manager (role='country_manager'): vê APENAS os do seu país
+  // - Provincial manager: vê APENAS os da sua província
   const effectiveCountryId = isAdmin ? null : (managedCountryId || country?.id);
   const effectiveProvinceId = isProvincialManager ? managedProvinceId : null;
 
   const { data: users, isLoading } = useQuery({
-    queryKey: ['admin-users', search, roleFilter, effectiveCountryId, effectiveProvinceId],
+    queryKey: ['admin-users', search, roleFilter, countryFilterUI, effectiveCountryId, effectiveProvinceId],
     enabled: canManage,
     queryFn: async () => {
       // Fetch profiles via admin RPC
-      const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full');
+      // - Admin global: sem parâmetro → a RPC devolve TODOS os perfis
+      // - Country manager: passa o country_id → a RPC devolve só desse país
+      const rpcParams: any = {};
+      if (!isAdmin && effectiveCountryId) {
+        rpcParams.p_country_id = effectiveCountryId;
+      } else if (isAdmin && countryFilterUI && countryFilterUI !== 'all') {
+        // Admin global pode opcionalmente filtrar por país no UI
+        rpcParams.p_country_id = countryFilterUI;
+      }
+      const { data: profilesRaw, error: profilesError } = await (supabase.rpc as any)('list_profiles_admin_full', rpcParams);
       if (profilesError) throw profilesError;
       let profiles: any[] = profilesRaw || [];
 
-      // Non-admin managers: filter by managed country
-      if (effectiveCountryId) {
-        profiles = profiles.filter((p: any) => p.country_id === effectiveCountryId);
-      }
+      // A filtragem por país já é feita pela RPC (segurança no servidor).
+      // Aqui filtramos apenas a nível provincial (gestor provincial).
       // Provincial managers: further restrict to their province
       if (effectiveProvinceId) {
         profiles = profiles.filter((p: any) => p.province_id === effectiveProvinceId);
@@ -284,6 +295,21 @@ export default function AdminUsers() {
             className="pl-10"
           />
         </div>
+        {/* Filtro por país — apenas para admin global */}
+        {isAdmin && allCountries && allCountries.length > 1 && (
+          <Select value={countryFilterUI} onValueChange={setCountryFilterUI}>
+            <SelectTrigger className="w-40">
+              <Globe className="h-4 w-4 mr-1" />
+              <SelectValue placeholder="Todos os países" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os países</SelectItem>
+              {allCountries.map(c => (
+                <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <Select value={roleFilter} onValueChange={setRoleFilter}>
           <SelectTrigger className="w-48">
             <SelectValue placeholder="Filtrar por role" />
@@ -337,6 +363,9 @@ export default function AdminUsers() {
                     </div>
                   </div>
                   <div className="text-right text-sm text-muted-foreground hidden md:block">
+                    {isAdmin && user.country_id && (
+                      <Badge variant="outline" className="text-xs mb-1">{user.country_id}</Badge>
+                    )}
                     <p>{user.phone || '-'}</p>
                     <p className="text-xs">{formatDate(user.created_at)}</p>
                   </div>

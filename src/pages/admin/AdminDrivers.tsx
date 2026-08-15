@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Search, Truck, Phone, MapPin, Calendar, CheckCircle, XCircle, Clock, Package, ShieldCheck, Snowflake, Globe } from "@/components/icons/lucide-compat";
 import { useCountry } from '@/contexts/CountryContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Driver {
   id: string;
@@ -37,6 +38,8 @@ interface DriverStats {
 export default function AdminDrivers() {
   const queryClient = useQueryClient();
   const { country } = useCountry();
+  const { roles: currentUserRoles } = useAuth();
+  const isAdmin = currentUserRoles.includes('admin');
   const [search, setSearch] = useState('');
   const [availabilityFilter, setAvailabilityFilter] = useState<string>('all');
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
@@ -46,9 +49,10 @@ export default function AdminDrivers() {
   const { data: drivers, isLoading } = useQuery({
     queryKey: ['admin-drivers', search, availabilityFilter, country?.id],
     queryFn: async () => {
-      const { data: raw, error } = await (supabase.rpc as any)('list_profiles_admin_full', {
-        p_country_id: country?.id
-      });
+      // Admin global: sem filtro de país → vê todos os drivers
+      // Country manager: filtra pelo país gerido (via RPC)
+      const rpcParams: any = isAdmin ? {} : { p_country_id: country?.id };
+      const { data: raw, error } = await (supabase.rpc as any)('list_profiles_admin_full', rpcParams);
       if (error) throw error;
       let list: any[] = (raw || []).filter((p: any) => p.vehicle_type);
       if (search) {
