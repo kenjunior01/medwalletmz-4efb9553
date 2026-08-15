@@ -70,7 +70,7 @@ export default function Wallet() {
 
   const loadTx = async () => {
     if (!user) return;
-    const { data } = await supabase.from('wallet_transactions').select('*')
+    const { data } = await (supabase as any).from('wallet_transactions').select('*')
       .eq('user_id', user.id).order('created_at', { ascending: false }).limit(50);
     setTx(data || []);
   };
@@ -81,10 +81,10 @@ export default function Wallet() {
 
   useEffect(() => {
     loadTx();
-    supabase.from('platform_settings').select('value').eq('key', 'deposit_bonus_percent').maybeSingle()
+    (supabase as any).from('platform_settings').select('value').eq('key', 'deposit_bonus_percent').maybeSingle()
       .then(({ data }) => { if (data) setBonusPct(Number(data.value)); });
 
-    supabase.from('platform_payment_accounts').select('*').eq('is_active', true)
+    (supabase as any).from('platform_payment_accounts').select('*').eq('is_active', true)
       .then(({ data }) => setAccounts((data as any) || []));
   }, [user]);
 
@@ -129,7 +129,7 @@ export default function Wallet() {
             }
           }
         }
-        const { error } = await supabase.from('mpesa_manual_payments').insert({
+        const { error } = await (supabase as any).from('mpesa_manual_payments').insert({
           user_id: user?.id,
           amount_mzn: amt,
           reference,
@@ -161,7 +161,7 @@ export default function Wallet() {
           }
         }
 
-        const { error } = await supabase.from('wallet_transactions').insert({
+        const { error } = await (supabase as any).from('wallet_transactions').insert({
           user_id: user?.id,
           amount: amt,
           type: 'deposit',

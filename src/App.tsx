@@ -207,6 +207,7 @@ const CampaignLinks = lazy(() => import("./pages/admin/CampaignLinks"));
 // ---- Manager Pages (páginas EXCLUSIVAS do gestor regional) ----
 const ManagerHome = lazy(() => import("./pages/manager/ManagerHome"));
 const ManagerUsers = lazy(() => import("./pages/manager/ManagerUsers"));
+const ManagerLogin = lazy(() => import("./pages/manager/ManagerLogin"));
 
 // ---- Registration type selector ----
 const ProfessionalTypeSelector = lazy(() => import("./pages/register/ProfessionalTypeSelector"));
@@ -400,6 +401,8 @@ const App = () => {
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                   <Route path="/auth/change-password" element={<ChangePassword />} />
+                  <Route path="/manager/login" element={<Suspense fallback={<LoadingScreen />}><ManagerLogin /></Suspense>} />
+                  <Route path="/gestor/login" element={<Suspense fallback={<LoadingScreen />}><ManagerLogin /></Suspense>} />
                  <Route path="/verify/:code" element={<VerifyPrescription />} />
                   <Route path="/register" element={<RegistrationWizard />} />
                   <Route path="/register/professional" element={<ProfessionalTypeSelector />} />

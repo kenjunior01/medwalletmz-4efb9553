@@ -150,7 +150,7 @@ export function BottomNav() {
                   to={path}
                   data-active={isActive || undefined}
                   aria-label={translatedLabel}
-                  onClick={() => haptic('medium')}
+                  onClick={() => haptic.medium()}
                   className="flex flex-col items-center -mt-5 mx-1 mb-0.5 no-tap-target relative z-10"
                 >
                   <div className={cn(
@@ -170,7 +170,7 @@ export function BottomNav() {
                 key={path}
                 to={path}
                 data-active={isActive || undefined}
-                onClick={() => haptic('light')}
+                onClick={() => haptic.light()}
                 className={cn(
                   'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors duration-150 flex-1 no-tap-target relative z-10',
                   isActive ? 'text-primary' : 'text-muted-foreground'

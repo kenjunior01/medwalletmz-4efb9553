@@ -1,36 +1,42 @@
-import { useRef, useState } from 'react';
-import { Upload } from '@/components/icons/lucide-compat';
-import { cn } from '@/lib/utils';
+import { FileUploadField } from './FileUploadField';
 
-interface VehiclePhotoUploadProps {
-  onFileSelect?: (file: File) => void;
-  label?: string;
-  accept?: string;
+export type VehiclePhotos = {
+  front?: string | null;
+  side?: string | null;
+  back?: string | null;
+  interior?: string | null;
+};
+
+export interface VehiclePhotoUploadProps {
+  driverId?: string;
+  photos?: VehiclePhotos;
+  required?: string[];
   className?: string;
+  onChange?: (photos: VehiclePhotos) => void;
+  onFileSelect?: (file: File) => void;
 }
 
-export function VehiclePhotoUpload({ onFileSelect, label = 'Carregar foto do veículo', accept = 'image/*', className }: VehiclePhotoUploadProps) {
-  const [preview, setPreview] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+const SLOTS: { key: keyof VehiclePhotos; label: string }[] = [
+  { key: 'front', label: 'Frente' },
+  { key: 'side', label: 'Lateral' },
+  { key: 'back', label: 'Traseira' },
+  { key: 'interior', label: 'Interior' },
+];
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setPreview(url);
-      onFileSelect?.(file);
-    }
-  };
-
+export function VehiclePhotoUpload({ photos = {}, required = [], className, onChange }: VehiclePhotoUploadProps) {
   return (
-    <div className={cn("border-2 border-dashed border-border rounded-xl p-4 text-center hover:border-primary/50 transition-colors cursor-pointer", className)} onClick={() => inputRef.current?.click()}>
-      <input ref={inputRef} type="file" accept={accept} className="hidden" onChange={handleFile} />
-      {preview ? (
-        <img src={preview} alt="Preview" className="max-h-24 mx-auto rounded-lg object-contain" />
-      ) : (
-        <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-      )}
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+    <div className={`grid grid-cols-2 gap-3 ${className || ''}`}>
+      {SLOTS.map(({ key, label }) => (
+        <FileUploadField
+          key={key}
+          label={`${label}${required.includes(key) ? ' *' : ''}`}
+          value={photos[key]}
+          bucket="licenses"
+          folder={`vehicle/${key}`}
+          accept="image/*"
+          onUploaded={(url) => onChange?.({ ...photos, [key]: url })}
+        />
+      ))}
     </div>
   );
 }
