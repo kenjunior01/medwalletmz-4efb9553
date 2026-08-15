@@ -291,7 +291,7 @@ class FcmService {
    */
   async saveTokenToSupabase(token: string, userId: string): Promise<void> {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('user_devices')
         .upsert(
           {
