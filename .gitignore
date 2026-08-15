@@ -63,7 +63,11 @@ android/.idea/
 
 # =============================================================================
 # PWA / Vite
-# =============================================================================
-# Service worker gerado pelo vite-plugin-pwa (é gerado em build)
 dev-dist/
+
+# Next.js artifacts (não usado em produção, apenas resíduos)
+.next/
+
+# Lovable local artifacts
+.lovable/
 
