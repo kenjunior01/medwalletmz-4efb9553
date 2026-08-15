@@ -106,9 +106,9 @@ export default function ManagerLogin() {
             Esqueci a minha palavra-passe
           </button>
           <p className="text-[11px] text-muted-foreground flex items-center justify-center gap-1">
-            <Globe className="h-3 w-3" /> Ainda não é gestor?{' '}
-            <button type="button" className="text-primary font-semibold hover:underline" onClick={() => navigate('/vagas-gestor')}>
-              Ver vagas
+            <Globe className="h-3 w-3" /> Conta de utilizador normal?{' '}
+            <button type="button" className="text-primary font-semibold hover:underline" onClick={() => navigate('/auth')}>
+              Entrar aqui
             </button>
           </p>
         </div>
