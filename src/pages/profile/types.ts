@@ -1,5 +1,6 @@
 import type { Tables } from "@/integrations/supabase/types";
-import type { LucideIcon } from "lucide-react";
+import type { ComponentType, SVGProps } from "react";
+type LucideIcon = ComponentType<SVGProps<SVGSVGElement>>;
 
 export type Profile = Tables<"profiles">;
 

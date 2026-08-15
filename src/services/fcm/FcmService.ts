@@ -391,8 +391,8 @@ class FcmService {
     let firebaseMessagingMod: FirebaseMessagingModule;
 
     try {
-      firebaseAppMod = await import(/* @vite-ignore */ 'firebase/app');
-      firebaseMessagingMod = await import(/* @vite-ignore */ 'firebase/messaging');
+      firebaseAppMod = await import(/* @vite-ignore */ 'firebase/app' as any);
+      firebaseMessagingMod = await import(/* @vite-ignore */ 'firebase/messaging' as any);
     } catch {
       logger.info('[FcmService] Firebase SDK não disponível no web. ' +
         'O caminho web/PWA de FCM está desactivado. ' +
@@ -448,7 +448,7 @@ class FcmService {
     // Se já temos instância do Firebase Messaging, usar getToken
     if (this.firebaseMessaging) {
       try {
-        const { getToken } = await import(/* @vite-ignore */ 'firebase/messaging');
+        const { getToken } = await import(/* @vite-ignore */ 'firebase/messaging' as any);
         const options: { vapidKey?: string } = {};
         if (FIREBASE_CONFIG.vapidKey) {
           options.vapidKey = FIREBASE_CONFIG.vapidKey;

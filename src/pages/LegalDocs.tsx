@@ -21,7 +21,7 @@ export default function LegalDocs() {
       setLoading(true);
       try {
         // Try to find the doc for specific country and language
-        let data: { content: string | null } | null = await supabase
+        let data: { content: string | null } | null = await (supabase as any)
           .from('legal_documents' as any)
           .select('content')
           .eq('country_id', country.id)
@@ -34,7 +34,7 @@ export default function LegalDocs() {
 
         // Fallback to English if not found in user language
         if (!data) {
-          const { data: fallback } = await supabase
+          const { data: fallback } = await (supabase as any)
             .from('legal_documents' as any)
             .select('content')
             .eq('country_id', country.id)
