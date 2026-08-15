@@ -249,7 +249,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
           } catch (e) {
             // Fallback: insere diretamente
-            await supabase.from('user_types').upsert({
+            await (supabase as any).from('user_types').upsert({
               user_id: data.user.id,
               user_type: userType,
               is_primary: true,
