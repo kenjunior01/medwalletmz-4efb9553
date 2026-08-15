@@ -400,6 +400,8 @@ const App = () => {
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                   <Route path="/auth/change-password" element={<ChangePassword />} />
+                  <Route path="/manager/login" element={<Suspense fallback={<LoadingScreen />}><ManagerLogin /></Suspense>} />
+                  <Route path="/gestor/login" element={<Suspense fallback={<LoadingScreen />}><ManagerLogin /></Suspense>} />
                  <Route path="/verify/:code" element={<VerifyPrescription />} />
                   <Route path="/register" element={<RegistrationWizard />} />
                   <Route path="/register/professional" element={<ProfessionalTypeSelector />} />
