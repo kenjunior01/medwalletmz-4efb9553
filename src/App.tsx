@@ -207,6 +207,7 @@ const CampaignLinks = lazy(() => import("./pages/admin/CampaignLinks"));
 // ---- Manager Pages (páginas EXCLUSIVAS do gestor regional) ----
 const ManagerHome = lazy(() => import("./pages/manager/ManagerHome"));
 const ManagerUsers = lazy(() => import("./pages/manager/ManagerUsers"));
+const ManagerLogin = lazy(() => import("./pages/manager/ManagerLogin"));
 
 // ---- Registration type selector ----
 const ProfessionalTypeSelector = lazy(() => import("./pages/register/ProfessionalTypeSelector"));
