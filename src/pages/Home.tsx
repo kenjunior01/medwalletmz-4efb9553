@@ -1,3 +1,4 @@
+import { Fragment, useState, useCallback, lazy, Suspense, useRef, useEffect } from "react";
 import { Seo } from "@/components/Seo";
 import {
   Stethoscope, Sparkles, Pill, MessageCircle, ArrowRight,
@@ -5,6 +6,7 @@ import {
   BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse
 } from '@/components/icons/lucide-compat';
 import { RoleHero } from "@/components/home/RoleHero";
+
 
 /* ── Lazy-loaded heavy/conditional components ── */
 const ViralShareSheet = lazy(() => import("@/components/growth/ViralShareSheet").then(m => ({ default: m.ViralShareSheet })));
@@ -64,8 +66,8 @@ import { useCountry } from "@/contexts/CountryContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Fragment, useState, useCallback, lazy, Suspense, useRef, useEffect } from "react";
 import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
 import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 
