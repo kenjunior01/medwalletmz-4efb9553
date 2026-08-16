@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useManagedCountry } from '@/hooks/useManagedCountry';
@@ -7,15 +7,15 @@ import { useCountry } from '@/contexts/CountryContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
-  Users, Search, Filter, ChevronRight, MoreVertical,
-  Shield, Ban, CheckCircle, AlertCircle, Eye,
-  Stethoscope, Store, Building2, UserCircle
+  Users, Search, ChevronRight, ChevronLeft,
+  Shield, Ban, CheckCircle, AlertCircle,
+  Stethoscope, Store, Building2, UserCircle, Loader2,
 } from "@/components/icons/lucide-compat";
 import {
-  GlassCard, BentoCard, BentoGrid,
+  GlassCard, BentoGrid, BentoCard,
 } from '@/components/ui/design-system';
+import { toast } from 'sonner';
 
 interface ManagedUser {
   id: string;
@@ -29,6 +29,8 @@ interface ManagedUser {
   last_sign_in?: string;
 }
 
+const PAGE_SIZE = 30;
+
 export default function ManagerUsers() {
   const { user } = useAuth();
   const { managedCountryId, countryCode } = useManagedCountry();
@@ -36,25 +38,36 @@ export default function ManagerUsers() {
   const navigate = useNavigate();
   const [users, setUsers] = useState<ManagedUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{ userId: string; activate: boolean; name: string } | null>(null);
 
-  useEffect(() => {
-    if (!user || !managedCountryId) return;
-    loadUsers();
-  }, [user, managedCountryId]);
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async (pageNum: number, search: string, role: string) => {
+    if (!managedCountryId) return;
     setLoading(true);
-    const query = supabase
+
+    let query = supabase
       .from('profiles')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('country_id', managedCountryId)
       .order('created_at', { ascending: false })
-      .limit(50);
+      .range(pageNum * PAGE_SIZE, (pageNum + 1) * PAGE_SIZE - 1);
 
-    const { data, error } = await query;
-    if (data) {
+    if (search) {
+      query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
+    }
+    if (role !== 'all') {
+      query = query.eq('primary_role', role);
+    }
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      toast.error('Erro ao carregar utilizadores');
+    } else if (data) {
       setUsers(data.map((p: any) => ({
         id: p.id,
         full_name: p.full_name || p.email,
@@ -66,26 +79,45 @@ export default function ManagerUsers() {
         created_at: p.created_at,
         last_sign_in: p.last_sign_in_at,
       })));
+      setTotalCount(count || 0);
     }
     setLoading(false);
-  };
+  }, [managedCountryId, countryCode]);
+
+  useEffect(() => {
+    if (!user || !managedCountryId) return;
+    setPage(0);
+    loadUsers(0, searchQuery, roleFilter);
+  }, [user, managedCountryId, searchQuery, roleFilter]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(0);
+      loadUsers(0, searchQuery, roleFilter);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const toggleUserActive = async (userId: string, isActive: boolean) => {
-    await supabase
+    setTogglingId(userId);
+    const { error } = await supabase
       .from('profiles')
       .update({ is_active: !isActive } as any)
       .eq('id', userId);
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_active: !isActive } : u));
+
+    if (error) {
+      toast.error('Erro ao alterar estado do utilizador');
+    } else {
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_active: !isActive } : u));
+      toast.success(isActive ? 'Utilizador desactivado' : 'Utilizador activado');
+    }
+    setTogglingId(null);
+    setConfirmAction(null);
   };
 
-  const filteredUsers = users.filter(u => {
-    const matchesSearch = searchQuery === '' ||
-      u.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.phone.includes(searchQuery);
-    const matchesRole = roleFilter === 'all' || u.role === roleFilter;
-    return matchesSearch && matchesRole;
-  });
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  const hasMore = page < totalPages - 1;
 
   const roleIcon = (role: string) => {
     switch (role) {
@@ -96,6 +128,16 @@ export default function ManagerUsers() {
     }
   };
 
+  const roleLabel = (role: string) => {
+    const labels: Record<string, string> = {
+      user: 'Utilizador', doctor: 'Médico', store_owner: 'Farmácia',
+      pharmacy: 'Farmácia', clinic: 'Clínica', hospital: 'Hospital',
+      lab: 'Laboratório', driver: 'Motorista', country_manager: 'Gestor',
+      provincial_manager: 'Gestor Prov.',
+    };
+    return labels[role] || role;
+  };
+
   return (
     <div className="space-y-5">
       <div>
@@ -103,21 +145,20 @@ export default function ManagerUsers() {
         <p className="text-sm text-muted-foreground">{t('manager.users_desc') || 'Gerir utilizadores do seu país'}</p>
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex gap-2">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('manager.search_users') || 'Pesquisar utilizadores...'}
-            className="pl-9"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-        </div>
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder={t('manager.search_users') || 'Pesquisar por nome, email ou telefone...'}
+          className="pl-9"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {['all', 'user', 'doctor', 'store_owner', 'clinic'].map(role => (
+      {/* Role filters */}
+      <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+        {['all', 'user', 'doctor', 'store_owner', 'clinic', 'driver'].map(role => (
           <button
             key={role}
             onClick={() => setRoleFilter(role)}
@@ -127,14 +168,20 @@ export default function ManagerUsers() {
                 : 'bg-muted/50 text-muted-foreground hover:text-foreground'
             }`}
           >
-            {role === 'all' ? (t('manager.all') || 'Todos') : role}
+            {role === 'all' ? (t('manager.all') || 'Todos') : roleLabel(role)}
           </button>
         ))}
       </div>
 
-      {/* User count */}
+      {/* Count & stats */}
       <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground">{filteredUsers.length} {t('manager.users_found') || 'utilizadores encontrados'}</p>
+        <p className="text-xs text-muted-foreground">
+          {totalCount} {t('manager.users_found') || 'utilizadores'}
+          {searchQuery && ` — filtrando por "${searchQuery}"`}
+        </p>
+        {totalPages > 1 && (
+          <p className="text-xs text-muted-foreground">Página {page + 1} de {totalPages}</p>
+        )}
       </div>
 
       {/* User list */}
@@ -144,43 +191,153 @@ export default function ManagerUsers() {
             <div key={i} className="h-16 rounded-xl bg-muted/50 animate-pulse" />
           ))}
         </div>
-      ) : filteredUsers.length === 0 ? (
+      ) : users.length === 0 ? (
         <GlassCard className="!p-8 text-center">
           <Users className="h-11 w-11 mx-auto text-muted-foreground/50 mb-2" />
           <p className="text-sm text-muted-foreground">{t('manager.no_users') || 'Nenhum utilizador encontrado'}</p>
+          {searchQuery && (
+            <Button variant="ghost" size="sm" className="mt-2" onClick={() => setSearchQuery('')}>
+              Limpar pesquisa
+            </Button>
+          )}
         </GlassCard>
       ) : (
-        <div className="space-y-2">
-          {filteredUsers.map(u => (
-            <GlassCard key={u.id} className="!p-3 flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted">
-                {roleIcon(u.role)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold truncate">{u.full_name}</p>
-                  {!u.is_active && (
-                    <Badge className="bg-red-500/10 text-red-500 border-red-500/20 text-[9px]">
-                      Inactivo
-                    </Badge>
-                  )}
+        <>
+          <div className="space-y-2">
+            {users.map(u => (
+              <GlassCard key={u.id} className="!p-3 flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted">
+                  {roleIcon(u.role)}
                 </div>
-                <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold truncate">{u.full_name}</p>
+                    {!u.is_active && (
+                      <Badge className="bg-red-500/10 text-red-500 border-red-500/20 text-[9px]">
+                        Inactivo
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                    {roleLabel(u.role)}
+                    {u.last_sign_in && ` · Último acesso: ${new Date(u.last_sign_in).toLocaleDateString('pt-PT')}`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <Badge variant="outline" className="text-[10px]">{roleLabel(u.role)}</Badge>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className={`h-8 w-8 p-0 ${
+                      u.is_active
+                        ? 'text-red-500 hover:bg-red-500/10'
+                        : 'text-emerald-500 hover:bg-emerald-500/10'
+                    } ${togglingId === u.id ? 'opacity-50' : ''}`}
+                    onClick={() => setConfirmAction({ userId: u.id, activate: !u.is_active, name: u.full_name })}
+                    disabled={togglingId === u.id}
+                    title={u.is_active ? 'Desactivar' : 'Activar'}
+                  >
+                    {togglingId === u.id
+                      ? <Loader2 className="h-4 w-4 animate-spin" />
+                      : u.is_active
+                        ? <Ban className="h-4 w-4" />
+                        : <CheckCircle className="h-4 w-4" />
+                    }
+                  </Button>
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <Button
+                variant="outline" size="sm"
+                className="h-9 px-3"
+                disabled={page === 0}
+                onClick={() => { const p = page - 1; setPage(p); loadUsers(p, searchQuery, roleFilter); }}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" /> Anterior
+              </Button>
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i;
+                  } else if (page < 3) {
+                    pageNum = i;
+                  } else if (page > totalPages - 4) {
+                    pageNum = totalPages - 5 + i;
+                  } else {
+                    pageNum = page - 2 + i;
+                  }
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => { setPage(pageNum); loadUsers(pageNum, searchQuery, roleFilter); }}
+                      className={`h-8 w-8 rounded-lg text-xs font-semibold transition-colors ${
+                        page === pageNum
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted/50 text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {pageNum + 1}
+                    </button>
+                  );
+                })}
               </div>
-              <div className="flex items-center gap-1 shrink-0">
-                <Badge variant="outline" className="text-[10px]">{u.role}</Badge>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className={`h-8 w-8 p-0 ${u.is_active ? 'text-red-500 hover:bg-red-500/10' : 'text-emerald-500 hover:bg-emerald-500/10'}`}
-                  onClick={() => toggleUserActive(u.id, u.is_active)}
-                  title={u.is_active ? 'Desactivar' : 'Activar'}
-                >
-                  {u.is_active ? <Ban className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
-                </Button>
+              <Button
+                variant="outline" size="sm"
+                className="h-9 px-3"
+                disabled={!hasMore}
+                onClick={() => { const p = page + 1; setPage(p); loadUsers(p, searchQuery, roleFilter); }}
+              >
+                Próximo <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Confirmation Dialog */}
+      {confirmAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setConfirmAction(null)}>
+          <GlassCard className="!p-5 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start gap-3">
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                confirmAction.activate ? 'bg-emerald-500/10' : 'bg-red-500/10'
+              }`>
+                {confirmAction.activate
+                  ? <CheckCircle className="h-5 w-5 text-emerald-500" />
+                  : <Ban className="h-5 w-5 text-red-500" />
+                }
               </div>
-            </GlassCard>
-          ))}
+              <div className="flex-1">
+                <h3 className="font-bold text-sm">
+                  {confirmAction.activate ? 'Activar utilizador?' : 'Desactivar utilizador?'}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {confirmAction.activate
+                    ? `${confirmAction.name} voltará a ter acesso à plataforma.`
+                    : `${confirmAction.name} perderá acesso à plataforma.`
+                  }
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <Button variant="outline" className="flex-1" onClick={() => setConfirmAction(null)}>
+                Cancelar
+              </Button>
+              <Button
+                className={`flex-1 ${confirmAction.activate ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'}`}
+                onClick={() => toggleUserActive(confirmAction.userId, !confirmAction.activate)}
+              >
+                {confirmAction.activate ? 'Activar' : 'Desactivar'}
+              </Button>
+            </div>
+          </GlassCard>
         </div>
       )}
     </div>

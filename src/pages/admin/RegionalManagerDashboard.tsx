@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
@@ -16,13 +16,21 @@ import {
   MapPin,
   Menu,
   ChevronLeft,
-  X,
   Globe,
+  Bell,
 } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { cn } from '@/lib/utils';
+
+function NotificationBell() {
+  return (
+    <div className="relative">
+      <Bell className="h-4.5 w-4.5" />
+    </div>
+  );
+}
 
 type NavItem = { icon: any; labelKey: string; path: string; accent?: string };
 
@@ -167,6 +175,18 @@ export default function RegionalManagerDashboard() {
                 <p className="text-[10px] text-muted-foreground font-medium">{countryName} ({countryCode})</p>
               </div>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Notificações"
+              className="h-11 w-11 rounded-xl hover:bg-primary/10 no-tap-target relative"
+              data-size="icon"
+              onClick={() => navigate('/notifications-center')}
+            >
+              <Suspense fallback={<Bell className="h-5 w-5" />}>
+                <NotificationBell />
+              </Suspense>
+            </Button>
             <Drawer snapPoints={[0.5, 0.85]}>
               <DrawerTrigger asChild>
                 <Button
