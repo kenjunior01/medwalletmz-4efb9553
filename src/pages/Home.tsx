@@ -1,3 +1,4 @@
+import { Fragment, useState, useCallback, lazy, Suspense, useRef, useEffect } from "react";
 import { Seo } from "@/components/Seo";
 import {
   Stethoscope, Sparkles, Pill, MessageCircle, ArrowRight,
@@ -5,6 +6,7 @@ import {
   BookOpen, MapPinPlus, Mic, FlaskConical, PawPrint, Crown, Baby, HeartPulse
 } from '@/components/icons/lucide-compat';
 import { RoleHero } from "@/components/home/RoleHero";
+
 
 /* ── Lazy-loaded heavy/conditional components ── */
 const ViralShareSheet = lazy(() => import("@/components/growth/ViralShareSheet").then(m => ({ default: m.ViralShareSheet })));
