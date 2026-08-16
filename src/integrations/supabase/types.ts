@@ -6046,6 +6046,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      health_worker_sensitive: {
+        Args: { _worker_id: string }
+        Returns: {
+          id: string
+          id_document_url: string
+          license_number: string
+          license_url: string
+        }[]
+      }
       is_country_manager: {
         Args: { _country_id: string; _user_id: string }
         Returns: boolean
