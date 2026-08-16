@@ -127,7 +127,7 @@ export function BottomNav() {
       <Suspense fallback={null}><ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} /></Suspense>
 
       {/* Bottom nav — native feel with sliding pill indicator */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border/50 safe-area-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 border-t border-border/50 safe-area-bottom">
         <div ref={navRef} className="relative flex items-center justify-around py-1.5 px-2 max-w-md mx-auto">
           {/* Sliding pill indicator — CSS transition */}
           <div

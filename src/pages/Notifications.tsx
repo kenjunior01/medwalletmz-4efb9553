@@ -32,7 +32,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { logger } from '@/lib/logger';
-type NotificationType = "consultation" | "order" | "prescription" | "reminder";
+type NotificationType = "consultation" | "order" | "prescription" | "reminder" | "health_tip" | "daily_checkin";
 
 interface NotificationItem {
   id: string;
@@ -48,6 +48,8 @@ const ICON: Record<NotificationType, typeof Stethoscope> = {
   order: Package,
   prescription: FileText,
   reminder: Clock,
+  health_tip: BellRing,
+  daily_checkin: BellRing,
 };
 
 const COLOR: Record<NotificationType, string> = {
@@ -55,6 +57,8 @@ const COLOR: Record<NotificationType, string> = {
   order: "bg-pharmacy/10 text-pharmacy",
   prescription: "bg-primary/10 text-primary",
   reminder: "bg-gold/10 text-gold-foreground",
+  health_tip: "bg-emerald-500/10 text-emerald-600",
+  daily_checkin: "bg-blue-500/10 text-blue-600",
 };
 
 const FILTERS: { key: NotificationType | "all"; label: string }[] = [
@@ -63,6 +67,7 @@ const FILTERS: { key: NotificationType | "all"; label: string }[] = [
   { key: "order", label: "Pedidos" },
   { key: "prescription", label: "Receitas" },
   { key: "reminder", label: "Lembretes" },
+  { key: "health_tip", label: "Saúde" },
 ];
 
 function relativeTime(iso: string): string {
@@ -91,7 +96,7 @@ export default function NotificationsPage() {
     setLoading(true);
     try {
       const sinceIso = since();
-      const [rx, orders, consults, reminders] = await Promise.all([
+      const [rx, orders, consults, reminders, automated] = await Promise.all([
         (supabase as any)
           .from("prescriptions")
           .select("id, created_at")
@@ -118,6 +123,15 @@ export default function NotificationsPage() {
           .select("id, sent_at, scheduled_at, consultation_id")
           .eq("patient_id", user.id)
           .not("sent_at", "is", null)
+          .order("sent_at", { ascending: false })
+          .limit(30),
+        // Automated notifications (health tips, daily check-ins, challenges)
+        (supabase as any)
+          .from("automated_notifications")
+          .select("id, type, title, body, status, scheduled_for, sent_at, action_url")
+          .eq("user_id", user.id)
+          .eq("status", "sent")
+          .gte("sent_at", sinceIso)
           .order("sent_at", { ascending: false })
           .limit(30),
       ]);
@@ -185,6 +199,19 @@ export default function NotificationsPage() {
         });
       });
 
+      // Automated notifications (health tips, daily mood check-ins, challenges)
+      (automated.data || []).forEach((n: any) => {
+        const isCheckIn = /como se sente|mood|como estás/i.test(n.title || n.body || '');
+        all.push({
+          id: `auto-${n.id}`,
+          type: isCheckIn ? "daily_checkin" : "health_tip",
+          title: n.title || "Dica de saúde",
+          body: n.body || "",
+          href: n.action_url || "/health",
+          created_at: n.sent_at || n.scheduled_for,
+        });
+      });
+
       all.sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
@@ -218,6 +245,11 @@ export default function NotificationsPage() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "consultations", filter: `patient_id=eq.${user.id}` },
+        load
+      )
+      .on(
+        "postgres_changes",
+        { event: "update", schema: "public", table: "automated_notifications", filter: `user_id=eq.${user.id}` },
         load
       )
       .subscribe();

@@ -20,7 +20,10 @@ function detectInitial(): boolean {
   // Respect Save-Data header / connection hint
   const conn = (navigator as any).connection;
   if (conn?.saveData) return true;
-  if (conn?.effectiveType && /2g|slow-2g/.test(conn.effectiveType)) return true;
+  // Auto-enable on 2g, slow-2g, and 3g (common in MZ)
+  if (conn?.effectiveType && /2g|slow-2g|3g/.test(conn.effectiveType)) return true;
+  // Auto-enable on slow RTT (>300ms) — typical for MZ mobile networks
+  if (conn?.rtt && conn.rtt > 300) return true;
   return false;
 }
 

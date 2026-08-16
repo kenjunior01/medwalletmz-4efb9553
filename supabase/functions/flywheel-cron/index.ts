@@ -93,6 +93,24 @@ Deno.serve(async (req) => {
       }
     }
 
+    // --- TASK 9: Morning Health Vibe (daily health tips + mood check-in) ---
+    if (action === 'run_all' || action === 'morning_health_vibe') {
+      try {
+        const vibeUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/morning-health-vibe`;
+        const resp = await fetch(vibeUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({})
+        });
+        results.morning_health_vibe = await resp.json();
+      } catch (e) {
+        results.morning_health_vibe = { error: (e as Error).message };
+      }
+    }
+
     return json({
       success: true,
       action,

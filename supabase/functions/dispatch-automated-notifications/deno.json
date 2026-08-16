@@ -1,0 +1,5 @@
+{
+  "scheduled": [
+    { "cron": "*/5 * * * *", "body": "{\"channels\":[\"push\",\"in_app\"],\"limit\":50}" }
+  ]
+}
