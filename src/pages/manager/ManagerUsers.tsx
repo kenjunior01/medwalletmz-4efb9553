@@ -138,6 +138,8 @@ export default function ManagerUsers() {
     return labels[role] || role;
   };
 
+  const bgColor = confirmAction?.activate ? 'bg-emerald-500/10' : 'bg-red-500/10';
+
   return (
     <div className="space-y-5">
       <div>
@@ -306,9 +308,7 @@ export default function ManagerUsers() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setConfirmAction(null)}>
           <GlassCard className="!p-5 max-w-sm w-full" onClick={e => e.stopPropagation()}>
             <div className="flex items-start gap-3">
-              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-                confirmAction.activate ? 'bg-emerald-500/10' : 'bg-red-500/10'
-              }`>
+              <div className={"flex h-10 w-10 shrink-0 items-center justify-center rounded-xl " + bgColor}>
                 {confirmAction.activate
                   ? <CheckCircle className="h-5 w-5 text-emerald-500" />
                   : <Ban className="h-5 w-5 text-red-500" />
@@ -321,8 +321,7 @@ export default function ManagerUsers() {
                 <p className="text-xs text-muted-foreground mt-1">
                   {confirmAction.activate
                     ? `${confirmAction.name} voltará a ter acesso à plataforma.`
-                    : `${confirmAction.name} perderá acesso à plataforma.`
-                  }
+                    : `${confirmAction.name} perderá acesso à plataforma.`}
                 </p>
               </div>
             </div>
