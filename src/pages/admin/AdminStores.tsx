@@ -39,7 +39,8 @@ const initialFormData: StoreFormData = {
 
 export default function AdminStores() {
   const { hasRole } = useAuth();
-  const { managedCountryId, isGlobalAdmin } = useManagedCountry();
+  const { managedCountryId } = useManagedCountry();
+  const isAdmin = hasRole('admin');
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -88,7 +89,7 @@ export default function AdminStores() {
     mutationFn: async ({ id, data }: { id: string; data: StoreFormData }) => {
       let q = supabase.from('stores').update(data).eq('id', id);
       // Scope: non-admin managers can only update stores in their country
-      if (!isGlobalAdmin && managedCountryId) {
+      if (!isAdmin && managedCountryId) {
         q = q.eq('country_id', managedCountryId);
       }
       const { error, count } = await q;
@@ -111,7 +112,7 @@ export default function AdminStores() {
     mutationFn: async (id: string) => {
       let q = supabase.from('stores').delete().eq('id', id);
       // SECURITY: Non-admin managers can only delete stores in their country
-      if (!isGlobalAdmin && managedCountryId) {
+      if (!isAdmin && managedCountryId) {
         q = q.eq('country_id', managedCountryId);
       }
       const { error } = await q;

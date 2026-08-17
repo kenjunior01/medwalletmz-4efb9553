@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, Outlet, useLocation } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   LayoutDashboard,
@@ -62,24 +62,15 @@ const menuItems: DashboardMenuItem[] = [
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, hasRole, loading, signOut } = useAuth();
   const isAdmin = hasRole('admin');
-  const isCountryManager = hasRole('country_manager');
 
   useEffect(() => {
-    if (!loading && (!user || (!isAdmin && !isCountryManager))) {
+    if (!loading && (!user || !isAdmin)) {
       navigate('/auth');
       return;
     }
-
-    // Gestores regionais devem usar APENAS o /manager dashboard para isolamento total
-    if (!loading && user && !isAdmin && isCountryManager) {
-      if (!location.pathname.startsWith('/manager')) {
-        navigate('/manager', { replace: true });
-      }
-    }
-  }, [user, loading, isAdmin, isCountryManager, navigate, location.pathname]);
+  }, [user, loading, isAdmin, navigate]);
 
   if (loading) {
     return (

@@ -49,16 +49,17 @@ export default function RegionalManagerDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, hasRole, loading, signOut } = useAuth();
-  const { managedCountryId, countryCode, countryName, isGlobalAdmin } = useManagedCountry();
+  const { managedCountryId, countryCode, countryName } = useManagedCountry();
+  const isAdmin = hasRole('admin');
   const { t } = useCountry();
   const isManager = hasRole('country_manager');
 
   useEffect(() => {
-    if (!loading && (!user || (!isManager && !isGlobalAdmin))) {
+    if (!loading && (!user || (!isManager && !isAdmin))) {
       navigate('/auth');
       return;
     }
-  }, [user, loading, isManager, isGlobalAdmin, navigate]);
+  }, [user, loading, isManager, isAdmin, navigate]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/30">
@@ -69,7 +70,7 @@ export default function RegionalManagerDashboard() {
     </div>
   );
 
-  if (!user || (!isManager && !isGlobalAdmin)) return null;
+  if (!user || (!isManager && !isAdmin)) return null;
 
   const activeLabel = navItems.find(m => m.path === location.pathname)
     ? t(navItems.find(m => m.path === location.pathname)!.labelKey)
@@ -124,12 +125,12 @@ export default function RegionalManagerDashboard() {
         })}
       </nav>
 
-      {/* Footer — aviso de isolamento */}
-      <div className="p-3 mx-3 mb-3 rounded-xl bg-amber-500/5 border border-amber-500/10">
+      {/* Footer — identidade da plataforma */}
+      <div className="p-3 mx-3 mb-3 rounded-xl bg-primary/5 border border-primary/10">
         <div className="flex items-start gap-2">
-          <ShieldCheck className="h-3.5 w-3.5 text-amber-500 mt-0.5 shrink-0" />
+          <ShieldCheck className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
           <p className="text-[10px] text-muted-foreground leading-relaxed">
-            {t('manager.isolation_notice') || 'Acesso restrito. Apenas dados da sua região são visíveis.'}
+            {t('manager.platform_identity') || 'MedWallet — Plataforma de gestão de saúde'}
           </p>
         </div>
       </div>
@@ -222,7 +223,7 @@ export default function RegionalManagerDashboard() {
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-3.5 w-3.5 text-primary" />
             <span className="text-[10px] text-muted-foreground font-medium">
-              {t('manager.isolated_session') || 'Sessão isolada por região'}
+              {t('manager.panel_label') || 'Gestor Regional'}
             </span>
           </div>
         </header>

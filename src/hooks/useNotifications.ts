@@ -195,6 +195,59 @@ export function useNotifications() {
     return () => { fcmService.destroy(); fcmInitializedRef.current = false; };
   }, [user, permission]);
 
+  // ---- Offline catchup: fetch automated notifications sent while app was closed ----
+  // This bridges the gap when realtime was disconnected (app backgrounded/closed)
+  const catchupRef = useRef(false);
+  useEffect(() => {
+    if (!user || permission !== 'granted' || catchupRef.current) return;
+    catchupRef.current = true;
+
+    const lastSeenKey = `automated-notif-last-seen`;
+    const lastSeen = localStorage.getItem(lastSeenKey) || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+    (async () => {
+      const { data: recent } = await supabase
+        .from('automated_notifications')
+        .select('id, title, body, metadata, sent_at')
+        .eq('user_id', user.id)
+        .eq('status', 'sent')
+        .gt('sent_at', lastSeen)
+        .order('sent_at', { ascending: false })
+        .limit(5);
+
+      if (!recent || recent.length === 0) return;
+
+      // Only show the most recent one to avoid spam on app open
+      const notif = recent[0];
+      if (canDeliver('notify_daily_health')) {
+        await notificationService.showLocal({
+          category: 'health_tip',
+          title: notif.title || 'MedWallet',
+          body: notif.body || '',
+          deepLink: notif.metadata?.action_url || '/notifications',
+          icon: '/icon-512.png',
+          data: { notification_id: notif.id, content_type: notif.metadata?.content_type },
+        });
+        bumpCounter();
+      }
+
+      // Update last-seen timestamp
+      localStorage.setItem(lastSeenKey, new Date().toISOString());
+    })();
+  }, [user, permission]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ---- Keep last-seen timestamp updated when realtime fires ----
+  useEffect(() => {
+    if (!user) return;
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        localStorage.setItem(`automated-notif-last-seen`, new Date().toISOString());
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, [user]);
+
   // ---- Supabase Realtime subscriptions (preserved from original hook) ----
   useEffect(() => {
     if (!user || permission !== 'granted') return;
@@ -272,6 +325,33 @@ export function useNotifications() {
                 `/health/consultation/${n.consultation_id}`,
                 'notify_reminders'
               );
+            }
+          }
+        )
+        .subscribe(),
+      // ---- Automated notifications (daily health tips, check-ins from cron) ----
+      supabase
+        .channel(`notif-automated-${user.id}`)
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'automated_notifications', filter: `user_id=eq.${user.id}` },
+          (p: any) => {
+            const n = p.new;
+            // Only show when status changes to 'sent' and wasn't already seen
+            if (n.status === 'sent' && p.old?.status !== 'sent') {
+              const contentType = n.metadata?.content_type || 'health_tip';
+              const deepLink = n.metadata?.action_url || '/notifications';
+              notificationService.showLocal({
+                category: 'health_tip',
+                title: n.title || 'MedWallet',
+                body: n.body || '',
+                deepLink,
+                icon: '/icon-512.png',
+                data: { notification_id: n.id, content_type: contentType },
+              });
+              bumpCounter();
+              // Update last-seen so catchup doesn't re-show this notification
+              localStorage.setItem(`automated-notif-last-seen`, new Date().toISOString());
             }
           }
         )

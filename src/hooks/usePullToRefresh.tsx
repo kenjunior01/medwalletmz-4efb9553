@@ -10,21 +10,15 @@ interface PullToRefreshReturn {
   ref: React.RefObject<HTMLDivElement | null>;
   isPulling: boolean;
   isRefreshing: boolean;
- pullDistance: number;
+  pullDistance: number;
   refresh: () => void;
 }
 
 /**
  * usePullToRefresh — native-feeling pull-to-refresh for mobile.
  *
- * Usage:
- *   const ptr = usePullToRefresh({ onRefresh: async () => { refetch(); } });
- *   return (
- *     <div ref={ptr.ref}>
- *       {ptr.isPulling && <PullIndicator distance={ptr.pullDistance} />}
- *       <YourContent />
- *     </div>
- *   );
+ * Works inside App Shell where the scroll container is the parent <main>,
+ * not the PullToRefresh div itself. Finds the nearest scrollable ancestor.
  */
 export function usePullToRefresh({
   onRefresh,
@@ -54,16 +48,32 @@ export function usePullToRefresh({
     }
   }, [onRefresh]);
 
+  /** Find the nearest scrollable ancestor element */
+  const findScrollParent = useCallback((el: HTMLElement | null): HTMLElement | null => {
+    let node = el?.parentElement;
+    while (node) {
+      const style = getComputedStyle(node);
+      const overflow = style.overflowY;
+      if ((overflow === 'auto' || overflow === 'scroll') && node.scrollHeight > node.clientHeight) {
+        return node;
+      }
+      node = node.parentElement;
+    }
+    return null;
+  }, []);
+
   useEffect(() => {
     if (disabled) return;
 
     const el = containerRef.current;
     if (!el) return;
+    const scrollParent = findScrollParent(el);
 
     const onTouchStart = (e: TouchEvent) => {
       if (isRefreshingRef.current) return;
-      // Only trigger when scrolled to top
-      if (el.scrollTop <= 0) {
+      // Only trigger when the scroll parent is at the top
+      const scrollTop = scrollParent ? scrollParent.scrollTop : el.scrollTop;
+      if (scrollTop <= 0) {
         startY.current = e.touches[0].clientY;
         currentY.current = 0;
       }
@@ -114,7 +124,7 @@ export function usePullToRefresh({
       el.removeEventListener('touchend', onTouchEnd);
       el.style.transform = '';
     };
-  }, [disabled, threshold, refresh]);
+  }, [disabled, threshold, refresh, findScrollParent]);
 
   return { ref: containerRef, isPulling, isRefreshing, pullDistance, refresh };
 }

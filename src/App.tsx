@@ -17,7 +17,9 @@ import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
 import { OAuthBrokerRedirect } from "@/components/auth/OAuthBrokerRedirect";
 import { PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
 import { OfflineIndicator } from "@/components/offline";
-import { SupabaseConfigBanner } from '@/components/SupabaseConfigBanner';
+const SupabaseConfigBanner = import.meta.env.DEV
+  ? lazy(() => import('@/components/SupabaseConfigBanner').then(m => ({ default: m.SupabaseConfigBanner })))
+  : () => null;
 const DeepLinkHandler = lazy(() => import("@/components/growth/DeepLinkHandler").then(m => ({ default: m.DeepLinkHandler })));
 // =========================================================================
 // CODE-SPLITTING COM React.lazy
@@ -412,10 +414,10 @@ const App = () => {
                   <Route path="/health/video/:id" element={<VideoConsultation />} />
                   <Route path="/health/room/:id" element={<ConsultationRoom />} />
 
-                  {/* Admin Routes — protegido ao nível da rota + guard interno em AdminDashboard */}
+                  {/* Admin Routes — APENAS admin global. Gestor regional tem o seu próprio painel em /manager. */}
                   <Route path="/admin" element={
                     <Suspense fallback={<LoadingScreen />}>
-                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager']}><AdminDashboard /></ProtectedRoute>
+                      <ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>
                     </Suspense>
                   }>
                     <Route index element={<AdminHome />} />
@@ -494,7 +496,7 @@ const App = () => {
                       </ProtectedRoute>
                     } />
                     <Route path="assign-country-manager" element={
-                      <ProtectedRoute allowedRoles={['admin', 'country_manager']}>
+                      <ProtectedRoute allowedRoles={['admin']}>
                         <AssignCountryManager />
                       </ProtectedRoute>
                     } />
@@ -504,18 +506,18 @@ const App = () => {
                       </ProtectedRoute>
                     } />
                     <Route path="assign-provincial-manager" element={
-                      <ProtectedRoute allowedRoles={['admin', 'country_manager']}>
+                      <ProtectedRoute allowedRoles={['admin']}>
                         <AssignProvincialManager />
                       </ProtectedRoute>
                     } />
                     <Route path="provincial-permissions" element={
-                      <ProtectedRoute allowedRoles={['admin', 'country_manager']}>
+                      <ProtectedRoute allowedRoles={['admin']}>
                         <ManageProvincialPermissions />
                       </ProtectedRoute>
                     } />
                   </Route>
 
-                  {/* Regional Manager Routes — protegido ao nível da rota + guard interno */}
+                  {/* Manager Routes — painel independente do gestor regional. Admin pode ver para debug. */}
                   <Route path="/manager" element={
                     <Suspense fallback={<LoadingScreen />}>
                       <ProtectedRoute allowedRoles={['country_manager', 'admin']}><RegionalManagerDashboard /></ProtectedRoute>
@@ -535,7 +537,7 @@ const App = () => {
 
                   {/* Provincial Manager Routes — Moçambique only */}
                   <Route path="/regional" element={
-                    <Suspense fallback={<LoadingScreen />}><ProtectedRoute allowedRoles={['provincial_manager', 'country_manager', 'admin']}><ProvincialManagerDashboard /></ProtectedRoute></Suspense>
+                    <Suspense fallback={<LoadingScreen />}><ProtectedRoute allowedRoles={['provincial_manager', 'admin']}><ProvincialManagerDashboard /></ProtectedRoute></Suspense>
                   }>
                     <Route index element={<ProvincialManagerDashboard />} />
                     <Route path="team" element={<ProvincialTeam />} />
@@ -603,7 +605,7 @@ const App = () => {
                 </Suspense>
                 </OAuthCallbackHandler>
                 {/* Componentes PWA globais (offline indicator + update toast) */}
-                <SupabaseConfigBanner />
+                <Suspense fallback={null}><SupabaseConfigBanner /></Suspense>
                 <OfflineIndicator />
                 <PWAUpdateToast />
                 {/* Deep link handler — checks URL params on every page load */}

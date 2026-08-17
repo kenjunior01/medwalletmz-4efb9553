@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => ({
     minify: 'esbuild',
     cssMinify: true,
     sourcemap: false,
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 200,
     commonjsOptions: {
       transformMixedEsModules: true,
     },
@@ -87,13 +87,13 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    mcpPlugin(),
+    mode === 'development' && mcpPlugin(),
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: 'auto',
       manifest: false,
       workbox: {
-        maximumFileSizeToCacheInBytes: 10000000,
+        maximumFileSizeToCacheInBytes: 2000000,
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
         // Não fazer cache de:
         // - API do Supabase (sempre fresh)
@@ -103,7 +103,7 @@ export default defineConfig(({ mode }) => ({
         //   não existe" em vez do redirect OAuth.)
         // - Google Fonts (CDN externo)
         navigateFallbackDenylist: [
-          /^https:\/\/pfqruzusjxyidhqkiob\.supabase\.co\//,
+          /^https:\/\/pfqruzusjjxyidhqkiob\.supabase\.co\//,
           /^https:\/\/oauth\.lovable\.app\//,
           /^https:\/\/fonts\.(googleapis|gstatic)\.com\//,
           // Caminho relativo /~oauth/ no mesmo origin (broker Lovable Cloud)

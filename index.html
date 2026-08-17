@@ -7,7 +7,8 @@
          VIEWPORT MOBILE — viewport-fit=cover para usar notch/safe areas
          maximum-scale=5 permite zoom até 5x (acessibilidade)
          ========================================================================= -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    <!-- STANDALONE/PWA: maximum-scale=1 para app nativo; user-scalable=yes para acessibilidade -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
     <!-- =========================================================================
          PWA CORE META TAGS
@@ -149,7 +150,7 @@
     <!-- =========================================================================
          PERFORMANCE — DNS prefetch para Supabase e Google Fonts
          ========================================================================= -->
-    <link rel="dns-prefetch" href="https://pfqruzusjxyidhqkiob.supabase.co" />
+    <link rel="dns-prefetch" href="https://pfqruzusjjxyidhqkiob.supabase.co" />
     <link rel="dns-prefetch" href="https://oauth.lovable.app" />
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />

@@ -111,7 +111,7 @@ export function useApeVisits(province?: string) {
       if (error) throw error;
       return (data || []) as any;
     },
-    staleTime: 15_000,
+    staleTime: 5 * 60_000, // 5min — province/facility data changes rarely
   });
 }
 
@@ -204,7 +204,7 @@ export function useMalariaCases(province?: string, limit = 100) {
       if (error) throw error;
       return (data || []) as any;
     },
-    staleTime: 15_000,
+    staleTime: 5 * 60_000, // 5min — province/facility data changes rarely
   });
 }
 

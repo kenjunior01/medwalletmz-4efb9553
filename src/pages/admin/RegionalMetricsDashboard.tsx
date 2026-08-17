@@ -121,7 +121,7 @@ function aggregateRegionMetrics(countryMetricsMap: Record<string, CountryMetrics
 
 export default function RegionalMetricsDashboard() {
   const { hasRole } = useAuth();
-  const { managedCountryId, isGlobalAdmin } = useManagedCountry();
+  const { managedCountryId } = useManagedCountry();
   const { allCountries } = useCountry();
 
   // Country isolation: if country_manager, only show their own country

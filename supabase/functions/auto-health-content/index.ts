@@ -152,12 +152,13 @@ Deno.serve(async (req) => {
       if (users?.length) {
         const notifs = users.map((u, i) => ({
           user_id: u.user_id,
-          category: 'health_tip',
+          channel: 'push',
           title: `Dica de Saude - ${selectedTopic.replace(/_/g, ' ')}`,
           body: selectedTips[i % selectedTips.length],
-          deep_link: 'medwallet://educacao',
-          scheduled_at: new Date(Date.now() + i * 5000).toISOString(), // Stagger 5s apart
-          metadata: { topic: selectedTopic, province: targetProvince, auto_generated: true }
+          vertical: 'community',
+          priority: 'low',
+          scheduled_for: new Date(Date.now() + i * 5000).toISOString(),
+          metadata: { content_type: 'health_tip', action_url: '/health/education', topic: selectedTopic, province: targetProvince, auto_generated: true }
         }));
 
         const { error } = await supabase

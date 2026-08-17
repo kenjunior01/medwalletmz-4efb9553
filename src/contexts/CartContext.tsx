@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, useMemo, ReactNode, useEffect, useCallback } from 'react';
 
 interface CartItem {
   id: string;
@@ -44,7 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const currentStoreId = items.length > 0 ? items[0].store_id : null;
 
-  const addItem = (item: Omit<CartItem, 'quantity'>) => {
+  const addItem = useCallback((item: Omit<CartItem, 'quantity'>) => {
     setItems(prev => {
       // Check if adding from different store
       if (prev.length > 0 && prev[0].store_id !== item.store_id) {
@@ -62,13 +62,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...item, quantity: 1 }];
     });
-  };
+  }, []);
 
-  const removeItem = (id: string) => {
+  const removeItem = useCallback((id: string) => {
     setItems(prev => prev.filter(i => i.id !== id));
-  };
+  }, []);
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = useCallback((id: string, quantity: number) => {
     if (quantity <= 0) {
       removeItem(id);
       return;
@@ -76,24 +76,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems(prev => prev.map(i => 
       i.id === id ? { ...i, quantity } : i
     ));
-  };
+  }, [removeItem]);
 
-  const clearCart = () => setItems([]);
+  const clearCart = useCallback(() => setItems([]), []);
 
-  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
-  const subtotal = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+  const totalItems = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
+  const subtotal = useMemo(() => items.reduce((sum, i) => sum + (i.price * i.quantity), 0), [items]);
+
+  const value = useMemo(() => ({
+    items,
+    addItem,
+    removeItem,
+    updateQuantity,
+    clearCart,
+    totalItems,
+    subtotal,
+    currentStoreId
+  }), [items, addItem, removeItem, updateQuantity, clearCart, totalItems, subtotal, currentStoreId]);
 
   return (
-    <CartContext.Provider value={{
-      items,
-      addItem,
-      removeItem,
-      updateQuantity,
-      clearCart,
-      totalItems,
-      subtotal,
-      currentStoreId
-    }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );

@@ -48,7 +48,6 @@ export function useManagedCountry() {
     managedCountryId,
     countryFilter,
     isManager,
-    isGlobalAdmin,
     canManage: isManager || isGlobalAdmin,
     countryName: country?.name || '',
     countryCode: country?.id || '',

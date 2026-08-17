@@ -5,3 +5,10 @@ verify_jwt = true
 
 [functions.emergency-sos]
 verify_jwt = false
+
+# Cron jobs use service_role key, NOT user JWT — must be false
+[functions.morning-health-vibe]
+verify_jwt = false
+
+[functions.dispatch-automated-notifications]
+verify_jwt = false

@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
- * Guard para páginas globais do admin — country_manager NÃO tem acesso.
- * Redireciona managers para o painel do seu país, e não-admins para /.
+ * Guard para páginas exclusivas do admin global — country_manager NÃO tem acesso.
+ * Redireciona managers para o seu painel próprio (/manager), e não-admins para /.
  */
 export function useGlobalAdminGuard() {
   const { hasRole, loading, user } = useAuth();
@@ -14,7 +14,7 @@ export function useGlobalAdminGuard() {
     if (!user) { navigate('/auth', { replace: true }); return; }
     if (hasRole('admin')) return;
     if (hasRole('country_manager')) {
-      navigate('/admin/country-dashboard', { replace: true });
+      navigate('/manager', { replace: true });
       return;
     }
     navigate('/', { replace: true });

@@ -11,7 +11,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { NotificationsPanel } from "@/components/notifications/NotificationsPanel";
+import { lazy, Suspense } from "react";
+const NotificationsPanel = lazy(() => import("@/components/notifications/NotificationsPanel").then(m => ({ default: m.NotificationsPanel })));
+function NotificationsFallback() {
+  return (
+    <Button variant="ghost" size="icon" aria-label="Notificações" className="relative hover:bg-primary/10 rounded-xl transition-all h-9 w-9 no-tap-target" data-size="icon">
+      <Bell className="h-4 w-4" />
+    </Button>
+  );
+}
 import { cn } from "@/lib/utils";
 
 function getGreeting(): { text: string; emoji: string } {
@@ -21,15 +29,20 @@ function getGreeting(): { text: string; emoji: string } {
   return { text: "Boa noite", emoji: "\ud83c\udf19" };
 }
 
-export function Header() {
+interface HeaderProps {
+  collapsed?: boolean;
+}
+
+export function Header({ collapsed = false }: HeaderProps) {
   const { city: selectedCity, setCity: setSelectedCity } = useAppLocation();
   const { country, allCountries, setCountryById, locale, setLocale, t } = useCountry();
   const greeting = useMemo(() => getGreeting(), []);
   const { user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Lightweight scroll detection — no framer-motion
+  // Scroll detection — only for desktop (mobile uses AppLayout's collapsible header)
   useEffect(() => {
+    if (collapsed) return; // Mobile: scroll is handled by AppLayout
     let ticking = false;
     const onScroll = () => {
       if (!ticking) {
@@ -42,7 +55,7 @@ export function Header() {
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [collapsed]);
 
   const handleLocaleChange = useCallback((l: string) => {
     setLocale(l);
@@ -54,8 +67,8 @@ export function Header() {
     const defaults: Record<string, string[]> = {
       MZ: ["Maputo", "Beira", "Nampula", "Quelimane", "Tete", "Chimoio", "Pemba", "Inhambane"],
       AO: ["Luanda", "Benguela", "Huambo", "Lubango", "Cabinda"],
-      BR: ["S\u00e3o Paulo", "Rio de Janeiro", "Bras\u00edlia", "Salvador", "Fortaleza"],
-      PT: ["Lisboa", "Porto", "Braga", "Coimbra", "Set\u00fabal"],
+      BR: ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza"],
+      PT: ["Lisboa", "Porto", "Braga", "Coimbra", "Setúbal"],
       ZA: ["Johannesburg", "Cape Town", "Durban", "Pretoria"],
       IN: ["Mumbai", "Delhi", "Bangalore"],
     };
@@ -72,22 +85,20 @@ export function Header() {
     <header
       className={cn(
         "sticky top-0 z-40 border-b border-border/50 safe-area-top",
-        isScrolled
-          ? "bg-background shadow-sm"
-          : "bg-background"
+        isScrolled && "shadow-sm"
       )}
     >
-      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 h-12">
         {/* Location selector */}
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1.5 hover:bg-muted rounded-xl transition-colors min-w-0">
-                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <MapPin className="h-3.5 w-3.5 text-primary" />
+              <Button variant="ghost" className="flex items-center gap-1.5 px-2 h-auto py-1 hover:bg-muted rounded-xl transition-colors min-w-0">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <MapPin className="h-3 w-3 text-primary" />
                 </div>
                 <div className="flex flex-col items-start min-w-0">
-                  <span className="text-[10px] text-muted-foreground font-medium leading-tight truncate">{t("header.deliver_at")}</span>
+                  <span className="text-[10px] text-muted-foreground font-medium leading-tight truncate hidden sm:block">{t("header.deliver_at")}</span>
                   <span className="font-bold text-sm leading-tight truncate max-w-[120px]">{selectedCity}</span>
                 </div>
                 <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -110,17 +121,17 @@ export function Header() {
           </span>
         </div>
 
-        {/* Mobile greeting pill */}
-        <span className="md:hidden text-xs bg-primary/5 px-2.5 py-0.5 rounded-full text-muted-foreground">
+        {/* Mobile greeting pill — compact */}
+        <span className="md:hidden text-[10px] bg-primary/5 px-2 py-0.5 rounded-full text-muted-foreground truncate">
           {greeting.emoji} {greeting.text.split(",")[0]}
         </span>
 
-        {/* Right actions */}
+        {/* Right actions — compact on mobile */}
         <div className="flex items-center gap-0.5 shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label={t("header.select_language")} className="h-9 w-9 rounded-xl hover:bg-muted no-tap-target" data-size="icon">
-                <Languages className="h-4 w-4 text-muted-foreground" />
+              <Button variant="ghost" size="icon" aria-label={t("header.select_language")} className="h-8 w-8 rounded-xl hover:bg-muted no-tap-target" data-size="icon">
+                <Languages className="h-3.5 w-3.5 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44 rounded-xl p-1">
@@ -128,7 +139,7 @@ export function Header() {
                 <div className="pb-1 mb-1 border-b border-border/50">
                   <p className="text-[10px] font-bold uppercase text-muted-foreground px-2 pt-1 tracking-wider">Idioma</p>
                   {country.supported_locales.map((l) => {
-                    const labels: Record<string, string> = { pt: "Portugu\u00eas", en: "English", es: "Espa\u00f1ol", fr: "Fran\u00e7ais", af: "Afrikaans", sw: "Kiswahili", am: "\u12a0\u121b\u122d\u129b", hi: "\u0939\u093f\u0928\u094d\u0926\u0940", "pt-BR": "Portugu\u00eas (BR)", emk: "Emakhuwa", tsn: "Xichangana", seh: "Cisena", elo: "Elomwe", chw: "Echuwabo" };
+                    const labels: Record<string, string> = { pt: "Português", en: "English", es: "Español", fr: "Français", af: "Afrikaans", sw: "Kiswahili", am: "አማርኛ", hi: "हिन्दी", "pt-BR": "Português (BR)", emk: "Emakhuwa", tsn: "Xichangana", seh: "Cisena", elo: "Elomwe", chw: "Echuwabo" };
                     return (
                       <DropdownMenuItem key={l} onClick={() => handleLocaleChange(l)} className={`rounded-lg py-2 px-3 cursor-pointer font-bold text-xs ${l === locale ? "bg-primary text-primary-foreground" : ""}`}>
                         {labels[l] || l}
@@ -153,7 +164,7 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
           <ThemeToggle />
-          <NotificationsPanel />
+          <Suspense fallback={<NotificationsFallback />}><NotificationsPanel /></Suspense>
         </div>
       </div>
     </header>

@@ -1,4 +1,4 @@
-import { AlertTriangle, ExternalLink } from 'lucide-react';
+import { AlertTriangle, ExternalLink } from '@/components/icons/lucide-compat';
 import { isSupabaseConfigured } from '@/integrations/supabase/client';
 
 /**

@@ -50,6 +50,9 @@ import { useCountry } from "@/contexts/CountryContext";
 import { toast } from "sonner";
 
 import { logger } from '@/lib/logger';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { Heart } from '@/components/icons/lucide-compat';
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -69,6 +72,8 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notifications, setNotifications] = useState(true);
+  const [dailyCheckin, setDailyCheckin] = useState(true);
+  const [dailyRecommendations, setDailyRecommendations] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -82,6 +87,8 @@ export default function Settings() {
         if (saved) {
           const parsed = JSON.parse(saved);
           if (typeof parsed.notifications === "boolean") setNotifications(parsed.notifications);
+          if (typeof parsed.dailyCheckin === "boolean") setDailyCheckin(parsed.dailyCheckin);
+          if (typeof parsed.dailyRecommendations === "boolean") setDailyRecommendations(parsed.dailyRecommendations);
           if (typeof parsed.darkMode === "boolean") setDarkMode(parsed.darkMode);
         }
         setLoading(false);
@@ -97,7 +104,9 @@ export default function Settings() {
     };
   }, [t]);
 
-  const persist = (next: { notifications?: boolean; darkMode?: boolean }) => {
+  const { user } = useAuth();
+
+  const persist = (next: Record<string, any>) => {
     try {
       const saved = localStorage.getItem("mw_settings");
       const parsed = saved ? JSON.parse(saved) : {};
@@ -108,9 +117,52 @@ export default function Settings() {
     }
   };
 
+  const syncNotifPrefsToDB = async (checkin: boolean, recommendations: boolean) => {
+    if (!user) return;
+    try {
+      await supabase.rpc('upsert_notification_preferences', {
+        p_user_id: user.id,
+        p_daily_health_checkin: checkin,
+        p_daily_health_recommendations: recommendations,
+      });
+    } catch (err) {
+      logger.warn('Failed to sync notification preferences to DB', { error: err });
+    }
+  };
+
+  // Load notification preferences from DB on mount
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('user_notification_preferences')
+      .select('daily_health_checkin, daily_health_recommendations')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setDailyCheckin(data.daily_health_checkin !== false);
+          setDailyRecommendations(data.daily_health_recommendations !== false);
+          persist({ dailyCheckin: data.daily_health_checkin, dailyRecommendations: data.daily_health_recommendations });
+        }
+      })
+      .catch(() => {});
+  }, [user]);
+
   const handleNotificationsChange = (checked: boolean) => {
     setNotifications(checked);
     persist({ notifications: checked });
+  };
+
+  const handleDailyCheckinChange = (checked: boolean) => {
+    setDailyCheckin(checked);
+    persist({ dailyCheckin: checked });
+    syncNotifPrefsToDB(checked, dailyRecommendations);
+  };
+
+  const handleDailyRecommendationsChange = (checked: boolean) => {
+    setDailyRecommendations(checked);
+    persist({ dailyRecommendations: checked });
+    syncNotifPrefsToDB(dailyCheckin, checked);
   };
 
   const handleDarkModeChange = (checked: boolean) => {
@@ -282,6 +334,50 @@ export default function Settings() {
                   aria-label={t("settings.notifications_push_aria")}
                 />
               </div>
+
+              {/* Daily health check-in toggle */}
+              {notifications && (
+                <div className="flex items-center justify-between p-4 min-h-[64px]">
+                  <div className="flex items-center gap-3">
+                    <div className="h-11 w-11 rounded-xl bg-green-500/10 flex items-center justify-center">
+                      <Heart className="h-5 w-5 text-green-500" aria-hidden="true" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-bold">Check-in diario de saude</Label>
+                      <p className="text-[10px] text-muted-foreground">
+                        \"Como te sentes hoje?\" — lembrete diario de humor
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={dailyCheckin}
+                    onCheckedChange={handleDailyCheckinChange}
+                    aria-label="Ativar check-in diario de saude"
+                  />
+                </div>
+              )}
+
+              {/* Daily health recommendations toggle */}
+              {notifications && (
+                <div className="flex items-center justify-between p-4 min-h-[64px]">
+                  <div className="flex items-center gap-3">
+                    <div className="h-11 w-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                      <ShieldCheck className="h-5 w-5 text-blue-500" aria-hidden="true" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-bold">Recomendacoes de saude diarias</Label>
+                      <p className="text-[10px] text-muted-foreground">
+                        Dicas sazonais de saude baseadas na sua provincia
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={dailyRecommendations}
+                    onCheckedChange={handleDailyRecommendationsChange}
+                    aria-label="Ativar recomendacoes de saude diarias"
+                  />
+                </div>
+              )}
 
               {/* Dark mode toggle */}
               <div className="flex items-center justify-between p-4 min-h-[64px]">

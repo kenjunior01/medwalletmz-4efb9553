@@ -7,7 +7,8 @@ import { useUserType } from '@/hooks/useUserType';
 import {
   Menu, ChevronRight, MapPin, PhoneCall, Globe, Sparkles, Stethoscope,
   Building2, FlaskConical, Truck, Store, ArrowRight, Briefcase, ChevronDown,
-  ChevronUp, Home, Bike, Heart, Users, Megaphone, Gift, Wallet, UserPlus, CheckCircle2, Plus
+  ChevronUp, Home, Bike, Heart, Users, Megaphone, Gift, Wallet, UserPlus, CheckCircle2, Plus,
+  Share2,
 } from '@/components/icons/lucide-compat';
 import {
   Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger,
@@ -114,29 +115,26 @@ export function BottomNav() {
 
   return (
     <>
-      {/* Floating Invite Button — smaller, no gradient glow */}
-      {user && (
-        <button
-          onClick={() => setShareSheetOpen(true)}
-          className="fixed bottom-20 right-3 z-40 h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-95 transition-transform no-tap-target"
-          aria-label="Convida Amigos"
-        >
-          <UserPlus className="h-5 w-5" />
-        </button>
-      )}
       <Suspense fallback={null}><ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} /></Suspense>
 
-      {/* Bottom nav — native feel with sliding pill indicator */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 border-t border-border/50 safe-area-bottom">
-        <div ref={navRef} className="relative flex items-center justify-around py-1.5 px-2 max-w-md mx-auto">
-          {/* Sliding pill indicator — CSS transition */}
+      {/* Bottom nav — native app feel with backdrop blur */}
+      <nav className="shrink-0 relative z-40 border-t border-border/50 pb-safe"
+        style={{
+          backgroundColor: 'hsl(var(--background) / 0.82)',
+          backdropFilter: 'blur(16px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+          paddingTop: 'env(safe-area-inset-bottom, 0px)' === '0px' ? undefined : undefined,
+        }}
+      >
+        <div ref={navRef} className="relative flex items-center justify-around px-1 pt-1.5 pb-1.5 max-w-md mx-auto" style={{ touchAction: 'manipulation' }}>
+          {/* Sliding pill indicator */}
           <div
-            className="absolute top-1 h-[calc(100%-8px)] rounded-xl bg-primary/10 pointer-events-none"
+            className="absolute top-1.5 h-[calc(100%-12px)] rounded-2xl bg-primary/8 pointer-events-none"
             style={{
               left: pillStyle.left,
               width: pillStyle.width,
               opacity: pillStyle.opacity,
-              transition: 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease',
+              transition: 'left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease',
             }}
           />
           {displayItems.map(({ path, icon: Icon, label, highlight }, idx) => {
@@ -151,10 +149,10 @@ export function BottomNav() {
                   data-active={isActive || undefined}
                   aria-label={translatedLabel}
                   onClick={() => haptic.medium()}
-                  className="flex flex-col items-center -mt-5 mx-1 mb-0.5 no-tap-target relative z-10"
+                  className="flex flex-col items-center -mt-4 mx-1 relative z-10 no-tap-target"
                 >
                   <div className={cn(
-                    'h-12 w-12 rounded-full flex items-center justify-center shadow-md transition-all duration-200',
+                    'h-11 w-11 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 transition-all duration-200',
                     'bg-primary text-primary-foreground',
                     isActive ? 'scale-105' : 'active:scale-95'
                   )}>
@@ -172,15 +170,15 @@ export function BottomNav() {
                 data-active={isActive || undefined}
                 onClick={() => haptic.light()}
                 className={cn(
-                  'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors duration-150 flex-1 no-tap-target relative z-10',
+                  'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-colors duration-150 flex-1 no-tap-target relative z-10',
                   isActive ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
-                <div className="p-1.5 rounded-xl">
-                  <Icon className="h-5 w-5" />
+                <div className="p-1 rounded-2xl">
+                  <Icon className="h-[18px] w-[18px]" />
                 </div>
                 <span className={cn(
-                  'text-[9px] font-semibold',
+                  'text-[10px] leading-tight font-medium',
                   isActive && 'text-primary font-bold'
                 )}>{translatedLabel}</span>
               </NavLink>
@@ -192,14 +190,14 @@ export function BottomNav() {
             <DrawerTrigger asChild>
               <button
                 className={cn(
-                  'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-colors duration-150 flex-1 no-tap-target',
+                  'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-colors duration-150 flex-1 no-tap-target',
                   open ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
-                <div className={cn('p-1.5 rounded-xl transition-colors duration-150', open && 'bg-primary/10')}>
-                  <Menu className="h-5 w-5" />
+                <div className={cn('p-1 rounded-2xl transition-colors duration-150', open && 'bg-primary/10')}>
+                  <Menu className="h-[18px] w-[18px]" />
                 </div>
-                <span className='text-[9px] font-semibold'>{t('common.more') || 'Mais'}</span>
+                <span className='text-[10px] leading-tight font-medium'>{t('common.more') || 'Mais'}</span>
               </button>
             </DrawerTrigger>
             <DrawerContent className="px-0 pb-10 max-h-[85vh] overflow-y-auto">
@@ -227,6 +225,23 @@ export function BottomNav() {
                   </Button>
                 </div>
 
+                {/* Invite Friends — inside drawer instead of floating button */}
+                {user && (
+                  <button
+                    onClick={() => { setOpen(false); setShareSheetOpen(true); }}
+                    className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-primary/5 border border-primary/15 mb-5 active:scale-[0.99] transition-transform"
+                  >
+                    <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Share2 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="font-bold text-sm">{t('bottomnav.invite_friends') || 'Convida Amigos'}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{t('bottomnav.invite_desc') || 'Partilha o MedWallet e ganha recompensas'}</p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                  </button>
+                )}
+
                 {/* My Institutions */}
                 <div className="mb-6">
                   <button
@@ -253,11 +268,11 @@ export function BottomNav() {
                                 key={inst.role}
                                 onClick={() => { navigate(inst.dashboard); setOpen(false); }}
                                 className={cn(
-                                  'rounded-xl border p-3 text-left transition-all active:scale-[0.98]',
+                                  'rounded-2xl border p-3 text-left transition-all active:scale-[0.98]',
                                   'bg-gradient-to-br ' + inst.gradient + ' ' + inst.borderColor,
                                 )}
                               >
-                                <div className={cn('h-9 w-9 rounded-lg flex items-center justify-center mb-2 border', inst.bgColor, inst.borderColor)}>
+                                <div className={cn('h-9 w-9 rounded-xl flex items-center justify-center mb-2 border', inst.bgColor, inst.borderColor)}>
                                   <Icon className={cn('h-4 w-4', inst.color)} />
                                 </div>
                                 <p className="font-bold text-sm leading-tight">{ROLE_LABELS[inst.role] || inst.role}</p>
@@ -271,9 +286,9 @@ export function BottomNav() {
                           {activeInstitutionRoles.length < INSTITUTION_ROLES.length && (
                             <button
                               onClick={() => { setOpen(false); navigate('/profile'); }}
-                              className="rounded-xl border border-dashed border-primary/20 p-3 text-left active:scale-[0.98]"
+                              className="rounded-2xl border border-dashed border-primary/20 p-3 text-left active:scale-[0.98]"
                             >
-                              <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/15 flex items-center justify-center mb-2">
+                              <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center mb-2">
                                 <Plus className="h-4 w-4 text-primary" />
                               </div>
                               <p className="font-bold text-sm text-primary">{t('bottomnav.add_institution') || 'Adicionar'}</p>
@@ -283,7 +298,7 @@ export function BottomNav() {
                       ) : (
                         <button
                           onClick={() => { setOpen(false); navigate('/profile'); }}
-                          className="w-full rounded-xl p-4 text-left active:scale-[0.99]"
+                          className="w-full rounded-2xl p-4 text-left active:scale-[0.99]"
                         >
                           <div className="flex items-center gap-3">
                             <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -312,11 +327,11 @@ export function BottomNav() {
                           <button
                             key={item.path}
                             onClick={() => { navigate(item.path); setOpen(false); }}
-                            className="flex items-center justify-between p-3 rounded-xl bg-card border border-border/50 hover:border-primary/20 active:bg-muted transition-colors w-full"
+                            className="flex items-center justify-between p-3 rounded-2xl bg-card border border-border/50 hover:border-primary/20 active:bg-muted transition-colors w-full"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="h-11 w-11 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-center">
-                                <item.icon className="h-4.5 w-4.5" />
+                              <div className="h-10 w-10 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-center">
+                                <item.icon className="h-4 w-4" />
                               </div>
                               <span className="font-semibold text-sm">{t(item.label)}</span>
                             </div>
@@ -331,9 +346,9 @@ export function BottomNav() {
                   <div className="pt-2">
                     <button
                       onClick={() => { setOpen(false); navigate('/health/triage'); }}
-                      className="w-full flex items-center gap-3 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive"
+                      className="w-full flex items-center gap-3 p-4 rounded-2xl bg-destructive/10 border border-destructive/20 text-destructive"
                     >
-                      <div className="h-11 w-11 rounded-xl bg-destructive text-white flex items-center justify-center">
+                      <div className="h-10 w-10 rounded-xl bg-destructive text-white flex items-center justify-center">
                         <PhoneCall className="h-5 w-5" />
                       </div>
                       <div className="flex-1 text-left">

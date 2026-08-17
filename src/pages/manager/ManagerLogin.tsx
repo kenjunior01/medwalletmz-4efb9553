@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { Loader2, ShieldCheck, Globe } from '@/components/icons/lucide-compat';
+import { Loader2, ShieldCheck } from '@/components/icons/lucide-compat';
 import { toast } from 'sonner';
 
 /** Rota do painel correspondente ao papel do gestor. */
@@ -51,8 +51,8 @@ export default function ManagerLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-background">
       <Helmet>
-        <title>Login de Gestor Regional | MedWallet</title>
-        <meta name="description" content="Acesso exclusivo ao painel de gestores regionais e provinciais da MedWallet." />
+        <title>Login do Gestor | MedWallet</title>
+        <meta name="description" content="Acesso ao painel de gestão MedWallet." />
       </Helmet>
 
       <Card className="w-full max-w-md p-8 rounded-3xl shadow-xl border-primary/20">
@@ -97,7 +97,7 @@ export default function ManagerLogin() {
           </Button>
         </form>
 
-        <div className="mt-6 pt-4 border-t border-border space-y-2 text-center">
+        <div className="mt-6 pt-4 border-t border-border text-center">
           <button
             type="button"
             className="text-xs text-primary font-semibold hover:underline"
@@ -105,12 +105,6 @@ export default function ManagerLogin() {
           >
             Esqueci a minha palavra-passe
           </button>
-          <p className="text-[11px] text-muted-foreground flex items-center justify-center gap-1">
-            <Globe className="h-3 w-3" /> Conta de utilizador normal?{' '}
-            <button type="button" className="text-primary font-semibold hover:underline" onClick={() => navigate('/auth')}>
-              Entrar aqui
-            </button>
-          </p>
         </div>
       </Card>
     </div>

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useCallback } from "react";
+import { Suspense, lazy, useEffect, useCallback, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { BottomNav } from "./BottomNav";
@@ -19,19 +19,6 @@ import { cn } from "@/lib/utils";
 // Lazy-load notification popup — was loading framer-motion + Lottie + FloatingParticles on every page
 const NotificationPermissionPopup = lazy(() => import("@/components/notifications/NotificationPermissionPopup"));
 
-/** Mapeia o pathname actual para o contexto do Meddy. */
-function contextFromPath(pathname: string) {
-  if (pathname.startsWith("/health/doctors")) return "empty_doctors";
-  if (pathname.startsWith("/health/triage")) return "triage";
-  if (pathname.startsWith("/health/education")) return "education";
-  if (pathname.startsWith("/pharmacy") || pathname.startsWith("/store")) return "empty_pharmacies";
-  if (pathname.startsWith("/orders")) return "orders";
-  if (pathname.startsWith("/profile") || pathname.startsWith("/wallet"))
-    return pathname.startsWith("/wallet") ? "wallet" : "profile";
-  if (pathname.startsWith("/admin/curation")) return "curation";
-  return "home";
-}
-
 /** Minimal loading state — fast and clean */
 function LoadingScreen() {
   return (
@@ -48,6 +35,8 @@ export function AppLayout() {
   const device = useDeviceType();
   const isMobile = device === "mobile";
   const queryClient = useQueryClient();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
 
   const handleRefresh = useCallback(async () => {
     // Invalidate all active queries for the current page
@@ -56,39 +45,117 @@ export function AppLayout() {
 
   // Scroll to top on route change — native app feel
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    }
+    // Reset header on navigation
+    setHeaderCollapsed(false);
   }, [location.pathname]);
 
+  // Collapsible header: hide on scroll down, show on scroll up (mobile only)
+  useEffect(() => {
+    if (!isMobile) return;
+    let lastScrollY = 0;
+    let ticking = false;
+    const container = scrollContainerRef.current;
+
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const currentY = container ? container.scrollTop : window.scrollY;
+          // Collapse after scrolling down 40px, expand when scrolling up or near top
+          if (currentY > 40 && currentY > lastScrollY) {
+            setHeaderCollapsed(true);
+          } else {
+            setHeaderCollapsed(false);
+          }
+          lastScrollY = currentY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    if (container) {
+      container.addEventListener('scroll', onScroll, { passive: true });
+      return () => container.removeEventListener('scroll', onScroll);
+    } else {
+      window.addEventListener('scroll', onScroll, { passive: true });
+      return () => window.removeEventListener('scroll', onScroll);
+    }
+  }, [isMobile]);
+
+  // =============== MOBILE APP SHELL ===============
+  // Native app feel: fixed header + scrollable content + fixed bottom nav
+  // Uses dvh (dynamic viewport height) to handle mobile browser chrome
+  if (isMobile) {
+    return (
+      <PopupCoordinatorProvider>
+        <div className="fixed inset-0 bg-background flex flex-col overflow-hidden" style={{ height: '100dvh' }}>
+          {/* Offline banner — thin, at the very top */}
+          <OfflineBanner />
+
+          {/* Collapsible Header — fixed, slides up/down */}
+          <div
+            className="shrink-0 transition-transform duration-200 ease-out z-30"
+            style={{ transform: headerCollapsed ? 'translateY(-100%)' : 'translateY(0)' }}
+          >
+            <Header collapsed={headerCollapsed} />
+          </div>
+
+          {/* Scrollable content area — fills remaining space */}
+          <main
+            ref={scrollContainerRef}
+            className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
+            <Suspense fallback={<LoadingScreen />}>
+              <PullToRefresh onRefresh={handleRefresh}>
+                <PageTransition>
+                  <div className="pb-2">
+                    <Outlet />
+                  </div>
+                </PageTransition>
+              </PullToRefresh>
+            </Suspense>
+          </main>
+
+          {/* Fixed Bottom Navigation */}
+          <BottomNav />
+
+          {/* Popups — rendered above everything */}
+          <Suspense fallback={null}>
+            <NotificationPermissionPopup />
+          </Suspense>
+          <Suspense fallback={null}><PWAInstallPrompt /></Suspense>
+        </div>
+      </PopupCoordinatorProvider>
+    );
+  }
+
+  // =============== DESKTOP/TABLET LAYOUT ===============
+  // Traditional sidebar + header + rail layout
   return (
     <PopupCoordinatorProvider>
       <div className="relative min-h-screen bg-background flex">
-        {/* No animated backgrounds on mobile — clean, fast, native feel */}
-        {!isMobile && <AppSidebar />}
+        <AppSidebar />
         <div className="relative z-10 flex-1 flex flex-col min-w-0">
           <OfflineBanner />
           <Header />
           <div className="flex-1 w-full max-w-7xl mx-auto lg:px-6 lg:gap-6 lg:pt-2 flex">
-            <main className={cn("flex-1 min-w-0", isMobile && "pb-20")}>
+            <main className="flex-1 min-w-0">
               <Suspense fallback={<LoadingScreen />}>
-                {isMobile ? (
-                  <PullToRefresh onRefresh={handleRefresh}>
-                    <PageTransition>
-                      <Outlet />
-                    </PageTransition>
-                  </PullToRefresh>
-                ) : (
-                  <PageTransition>
-                    <Outlet />
-                  </PageTransition>
-                )}
+                <PageTransition>
+                  <Outlet />
+                </PageTransition>
               </Suspense>
             </main>
             {device === "desktop" && <DesktopRail />}
           </div>
-          {isMobile && <BottomNav />}
         </div>
 
-        {/* Lazy-loaded — only fetches JS after 8s delay inside the component */}
         <Suspense fallback={null}>
           <NotificationPermissionPopup />
         </Suspense>

@@ -1208,14 +1208,12 @@ html.data-saver .mw-header-mesh { display: none !important; }
 /* ═══════════════════════════════════════════════════════════════════════════
    NATIVE PAGE TRANSITIONS — CSS only, zero JS
    ═══════════════════════════════════════════════════════════════════════════ */
-.page-enter {
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .page-enter-active {
-  opacity: 1;
-  transform: translateY(0);
+  animation: page-fade-in 0.15s ease-out both;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1272,6 +1270,27 @@ html.data-saver .mw-header-mesh { display: none !important; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   DYNAMIC VIEWPORT HEIGHT — Fix 100dvh for older browsers
+   ═══════════════════════════════════════════════════════════════════════════ */
+@supports not (height: 100dvh) {
+  .dvh-fallback { height: 100vh; height: -webkit-fill-available; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE APP SHELL — Native bottom tab bar
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* The bottom nav is now part of the flex column in AppLayout (mobile),
+   so it needs to be a flex child, not position:fixed */
+@media (max-width: 767px) {
+  /* Ensure html/body don't add extra scrollbars inside the app shell */
+  html, body {
+    overflow: hidden;
+    height: 100%;
+    height: -webkit-fill-available;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    BOTTOM SHEET — Native drag handle
    ═══════════════════════════════════════════════════════════════════════════ */
 [data-side="bottom"] {
@@ -1312,6 +1331,13 @@ html.data-saver .mw-header-mesh { display: none !important; }
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (pointer: coarse) {
   /* Kill all infinite animations on mobile — they drain GPU/battery */
+  /* Stagger: skip opacity:0 flash on touch devices */
+  .stagger-children > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
   .animate-pulse-glow,
   .animate-sos-pulse-glow,
   .animate-shimmer,
@@ -1371,6 +1397,17 @@ html.data-saver .mw-header-mesh { display: none !important; }
 .overflow-y-auto, .overflow-auto, .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+}
+
+/* TOUCH OPTIMIZATION - Remove 300ms double-tap zoom delay */
+a, button, [role="button"], input, select, textarea, label, .no-tap-target {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* SAFE AREA BOTTOM - Bottom nav + home indicator (iPhone X+) */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

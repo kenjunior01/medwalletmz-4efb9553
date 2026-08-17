@@ -187,9 +187,12 @@ class NotificationService {
 
     try {
       const registration = await navigator.serviceWorker.getRegistration('/');
+      // Use existing PWA service worker — don't register a separate /sw.js
+      // The VitePWA plugin already registers a service worker at the root scope
       if (!registration) {
-        // Register the service worker if not already done
-        await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+        // PWA SW not yet registered — the VitePWA plugin's autoUpdate will handle it
+        logger.info('[NotificationService] No SW found yet — PWA plugin will register one');
+        return;
       }
     } catch (err) {
       logger.warn('[NotificationService] Web push registration failed:', { error: err });

@@ -48,9 +48,19 @@ function LazyMount({ children, rootMargin = '200px' }: { children: React.ReactNo
   return <div ref={ref}>{visible ? children : null}</div>;
 }
 
-/** Lightweight Suspense wrapper — renders nothing until chunk loads */
-function LazySuspense({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={null}>{children}</Suspense>;
+/** Lightweight Suspense wrapper — shows skeleton placeholder until chunk loads */
+function LazySuspense({ children, height = 120 }: { children: React.ReactNode; height?: number }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-4 animate-pulse">
+          <div className="bg-muted rounded-2xl" style={{ height }} />
+        </div>
+      }
+    >
+      {children}
+    </Suspense>
+  );
 };
 // Heavy imports removed from Home for mobile performance:
 // - EnableNotificationsBanner (rendered elsewhere), MagneticWrapper, ShimmerCard,

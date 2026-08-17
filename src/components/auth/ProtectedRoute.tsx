@@ -32,6 +32,10 @@ export default function ProtectedRoute({ allowedRoles, children }: ProtectedRout
   }
 
   if (allowedRoles && !allowedRoles.some(r => hasRole(r as any))) {
+    // Se é gestor regional, redirecionar silenciosamente para o seu painel
+    if (hasRole('country_manager')) {
+      return <Navigate to="/manager" replace />;
+    }
     return (
       <div className="flex items-center justify-center min-h-screen bg-background p-4">
         <Card className="max-w-md w-full p-6 flex flex-col items-center gap-4 text-center">

@@ -34,7 +34,7 @@ export function useComplianceOverview() {
       if (error) throw error;
       return (data || []) as unknown as ComplianceOverviewRow[];
     },
-    staleTime: 30_000,
+    staleTime: 5 * 60_000, // 5min — compliance data changes rarely
   });
 }
 
@@ -71,7 +71,7 @@ export function usePartnerCertifications(countryId?: string, filters?: { tier?: 
         partner_phone: d.partner?.phone,
       })) as unknown as PartnerCertification[];
     },
-    staleTime: 30_000,
+    staleTime: 5 * 60_000, // 5min — near-static data
   });
 }
 
@@ -104,7 +104,7 @@ export function useComplianceDocuments(countryId?: string, expiringOnly = false)
         };
       }) as unknown as ComplianceDocument[];
     },
-    staleTime: 30_000,
+    staleTime: 5 * 60_000, // 5min — near-static data
   });
 }
 
@@ -126,7 +126,7 @@ export function useAuditTrail(countryId?: string, limit = 50) {
         partner_name: d.partner?.full_name,
       })) as unknown as ComplianceAuditEvent[];
     },
-    staleTime: 15_000,
+    staleTime: 2 * 60_000, // 2min — audit events slightly more dynamic
   });
 }
 
@@ -162,7 +162,7 @@ export function useMicroInsuranceClaims(countryId?: string, limit = 50) {
         user_name: Array.isArray(d.user) ? d.user[0]?.full_name : d.user?.full_name,
       })) as unknown as MicroInsuranceClaim[];
     },
-    staleTime: 30_000,
+    staleTime: 5 * 60_000, // 5min — near-static data
   });
 }
 

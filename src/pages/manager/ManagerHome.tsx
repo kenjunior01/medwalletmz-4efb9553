@@ -62,7 +62,7 @@ function timeAgo(dateStr: string): string {
 
 export default function ManagerHome() {
   const { user, hasRole, signOut } = useAuth();
-  const { managedCountryId, countryName, countryCode, isGlobalAdmin, countryFilter } = useManagedCountry();
+  const { managedCountryId, countryName, countryCode, countryFilter } = useManagedCountry();
   const { t } = useCountry();
   const navigate = useNavigate();
   const [stats, setStats] = useState<ManagerStats>({
@@ -254,11 +254,10 @@ export default function ManagerHome() {
           <p className="text-sm text-muted-foreground">
             {countryName} ({countryCode})
           </p>
-          {isGlobalAdmin && (
-            <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20 text-xs">
-              Admin Global
-            </Badge>
-          )}
+          {/* Badge de identidade — sem referência a níveis superiores */}
+          <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">
+            {t('manager.panel_label') || 'Gestor Regional'}
+          </Badge>
         </div>
         {lastSession && (
           <p className="text-[11px] text-muted-foreground mt-0.5">
@@ -289,7 +288,7 @@ export default function ManagerHome() {
       )}
 
       {/* Restrictions notice — only show when relevant */}
-      {!hasAllPermissions && !isGlobalAdmin && (
+      {!hasAllPermissions && !hasRole('admin') && (
         <Card className={hasNoPermissions ? 'border-red-500/20 bg-red-500/5' : 'border-amber-500/20 bg-amber-500/5'}>
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
@@ -313,7 +312,7 @@ export default function ManagerHome() {
                 )}
                 {hasNoPermissions && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Contacte o administrador para activar permissões.
+                    {t('manager.no_permissions_hint') || 'As suas permissões serão activadas em breve.'}
                   </p>
                 )}
               </div>
@@ -372,12 +371,12 @@ export default function ManagerHome() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-2">
-        {(restrictions.canApproveDoctors || isGlobalAdmin) && (
+        {(restrictions.canApproveDoctors || hasRole('admin')) && (
           <Button variant="outline" className="h-12 gap-2 text-sm" onClick={() => navigate('/manager/users')}>
             <Stethoscope className="h-4 w-4" /> {t('manager.manage_doctors') || 'Gerir Médicos'}
           </Button>
         )}
-        {(restrictions.canApprovePharmacies || isGlobalAdmin) && (
+        {(restrictions.canApprovePharmacies || hasRole('admin')) && (
           <Button variant="outline" className="h-12 gap-2 text-sm" onClick={() => navigate('/manager/stores')}>
             <Store className="h-4 w-4" /> {t('manager.manage_pharmacies') || 'Gerir Farmácias'}
           </Button>

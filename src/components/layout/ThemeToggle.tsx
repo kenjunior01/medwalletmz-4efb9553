@@ -59,7 +59,7 @@ export function ThemeToggle() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative hover:bg-primary/10 rounded-xl transition-all h-11 w-11"
+          className="relative hover:bg-primary/10 rounded-xl transition-all h-8 w-8 no-tap-target"
           aria-label="Alternar tema"
         >
           <Icon className="h-4 w-4 transition-transform" />

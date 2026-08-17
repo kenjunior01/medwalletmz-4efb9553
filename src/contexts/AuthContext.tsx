@@ -169,7 +169,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Auto-cache critical data for offline access on sign-in
           if (_event === 'SIGNED_IN' && session?.user) {
             offlineManager.init();
-            offlineManager.cacheAll(session.user.id).catch((e) => { logger.warn('Failed to cache data offline', { error: e }); });
+            // Defer heavy offline caching to avoid blocking post-login UI
+            const deferCache = () => offlineManager.cacheAll(session.user.id).catch((e) => { logger.warn('Failed to cache data offline', { error: e }); });
+            if ('requestIdleCallback' in window) { (window as any).requestIdleCallback(deferCache); } else { setTimeout(deferCache, 3000); }
             // Analytics: identify user on sign-in
             identifyUser(session.user.id, {
               email: session.user.email,
@@ -195,7 +197,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Cache offline data for returning users
         if (data.session?.user) {
           offlineManager.init();
-          offlineManager.cacheAll(data.session.user.id).catch((e) => { logger.warn('Failed to cache data offline', { error: e }); });
+          const deferCacheRestore = () => offlineManager.cacheAll(data.session.user.id).catch((e) => { logger.warn('Failed to cache data offline', { error: e }); });
+          if ('requestIdleCallback' in window) { (window as any).requestIdleCallback(deferCacheRestore); } else { setTimeout(deferCacheRestore, 3000); }
         }
       } catch (err) {
         logError('auth', 'Falha ao carregar sessão inicial', err, newRequestId('sess'));
