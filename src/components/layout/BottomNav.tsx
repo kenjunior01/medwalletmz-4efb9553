@@ -24,10 +24,10 @@ import { useCapacitor } from '@/hooks/useCapacitor';
 
 /** Professional institution roles with their metadata */
 const INSTITUTION_ROLES = [
-  { role: 'doctor' as const, icon: Stethoscope, color: 'text-blue-500', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20', gradient: 'from-blue-500/5 to-blue-500/10', dashboard: '/doctor/dashboard', register: '/doctor/register' },
+  { role: 'doctor' as const, icon: Stethoscope, color: 'text-primary', bgColor: 'bg-primary/10', borderColor: 'border-primary/20', gradient: 'from-primary/5 to-primary/10', dashboard: '/doctor/dashboard', register: '/doctor/register' },
   { role: 'clinic' as const, icon: Building2, color: 'text-gold', bgColor: 'bg-gold/10', borderColor: 'border-gold/20', gradient: 'from-gold/5 to-gold/10', dashboard: '/clinic/dashboard', register: '/clinic/register' },
-  { role: 'store_owner' as const, icon: Store, color: 'text-green-500', bgColor: 'bg-green-500/10', borderColor: 'border-green-500/20', gradient: 'from-green-500/5 to-green-500/10', dashboard: '/store/dashboard', register: '/store/register' },
-  { role: 'lab' as const, icon: FlaskConical, color: 'text-cyan-500', bgColor: 'bg-cyan-500/10', borderColor: 'border-cyan-500/20', gradient: 'from-cyan-500/5 to-cyan-500/10', dashboard: '/lab/dashboard', register: '/lab/register' },
+  { role: 'store_owner' as const, icon: Store, color: 'text-emerald', bgColor: 'bg-emerald/10', borderColor: 'border-emerald/20', gradient: 'from-emerald/5 to-emerald/10', dashboard: '/store/dashboard', register: '/store/register' },
+  { role: 'lab' as const, icon: FlaskConical, color: 'text-primary', bgColor: 'bg-primary/10', borderColor: 'border-primary/20', gradient: 'from-primary/5 to-primary/10', dashboard: '/lab/dashboard', register: '/lab/register' },
   { role: 'driver' as const, icon: Truck, color: 'text-orange-500', bgColor: 'bg-orange-500/10', borderColor: 'border-orange-500/20', gradient: 'from-orange-500/5 to-orange-500/10', dashboard: '/driver/dashboard', register: '/driver/register' },
 ] as const;
 
@@ -49,26 +49,6 @@ export function BottomNav() {
   const [open, setOpen] = useState(false);
   const [institutionsOpen, setInstitutionsOpen] = useState(true);
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
-
-  // Sliding pill indicator
-  const navRef = useRef<HTMLDivElement>(null);
-  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
-
-  const updatePill = useCallback(() => {
-    const container = navRef.current;
-    if (!container) return;
-    const activeBtn = container.querySelector('[data-active="true"]') as HTMLElement;
-    if (!activeBtn) { setPillStyle(s => ({ ...s, opacity: 0 })); return; }
-    const containerRect = container.getBoundingClientRect();
-    const btnRect = activeBtn.getBoundingClientRect();
-    setPillStyle({
-      left: btnRect.left - containerRect.left,
-      width: btnRect.width,
-      opacity: 1,
-    });
-  }, []);
-
-  useEffect(() => { updatePill(); }, [location.pathname, updatePill]);
 
   const navItems = bottomNavByRole[role] ?? bottomNavByRole.customer;
   const allItems = sidebarByRole[role] ?? sidebarByRole.customer;
@@ -117,26 +97,16 @@ export function BottomNav() {
     <>
       <Suspense fallback={null}><ViralShareSheet open={shareSheetOpen} onOpenChange={setShareSheetOpen} /></Suspense>
 
-      {/* Bottom nav — native app feel with backdrop blur */}
-      <nav className="shrink-0 relative z-40 border-t border-border/50 pb-safe"
+      {/* Ada Health inspired bottom navigation — clean, minimal, frosted glass */}
+      <nav className="shrink-0 relative z-40 pb-safe"
         style={{
-          backgroundColor: 'hsl(var(--background) / 0.82)',
-          backdropFilter: 'blur(16px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-          paddingTop: 'env(safe-area-inset-bottom, 0px)' === '0px' ? undefined : undefined,
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          borderTop: '0.5px solid rgba(0, 0, 0, 0.06)',
         }}
       >
-        <div ref={navRef} className="relative flex items-center justify-around px-1 pt-1.5 pb-1.5 max-w-md mx-auto" style={{ touchAction: 'manipulation' }}>
-          {/* Sliding pill indicator */}
-          <div
-            className="absolute top-1.5 h-[calc(100%-12px)] rounded-2xl bg-primary/8 pointer-events-none"
-            style={{
-              left: pillStyle.left,
-              width: pillStyle.width,
-              opacity: pillStyle.opacity,
-              transition: 'left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease',
-            }}
-          />
+        <div className="flex items-center justify-around px-2 pt-2 pb-1.5 max-w-md mx-auto" style={{ minHeight: 56, touchAction: 'manipulation' }}>
           {displayItems.map(({ path, icon: Icon, label, highlight }, idx) => {
             const isActive = location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
             const translatedLabel = t(label);
@@ -149,16 +119,17 @@ export function BottomNav() {
                   data-active={isActive || undefined}
                   aria-label={translatedLabel}
                   onClick={() => haptic.medium()}
-                  className="flex flex-col items-center -mt-4 mx-1 relative z-10 no-tap-target"
+                  className="flex flex-col items-center -mt-5 mx-1 relative z-10 no-tap-target"
                 >
                   <div className={cn(
-                    'h-11 w-11 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 transition-all duration-200',
+                    'h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-200',
                     'bg-primary text-primary-foreground',
+                    'shadow-[0_4px_16px_rgba(30,107,156,0.3)]',
                     isActive ? 'scale-105' : 'active:scale-95'
                   )}>
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-5 w-5" strokeWidth={1.8} />
                   </div>
-                  <span className="text-[9px] font-bold mt-1 text-primary">{translatedLabel}</span>
+                  <span className="text-[9px] font-semibold mt-1.5 text-primary leading-tight">{translatedLabel}</span>
                 </NavLink>
               );
             }
@@ -169,17 +140,21 @@ export function BottomNav() {
                 to={path}
                 data-active={isActive || undefined}
                 onClick={() => haptic.light()}
-                className={cn(
-                  'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-colors duration-150 flex-1 no-tap-target relative z-10',
-                  isActive ? 'text-primary' : 'text-muted-foreground'
-                )}
+                className="flex flex-col items-center gap-0.5 px-3 py-1.5 transition-all duration-200 flex-1 no-tap-target relative"
               >
-                <div className="p-1 rounded-2xl">
-                  <Icon className="h-[18px] w-[18px]" />
-                </div>
+                {isActive && (
+                  <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+                )}
+                {isActive && (
+                  <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+                )}
+                <Icon className={cn(
+                  'h-[22px] w-[22px] transition-colors duration-200',
+                  isActive ? 'text-primary' : 'text-gray-400'
+                )} strokeWidth={isActive ? 2 : 1.5} />
                 <span className={cn(
-                  'text-[10px] leading-tight font-medium',
-                  isActive && 'text-primary font-bold'
+                  'text-[10px] leading-tight transition-colors duration-200',
+                  isActive ? 'text-primary font-semibold' : 'text-gray-400 font-medium'
                 )}>{translatedLabel}</span>
               </NavLink>
             );
@@ -190,13 +165,14 @@ export function BottomNav() {
             <DrawerTrigger asChild>
               <button
                 className={cn(
-                  'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-colors duration-150 flex-1 no-tap-target',
-                  open ? 'text-primary' : 'text-muted-foreground'
+                  'flex flex-col items-center gap-0.5 px-3 py-1.5 transition-all duration-200 flex-1 no-tap-target relative',
+                  open ? 'text-primary' : 'text-gray-400'
                 )}
               >
-                <div className={cn('p-1 rounded-2xl transition-colors duration-150', open && 'bg-primary/10')}>
-                  <Menu className="h-[18px] w-[18px]" />
-                </div>
+                {open && (
+                  <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+                )}
+                <Menu className={cn('h-[22px] w-[22px]')} strokeWidth={open ? 2 : 1.5} />
                 <span className='text-[10px] leading-tight font-medium'>{t('common.more') || 'Mais'}</span>
               </button>
             </DrawerTrigger>
@@ -225,7 +201,7 @@ export function BottomNav() {
                   </Button>
                 </div>
 
-                {/* Invite Friends — inside drawer instead of floating button */}
+                {/* Invite Friends */}
                 {user && (
                   <button
                     onClick={() => { setOpen(false); setShareSheetOpen(true); }}
