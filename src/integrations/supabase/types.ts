@@ -5175,6 +5175,42 @@ export type Database = {
           },
         ]
       }
+      user_notification_preferences: {
+        Row: {
+          consultation_updates: boolean
+          created_at: string
+          daily_health_checkin: boolean
+          daily_health_recommendations: boolean
+          order_updates: boolean
+          quiet_hours_end: number
+          quiet_hours_start: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consultation_updates?: boolean
+          created_at?: string
+          daily_health_checkin?: boolean
+          daily_health_recommendations?: boolean
+          order_updates?: boolean
+          quiet_hours_end?: number
+          quiet_hours_start?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consultation_updates?: boolean
+          created_at?: string
+          daily_health_checkin?: boolean
+          daily_health_recommendations?: boolean
+          order_updates?: boolean
+          quiet_hours_end?: number
+          quiet_hours_start?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_referrals: {
         Row: {
           bonus_coins: number | null
@@ -6311,6 +6347,18 @@ export type Database = {
           p_vehicle_id: string
         }
         Returns: boolean
+      }
+      upsert_notification_preferences: {
+        Args: {
+          p_consultation_updates?: boolean
+          p_daily_health_checkin?: boolean
+          p_daily_health_recommendations?: boolean
+          p_order_updates?: boolean
+          p_quiet_hours_end?: number
+          p_quiet_hours_start?: number
+          p_user_id: string
+        }
+        Returns: undefined
       }
       validate_checkout_amounts: {
         Args: {

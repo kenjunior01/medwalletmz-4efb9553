@@ -5,7 +5,20 @@ import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  // Lovable Cloud exposes canonical SUPABASE_* variables during deployment.
+  // Map them to the VITE_* names expected by the generated browser client.
+  const define: Record<string, string> = {};
+  const supabaseUrl = process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL;
+  const supabasePublishableKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_PUBLISHABLE_KEY;
+  const supabaseProjectId = process.env.VITE_SUPABASE_PROJECT_ID ?? process.env.SUPABASE_PROJECT_ID;
+
+  if (supabaseUrl) define['import.meta.env.VITE_SUPABASE_URL'] = JSON.stringify(supabaseUrl);
+  if (supabasePublishableKey) define['import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY'] = JSON.stringify(supabasePublishableKey);
+  if (supabaseProjectId) define['import.meta.env.VITE_SUPABASE_PROJECT_ID'] = JSON.stringify(supabaseProjectId);
+
+  return {
+  define,
   server: {
     host: "::",
     port: 8080,
@@ -147,4 +160,5 @@ export default defineConfig(({ mode }) => ({
       },
     }),
   ].filter(Boolean),
-}));
+  };
+});
