@@ -248,8 +248,8 @@ export default function NotificationsPage() {
         load
       )
       .on(
-        "postgres_changes",
-        { event: "update", schema: "public", table: "automated_notifications", filter: `user_id=eq.${user.id}` },
+        "postgres_changes" as any,
+        { event: "update", schema: "public", table: "automated_notifications", filter: `user_id=eq.${user.id}` } as any,
         load
       )
       .subscribe();
