@@ -7,7 +7,7 @@ import { OfflineBanner } from "./OfflineBanner";
 import { DesktopRail } from "./DesktopRail";
 import { AppSidebar } from "./AppSidebar";
 // Lazy-loaded: framer-motion (~35KB gzip) não precisa estar no bundle inicial
-const PWAInstallPrompt = lazy(() => import("@/components/pwa/PWAInstallPrompt"));
+const PWAInstallPrompt = lazy(() => import("@/components/pwa/PWAInstallPrompt").then((m) => ({ default: m.PWAInstallPrompt })));
 import { OfflineIndicator } from "@/components/offline";
 import { PopupCoordinatorProvider } from "./PopupCoordinator";
 import { useDeviceType } from "@/hooks/useDeviceType";

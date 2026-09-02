@@ -206,7 +206,7 @@ export function useNotifications() {
     const lastSeen = localStorage.getItem(lastSeenKey) || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
     (async () => {
-      const { data: recent } = await supabase
+      const { data: recent } = await (supabase as any)
         .from('automated_notifications')
         .select('id, title, body, metadata, sent_at')
         .eq('user_id', user.id)
