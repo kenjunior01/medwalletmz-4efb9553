@@ -144,8 +144,7 @@ export default function Settings() {
           setDailyRecommendations(data.daily_health_recommendations !== false);
           persist({ dailyCheckin: data.daily_health_checkin, dailyRecommendations: data.daily_health_recommendations });
         }
-      })
-      .catch(() => {});
+      }, () => {});
   }, [user]);
 
   const handleNotificationsChange = (checked: boolean) => {

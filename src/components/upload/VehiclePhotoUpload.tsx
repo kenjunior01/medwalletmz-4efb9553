@@ -7,6 +7,10 @@ interface VehiclePhotoUploadProps {
   label?: string;
   accept?: string;
   className?: string;
+  driverId?: string;
+  photos?: Record<string, string>;
+  onChange?: (payload: any) => void;
+  required?: string[];
 }
 
 export function VehiclePhotoUpload({ onFileSelect, label = 'Carregar foto do veículo', accept = 'image/*', className }: VehiclePhotoUploadProps) {

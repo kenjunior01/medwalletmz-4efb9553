@@ -7,6 +7,10 @@ interface LicenseUploadProps {
   label?: string;
   accept?: string;
   className?: string;
+  slot?: string;
+  description?: string;
+  value?: string | null;
+  onUploaded?: (payload: any) => void;
 }
 
 export function LicenseUpload({ onFileSelect, label = 'Carregar licença', accept = 'image/*,.pdf', className }: LicenseUploadProps) {

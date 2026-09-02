@@ -49,7 +49,7 @@ export default function ManagerUsers() {
     if (!managedCountryId) return;
     setLoading(true);
 
-    let query = supabase
+    let query = (supabase as any)
       .from('profiles')
       .select('*', { count: 'exact' })
       .eq('country_id', managedCountryId)

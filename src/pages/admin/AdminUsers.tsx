@@ -26,6 +26,7 @@ interface UserWithRoles {
   avatar_url: string | null;
   created_at: string;
   default_city: string | null;
+  country_id?: string | null;
   roles: { role: AppRole; country_id?: string | null }[];
 }
 
