@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "MedWallet (dev)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define=SUPABASE_URL=https://pfqruzusjjxyidhqkiob.supabase.co",
+        "--dart-define=SUPABASE_ANON_KEY=SUBSTITUI_PELO_TEU_ANON_KEY"
+      ]
+    },
+    {
+      "name": "MedWallet (release Android)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "args": [
+        "--dart-define=SUPABASE_URL=https://pfqruzusjjxyidhqkiob.supabase.co",
+        "--dart-define=SUPABASE_ANON_KEY=SUBSTITUI_PELO_TEU_ANON_KEY"
+      ]
+    }
+  ]
+}
