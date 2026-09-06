@@ -7,6 +7,7 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/otp_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
+import '../../features/blood/presentation/blood_hub_screen.dart';
 import '../../features/bookings/presentation/bookings_screen.dart';
 import '../../features/bookings/presentation/prescriptions_screen.dart';
 import '../../features/bookings/presentation/verify_prescription_screen.dart';
@@ -27,7 +28,9 @@ import '../../features/facilities/presentation/facility_detail_screen.dart';
 import '../../features/health_hub/presentation/health_hub_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/chat/presentation/facility_inbox_screen.dart';
+import '../../features/family/presentation/family_hub_screen.dart';
 import '../../features/insurance/presentation/insurance_screen.dart';
+import '../../features/journal/presentation/journal_screen.dart';
 import '../../features/labs/data/labs_repository.dart';
 import '../../features/labs/presentation/lab_detail_screen.dart';
 import '../../features/labs/presentation/lab_orders_screen.dart';
@@ -46,12 +49,15 @@ import '../../features/profile/presentation/profile_edit_screen.dart';
 import '../../features/profile/presentation/change_password_screen.dart';
 import '../../features/profile/presentation/health_profile_screen.dart';
 import '../../features/profile/presentation/help_legal_screen.dart';
+import '../../features/ranking/presentation/ranking_screen.dart';
 import '../../features/referrals/presentation/referrals_screen.dart';
 import '../../features/records/presentation/records_screen.dart';
 import '../../features/regional/presentation/regional_dashboard_screen.dart';
 import '../../features/services/presentation/services_screen.dart';
 import '../../features/services/presentation/specialists_screen.dart';
+import '../../features/solidarity/presentation/solidarity_screen.dart';
 import '../../features/sos/presentation/sos_screen.dart';
+import '../../features/subscriptions/presentation/plans_screen.dart';
 import '../../features/triage/presentation/triage_result_screen.dart';
 import '../../features/triage/presentation/triage_wizard_screen.dart';
 import '../../features/wallet/presentation/wallet_screen.dart';
@@ -284,6 +290,16 @@ final router = GoRouter(
     // F9 — Educação em saúde (health_articles).
     GoRoute(
         path: '/health-hub', builder: (_, __) => const HealthHubScreen()),
+
+    // F10 — Comunidade e bem-estar (paridade total com a web).
+    GoRoute(path: '/blood', builder: (_, __) => const BloodHubScreen()),
+    GoRoute(
+        path: '/solidarity', builder: (_, __) => const SolidarityScreen()),
+    GoRoute(path: '/journal', builder: (_, __) => const JournalScreen()),
+    GoRoute(
+        path: '/family', builder: (_, __) => const FamilyHubScreen()),
+    GoRoute(path: '/plans', builder: (_, __) => const PlansScreen()),
+    GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
   ],
 );
 

@@ -76,6 +76,72 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   ),
                 ),
               ]),
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.bloodtype_rounded,
+                    title: 'Banco de sangue',
+                    subtitle: 'Doar ou pedir',
+                    colors: const [Color(0xFFEF4444), Color(0xFF7F1D1D)],
+                    onTap: () => context.push('/blood'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.volunteer_activism_rounded,
+                    title: 'Solidariedade',
+                    subtitle: 'Apoio médico',
+                    colors: const [Color(0xFF14B8A6), Color(0xFF134E4A)],
+                    onTap: () => context.push('/solidarity'),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.auto_stories_rounded,
+                    title: 'Diário',
+                    subtitle: 'Bem-estar diário',
+                    colors: const [Color(0xFF8B5CF6), Color(0xFF4C1D95)],
+                    onTap: () => context.push('/journal'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.family_restroom_rounded,
+                    title: 'Família',
+                    subtitle: 'Cuidar à distância',
+                    colors: const [Color(0xFF3B82F6), Color(0xFF1E3A8A)],
+                    onTap: () => context.push('/family'),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.workspace_premium_rounded,
+                    title: 'Planos',
+                    subtitle: 'Subscrição M-Pesa',
+                    colors: const [Color(0xFFF59E0B), Color(0xFF78350F)],
+                    onTap: () => context.push('/plans'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.emoji_events_rounded,
+                    title: 'Ranking',
+                    subtitle: 'Melhor avaliados',
+                    colors: const [Color(0xFFEC4899), Color(0xFF831843)],
+                    onTap: () => context.push('/ranking'),
+                  ),
+                ),
+              ]),
               const SizedBox(height: 6),
               specialties.maybeWhen(
                 data: (list) => list.isEmpty

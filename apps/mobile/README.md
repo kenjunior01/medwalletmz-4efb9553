@@ -1,4 +1,4 @@
-# 🩺 MedWallet MZ — App Flutter (F0→F9 — Paridade total: Triagem, Chat, Vídeo Jitsi, Círculos, Registos, Ganhe, Gestão Global/Regional, SOS, Laboratórios, Push, Offline, **Painel do Médico**, **Slots de Agenda**, **Avaliações**, **Verificar Receita**, **Perfil de Saúde**, **Inbox de Instituições**, **Educação em Saúde**, **Depósito Multi-método**, 14 Idiomas)
+# 🩺 MedWallet MZ — App Flutter (F0→F10 — Paridade total: Triagem, Chat, Vídeo Jitsi, Círculos, Registos, Ganhe, Gestão Global/Regional, SOS, Laboratórios, Push, Offline, Painel do Médico, **Banco de Sangue**, **Solidariedade**, **Diário de Saúde**, **Família Cuidador**, **Planos/Subscrições**, **Ranking**, 14 Idiomas)
 
 App móvel **nativa** do MedWallet MZ, construída em Flutter com **Clean
 Architecture**, ligada **directamente à mesma base de dados Supabase** do
@@ -91,7 +91,7 @@ flutter run \
 > Se correres sem as defines, a app arranca com o banner **"SEM CONFIG"**
 > — é um lembrete intencional.
 
-## 4. O que já funciona (F0 → F8)
+## 4. O que já funciona (F0 → F10)
 
 ### Núcleo (F0–F2)
 | Módulo | Estado | Backend (tabelas/RPC) |
@@ -324,6 +324,22 @@ Enquanto não forem aplicadas, o resto da app funciona normalmente.
 | **Banner regional** (campanhas/avisos da gestão no Home) | ✅ | `regional_content` (is_active + janela) |
 | **Ajuda & Legal** (FAQ 8 perguntas + termos + contactos) | ✅ | estático + url_launcher |
 
+### Novidades F10 — comunidade & bem-estar (últimos módulos do web)
+| Módulo | Estado | Backend (tabelas/RPC) |
+|--------|--------|------------------------|
+| **Banco de Sangue** (pedidos críticos primeiro, voluntariar, progresso de unidades, tipo compatível destacado) | ✅ | `blood_requests`, `blood_donation_matches` (UNIQUE request+donor) |
+| **Registo de dador** (tipo de sangue, disponibilidade, histórico + recompensa automática de 100 MT) | ✅ | `blood_donors` (upsert por user_id) |
+| **Campanhas de doação** (janela temporal, tipos necessários, metas) | ✅ | `blood_donation_campaigns` |
+| **Pedir sangue** (folha completa: urgência, unidades, hospital, contacto) | ✅ | `blood_requests` INSERT (created_by) |
+| **Solidariedade** (campanhas verificadas, progresso de angariação, submeter pedido para revisão) | ✅ | `medical_aid_requests` (pending → approved) |
+| **Doar** (carteira via RPC debit + M-Pesa/e-Mola com instruções) | ✅ | `medical_aid_donations` + `wallet_debit('solidarity')` |
+| **Diário de Saúde** (check-in diário: humor 1-5, energia, sono, dor 0-10, sintomas, notas, gratidão + streak) | ✅ | `health_journal` (UNIQUE user_id+entry_date) |
+| **Insight IA do diário** (quando o job semanal preenche) | ✅ | `health_journal.ai_insight` (leitura) |
+| **Família / Cuidador** (ficha por familiar, cores, alergias/crónicas/medicação, lembretes tomou/saltou) | ✅ | `family_members`, `family_medication_logs` |
+| **Planos MedWallet** (planos do paciente, checkout M-Pesa com referência MW-XXXXXX, envio do tx ID) | ✅ | `subscription_plans`, `subscriptions`, `mpesa_manual_payments` |
+| **As minhas subscrições** (estados pending/active/expired) | ✅ | `subscriptions` (join plan) |
+| **Ranking de confiança** (médicos por rating, farmácias/clínicas/hospitais, medalhas top-3) | ✅ | `doctor_profiles`, `clinics`, `stores` (avg_rating) |
+
 ## 5. Arquitectura
 
 ```
@@ -376,6 +392,18 @@ lib/
     │                    hub, consola 10-secções, painel global,
     │                    painéis ops/growth + Meddy Copilot
     ├── regional/        data → controller → dashboard (legado, mantido)
+    ├── blood/           data (donors/requests/matches/campaigns) →
+    │                    hub 3-abas (pedidos, dador, campanhas)
+    ├── solidarity/      data (medical_aid_requests/donations) →
+    │                    campanhas verificadas + doação (wallet/mpesa/emola)
+    ├── journal/         data (health_journal) → check-in diário
+    │                    (humor/energia/sono/dor/sintomas) + streak
+    ├── family/          data (family_members + med logs) → ficha por
+    │                    familiar + medicação tomou/saltou
+    ├── subscriptions/   data (plans/subscriptions/mpesa_manual) →
+    │                    planos + checkout M-Pesa MW-XXXXXX
+    ├── ranking/         data (doctor_profiles/clinics/stores) →
+    │                    top avaliados com medalhas
     ├── home/            presentation (quick actions + badge)
     └── profile/         data (moradas) → presentation (+ idioma)
 ```
@@ -411,8 +439,8 @@ full-screen: `/triage` (wizard) → `/triage-result`, `/specialists`,
 
 ## 6. Roadmap (próximas fases)
 
-F9 fecha os últimos gaps funcionais face à web (lado do médico, donos
-de instituição, farmácias e verificação anti-fraude). Extensões naturais:
+F10 fecha a paridade funcional com os módulos comunitários e de
+bem-estar do web. Extensões naturais:
 
 - **Tradução integral** dos restantes ecrãs (a infra-estrutura de
   42 chaves × 14 idiomas já está pronta — basta acrescentar chaves);
@@ -420,7 +448,9 @@ de instituição, farmácias e verificação anti-fraude). Extensões naturais:
   reutilizando o padrão dos círculos;
 - **Anexos no chat dos círculos** (bucket dedicado com policies);
 - **Sync offline bidireccional** (fila de mutações quando a rede volta);
-- **Jitsi self-hosted** (definir `serverURL` próprio em vez de meet.jit.si).
+- **Jitsi self-hosted** (definir `serverURL` próprio em vez de meet.jit.si);
+- **Diário por voz** (`voice_journals` — gravação + upload; a transcrição
+  IA já corre no backend via jobs).
 
 ## 7. Problemas comuns
 
@@ -441,6 +471,10 @@ de instituição, farmácias e verificação anti-fraude). Extensões naturais:
 | Sem planos de seguro | tabela `insurance_plans` vazia | as seguradoras/owner criam planos (RLS de leitura pública) |
 | Reacções dos círculos não gravam | migração `circle_social_push` não aplicada | corre `supabase db push` (secção 4) |
 | Círculos sem realtime | idem — tabela fora da publication | idem |
+| Doação nos círculos não soma | migração não aplicada | corre `supabase db push` (secção 4) |
+| Pedidos de sangue vazios | sem pedidos 'open' na base | cria um pedido na aba Pedidos → FAB |
+| Planos vazios | `subscription_plans` sem linhas patient | admin publica planos (is_active=true) |
+| Ranking vazio | sem avaliações em `doctor_reviews`/instituições | avalia consultas e instituições primeiro |
 | Build falha no Jitsi (minSdk) | SDK exige `minSdk ≥ 26` | `android/app/build.gradle.kts`: `minSdk = 26`; iOS: `platform :ios, '15.0'` |
 | Push não chega | `FCM_ENABLED` off ou Firebase sem config | adiciona a flag + `google-services.json` / `GoogleService-Info.plist` |
 | App abre com dados antigos sem internet | normal — cache offline a servir dados | activa a rede; o cache refresca sozinho |

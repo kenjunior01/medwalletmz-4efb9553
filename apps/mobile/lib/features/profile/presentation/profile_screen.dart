@@ -239,6 +239,31 @@ class ProfileScreen extends ConsumerWidget {
                     onTap: () => context.push('/circles'),
                   ),
                   _MenuItem(
+                    icon: Icons.bloodtype_rounded,
+                    label: 'Banco de Sangue',
+                    onTap: () => context.push('/blood'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.volunteer_activism_rounded,
+                    label: 'Solidariedade',
+                    onTap: () => context.push('/solidarity'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.auto_stories_rounded,
+                    label: 'Diário de Saúde',
+                    onTap: () => context.push('/journal'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.family_restroom_rounded,
+                    label: 'Família',
+                    onTap: () => context.push('/family'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.workspace_premium_rounded,
+                    label: 'Planos MedWallet',
+                    onTap: () => context.push('/plans'),
+                  ),
+                  _MenuItem(
                     icon: Icons.card_giftcard_rounded,
                     label: 'Convida e Ganha',
                     onTap: () => context.push('/referrals'),
