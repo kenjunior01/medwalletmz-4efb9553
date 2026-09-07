@@ -28,6 +28,13 @@ import '../../features/facilities/presentation/facility_detail_screen.dart';
 import '../../features/health_hub/presentation/health_hub_screen.dart';
 import '../../features/health_workers/presentation/health_workers_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/ads/presentation/ads_screen.dart';
+import '../../features/ape_network/presentation/ape_network_screen.dart';
+import '../../features/impact/presentation/impact_screen.dart';
+import '../../features/monetization/presentation/monetization_hub_screen.dart';
+import '../../features/rewards/presentation/rewards_screen.dart';
+import '../../features/riders/presentation/rider_screen.dart';
+import '../../features/veterinary/presentation/veterinary_screen.dart';
 import '../../features/chat/presentation/facility_inbox_screen.dart';
 import '../../features/family/presentation/family_hub_screen.dart';
 import '../../features/insurance/presentation/insurance_screen.dart';
@@ -320,6 +327,21 @@ final router = GoRouter(
     GoRoute(
         path: '/health-workers',
         builder: (_, __) => const HealthWorkersScreen()),
+
+    // F13 — Rede Nacional & Monetização (paridade final com a web:
+    // riders, classificados, recompensas, impacto, veterinária,
+    // rede APE e hub de monetização).
+    GoRoute(path: '/riders', builder: (_, __) => const RiderScreen()),
+    GoRoute(path: '/ads', builder: (_, __) => const AdsScreen()),
+    GoRoute(path: '/rewards', builder: (_, __) => const RewardsScreen()),
+    GoRoute(path: '/impact', builder: (_, __) => const ImpactScreen()),
+    GoRoute(
+        path: '/veterinary', builder: (_, __) => const VeterinaryScreen()),
+    GoRoute(
+        path: '/ape-network', builder: (_, __) => const ApeNetworkScreen()),
+    GoRoute(
+        path: '/monetization',
+        builder: (_, __) => const MonetizationHubScreen()),
   ],
 );
 

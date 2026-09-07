@@ -1,4 +1,4 @@
-# 🩺 MedWallet MZ — App Flutter (F0→F11 — Paridade total: Triagem, Chat, Vídeo Jitsi, Círculos, Registos, Ganhe, Gestão Global/Regional, SOS, Laboratórios, Push, Offline, Painel do Médico, Banco de Sangue, Solidariedade, Diário de Saúde, Família Cuidador, Planos/Subscrições, Ranking, **Meddy IA**, **Scanner de Visão**, **Diário de Voz**, **Saúde Maternal**, **Agentes de Saúde**, 14 Idiomas)
+# 🩺 MedWallet MZ — App Flutter (F0→F13 — Paridade total: Triagem, Chat, Vídeo Jitsi, Círculos, Registos, Ganhe, Gestão Global/Regional, SOS, Laboratórios, Push, Offline, Painel do Médico, Banco de Sangue, Solidariedade, Diário de Saúde, Família Cuidador, Planos/Subscrições, Ranking, **Meddy IA**, **Scanner de Visão**, **Diário de Voz**, **Saúde Maternal**, **Agentes de Saúde**, **Centro de Controlo de Gestores**, **Riders de Saúde**, **Classificados**, **Recompensas**, **Monetização**, 14 Idiomas)
 
 App móvel **nativa** do MedWallet MZ, construída em Flutter com **Clean
 Architecture**, ligada **directamente à mesma base de dados Supabase** do
@@ -98,7 +98,7 @@ flutter run \
 > Se correres sem as defines, a app arranca com o banner **"SEM CONFIG"**
 > — é um lembrete intencional.
 
-## 4. O que já funciona (F0 → F11)
+## 4. O que já funciona (F0 → F13)
 
 ### Núcleo (F0–F2)
 | Módulo | Estado | Backend (tabelas/RPC) |
@@ -375,6 +375,22 @@ Enquanto não forem aplicadas, o resto da app funciona normalmente.
 > falta no enum `app_role` e corrige as políticas das tabelas
 > `regional_*` — sem ela, as novas secções degradam graciosamente.
 
+### Novidades F13 — Rede Nacional & Monetização (fecho da paridade de superfície)
+| Módulo | Estado | Backend (tabelas/RPC/buckets) |
+|--------|--------|------------------------------|
+| **Riders de Saúde** (onboarding em 4 passos com upload de documentos, dashboard com modo Online, ganhos hoje/7/30 dias, entregas disponíveis → activas com avanço de estado → histórico, taxa base+15 MZN/km+30 cadeia de frio 80/20) | ✅ | `health_riders`, `health_deliveries`, bucket `rider-documents`, RPC `increment_rider_stats` (fallback directo) |
+| **Classificados de Saúde** (explorar com filtro cidade/categoria/pesquisa, ficha com WhatsApp/tel, os-meus com estados e remoção, criação pendente de aprovação) | ✅ | `advertisements` (RLS leitura de aprovados + INSERT/UPDATE próprios) |
+| **Recompensas & Conquistas** (cartão de nível com barra de XP — 500 XP/nível, streak 🔥, pontos Pulse, grelha de conquistas desbloqueadas vs bloqueadas, histórico de pontos) | ✅ | `user_gamification`, `achievements`, `user_achievements`, `joy_coin_transactions` |
+| **Monetização** (estado da subscrição, código de convite gerado sob demanda, estatísticas de bónus reais em MZN, partilha WhatsApp, últimos movimentos da carteira, atalhos) | ✅ | `profiles.referral_code`, `user_referrals` (join referido), `platform_settings`, `wallet_transactions`, `subscriptions` |
+| **Impacto Público** (KPIs agregados anónimos com contadores animados, cobertura de 11 províncias, auto-refresh 60 s, nota de transparência) | ✅ | contagens `head:exact` sobre `profiles`/`subscriptions`/`triage_sessions` — igual ao web |
+| **Veterinária** (lista estática de clínicas parceiras com pesquisa, serviços e rating — mesma abordagem mock da web) | ✅ | — |
+| **Rede APE** (página do programa: distribuição por 11 províncias, APEs em destaque, benefícios M-Pesa/Pontos/formação, CTA → agentes de saúde) | ✅ | — |
+
+> **Nota riders**: a RLS esconde entregas `pending` ainda sem estafeta
+> (igual à web) — quando não há entregas reais publicadas, o ecrã entra
+> em **modo demonstração** com 3 entregas de exemplo claramente
+> etiquetadas, e o aceite de demonstração é local.
+
 ## 5. Arquitectura
 
 ```
@@ -452,6 +468,18 @@ lib/
     │                    sinais vitais
     ├── health_workers/  data (perfis verificados + reservas) →
     │                    marketplace com pagamento por carteira
+    ├── riders/          data (health_riders/deliveries + mocks) →
+    │                    onboarding, dashboard, entregas e ganhos
+    ├── ads/             data (advertisements) → classificados:
+    │                    explorar, os-meus, criar (aprovação admin)
+    ├── rewards/         data (gamification/achievements/joy) →
+    │                    níveis, XP, conquistas e pontos
+    ├── impact/          data (contagens head:exact) → dashboard
+    │                    público de impacto (auto-refresh 60 s)
+    ├── monetization/    data (convites + settings + wallet) → hub
+    │                    de monetização (subscrição + ganhos)
+    ├── veterinary/      presentation (lista parceira estática)
+    ├── ape_network/     presentation (programa APE, dados estáticos)
     ├── home/            presentation (quick actions + badge)
     └── profile/         data (moradas) → presentation (+ idioma)
 ```
@@ -473,7 +501,10 @@ full-screen: `/triage` (wizard) → `/triage-result`, `/specialists`,
 `/earn`, `/earn-submit`, `/map-picker`, `/facility-detail`, `/sos`,
 `/meds`, `/insurance`, `/labs`, `/lab-detail`, `/lab-orders`,
 `/circles`, `/circle-chat`, `/records`, `/referrals`, `/manager-hub`,
-`/manager-console`, `/global-dashboard`, `/regional` (legado).
+`/manager-console`, `/global-dashboard`, `/regional` (legado),
+`/meddy`, `/vision-scan`, `/voice-journal`, `/maternal`,
+`/health-workers`, `/riders`, `/ads`, `/rewards`, `/impact`,
+`/veterinary`, `/ape-network`, `/monetization`.
 
 ### Princípios aplicados
 - **Streams Supabase realtime** para carteira, consultas, chats,
@@ -487,8 +518,9 @@ full-screen: `/triage` (wizard) → `/triage-result`, `/specialists`,
 
 ## 6. Roadmap (próximas fases)
 
-F11 fecha a paridade FUNCIONAL completa com o web: toda a superfície de
-funcionalidades do produto web tem agora correspondência na app.
+F13 fecha a paridade de SUPERFÍCIE com o web: cada página roteada do
+produto web tem agora correspondência na app (os fluxos de e-commerce
+tipo loja/carrinho continuam fora do âmbito, como definido).
 Extensões naturais:
 
 - **Tradução integral** dos restantes ecrãs (a infra-estrutura de
@@ -500,6 +532,11 @@ Extensões naturais:
 - **Jitsi self-hosted** (definir `serverURL` próprio em vez de meet.jit.si);
 - **Delegar análise IA a jobs backend** (migração `ai_insight` do diário e
   transcrições já correm no servidor — a app pode apenas consumir);
+- **GPS dos riders em tempo real** (`updateRiderLocation` já existe no
+  repositório — ligar ao `geolocator` com stream em primeiro plano);
+- **Pedidos de entrega pelo paciente** (a RLS já permite
+  `customer_user_id = auth.uid()` criar entregas — falta ecrã de
+  pedido com map-picker e fee estimada).
 
 ## 7. Problemas comuns
 
@@ -532,6 +569,11 @@ Extensões naturais:
 | Diário de Voz pede permissão | microfone negado | Android: `RECORD_AUDIO` no manifesto · iOS: `NSMicrophoneUsageDescription` |
 | Notas de voz não transcrevem | sem `GEMINI_API_KEY` | escreve a nota manual (campo integrado) ou configura a chave |
 | Agentes de saúde vazios | sem perfis `is_verified=true` | admin verifica perfis (`health_worker_profiles`) no painel web |
+| Riders em "modo demonstração" | sem entregas `pending` visíveis (RLS esconde entregas sem estafeta — igual ao web) | normal até existirem pedidos reais; os mocks são etiquetados |
+| Rider não aceita entrega | outro estafeta chegou primeiro (trava `status='pending'`) | a lista refresca sozinha — tenta a próxima |
+| Upload de documentos do rider falha | bucket `rider-documents` inexistente | cria o bucket privado no painel Supabase (a candidatura continua sem o ficheiro) |
+| Classificados "Pendente" | anúncio à espera de aprovação | admin aprova em `/admin` → Ads (web); passa a "Aprovado" e fica visível |
+| Recompensas zeradas | sem linha em `user_gamification` | normal — XP acumula com o uso; o cartão mostra Nível 1 |
 | Reserva de agente falha "saldo" | carteira insuficiente | carrega a carteira; a reserva é cancelada automaticamente se o débito falhar |
 
 ## 8. Segurança

@@ -485,6 +485,42 @@ class ProfileScreen extends ConsumerWidget {
                     label: 'Ganhe com o MedWallet',
                     onTap: () => context.push('/earn'),
                   ),
+                  // F13 — Rede Nacional & Monetização.
+                  _MenuItem(
+                    icon: Icons.directions_bike_rounded,
+                    label: 'Riders de Saúde (entregas)',
+                    onTap: () => context.push('/riders'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.storefront_rounded,
+                    label: 'Classificados de Saúde',
+                    onTap: () => context.push('/ads'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.emoji_events_rounded,
+                    label: 'Recompensas & Conquistas',
+                    onTap: () => context.push('/rewards'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.savings_rounded,
+                    label: 'Monetização',
+                    onTap: () => context.push('/monetization'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.pets_rounded,
+                    label: 'Clínicas Veterinárias',
+                    onTap: () => context.push('/veterinary'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.groups_rounded,
+                    label: 'Rede APE (comunitária)',
+                    onTap: () => context.push('/ape-network'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.public_rounded,
+                    label: 'Impacto Público',
+                    onTap: () => context.push('/impact'),
+                  ),
                   // Painel do médico — só quando há linha em doctor_profiles.
                   if (ref.watch(myDoctorProfileProvider).value != null)
                     _MenuItem(

@@ -187,6 +187,87 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   ),
                 ),
               ]),
+              // F13 — Rede Nacional & Monetização.
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.directions_bike_rounded,
+                    title: 'Riders',
+                    subtitle: 'Entrega e ganha',
+                    colors: const [Color(0xFF059669), Color(0xFF064E3B)],
+                    onTap: () => context.push('/riders'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.storefront_rounded,
+                    title: 'Classificados',
+                    subtitle: 'Compra e vende',
+                    colors: const [Color(0xFF7C3AED), Color(0xFF4C1D95)],
+                    onTap: () => context.push('/ads'),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.emoji_events_rounded,
+                    title: 'Recompensas',
+                    subtitle: 'Níveis e conquistas',
+                    colors: const [Color(0xFFF59E0B), Color(0xFF78350F)],
+                    onTap: () => context.push('/rewards'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.public_rounded,
+                    title: 'Impacto',
+                    subtitle: 'Números da rede',
+                    colors: const [Color(0xFF0EA5E9), Color(0xFF0C4A6E)],
+                    onTap: () => context.push('/impact'),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.pets_rounded,
+                    title: 'Veterinária',
+                    subtitle: 'Cuidado animal',
+                    colors: const [Color(0xFF16A34A), Color(0xFF14532D)],
+                    onTap: () => context.push('/veterinary'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.groups_rounded,
+                    title: 'Rede APE',
+                    subtitle: 'Agentes comunitários',
+                    colors: const [Color(0xFFEA580C), Color(0xFF92400E)],
+                    onTap: () => context.push('/ape-network'),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.savings_rounded,
+                    title: 'Monetização',
+                    subtitle: 'Convite & ganhos',
+                    colors: const [Color(0xFF1D4ED8), Color(0xFF172554)],
+                    onTap: () => context.push('/monetization'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Expanded(child: SizedBox.shrink()),
+              ]),
               const SizedBox(height: 6),
               specialties.maybeWhen(
                 data: (list) => list.isEmpty
