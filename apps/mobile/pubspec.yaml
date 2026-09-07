@@ -69,6 +69,18 @@ dependencies:
   # F9 — QR code da receita (ecrã Verificar receita; puro Dart, leve).
   qr_flutter: ^4.1.0
 
+  # F11 — IA no dispositivo (Meddy, scanner, diário de voz): chamada
+  # HTTPS directa ao Gemini, SEM SDK (mesma estratégia da web).
+  # Chave OPT-IN via --dart-define=GEMINI_API_KEY=...
+  http: ^1.2.2
+
+  # F11 — gravação de áudio do Diário de Voz (m4a/AAC-LC).
+  # Requer RECORD_AUDIO (Android) e NSMicrophoneUsageDescription (iOS).
+  record: ^5.1.2
+
+  # F11 — directório temporário para os ficheiros de gravação.
+  path_provider: ^2.1.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

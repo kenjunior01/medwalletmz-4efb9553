@@ -51,5 +51,5 @@ abstract final class AppConfig {
   static const int maxPendingPerUser = 20;
 
   /// Versão apresentada no ecrã de perfil.
-  static const String appVersion = '0.2.0';
+  static const String appVersion = '0.3.0';
 }

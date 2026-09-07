@@ -142,6 +142,51 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   ),
                 ),
               ]),
+              // F11 — IA & Programas.
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.document_scanner_rounded,
+                    title: 'Scanner',
+                    subtitle: 'Lê receitas e exames',
+                    colors: const [Color(0xFF6366F1), Color(0xFF312E81)],
+                    onTap: () => context.push('/vision-scan'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.mic_rounded,
+                    title: 'Voz',
+                    subtitle: 'Diário falado com IA',
+                    colors: const [Color(0xFF06B6D4), Color(0xFF164E63)],
+                    onTap: () => context.push('/voice-journal'),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.pregnant_woman_rounded,
+                    title: 'Maternal',
+                    subtitle: 'Acompanha a gravidez',
+                    colors: const [Color(0xFFA855F7), Color(0xFF581C87)],
+                    onTap: () => context.push('/maternal'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.medical_services_rounded,
+                    title: 'Agentes de saúde',
+                    subtitle: 'Enfermeiros, APEs…',
+                    colors: const [Color(0xFF10B981), Color(0xFF064E3B)],
+                    onTap: () => context.push('/health-workers'),
+                  ),
+                ),
+              ]),
               const SizedBox(height: 6),
               specialties.maybeWhen(
                 data: (list) => list.isEmpty

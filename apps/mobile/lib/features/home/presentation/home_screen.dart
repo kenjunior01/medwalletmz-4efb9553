@@ -104,6 +104,26 @@ class HomeScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  // F11 — Meddy 🐻: chat IA directo do ecrã principal.
+                  IconButton(
+                    onPressed: () => context.push('/meddy'),
+                    tooltip: 'Falar com o Meddy',
+                    icon: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        gradient:
+                            const LinearGradient(colors: AppColors.buttonGradient),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: const [
+                          BoxShadow(color: AppColors.glowCyan, blurRadius: 10),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text('🐻', style: TextStyle(fontSize: 17)),
+                      ),
+                    ),
+                  ),
                   IconButton(
                     onPressed: () => context.push('/notifications'),
                     icon: Consumer(builder: (context, ref, _) {

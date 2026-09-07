@@ -1,4 +1,4 @@
-# 🩺 MedWallet MZ — App Flutter (F0→F10 — Paridade total: Triagem, Chat, Vídeo Jitsi, Círculos, Registos, Ganhe, Gestão Global/Regional, SOS, Laboratórios, Push, Offline, Painel do Médico, **Banco de Sangue**, **Solidariedade**, **Diário de Saúde**, **Família Cuidador**, **Planos/Subscrições**, **Ranking**, 14 Idiomas)
+# 🩺 MedWallet MZ — App Flutter (F0→F11 — Paridade total: Triagem, Chat, Vídeo Jitsi, Círculos, Registos, Ganhe, Gestão Global/Regional, SOS, Laboratórios, Push, Offline, Painel do Médico, Banco de Sangue, Solidariedade, Diário de Saúde, Família Cuidador, Planos/Subscrições, Ranking, **Meddy IA**, **Scanner de Visão**, **Diário de Voz**, **Saúde Maternal**, **Agentes de Saúde**, 14 Idiomas)
 
 App móvel **nativa** do MedWallet MZ, construída em Flutter com **Clean
 Architecture**, ligada **directamente à mesma base de dados Supabase** do
@@ -88,10 +88,17 @@ flutter run \
 > Ganhe (SDK Android/iOS do Google Maps). Sem a chave, a app oferece
 > GPS + coordenadas manuais — nada deixa de funcionar.
 
+> **IA (F11)** — opcional: adiciona `--dart-define=GEMINI_API_KEY=...`
+> (Google AI Studio) para activar o **Meddy**, o **Scanner de Saúde** e
+> a **transcrição do Diário de Voz**. É a MESMA abordagem do web
+> (chamada client-side ao Gemini). Sem a chave, o Meddy responde em
+> modo local seguro, o scanner guarda documentos "Pendentes"
+> (re-analisáveis) e o diário de voz aceita notas escritas.
+
 > Se correres sem as defines, a app arranca com o banner **"SEM CONFIG"**
 > — é um lembrete intencional.
 
-## 4. O que já funciona (F0 → F10)
+## 4. O que já funciona (F0 → F11)
 
 ### Núcleo (F0–F2)
 | Módulo | Estado | Backend (tabelas/RPC) |
@@ -340,6 +347,17 @@ Enquanto não forem aplicadas, o resto da app funciona normalmente.
 | **As minhas subscrições** (estados pending/active/expired) | ✅ | `subscriptions` (join plan) |
 | **Ranking de confiança** (médicos por rating, farmácias/clínicas/hospitais, medalhas top-3) | ✅ | `doctor_profiles`, `clinics`, `stores` (avg_rating) |
 
+### Novidades F11 — IA & Programas de saúde (fecho da paridade funcional)
+| Módulo | Estado | Backend (tabelas/buckets) |
+|--------|--------|------------------------|
+| **Cliente Gemini no dispositivo** (chat, visão e áudio; cadeia de modelos com fallback; degradação graciosa sem chave — mesma estratégia client-side da web) | ✅ | — (HTTPS directo, zero backend) |
+| **Meddy 🐻 — chat IA do mascote** (histórico persistido, acções sugeridas navegáveis, detector de crise + linha de apoio por país MZ 847, modo local sem chave) | ✅ | `meddy_conversations`, `meddy_messages` |
+| **Scanner de Saúde** (6 tipos de documento, câmara/galeria, extração IA de medicamentos/parâmetros/médico/facilidade, confiança, re-análise de pendentes) | ✅ | `vision_scans` + bucket `vision-scans` |
+| **Diário de Voz** (gravação m4a via pacote record, transcrição+humor+sintomas+insight IA, nota escrita manual como fallback) | ✅ | `voice_journals` + bucket `voice-journals` |
+| **Saúde Maternal** (DUM → DPP por Naegele, semanas/trimestre, plano OMS de 8 consultas ANC gerado localmente, TA/peso com alerta de pré-eclâmpsia) | ✅ | `maternal_profiles` (RLS própria) |
+| **Agentes de Saúde** (marketplace verificado por profissão, fee 80/20 igual à web, reserva com débito transacional da carteira, estados + avaliação) | ✅ | `health_worker_profiles`, `health_worker_bookings` + RPC `wallet_debit('worker_booking')` |
+| Entradas: botão Meddy 🐻 no ecrã inicial, 4 banners nos Serviços, 5 itens no perfil | ✅ | — |
+
 ## 5. Arquitectura
 
 ```
@@ -362,6 +380,9 @@ lib/
 │   ├── theme/                 # tokens, tema dark, vidro, fundo mesh
 │   ├── utils/                 # formatters pt-MZ, Haversine
 │   ├── reminders/             # MedsReminderService (notificações locais)
+│   ├── ai/                    # gemini_client (chat/visão/áudio no
+│   │                          #  dispositivo, opt-in GEMINI_API_KEY) +
+│   │                          #  recorder_service (pacote record)
 │   └── widgets/               # vidro, WalletCard, botões, skeletons,
 │                              # NotificationBanner (overlay raiz)
 └── features/                  # (feature-first + camadas)
@@ -404,6 +425,16 @@ lib/
     │                    planos + checkout M-Pesa MW-XXXXXX
     ├── ranking/         data (doctor_profiles/clinics/stores) →
     │                    top avaliados com medalhas
+    ├── meddy/           data (meddy_conversations/messages) → chat do
+    │                    mascote IA com crises + acções sugeridas
+    ├── vision/          data (vision_scans + bucket) → scanner de
+    │                    receitas/exames/rótulos com extração IA
+    ├── voice_journal/   data (voice_journals + bucket) → gravação,
+    │                    transcrição, humor e insight por IA
+    ├── maternal/        data (maternal_profiles) → gravidez, ANC,
+    │                    sinais vitais
+    ├── health_workers/  data (perfis verificados + reservas) →
+    │                    marketplace com pagamento por carteira
     ├── home/            presentation (quick actions + badge)
     └── profile/         data (moradas) → presentation (+ idioma)
 ```
@@ -439,8 +470,9 @@ full-screen: `/triage` (wizard) → `/triage-result`, `/specialists`,
 
 ## 6. Roadmap (próximas fases)
 
-F10 fecha a paridade funcional com os módulos comunitários e de
-bem-estar do web. Extensões naturais:
+F11 fecha a paridade FUNCIONAL completa com o web: toda a superfície de
+funcionalidades do produto web tem agora correspondência na app.
+Extensões naturais:
 
 - **Tradução integral** dos restantes ecrãs (a infra-estrutura de
   42 chaves × 14 idiomas já está pronta — basta acrescentar chaves);
@@ -449,8 +481,8 @@ bem-estar do web. Extensões naturais:
 - **Anexos no chat dos círculos** (bucket dedicado com policies);
 - **Sync offline bidireccional** (fila de mutações quando a rede volta);
 - **Jitsi self-hosted** (definir `serverURL` próprio em vez de meet.jit.si);
-- **Diário por voz** (`voice_journals` — gravação + upload; a transcrição
-  IA já corre no backend via jobs).
+- **Delegar análise IA a jobs backend** (migração `ai_insight` do diário e
+  transcrições já correm no servidor — a app pode apenas consumir);
 
 ## 7. Problemas comuns
 
@@ -478,6 +510,12 @@ bem-estar do web. Extensões naturais:
 | Build falha no Jitsi (minSdk) | SDK exige `minSdk ≥ 26` | `android/app/build.gradle.kts`: `minSdk = 26`; iOS: `platform :ios, '15.0'` |
 | Push não chega | `FCM_ENABLED` off ou Firebase sem config | adiciona a flag + `google-services.json` / `GoogleService-Info.plist` |
 | App abre com dados antigos sem internet | normal — cache offline a servir dados | activa a rede; o cache refresca sozinho |
+| Meddy responde "modo local" | `GEMINI_API_KEY` ausente | `--dart-define=GEMINI_API_KEY=...` (Google AI Studio) |
+| Scanner guarda "Pendente" | idem — IA não configurada | idem + botão **Re-analisar com IA** no cartão do scan |
+| Diário de Voz pede permissão | microfone negado | Android: `RECORD_AUDIO` no manifesto · iOS: `NSMicrophoneUsageDescription` |
+| Notas de voz não transcrevem | sem `GEMINI_API_KEY` | escreve a nota manual (campo integrado) ou configura a chave |
+| Agentes de saúde vazios | sem perfis `is_verified=true` | admin verifica perfis (`health_worker_profiles`) no painel web |
+| Reserva de agente falha "saldo" | carteira insuficiente | carrega a carteira; a reserva é cancelada automaticamente se o débito falhar |
 
 ## 8. Segurança
 

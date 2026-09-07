@@ -26,6 +26,7 @@ import '../../features/doctor/presentation/doctor_dashboard_screen.dart';
 import '../../features/facilities/presentation/facilities_screen.dart';
 import '../../features/facilities/presentation/facility_detail_screen.dart';
 import '../../features/health_hub/presentation/health_hub_screen.dart';
+import '../../features/health_workers/presentation/health_workers_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/chat/presentation/facility_inbox_screen.dart';
 import '../../features/family/presentation/family_hub_screen.dart';
@@ -38,6 +39,8 @@ import '../../features/labs/presentation/labs_screen.dart';
 import '../../features/manager/presentation/global_dashboard_screen.dart';
 import '../../features/manager/presentation/manager_console_screen.dart';
 import '../../features/manager/presentation/manager_hub_screen.dart';
+import '../../features/maternal/presentation/maternal_screen.dart';
+import '../../features/meddy/presentation/meddy_chat_screen.dart';
 import '../../features/meds/presentation/meds_screen.dart';
 import '../../features/notifications/data/notification_models.dart';
 import '../../features/notifications/presentation/notification_center_screen.dart';
@@ -60,6 +63,8 @@ import '../../features/sos/presentation/sos_screen.dart';
 import '../../features/subscriptions/presentation/plans_screen.dart';
 import '../../features/triage/presentation/triage_result_screen.dart';
 import '../../features/triage/presentation/triage_wizard_screen.dart';
+import '../../features/vision/presentation/vision_scanner_screen.dart';
+import '../../features/voice_journal/presentation/voice_journal_screen.dart';
 import '../../features/wallet/presentation/wallet_screen.dart';
 import '../config.dart';
 import '../l10n/app_strings.dart';
@@ -300,6 +305,20 @@ final router = GoRouter(
         path: '/family', builder: (_, __) => const FamilyHubScreen()),
     GoRoute(path: '/plans', builder: (_, __) => const PlansScreen()),
     GoRoute(path: '/ranking', builder: (_, __) => const RankingScreen()),
+
+    // F11 — IA & Programas (paridade final: Meddy, visão, voz,
+    // maternal e agentes de saúde).
+    GoRoute(path: '/meddy', builder: (_, __) => const MeddyChatScreen()),
+    GoRoute(
+        path: '/vision-scan',
+        builder: (_, __) => const VisionScannerScreen()),
+    GoRoute(
+        path: '/voice-journal',
+        builder: (_, __) => const VoiceJournalScreen()),
+    GoRoute(path: '/maternal', builder: (_, __) => const MaternalScreen()),
+    GoRoute(
+        path: '/health-workers',
+        builder: (_, __) => const HealthWorkersScreen()),
   ],
 );
 

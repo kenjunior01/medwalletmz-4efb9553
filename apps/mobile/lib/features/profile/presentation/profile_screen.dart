@@ -263,6 +263,32 @@ class ProfileScreen extends ConsumerWidget {
                     label: 'Planos MedWallet',
                     onTap: () => context.push('/plans'),
                   ),
+                  // F11 — IA & Programas.
+                  _MenuItem(
+                    icon: Icons.smart_toy_rounded,
+                    label: 'Meddy (assistente IA)',
+                    onTap: () => context.push('/meddy'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.document_scanner_rounded,
+                    label: 'Scanner de Saúde',
+                    onTap: () => context.push('/vision-scan'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.mic_rounded,
+                    label: 'Diário de Voz',
+                    onTap: () => context.push('/voice-journal'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.pregnant_woman_rounded,
+                    label: 'Saúde Maternal',
+                    onTap: () => context.push('/maternal'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.medical_services_rounded,
+                    label: 'Agentes de Saúde',
+                    onTap: () => context.push('/health-workers'),
+                  ),
                   _MenuItem(
                     icon: Icons.card_giftcard_rounded,
                     label: 'Convida e Ganha',
