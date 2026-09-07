@@ -104,6 +104,7 @@ const VoiceJournal = lazy(() => import("./pages/health/VoiceJournal"));
 const MapsPremium = lazy(() => import("./pages/health/MapsPremium"));
 const SupportCircles = lazy(() => import("./pages/health/SupportCircles"));
 const HealthRidersNetwork = lazy(() => import("./pages/health/HealthRidersNetwork"));
+const PatientDeliveries = lazy(() => import("./pages/health/PatientDeliveries"));
 const HealthWorkerMarketplace = lazy(() => import("./pages/health/HealthWorkerMarketplace"));
 const HealthWorkerProfile = lazy(() => import("./pages/health/HealthWorkerProfile"));
 const HealthPlans = lazy(() => import("./pages/health/HealthPlans"));
@@ -338,6 +339,7 @@ const App = () => {
                     <Route path="/health/maps" element={<MapsPremium />} />
                     <Route path="/health/circles" element={<SupportCircles />} />
                     <Route path="/health/riders" element={<HealthRidersNetwork />} />
+                    <Route path="/health/deliveries" element={<PatientDeliveries />} />
                     <Route path="/health/workers" element={<HealthWorkerMarketplace />} />
                     <Route path="/health/workers/profile" element={<HealthWorkerProfile />} />
                     <Route path="/health/plans" element={<HealthPlans />} />

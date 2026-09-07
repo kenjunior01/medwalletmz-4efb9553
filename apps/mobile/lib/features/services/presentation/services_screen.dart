@@ -266,7 +266,15 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                const Expanded(child: SizedBox.shrink()),
+                Expanded(
+                  child: _MiniServiceBanner(
+                    icon: Icons.local_shipping_rounded,
+                    title: 'Entregas',
+                    subtitle: 'Pedir & tracking ao vivo',
+                    colors: const [Color(0xFFEA580C), Color(0xFF7C2D12)],
+                    onTap: () => context.push('/deliveries'),
+                  ),
+                ),
               ]),
               const SizedBox(height: 6),
               specialties.maybeWhen(

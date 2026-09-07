@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/presentation/login_screen.dart';
@@ -23,6 +24,8 @@ import '../../features/earn/presentation/earn_home_screen.dart';
 import '../../features/earn/presentation/map_picker_screen.dart';
 import '../../features/earn/presentation/submit_proposal_screen.dart';
 import '../../features/doctor/presentation/doctor_dashboard_screen.dart';
+import '../../features/deliveries/presentation/deliveries_screen.dart';
+import '../../features/deliveries/presentation/delivery_tracking_screen.dart';
 import '../../features/facilities/presentation/facilities_screen.dart';
 import '../../features/facilities/presentation/facility_detail_screen.dart';
 import '../../features/health_hub/presentation/health_hub_screen.dart';
@@ -342,6 +345,33 @@ final router = GoRouter(
     GoRoute(
         path: '/monetization',
         builder: (_, __) => const MonetizationHubScreen()),
+
+    // F14 — Logística do paciente: pedidos de entrega e tracking em
+    // tempo real (estado + GPS via broadcast) + seletor de mapa partilhado.
+    GoRoute(
+      path: '/deliveries',
+      builder: (_, __) => const DeliveriesScreen(),
+    ),
+    GoRoute(
+      path: '/delivery/:id',
+      builder: (_, state) => DeliveryTrackingScreen(
+        deliveryId: state.pathParameters['id']!,
+      ),
+    ),
+    GoRoute(
+      path: '/picker',
+      builder: (_, state) {
+        final extra = state.extra;
+        LatLng? initial;
+        if (extra is List && extra.length >= 2) {
+          initial = LatLng(
+            (extra[0] as num).toDouble(),
+            (extra[1] as num).toDouble(),
+          );
+        }
+        return MapPickerScreen(initial: initial);
+      },
+    ),
   ],
 );
 

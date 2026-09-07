@@ -118,6 +118,15 @@ enum DeliveryStatus {
   final String label;
   final int color;
 
+  /// Entrega em curso — o estafeta está em trânsito e o broadcast GPS
+  /// do tracking ao vivo deve estar ligado (F14).
+  bool get isActiveRide =>
+      this == DeliveryStatus.accepted ||
+      this == DeliveryStatus.arrivingPickup ||
+      this == DeliveryStatus.pickedUp ||
+      this == DeliveryStatus.inTransit ||
+      this == DeliveryStatus.arrivingDropoff;
+
   static DeliveryStatus fromKey(String? key) {
     switch (key) {
       case 'accepted':

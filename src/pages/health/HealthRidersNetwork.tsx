@@ -14,6 +14,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bike, Car, Footprints, Power, PowerOff, TrendingUp,
@@ -41,6 +42,7 @@ export default function HealthRidersNetwork() {
   // t() + country come from useCountry(); user comes from useAuth().
   const { t, country } = useCountry();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [rider, setRider] = useState<HealthRider | null>(null);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<View>('onboarding');
@@ -95,6 +97,21 @@ export default function HealthRidersNetwork() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-6">
+        {/* CTA do lado do paciente — o mesmo fluxo de health_deliveries */}
+        <div className="mb-5 flex items-center justify-between gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 px-4 py-3">
+          <div>
+            <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">É paciente?</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Peça a recolha de medicamentos ou amostras e acompanhe o estafeta ao vivo.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/health/deliveries')}
+            className="shrink-0 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-md transition hover:bg-emerald-500"
+          >
+            Pedir entrega
+          </button>
+        </div>
         {!isDashboard ? (
           <RiderOnboarding rider={rider} onCompleted={load} userId={user?.id ?? ''} countryId={country?.id ?? 'MZ'} t={t} />
         ) : (

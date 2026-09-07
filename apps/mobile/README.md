@@ -1,4 +1,4 @@
-# 🩺 MedWallet MZ — App Flutter (F0→F13 — Paridade total: Triagem, Chat, Vídeo Jitsi, Círculos, Registos, Ganhe, Gestão Global/Regional, SOS, Laboratórios, Push, Offline, Painel do Médico, Banco de Sangue, Solidariedade, Diário de Saúde, Família Cuidador, Planos/Subscrições, Ranking, **Meddy IA**, **Scanner de Visão**, **Diário de Voz**, **Saúde Maternal**, **Agentes de Saúde**, **Centro de Controlo de Gestores**, **Riders de Saúde**, **Classificados**, **Recompensas**, **Monetização**, 14 Idiomas)
+# 🩺 MedWallet MZ — App Flutter (F0→F14 — Paridade total: Triagem, Chat, Vídeo Jitsi, Círculos, Registos, Ganhe, Gestão Global/Regional, SOS, Laboratórios, Push, Offline, Painel do Médico, Banco de Sangue, Solidariedade, Diário de Saúde, Família Cuidador, Planos/Subscrições, Ranking, **Meddy IA**, **Scanner de Visão**, **Diário de Voz**, **Saúde Maternal**, **Agentes de Saúde**, **Centro de Controlo de Gestores**, **Riders de Saúde**, **Classificados**, **Recompensas**, **Monetização**, **Entregas do Paciente com Tracking em Tempo Real**, 14 Idiomas)
 
 App móvel **nativa** do MedWallet MZ, construída em Flutter com **Clean
 Architecture**, ligada **directamente à mesma base de dados Supabase** do
@@ -98,7 +98,7 @@ flutter run \
 > Se correres sem as defines, a app arranca com o banner **"SEM CONFIG"**
 > — é um lembrete intencional.
 
-## 4. O que já funciona (F0 → F13)
+## 4. O que já funciona (F0 → F14)
 
 ### Núcleo (F0–F2)
 | Módulo | Estado | Backend (tabelas/RPC) |
@@ -391,6 +391,15 @@ Enquanto não forem aplicadas, o resto da app funciona normalmente.
 > em **modo demonstração** com 3 entregas de exemplo claramente
 > etiquetadas, e o aceite de demonstração é local.
 
+### Novidades F14 — Logística do Paciente & Tracking em Tempo Real
+| Módulo | Estado | Backend (tabelas/RPC/buckets) |
+|--------|--------|------------------------------|
+| **Pedidos de Entrega do Paciente** (folha em 4 passos: recolha por tipo + map-picker, destino com pré-preenchimento do perfil, tipo de encomenda com cadeia de frio, revisão com quote por veículo — base+15 MZN/km+30 frio — e pagamento transaccional da carteira com cancelamento por compensação) | ✅ | INSERT próprio em `health_deliveries` (RLS "Customers can create deliveries"), RPC `wallet_debit('delivery')` |
+| **Tracking em tempo real** (estado via stream Postgres Changes filtrada por id, timeline de 5 marcos com timestamps, mapa Google com marcadores recolha/destino/estafeta — fallback com links "abrir no Google Maps" sem chave MAPS_API_KEY) | ✅ | SELECT próprio em `health_deliveries` (`.stream(primaryKey:)`) |
+| **GPS do estafeta ao vivo** (broadcast Supabase Realtime no canal `dw-delivery-{id}` — estafeta publica a cada 8 s com `geolocator` distanceFilter 25 m enquanto a entrega está activa; liga/desliga automaticamente; cliente subscreve e vê o marcador azul no mapa) | ✅ | canais Realtime broadcast — **sem tabelas novas** |
+| **Cancelamento gratuito** enquanto "Por aceitar" (diálogo de confirmação) | ✅ | UPDATE próprio em `pending` (RLS "Customers can update own pending deliveries") |
+| **Seletor de mapa partilhado** `/picker` (reutiliza o MapPicker do crowdsourcing com rota própria e ponto inicial por `extra`) | ✅ | — |
+
 ## 5. Arquitectura
 
 ```
@@ -478,6 +487,10 @@ lib/
     │                    público de impacto (auto-refresh 60 s)
     ├── monetization/    data (convites + settings + wallet) → hub
     │                    de monetização (subscrição + ganhos)
+    ├── deliveries/      data (health_deliveries: pedido + tracking
+    │                    realtime + broadcast) → pedidos do paciente,
+    │                    folha em 4 passos, mapa ao vivo e timeline
+    │                    (o estafeta publica GPS a partir de riders/)
     ├── veterinary/      presentation (lista parceira estática)
     ├── ape_network/     presentation (programa APE, dados estáticos)
     ├── home/            presentation (quick actions + badge)
@@ -504,7 +517,8 @@ full-screen: `/triage` (wizard) → `/triage-result`, `/specialists`,
 `/manager-console`, `/global-dashboard`, `/regional` (legado),
 `/meddy`, `/vision-scan`, `/voice-journal`, `/maternal`,
 `/health-workers`, `/riders`, `/ads`, `/rewards`, `/impact`,
-`/veterinary`, `/ape-network`, `/monetization`.
+`/veterinary`, `/ape-network`, `/monetization`, `/deliveries`,
+`/delivery/:id` (tracking), `/picker` (seletor de mapa).
 
 ### Princípios aplicados
 - **Streams Supabase realtime** para carteira, consultas, chats,
@@ -518,9 +532,9 @@ full-screen: `/triage` (wizard) → `/triage-result`, `/specialists`,
 
 ## 6. Roadmap (próximas fases)
 
-F13 fecha a paridade de SUPERFÍCIE com o web: cada página roteada do
-produto web tem agora correspondência na app (os fluxos de e-commerce
-tipo loja/carrinho continuam fora do âmbito, como definido).
+F14 fecha o ciclo logístico: pacientes pedem entregas, estafetas
+recebem-nas no dashboard (F13) e ambas as partes acompanham o percurso
+em tempo real — sem uma única linha alterada no backend.
 Extensões naturais:
 
 - **Tradução integral** dos restantes ecrãs (a infra-estrutura de
@@ -532,11 +546,10 @@ Extensões naturais:
 - **Jitsi self-hosted** (definir `serverURL` próprio em vez de meet.jit.si);
 - **Delegar análise IA a jobs backend** (migração `ai_insight` do diário e
   transcrições já correm no servidor — a app pode apenas consumir);
-- **GPS dos riders em tempo real** (`updateRiderLocation` já existe no
-  repositório — ligar ao `geolocator` com stream em primeiro plano);
-- **Pedidos de entrega pelo paciente** (a RLS já permite
-  `customer_user_id = auth.uid()` criar entregas — falta ecrã de
-  pedido com map-picker e fee estimada).
+- **Dispatch automático de entregas** (notificar estafetas online quando
+  surge uma entrega `pending` — hoje descobrem ao abrir o dashboard);
+- **Histórico de posições persistido** (appender no JSONB
+  `tracking_history` pelo estafeta para replay do percurso).
 
 ## 7. Problemas comuns
 

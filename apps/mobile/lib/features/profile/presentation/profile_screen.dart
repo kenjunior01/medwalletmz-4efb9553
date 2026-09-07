@@ -521,6 +521,12 @@ class ProfileScreen extends ConsumerWidget {
                     label: 'Impacto Público',
                     onTap: () => context.push('/impact'),
                   ),
+                  // F14 — entregas com tracking em tempo real.
+                  _MenuItem(
+                    icon: Icons.local_shipping_rounded,
+                    label: 'Entregas & Tracking',
+                    onTap: () => context.push('/deliveries'),
+                  ),
                   // Painel do médico — só quando há linha em doctor_profiles.
                   if (ref.watch(myDoctorProfileProvider).value != null)
                     _MenuItem(

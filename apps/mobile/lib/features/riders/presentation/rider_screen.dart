@@ -7,6 +7,8 @@ import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/skeleton.dart';
+import '../../auth/presentation/auth_controller.dart';
+import '../data/position_broadcaster.dart';
 import '../data/rider_repository.dart';
 
 /// Rede de Riders de Saúde (paridade com `HealthRidersNetwork.tsx`):
@@ -31,18 +33,35 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
   List<HealthDelivery> _history = [];
   EarningsSummary? _earnings;
   bool _demoMode = false;
+  PositionBroadcaster? _broadcaster;
 
   @override
   void initState() {
     super.initState();
     _tabs = TabController(length: 3, vsync: this);
+    _broadcaster =
+        PositionBroadcaster(ref.read(supabaseClientProvider));
     _load();
   }
 
   @override
   void dispose() {
     _tabs.dispose();
+    _broadcaster?.stop();
     super.dispose();
+  }
+
+  /// Liga/desliga o GPS do tracking ao vivo conforme as entregas
+  /// activas (F14 — broadcast no canal dw-delivery-{id}).
+  void _syncBroadcast() {
+    final active = _active.where((d) => !d.isMock && d.status.isActiveRide);
+    final b = _broadcaster;
+    if (b == null) return;
+    if (active.isNotEmpty) {
+      b.start(active.first.id);
+    } else if (b.isBroadcasting) {
+      b.stop();
+    }
   }
 
   Future<void> _load() async {
@@ -83,6 +102,7 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
         _history = history;
         _earnings = earnings;
       });
+      _syncBroadcast();
     } catch (_) {
       if (!mounted) return;
       setState(() {
