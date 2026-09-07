@@ -8,14 +8,20 @@ import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
 export default defineConfig(({ mode }) => {
   // Lovable Cloud exposes canonical SUPABASE_* variables during deployment.
   // Map them to the VITE_* names expected by the generated browser client.
-  const define: Record<string, string> = {};
-  const supabaseUrl = process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL;
-  const supabasePublishableKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_PUBLISHABLE_KEY;
-  const supabaseProjectId = process.env.VITE_SUPABASE_PROJECT_ID ?? process.env.SUPABASE_PROJECT_ID;
+  // Fallbacks garantem que o build publicado nunca fica sem credenciais públicas.
+  const FALLBACK_URL = "https://pfqruzusjjxyidhqkiob.supabase.co";
+  const FALLBACK_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXJ1enVzamp4eWlkaHFraW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NTYwODMsImV4cCI6MjA5NzMzMjA4M30.zPcOEd5AKFg5KHa3xdhJPBFOphkWpf-huTvWh_V_f50";
+  const FALLBACK_PROJECT_ID = "pfqruzusjjxyidhqkiob";
 
-  if (supabaseUrl) define['import.meta.env.VITE_SUPABASE_URL'] = JSON.stringify(supabaseUrl);
-  if (supabasePublishableKey) define['import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY'] = JSON.stringify(supabasePublishableKey);
-  if (supabaseProjectId) define['import.meta.env.VITE_SUPABASE_PROJECT_ID'] = JSON.stringify(supabaseProjectId);
+  const define: Record<string, string> = {};
+  const supabaseUrl = process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL ?? FALLBACK_URL;
+  const supabasePublishableKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? process.env.SUPABASE_PUBLISHABLE_KEY ?? FALLBACK_KEY;
+  const supabaseProjectId = process.env.VITE_SUPABASE_PROJECT_ID ?? process.env.SUPABASE_PROJECT_ID ?? FALLBACK_PROJECT_ID;
+
+  define['import.meta.env.VITE_SUPABASE_URL'] = JSON.stringify(supabaseUrl);
+  define['import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY'] = JSON.stringify(supabasePublishableKey);
+  define['import.meta.env.VITE_SUPABASE_PROJECT_ID'] = JSON.stringify(supabaseProjectId);
+
 
   return {
   define,
