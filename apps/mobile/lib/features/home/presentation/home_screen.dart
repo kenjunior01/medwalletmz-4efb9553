@@ -15,6 +15,7 @@ import '../../auth/presentation/auth_controller.dart';
 import '../../bookings/domain/booking_models.dart';
 import '../../bookings/presentation/bookings_controller.dart';
 import '../../notifications/presentation/notifications_controller.dart';
+import '../../regional/data/regional_models.dart';
 import '../../services/presentation/services_controller.dart';
 import '../../wallet/presentation/deposit_sheet.dart';
 import '../../wallet/presentation/wallet_controller.dart';
@@ -32,6 +33,9 @@ class HomeScreen extends ConsumerWidget {
     final hidden = ref.watch(balanceHiddenProvider);
     final consults = ref.watch(myConsultationsProvider);
     final locale = ref.watch(localeProvider);
+    final roles =
+        ref.watch(userRolesProvider).valueOrNull ?? const <String>[];
+    final isManager = roles.any(managerRoles.contains);
 
     final upcoming = consults.value
         ?.where((c) => c.scheduledAt.isAfter(DateTime.now()))
@@ -267,11 +271,18 @@ class HomeScreen extends ConsumerWidget {
                     label: tr(S.consultations, locale),
                     onTap: () => context.push('/bookings'),
                   ),
-                  _QuickAction(
-                    icon: Icons.admin_panel_settings_rounded,
-                    label: tr(S.management, locale),
-                    onTap: () => context.push('/manager-hub'),
-                  ),
+                  if (isManager)
+                    _QuickAction(
+                      icon: Icons.admin_panel_settings_rounded,
+                      label: tr(S.management, locale),
+                      onTap: () => context.push('/manager-hub'),
+                    )
+                  else
+                    _QuickAction(
+                      icon: Icons.emergency_rounded,
+                      label: 'SOS',
+                      onTap: () => context.push('/sos'),
+                    ),
                 ],
               )
                   .animate(interval: 60.ms)

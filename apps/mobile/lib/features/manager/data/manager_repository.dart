@@ -338,23 +338,62 @@ class ManagerRepository {
     }
   }
 
+  /// Cria um banner/conteúdo regional. Usa o RPC
+  /// `create_regional_content_safe` (valida permissão + limite de
+  /// itens activos) e cai para inserção directa se o RPC ainda não
+  /// existir na base.
   Future<void> createContent({
     required String countryCode,
     required String contentType,
     required String title,
     String? description,
+    String? imageUrl,
+    String? accentColor,
     String? ctaLabel,
     String? ctaUrl,
+    bool isPinned = false,
+    DateTime? startsAt,
+    DateTime? endsAt,
+    List<String> audienceTags = const [],
   }) async {
-    await _client.from('regional_content').insert({
-      'country_code': countryCode,
-      'content_type': contentType,
-      'title': title,
-      if (description != null && description.isNotEmpty)
-        'description': description,
-      if (ctaLabel != null && ctaLabel.isNotEmpty) 'cta_label': ctaLabel,
-      if (ctaUrl != null && ctaUrl.isNotEmpty) 'cta_url': ctaUrl,
-    });
+    try {
+      await _client.rpc('create_regional_content_safe', params: {
+        'p_country_code': countryCode,
+        'p_content_type': contentType,
+        'p_title': title,
+        if (description != null && description.isNotEmpty)
+          'p_description': description,
+        if (imageUrl != null && imageUrl.isNotEmpty)
+          'p_image_url': imageUrl,
+        if (accentColor != null && accentColor.isNotEmpty)
+          'p_accent_color': accentColor,
+        if (ctaLabel != null && ctaLabel.isNotEmpty)
+          'p_cta_label': ctaLabel,
+        if (ctaUrl != null && ctaUrl.isNotEmpty) 'p_cta_url': ctaUrl,
+        'p_is_pinned': isPinned,
+        if (startsAt != null) 'p_starts_at': startsAt.toIso8601String(),
+        if (endsAt != null) 'p_ends_at': endsAt.toIso8601String(),
+        if (audienceTags.isNotEmpty) 'p_audience_tags': audienceTags,
+      });
+    } catch (_) {
+      // Fallback: inserção directa (a RLS de regional_content decide).
+      await _client.from('regional_content').insert({
+        'country_code': countryCode,
+        'content_type': contentType,
+        'title': title,
+        if (description != null && description.isNotEmpty)
+          'description': description,
+        if (imageUrl != null && imageUrl.isNotEmpty) 'image_url': imageUrl,
+        if (accentColor != null && accentColor.isNotEmpty)
+          'accent_color': accentColor,
+        if (ctaLabel != null && ctaLabel.isNotEmpty) 'cta_label': ctaLabel,
+        if (ctaUrl != null && ctaUrl.isNotEmpty) 'cta_url': ctaUrl,
+        'is_pinned': isPinned,
+        if (startsAt != null) 'starts_at': startsAt.toIso8601String(),
+        if (endsAt != null) 'ends_at': endsAt.toIso8601String(),
+        if (audienceTags.isNotEmpty) 'audience_tags': audienceTags,
+      });
+    }
   }
 
   Future<void> setContentActive(String id, bool active) async {
@@ -373,6 +412,70 @@ class ManagerRepository {
       return rows.map(RegionalRankingRow.fromJson).toList();
     } catch (_) {
       return const [];
+    }
+  }
+
+  // ── Permissões & Limites (Centro de Controlo) ───────────────────
+
+  /// Permissões efectivas do utilizador actual (RPC
+  /// `my_manager_permissions`). null = RPC indisponível (migration
+  /// ainda não aplicada) — a UI degrada para "acesso completo local".
+  Future<Map<String, dynamic>?> fetchMyPermissions() async {
+    try {
+      final res = await _client.rpc('my_manager_permissions');
+      if (res is Map) return Map<String, dynamic>.from(res);
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Upsert de permissões/limites de um gestor (só admin global).
+  Future<void> upsertManagerPermissions({
+    required String userId,
+    String? countryId,
+    Map<String, bool> permissions = const {},
+    int? dailyApprovalLimit,
+    int? maxActiveContent,
+    String? notes,
+  }) async {
+    await _client.rpc('upsert_manager_permissions', params: {
+      'p_user_id': userId,
+      if (countryId != null) 'p_country_id': countryId,
+      'p_permissions': permissions,
+      if (dailyApprovalLimit != null)
+        'p_daily_approval_limit': dailyApprovalLimit,
+      if (maxActiveContent != null) 'p_max_active_content': maxActiveContent,
+      if (notes != null) 'p_notes': notes,
+    });
+  }
+
+  /// Linha bruta de permissões de um gestor (admin lê qualquer;
+  /// gestor lê apenas a própria).
+  Future<Map<String, dynamic>?> fetchManagerPermissions(
+      String userId) async {
+    try {
+      final rows = await _client
+          .from('manager_permissions')
+          .select()
+          .eq('user_id', userId)
+          .limit(1);
+      if (rows.isEmpty) return null;
+      return Map<String, dynamic>.from(rows.first);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Aprovações feitas pelo utilizador hoje (RPC
+  /// `manager_approvals_today`) — alimenta o widget de limite diário.
+  Future<int> approvalsToday() async {
+    try {
+      final res = await _client.rpc('manager_approvals_today');
+      if (res is num) return res.toInt();
+      return 0;
+    } catch (_) {
+      return 0;
     }
   }
 

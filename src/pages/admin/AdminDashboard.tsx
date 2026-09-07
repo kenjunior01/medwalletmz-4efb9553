@@ -25,6 +25,9 @@ import {
   Globe,
   ShieldCheck,
   Bot,
+  Palette,
+  IdCard,
+  UserPlus,
 } from "@/components/icons/lucide-compat";
 import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardShell, type DashboardMenuItem } from '@/components/layout/DashboardShell';
@@ -55,6 +58,11 @@ const menuItems: DashboardMenuItem[] = [
   { icon: BarChart3, label: 'Relatórios', path: '/admin/reports' },
   { icon: Upload, label: 'Importar Dados', path: '/admin/import', highlight: true },
   { icon: Globe, label: 'Gestão do País', path: '/admin/country-settings', highlight: true },
+  { icon: UserPlus, label: 'Atribuir Gestor de País', path: '/admin/assign-country-manager' },
+  { icon: ShieldCheck, label: 'Permissões de Gestores', path: '/admin/country-permissions', highlight: true },
+  { icon: Palette, label: 'Cores & Banner do País', path: '/admin/branding', highlight: true },
+  { icon: IdCard, label: 'Perfis & Tipos de Conta', path: '/admin/roles', highlight: true },
+  { icon: Globe, label: 'Banners & Conteúdo Regional', path: '/admin/regional-content', highlight: true },
   { icon: ShieldCheck, label: 'Compliance Command Center', path: '/admin/compliance', highlight: true },
   { icon: Bot, label: 'Meddy IA Copilot', path: '/admin/compliance/copilot', highlight: true },
   { icon: Settings, label: 'Configurações', path: '/admin/settings' },

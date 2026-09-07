@@ -358,6 +358,23 @@ Enquanto não forem aplicadas, o resto da app funciona normalmente.
 | **Agentes de Saúde** (marketplace verificado por profissão, fee 80/20 igual à web, reserva com débito transacional da carteira, estados + avaliação) | ✅ | `health_worker_profiles`, `health_worker_bookings` + RPC `wallet_debit('worker_booking')` |
 | Entradas: botão Meddy 🐻 no ecrã inicial, 4 banners nos Serviços, 5 itens no perfil | ✅ | — |
 
+### Novidades F12 — Centro de Controlo de Gestores (paridade com o web + controlo regional)
+| Módulo | Estado | Backend (tabelas/RPC) |
+|--------|--------|----------------------|
+| **Permissões & Limites** (secção nova no console: permissões efectivas via RPC, aprovações hoje vs limite diário, banners activos vs máximo) | ✅ | `manager_permissions` + RPC `my_manager_permissions`, `manager_approvals_today` |
+| **Banner Studio** (publicar para o país com pré-visualização ao vivo, paleta de cor de destaque, imagem, CTA, fixar no topo, agendamento início/fim; erro amigável ao atingir o limite) | ✅ | RPC `create_regional_content_safe` (valida permissão + limite) → fallback inserção directa |
+| **Editor de cores do país** (3 cores + banner da Home, 6 paletas rápidas pré-definidas, faixa de pré-visualização ao vivo) | ✅ | `countries.branding_config` (RLS gestor do próprio país) |
+| **Equipa (admin)** — escudo por gestor abre folha de edição de permissões + limites (9 toggles + 2 limites) | ✅ | RPC `upsert_manager_permissions` (só admin) |
+| **Panorama do país** (barras comparativas em widgets puros, sem dependências) | ✅ | — |
+| **Tipo de perfil** (perfil → folha de 5 personas com troca imediata) | ✅ | RPC `set_user_primary_type` |
+| Correcções: atalho "Gestão" só para gestores (restantes veem SOS), `/regional` legado → redirecção ao hub | ✅ | — |
+
+> A migration da web `20260906120000_manager_control_center.sql` (100%
+> aditiva) cria a tabela `manager_permissions`, alarga CHECKs da
+> `wallet_transactions` (saques/confirmados), adiciona os valores em
+> falta no enum `app_role` e corrige as políticas das tabelas
+> `regional_*` — sem ela, as novas secções degradam graciosamente.
+
 ## 5. Arquitectura
 
 ```

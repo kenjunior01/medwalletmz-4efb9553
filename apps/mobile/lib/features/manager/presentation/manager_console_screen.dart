@@ -15,12 +15,13 @@ import '../data/manager_models.dart';
 import 'manager_controller.dart';
 import 'manager_growth_panels.dart';
 import 'manager_ops_panels.dart';
+import 'manager_permissions_panel.dart';
 import 'manager_widgets.dart';
 import 'meddy_copilot_sheet.dart';
 
-/// Consola completa de gestão de um país — 10 secções:
+/// Consola completa de gestão de um país — 11 secções:
 /// visão geral, submissões, instituições, KPIs, metas, conteúdo,
-/// pagamentos, utilizadores, SOS e configuração.
+/// pagamentos, utilizadores, SOS, permissões e configuração.
 class ManagerConsoleScreen extends ConsumerStatefulWidget {
   const ManagerConsoleScreen({super.key, this.countryId});
 
@@ -45,6 +46,7 @@ class _ManagerConsoleScreenState extends ConsumerState<ManagerConsoleScreen> {
     ('payments', 'Pagamentos', Icons.payments_rounded),
     ('users', 'Utilizadores', Icons.people_alt_rounded),
     ('sos', 'SOS', Icons.emergency_rounded),
+    ('permissions', 'Permissões', Icons.verified_user_rounded),
     ('config', 'Configuração', Icons.tune_rounded),
   ];
 
@@ -225,6 +227,8 @@ class _ManagerConsoleScreenState extends ConsumerState<ManagerConsoleScreen> {
         return UsersPanel(countryId: id);
       case 'sos':
         return SosMonitorPanel(countryId: id);
+      case 'permissions':
+        return PermissionsPanel(countryId: id);
       case 'config':
         return ConfigPanel(countryId: id);
       default:
@@ -306,6 +310,40 @@ class _OverviewPanel extends ConsumerWidget {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.fromLTRB(14, 13, 14, 10),
+            decoration: BoxDecoration(
+              color: AppColors.glassFill,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.glassBorder),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Panorama do país',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13.5,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                _StatsBars(data: [
+                  ('Users', s.users, const Color(0xFF38BDF8)),
+                  ('Rede', s.institutions, AppColors.success),
+                  ('Consultas', s.consultations,
+                      const Color(0xFFA78BFA)),
+                  ('Triagens', s.triages, const Color(0xFFFBBF24)),
+                  ('Pendentes', s.pendingProposals,
+                      const Color(0xFFF87171)),
+                  ('Aprovadas', s.approvedProposals,
+                      const Color(0xFF34D399)),
+                ]),
+              ],
+            ),
+          ),
           const SizedBox(height: 18),
           SectionTitle(
             'Acções prioritárias',
@@ -365,6 +403,71 @@ class _OverviewPanel extends ConsumerWidget {
   }
 }
 
+/// Barras comparativas simples (widgets puros, sem dependências).
+class _StatsBars extends StatelessWidget {
+  const _StatsBars({required this.data});
+
+  final List<(String, int, Color)> data;
+
+  String _short(int v) =>
+      v >= 1000 ? '${(v / 1000).toStringAsFixed(1)}k' : '$v';
+
+  @override
+  Widget build(BuildContext context) {
+    var maxV = 1;
+    for (final d in data) {
+      if (d.$2 > maxV) maxV = d.$2;
+    }
+    return SizedBox(
+      height: 104,
+      child: Row(
+        children: [
+          for (final (label, value, color) in data)
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    _short(value),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.6),
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Container(
+                    height: 52 * (value / maxV).clamp(0.05, 1.0),
+                    width: 17,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [color, color.withOpacity(0.30)],
+                      ),
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(6)),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.45),
+                      fontSize: 9,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ActionTile extends StatelessWidget {
   const _ActionTile({
     required this.icon,
@@ -373,12 +476,6 @@ class _ActionTile extends StatelessWidget {
     this.badge = 0,
     this.danger = false,
   });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final int badge;
-  final bool danger;
 
   @override
   Widget build(BuildContext context) {

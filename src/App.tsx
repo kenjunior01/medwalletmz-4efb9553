@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { CountryProvider } from "@/contexts/CountryContext";
@@ -215,17 +215,9 @@ const ManagerLogin = lazy(() => import("./pages/manager/ManagerLogin"));
 // ---- Registration type selector ----
 const ProfessionalTypeSelector = lazy(() => import("./pages/register/ProfessionalTypeSelector"));
 
-// ---- Provincial Manager Pages (páginas EXCLUSIVAS do gestor provincial — Moçambique) ----
-const ProvincialManagerDashboard = lazy(() => import("./pages/regional/RegionalManagerDashboard"));
-const ProvincialTeam = lazy(() => import("./pages/regional/RegionalTeam"));
-const ProvincialContent = lazy(() => import("./pages/regional/RegionalContent"));
-const ProvincialEarnings = lazy(() => import("./pages/regional/RegionalEarnings"));
-const ProvincialFacilities = lazy(() => import("./pages/regional/RegionalFacilities"));
-const ProvincialOrders = lazy(() => import("./pages/regional/RegionalOrders"));
-const ProvincialRiders = lazy(() => import("./pages/regional/RegionalRiders"));
-const ProvincialAnalytics = lazy(() => import("./pages/regional/RegionalAnalytics"));
-const ProvincialUsers = lazy(() => import("./pages/regional/RegionalUsers"));
-const ProvincialSettings = lazy(() => import("./pages/regional/RegionalSettings"));
+// ---- Branding & perfis (F12 — Centro de Controlo de Gestores) ----
+const CountryBranding = lazy(() => import("./pages/admin/CountryBranding"));
+const AdminRolesMatrix = lazy(() => import("./pages/admin/AdminRolesMatrix"));
 const AssignProvincialManager = lazy(() => import("./pages/admin/AssignRegionalManager"));
 const ManageProvincialPermissions = lazy(() => import("./pages/admin/ManageRegionalPermissions"));
 
@@ -505,6 +497,8 @@ const App = () => {
                         <ManageCountryPermissions />
                       </ProtectedRoute>
                     } />
+                    <Route path="branding" element={<CountryBranding />} />
+                    <Route path="roles" element={<AdminRolesMatrix />} />
                     <Route path="assign-provincial-manager" element={
                       <ProtectedRoute allowedRoles={['admin']}>
                         <AssignProvincialManager />
@@ -525,6 +519,8 @@ const App = () => {
                   }>
                     <Route index element={<ManagerHome />} />
                     <Route path="users" element={<ManagerUsers />} />
+                    <Route path="branding" element={<CountryBranding />} />
+                    <Route path="content" element={<RegionalContentCMS />} />
                     {/* Páginas compartilhadas (usam os mesmos componentes admin mas
                         o isolamento de dados é feito via useManagedCountry + backend RLS) */}
                     <Route path="stores" element={<AdminStores />} />
@@ -535,21 +531,12 @@ const App = () => {
                     <Route path="metrics" element={<RegionalMetrics />} />
                   </Route>
 
-                  {/* Provincial Manager Routes — Moçambique only */}
-                  <Route path="/regional" element={
-                    <Suspense fallback={<LoadingScreen />}><ProtectedRoute allowedRoles={['provincial_manager', 'admin']}><ProvincialManagerDashboard /></ProtectedRoute></Suspense>
-                  }>
-                    <Route index element={<ProvincialManagerDashboard />} />
-                    <Route path="team" element={<ProvincialTeam />} />
-                    <Route path="content" element={<ProvincialContent />} />
-                    <Route path="earnings" element={<ProvincialEarnings />} />
-                    <Route path="facilities" element={<ProvincialFacilities />} />
-                    <Route path="orders" element={<ProvincialOrders />} />
-                    <Route path="riders" element={<ProvincialRiders />} />
-                    <Route path="analytics" element={<ProvincialAnalytics />} />
-                    <Route path="users" element={<ProvincialUsers />} />
-                    <Route path="settings" element={<ProvincialSettings />} />
-                  </Route>
+                  {/* Regional (provincial) — CONSOLIDADO: o escopo provincial
+                      foi removido da base de dados (20260725); gestores
+                      regionais gerem países em /manager. Rotas antigas
+                      redirecionam para não quebrar links/bookmarks. */}
+                  <Route path="/regional" element={<Navigate to="/manager" replace />} />
+                  <Route path="/regional/*" element={<Navigate to="/manager" replace />} />
 
                   {/* Store Owner Routes — protegido ao nível da rota */}
                   <Route path="/store/register" element={<RegistrationWizard />} />

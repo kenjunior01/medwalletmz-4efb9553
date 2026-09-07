@@ -84,6 +84,11 @@ export default function ManagerHome() {
     canManageCoupons: false,
     canManageSettings: false,
   });
+  const [limits, setLimits] = useState<{
+    dailyApprovalLimit: number | null;
+    maxActiveContent: number | null;
+  }>({ dailyApprovalLimit: null, maxActiveContent: null });
+  const [approvalsToday, setApprovalsToday] = useState<number | null>(null);
 
   // Check if all permissions are active (to hide the card)
   const permissionCount = Object.values(restrictions).filter(Boolean).length;
@@ -101,6 +106,7 @@ export default function ManagerHome() {
     loadPendingVerifications();
     loadRestrictions();
     loadLastSession();
+    loadApprovalsToday();
   }, [user, managedCountryId]);
 
   const loadLastSession = async () => {
@@ -202,9 +208,61 @@ export default function ManagerHome() {
     }
   };
 
+  const loadApprovalsToday = async () => {
+    if (!user) return;
+    try {
+      const { data } = await (supabase as any).rpc('manager_approvals_today');
+      setApprovalsToday(Number(data ?? 0));
+    } catch {
+      setApprovalsToday(null);
+    }
+  };
+
   const loadRestrictions = async () => {
     if (!user) return;
     try {
+      // 1º: RPC de permissões efectivas (merge manager_permissions +
+      // country_management; admin global recebe tudo true).
+      const { data: eff, error: rpcError } = await (supabase as any)
+        .rpc('my_manager_permissions');
+
+      if (!rpcError && eff) {
+        if (eff.is_global) {
+          setRestrictions({
+            canApproveDoctors: true,
+            canApprovePharmacies: true,
+            canApproveInstitutions: true,
+            canViewFinancials: true,
+            canExportData: true,
+            canManageDrivers: true,
+            canManageCoupons: true,
+            canManageSettings: true,
+          });
+          setLimits({ dailyApprovalLimit: null, maxActiveContent: null });
+          return;
+        }
+        if (eff.managed) {
+          const p = eff.permissions || {};
+          setRestrictions({
+            canApproveDoctors: p.can_approve_doctors ?? false,
+            canApprovePharmacies: p.can_approve_pharmacies ?? false,
+            canApproveInstitutions: p.can_approve_institutions ?? false,
+            canViewFinancials: p.can_view_financials ?? false,
+            canExportData: p.can_export_data ?? false,
+            canManageDrivers: p.can_manage_drivers ?? false,
+            canManageCoupons: p.can_manage_coupons ?? false,
+            canManageSettings: p.can_manage_settings ?? false,
+          });
+          const l = eff.limits || {};
+          setLimits({
+            dailyApprovalLimit: l.daily_approval_limit ?? 100,
+            maxActiveContent: l.max_active_content ?? 30,
+          });
+          return;
+        }
+      }
+
+      // Fallback: tabela directa (RPC ainda não aplicado na base).
       const { data: perms } = await (supabase as any)
         .from('manager_permissions')
         .select('*')
@@ -221,6 +279,10 @@ export default function ManagerHome() {
           canManageDrivers: perms.can_manage_drivers ?? false,
           canManageCoupons: perms.can_manage_coupons ?? false,
           canManageSettings: perms.can_manage_settings ?? false,
+        });
+        setLimits({
+          dailyApprovalLimit: perms.daily_approval_limit ?? 100,
+          maxActiveContent: perms.max_active_content ?? 30,
         });
       }
     } catch {
@@ -314,6 +376,32 @@ export default function ManagerHome() {
                   <p className="text-xs text-muted-foreground mt-1">
                     {t('manager.no_permissions_hint') || 'As suas permissões serão activadas em breve.'}
                   </p>
+                )}
+                {/* Limites quantitativos (definidos pelo Gestor Global) */}
+                {!hasRole('admin') && limits.dailyApprovalLimit != null && approvalsToday != null && (
+                  <div className="mt-3">
+                    <div className="flex justify-between text-[11px] text-muted-foreground mb-1">
+                      <span>Aprovações hoje (limite diário)</span>
+                      <span className="font-semibold tabular-nums">
+                        {approvalsToday}/{limits.dailyApprovalLimit}
+                      </span>
+                    </div>
+                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${
+                          approvalsToday / Math.max(limits.dailyApprovalLimit, 1) >= 0.85
+                            ? 'bg-red-500'
+                            : 'bg-emerald-500'
+                        }`}
+                        style={{
+                          width: `${Math.min(
+                            (approvalsToday / Math.max(limits.dailyApprovalLimit, 1)) * 100,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

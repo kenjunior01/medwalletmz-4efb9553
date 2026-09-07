@@ -10,6 +10,7 @@ import '../../../core/widgets/skeleton.dart';
 import '../data/manager_models.dart';
 import 'manager_controller.dart';
 import 'manager_ops_panels.dart';
+import 'manager_permissions_panel.dart';
 import 'manager_widgets.dart';
 import 'meddy_copilot_sheet.dart';
 
@@ -514,6 +515,7 @@ class TeamEmbed extends ConsumerWidget {
 }
 
 /// Equipa de gestão — atribuições country_management + user_roles.
+/// O admin pode editar permissões/limites de cada gestor na app.
 class TeamPanel extends ConsumerStatefulWidget {
   const TeamPanel({super.key});
 
@@ -548,8 +550,8 @@ class _TeamPanelState extends ConsumerState<TeamPanel> {
         const SectionTitle(
           'Equipa de gestão',
           subtitle:
-              'Gestores de país e regionais atribuídos. Gerir a '
-              'atribuição via user_roles / country_management na BD.',
+              'Gestores atribuídos e o que cada um pode fazer. Toca no '
+              'escudo para editar permissões e limites.',
         ),
         if (rows == null)
           const ListSkeleton(count: 4, itemHeight: 70)
@@ -617,6 +619,24 @@ class _TeamPanelState extends ConsumerState<TeamPanel> {
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.4),
                         fontSize: 10.5,
+                      ),
+                    ),
+                  if (a.countryId != '*')
+                    IconButton(
+                      tooltip: 'Permissões & limites',
+                      onPressed: () async {
+                        await ManagerPermissionsEditorSheet.show(
+                          context,
+                          userId: a.userId,
+                          countryId: a.countryId,
+                          userName: a.fullName ?? a.userId.substring(0, 8),
+                        );
+                        if (mounted) _load();
+                      },
+                      icon: const Icon(
+                        Icons.shield_rounded,
+                        size: 20,
+                        color: Color(0xFF7DD3FC),
                       ),
                     ),
                 ],

@@ -20,6 +20,192 @@ import '../../regional/data/regional_models.dart';
 import '../../wallet/presentation/wallet_controller.dart';
 import '../data/profile_controller.dart';
 
+/// Tipo de perfil actual (profiles.user_type — persona principal).
+final userTypeProvider = FutureProvider<String>((ref) async {
+  final client = Supabase.instance.client;
+  final uid = client.auth.currentUser?.id;
+  if (uid == null) return 'patient';
+  try {
+    final row = await client
+        .from('profiles')
+        .select('user_type')
+        .eq('user_id', uid)
+        .single();
+    return (row['user_type'] ?? 'patient') as String;
+  } catch (_) {
+    return 'patient';
+  }
+});
+
+const _userTypeCatalog = <(String, String, String, IconData)>[
+  ('patient', 'Doente', 'Consultas, exames, medicação e círculos.',
+      Icons.person_rounded),
+  ('rider', 'Rider', 'Entregas de medicamentos e transporte.',
+      Icons.pedal_bike_rounded),
+  ('worker', 'Profissional',
+      'Atende como médico, enfermeiro ou agente de saúde.',
+      Icons.medical_services_rounded),
+  ('caregiver', 'Cuidador',
+      'Cuida da saúde de familiares e dependentes.',
+      Icons.volunteer_activism_rounded),
+  ('promoter', 'Promotor',
+      'Indica parceiros e instituições e ganha comissões.',
+      Icons.campaign_rounded),
+];
+
+Future<void> _showUserTypePicker(
+    BuildContext context, WidgetRef ref) async {
+  final client = Supabase.instance.client;
+  final uid = client.auth.currentUser?.id;
+  if (uid == null) return;
+
+  var current = 'patient';
+  try {
+    final row = await client
+        .from('profiles')
+        .select('user_type')
+        .eq('user_id', uid)
+        .single();
+    current = (row['user_type'] ?? 'patient') as String;
+  } catch (_) {}
+
+  var saving = false;
+  await showModalBottomSheet<void>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setSheet) => Container(
+        padding: const EdgeInsets.fromLTRB(22, 18, 22, 24),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+              colors: [AppColors.bgHigh, AppColors.bgDeep]),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Tipo de perfil',
+              style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Como a plataforma te apresenta e personaliza. Podes '
+              'mudar quando quiseres.',
+              style: TextStyle(
+                  color: Colors.white.withOpacity(0.5), fontSize: 12),
+            ),
+            const SizedBox(height: 12),
+            for (final (key, label, desc, icon) in _userTypeCatalog)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 7),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: saving || key == current
+                      ? null
+                      : () async {
+                          setSheet(() => saving = true);
+                          try {
+                            await client.rpc('set_user_primary_type',
+                                params: {
+                                  'p_user_id': uid,
+                                  'p_type': key,
+                                });
+                            ref.invalidate(userTypeProvider);
+                            ref.invalidate(profileProvider);
+                            if (ctx.mounted) Navigator.of(ctx).pop();
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: AppColors.success,
+                                  content: Text(
+                                      'Tipo de perfil alterado para '
+                                      '"$label".'),
+                                ),
+                              );
+                            }
+                          } catch (_) {
+                            setSheet(() => saving = false);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: AppColors.danger,
+                                  content: Text(
+                                      'Não foi possível actualizar o tipo.'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                  child: Container(
+                    padding: const EdgeInsets.all(11),
+                    decoration: BoxDecoration(
+                      color: key == current
+                          ? const Color(0x2638BDF8)
+                          : AppColors.glassFill,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: key == current
+                            ? const Color(0xFF38BDF8)
+                            : AppColors.glassBorder,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(icon,
+                            size: 19,
+                            color: key == current
+                                ? const Color(0xFF7DD3FC)
+                                : Colors.white.withOpacity(0.5)),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                label,
+                                style: const TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              Text(desc,
+                                  style: TextStyle(
+                                      color: Colors.white
+                                          .withOpacity(0.45),
+                                      fontSize: 10.5)),
+                            ],
+                          ),
+                        ),
+                        if (saving && key == current)
+                          const SizedBox(
+                            width: 15,
+                            height: 15,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.accent),
+                          )
+                        else if (key == current)
+                          const Icon(Icons.check_circle_rounded,
+                              color: Color(0xFF38BDF8), size: 18),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 /// Perfil: identidade, atalhos e saída de sessão.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -323,6 +509,11 @@ class ProfileScreen extends ConsumerWidget {
                       label: 'Gestão',
                       onTap: () => context.push('/manager-hub'),
                     ),
+                  _MenuItem(
+                    icon: Icons.badge_outlined,
+                    label: 'Tipo de perfil',
+                    onTap: () => _showUserTypePicker(context, ref),
+                  ),
                   _MenuItem(
                     icon: Icons.language_rounded,
                     label: 'Idioma',

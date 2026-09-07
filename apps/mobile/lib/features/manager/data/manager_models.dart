@@ -355,6 +355,11 @@ class RegionalContentItem {
     this.ctaUrl,
     this.accentColor,
     this.isPinned = false,
+    this.imageUrl,
+    this.viewsCount = 0,
+    this.clicksCount = 0,
+    this.startsAt,
+    this.endsAt,
   });
 
   final String id;
@@ -371,6 +376,11 @@ class RegionalContentItem {
   final bool isActive;
   final bool isPinned;
   final DateTime createdAt;
+  final String? imageUrl;
+  final int viewsCount;
+  final int clicksCount;
+  final DateTime? startsAt;
+  final DateTime? endsAt;
 
   factory RegionalContentItem.fromJson(Map<String, dynamic> j) =>
       RegionalContentItem(
@@ -385,6 +395,11 @@ class RegionalContentItem {
         isActive: j['is_active'] as bool? ?? true,
         isPinned: j['is_pinned'] as bool? ?? false,
         createdAt: jsonDate(j['created_at']) ?? DateTime.now(),
+        imageUrl: j['image_url'] as String?,
+        viewsCount: (j['views_count'] as num?)?.toInt() ?? 0,
+        clicksCount: (j['clicks_count'] as num?)?.toInt() ?? 0,
+        startsAt: jsonDate(j['starts_at']),
+        endsAt: jsonDate(j['ends_at']),
       );
 
   static const types = <(String, String, IconData)>[

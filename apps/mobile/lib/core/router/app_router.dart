@@ -55,7 +55,6 @@ import '../../features/profile/presentation/help_legal_screen.dart';
 import '../../features/ranking/presentation/ranking_screen.dart';
 import '../../features/referrals/presentation/referrals_screen.dart';
 import '../../features/records/presentation/records_screen.dart';
-import '../../features/regional/presentation/regional_dashboard_screen.dart';
 import '../../features/services/presentation/services_screen.dart';
 import '../../features/services/presentation/specialists_screen.dart';
 import '../../features/solidarity/presentation/solidarity_screen.dart';
@@ -169,10 +168,12 @@ final router = GoRouter(
         path: '/map-picker',
         builder: (_, __) => const MapPickerScreen()),
 
-    // Gestão regional (legado) — painel original de submissões/KPIs.
+    // Gestão regional (legado) — o painel original foi consolidado
+    // na suite de gestão F5+/F12; qualquer link antigo cai no hub.
     GoRoute(
-        path: '/regional',
-        builder: (_, __) => const RegionalDashboardScreen()),
+      path: '/regional',
+      redirect: (_, __) => '/manager-hub',
+    ),
 
     // Suite de gestão F5 — hub, consola por país e painel global.
     GoRoute(

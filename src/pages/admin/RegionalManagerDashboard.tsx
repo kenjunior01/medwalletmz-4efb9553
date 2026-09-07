@@ -18,6 +18,8 @@ import {
   ChevronLeft,
   Globe,
   Bell,
+  Megaphone,
+  Palette,
 } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +45,8 @@ const navItems: NavItem[] = [
   { icon: Truck, labelKey: 'nav.drivers', path: '/manager/drivers', accent: 'from-amber-500/20 to-amber-600/5' },
   { icon: BarChart3, labelKey: 'nav.reports', path: '/manager/reports', accent: 'from-rose-500/20 to-rose-600/5' },
   { icon: Globe, labelKey: 'nav.regional_metrics', path: '/manager/metrics', accent: 'from-cyan-500/20 to-cyan-600/5' },
+  { icon: Megaphone, labelKey: 'nav.provincial_content', path: '/manager/content', accent: 'from-fuchsia-500/20 to-fuchsia-600/5' },
+  { icon: Palette, labelKey: 'nav.branding_colors', path: '/manager/branding', accent: 'from-lime-500/20 to-lime-600/5' },
 ];
 
 export default function RegionalManagerDashboard() {

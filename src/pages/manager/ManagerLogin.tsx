@@ -13,7 +13,10 @@ import { toast } from 'sonner';
 function panelFor(hasRole: (r: string) => boolean): string | null {
   if (hasRole('admin')) return '/admin';
   if (hasRole('country_manager')) return '/manager';
-  if (hasRole('provincial_manager') || hasRole('regional_manager') || hasRole('regional_ceo')) return '/regional';
+  // Escopo provincial foi consolidado no painel por país (/manager).
+  if (hasRole('provincial_manager') || hasRole('regional_manager') || hasRole('regional_ceo')) {
+    return '/manager';
+  }
   return null;
 }
 

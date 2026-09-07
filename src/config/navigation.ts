@@ -1,7 +1,7 @@
 import {
   Home, Stethoscope, FileText, ClipboardList, User, Droplet, Pill, Building2, FlaskConical,
   Calendar, Users, MessageSquare, Truck, Package, BarChart3, Shield, Wallet, Settings, LayoutDashboard, Hospital, Video, Crown, TrendingUp, BookOpen, Globe, HeartHandshake,
-  UserPlus, ShieldCheck, Share2, Radio, Route, Navigation,
+  UserPlus, ShieldCheck, Share2, Radio, Route, Navigation, Palette, IdCard,
 } from "@/components/icons/lucide-compat";
 import type { LucideIcon } from "@/components/icons/lucide-compat";
 
@@ -16,7 +16,8 @@ export type NavItem = {
 
 export type RoleKey =
   | "customer" | "doctor" | "clinic" | "hospital"
-  | "lab" | "store_owner" | "driver" | "admin" | "country_manager" | "provincial_manager" | "insurance";
+  | "lab" | "store_owner" | "driver" | "admin" | "country_manager"
+  | "provincial_manager" | "regional_manager" | "regional_ceo" | "insurance";
 
 /** Primary 5 items for mobile BottomNav per role. */
 export const bottomNavByRole: Record<RoleKey, NavItem[]> = {
@@ -29,10 +30,24 @@ export const bottomNavByRole: Record<RoleKey, NavItem[]> = {
     { path: "/", icon: Home, label: "nav.home" },
   ],
   provincial_manager: [
-    { path: "/regional", icon: LayoutDashboard, label: "nav.dashboard" },
-    { path: "/regional/orders", icon: Package, label: "nav.orders" },
-    { path: "/regional/users", icon: Users, label: "nav.users_list" },
-    { path: "/regional/analytics", icon: BarChart3, label: "nav.analytics" },
+    { path: "/manager", icon: LayoutDashboard, label: "nav.dashboard" },
+    { path: "/manager/orders", icon: Package, label: "nav.orders" },
+    { path: "/manager/users", icon: Users, label: "nav.users_list" },
+    { path: "/manager/metrics", icon: BarChart3, label: "nav.analytics" },
+    { path: "/profile", icon: User, label: "nav.profile" },
+  ],
+  regional_manager: [
+    { path: "/manager", icon: LayoutDashboard, label: "nav.dashboard" },
+    { path: "/manager/orders", icon: Package, label: "nav.orders" },
+    { path: "/manager/users", icon: Users, label: "nav.users_list" },
+    { path: "/manager/metrics", icon: BarChart3, label: "nav.analytics" },
+    { path: "/profile", icon: User, label: "nav.profile" },
+  ],
+  regional_ceo: [
+    { path: "/admin/regional-ceo", icon: LayoutDashboard, label: "nav.dashboard" },
+    { path: "/admin/regional-metrics", icon: BarChart3, label: "nav.analytics" },
+    { path: "/admin/regional-content", icon: FileText, label: "nav.provincial_content" },
+    { path: "/admin/global-ranking", icon: TrendingUp, label: "nav.ranking" },
     { path: "/profile", icon: User, label: "nav.profile" },
   ],
   country_manager: [
@@ -190,6 +205,8 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/admin/users", icon: Users, label: "nav.users", group: "nav_group.management" },
     { path: "/admin/assign-country-manager", icon: UserPlus, label: "nav.assign_country_manager", group: "nav_group.management" },
     { path: "/admin/country-permissions", icon: ShieldCheck, label: "nav.manager_permissions", group: "nav_group.management" },
+    { path: "/admin/branding", icon: Palette, label: "nav.branding_colors", group: "nav_group.management" },
+    { path: "/admin/roles", icon: IdCard, label: "nav.profiles_types", group: "nav_group.management" },
     { path: "/admin/assign-provincial-manager", icon: UserPlus, label: "nav.provincial_managers_mz", group: "nav_group.management" },
     { path: "/admin/provincial-permissions", icon: ShieldCheck, label: "nav.provincial_permissions_mz", group: "nav_group.management" },
     { path: "/admin/drivers", icon: Truck, label: "nav.drivers", group: "nav_group.management" },
@@ -211,21 +228,32 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/manager/drivers", icon: Truck, label: "nav.drivers", group: "nav_group.operations" },
     { path: "/manager/reports", icon: BarChart3, label: "nav.reports", group: "nav_group.operations" },
     { path: "/manager/metrics", icon: Globe, label: "nav.regional_metrics", group: "nav_group.analytics" },
+    { path: "/manager/branding", icon: Palette, label: "nav.branding_colors", group: "nav_group.analytics" },
     { path: "/profile", icon: User, label: "nav.profile", group: "nav_group.account" },
   ],
   provincial_manager: [
-    { path: "/regional", icon: LayoutDashboard, label: "nav.dashboard", group: "nav_group.panel" },
-    { path: "/regional/analytics", icon: BarChart3, label: "nav.analytics", group: "nav_group.panel" },
-    { path: "/regional/users", icon: Users, label: "nav.users_list", group: "nav_group.people" },
-    { path: "/regional/team", icon: Stethoscope, label: "nav.health_professionals", group: "nav_group.people" },
-    { path: "/regional/riders", icon: Truck, label: "nav.riders", group: "nav_group.people" },
-    { path: "/regional/facilities", icon: Building2, label: "nav.institutions", group: "nav_group.operations" },
-    { path: "/regional/orders", icon: Package, label: "nav.orders", group: "nav_group.operations" },
-    { path: "/regional/earnings", icon: Wallet, label: "nav.finance", group: "nav_group.operations" },
-    { path: "/regional/content", icon: FileText, label: "nav.provincial_content", group: "nav_group.operations" },
-    { path: "/admin/subscription-plans", icon: Shield, label: "nav.subscription_plans", group: "nav_group.operations" },
-    { path: "/regional/settings", icon: Settings, label: "nav.settings", group: "nav_group.system" },
-    { path: "/help", icon: MessageSquare, label: "nav.help", group: "nav_group.system" },
+    { path: "/manager", icon: LayoutDashboard, label: "nav.dashboard", group: "nav_group.panel" },
+    { path: "/manager/metrics", icon: BarChart3, label: "nav.analytics", group: "nav_group.panel" },
+    { path: "/manager/users", icon: Users, label: "nav.users_list", group: "nav_group.people" },
+    { path: "/manager/clinics", icon: Stethoscope, label: "nav.health_professionals", group: "nav_group.people" },
+    { path: "/manager/drivers", icon: Truck, label: "nav.riders", group: "nav_group.people" },
+    { path: "/manager/stores", icon: Building2, label: "nav.institutions", group: "nav_group.operations" },
+    { path: "/manager/orders", icon: Package, label: "nav.orders", group: "nav_group.operations" },
+    { path: "/manager/branding", icon: Palette, label: "nav.branding_colors", group: "nav_group.operations" },
+    { path: "/profile", icon: User, label: "nav.profile", group: "nav_group.account" },
+  ],
+  regional_manager: [
+    { path: "/manager", icon: LayoutDashboard, label: "nav.dashboard", group: "nav_group.panel" },
+    { path: "/manager/metrics", icon: BarChart3, label: "nav.analytics", group: "nav_group.panel" },
+    { path: "/manager/users", icon: Users, label: "nav.users_list", group: "nav_group.people" },
+    { path: "/manager/branding", icon: Palette, label: "nav.branding_colors", group: "nav_group.operations" },
+    { path: "/profile", icon: User, label: "nav.profile", group: "nav_group.account" },
+  ],
+  regional_ceo: [
+    { path: "/admin/regional-ceo", icon: LayoutDashboard, label: "nav.dashboard", group: "nav_group.panel" },
+    { path: "/admin/regional-metrics", icon: BarChart3, label: "nav.analytics", group: "nav_group.panel" },
+    { path: "/admin/regional-content", icon: FileText, label: "nav.provincial_content", group: "nav_group.operations" },
+    { path: "/admin/global-ranking", icon: TrendingUp, label: "nav.ranking", group: "nav_group.operations" },
     { path: "/profile", icon: User, label: "nav.profile", group: "nav_group.account" },
   ],
   insurance: [
