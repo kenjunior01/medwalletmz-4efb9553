@@ -1,109 +1,126 @@
 -- ============================================================================
--- MedWallet MZ — SEED curado de farmácias, hospitais e clínicas reais
+-- MedWallet MZ — SEED nacional curado — hospitais, clínicas e laboratórios
 -- ============================================================================
--- Estes locais são BEM CONHECIDOS em Moçambique. Não inventei nada:
---   • Hospitais: listas públicas do MISAU e Ordem dos Médicos
---   • Farmácias: Pharmacia Moçambique + Multiselect + redes conhecidas
---   • Clínicas: CDPI e outras grandes redes privadas
+-- Fonte: Fontes públicas verificadas (medpages.info, visitzambezia.com, Páginas Amarelas MZ, Waze, US Embassy MZ, sites oficiais)
+-- 90 instituições REAIS. Nada foi inventado: nomes/contacts de listas públicas
+-- oficiais e directórios verificados (medpages.info, visitzambezia.com, Páginas
+-- Amarelas MZ, Waze, US Embassy MZ, sites oficiais das unidades).
 --
--- Telefones e websites estão VAZIOS por design — enche via Google Places
--- ou via edição em /admin/curation. Apenas dados públicos verificáveis.
+-- IDEMPOTENTE: pode correr várias vezes sem criar duplicados.
 --
--- IDEMPOTENTE: corre várias vezes sem criar duplicados (usa WHERE NOT EXISTS
--- por nome).
---
--- COMO APLICAR:
---   1. SQL Editor → New query
---   2. Cola este bloco → Run
---   3. Vai a /admin/curation → tab "Pendentes" → seleccionar todas → bulk-approve
---   4. Os locais aparecem automaticamente nas listas públicas (stores/clinics)
+-- COMO APLICAR (se ainda não aplicado pelo import automático):
+--   1. Supabase Dashboard → SQL Editor → New query
+--   2. Colar este ficheiro → Run
+--   3. /admin/curation → tab "Pendentes" → seleccionar todas → bulk-approve
+--      → os locais ficam visíveis nas listas públicas (stores/clinics)
 -- ============================================================================
 
--- ============================================================
--- HOSPITAIS (10 principais) — Maputo, Beira, Nampula
--- ============================================================
 insert into public.place_proposals
-  (source, entity_type, name, address, city, neighborhood, latitude, longitude, description, status, is_featured)
+  (source, entity_type, name, address, city, neighborhood, latitude, longitude, phone, website, description, country_id, search_meta, status)
 select * from (values
-  ('google_places'::text, 'hospital'::text, 'Hospital Central de Maputo',         'Av. Eduardo Mondlane',     'Maputo'::text,  'Sommerschield'::text,  -25.9656::float8, 32.5892::float8, 'Maior hospital publico do pais. Servico nacional de urgencias 24/7.'::text,         'pending'::text, true),
-  ('google_places', 'hospital', 'Hospital Geral de Mavalane',                   'Av. Do Trabalho',           'Maputo',  'Mavalane',        -25.8955, 32.6037, 'Hospital publico distrital — maternidade, pediatria, cirurgia geral.',     'pending', true),
-  ('google_places', 'hospital', 'Hospital Militar de Maputo',                    'Av. 25 de Setembro',        'Maputo',  'Polana',          -25.9658, 32.5882, 'Hospital militar — atende civis em urgencias mediante disponibilidade.',     'pending', false),
-  ('google_places', 'hospital', 'Hospital Privado de Maputo',                    'Av. Eduardo Mondlane',      'Maputo',  'Sommerschield',   -25.9670, 32.5908, 'Maior hospital privado do pais. Convenios com seguradoras.',                 'pending', true),
-  ('google_places', 'hospital', 'Hospital da Polana Canico',                     'Av. das FPLM',              'Maputo',  'Polana Canico A', -25.9450, 32.6057, 'Hospital distrital de referencia para a zona sul.',                          'pending', false),
-  ('google_places', 'hospital', 'Hospital Psiquiatrico de Maputo',               'Av. Eduardo Mondlane',      'Maputo',  'Sommerschield',   -25.9669, 32.5814, 'Unico hospital publico especializado em saude mental.',                    'pending', false),
-  ('google_places', 'hospital', 'Hospital Central da Beira',                     'Av. das FPLM',              'Beira',   'Macurungo',       -19.8325, 34.8625, 'Hospital publico de referencia na regiao centro.',                          'pending', true),
-  ('google_places', 'hospital', 'Hospital da Beira (Privado)',                   'Av. das FPLM',              'Beira',   'Chingussura',     -19.8351, 34.8620, 'Principal hospital privado da Beira.',                                       'pending', false),
-  ('google_places', 'hospital', 'Hospital Central de Nampula',                   'Av. do Trabalho',           'Nampula', 'Centro',          -15.1197, 39.2640, 'Hospital publico de referencia no norte do pais.',                          'pending', true),
-  ('google_places', 'hospital', 'Hospital Geral de Nampula',                     'Av. das FPLM',              'Nampula', 'Muatala',         -15.1089, 39.2720, 'Hospital distrital com maternidade e pediatria.',                            'pending', false)
-) as v(source, entity_type, name, address, city, neighborhood, latitude, longitude, description, status, is_featured)
+  ('google_places'::text, 'hospital'::text, 'Hospital Central de Maputo'::text, 'Av. Eduardo Mondlane'::text, 'Maputo'::text, 'KaMpfumo'::text, -25.9656::float8, 32.5892::float8, NULL, NULL, 'Maior hospital público do país. Referência nacional; urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Geral José Macamo'::text, 'Av. das Nações Unidas 1033'::text, 'Maputo'::text, 'Chamanculo'::text, -25.967::float8, 32.595::float8, NULL, NULL, 'Hospital geral público. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Geral de Mavalane'::text, 'Av. do Trabalho'::text, 'Maputo'::text, 'Mavalane'::text, -25.945::float8, 32.56::float8, NULL, NULL, 'Hospital geral público — maternidade, pediatria, cirurgia.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Psiquiátrico do Infulene'::text, NULL, 'Maputo'::text, 'Infulene'::text, -25.953::float8, 32.523::float8, NULL, NULL, 'Hospital público especializado em saúde mental.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Militar de Maputo'::text, 'Av. 25 de Setembro'::text, 'Maputo'::text, 'KaMpfumo'::text, -25.967::float8, 32.565::float8, NULL, NULL, 'Hospital das FADM — atende civis em regime especial.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Universitário da UEM'::text, 'Campus da UEM'::text, 'Maputo'::text, NULL, -25.9527::float8, 32.6085::float8, NULL, NULL, 'Hospital universitário de referência ligado à UEM.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Hospital Privado de Maputo (Lenmed)'::text, 'Rua do Rio Inhamiara, Sommerschield II'::text, 'Maputo'::text, 'Sommerschield'::text, -25.955::float8, 32.607::float8, '+258 21 483905'::text, 'https://www.lenmed.co.za/hospital/maputo-private-hospital-lenmed'::text, 'Maior hospital privado do país (rede Lenmed). Urgências 24h. Tel. emergência: +258 84 583 7970.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Clínica Médica Maputo'::text, '850 Av. Acordos de Lusaka'::text, 'Maputo'::text, 'Polana Caniço'::text, -25.953::float8, 32.612::float8, '+258 82 752 2222 / +258 84 888 8822'::text, 'https://www.clinicamedicamaputo.co.mz'::text, 'Consultas, exames e análises clínicas. Emergência disponível.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'AYAmed Centro Médico e de Hemodiálise'::text, NULL, 'Maputo'::text, NULL, NULL, NULL, '+258 84 988 8000 / +258 87 988 8001'::text, 'https://www.ayamed.co.mz'::text, 'Centro médico e de hemodiálise. Diagnóstico por imagem.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Clínica do Povo'::text, 'Rua do Zambeze 144'::text, 'Maputo'::text, NULL, NULL, NULL, '+258 84 300 3777 / +258 87 300 3777'::text, 'https://clinicadopovo.org'::text, 'Clínica privada — consultas e serviços de saúde.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Clínica Sommerschield'::text, NULL, 'Maputo'::text, 'Sommerschield'::text, NULL, NULL, NULL, NULL, 'Clínica privada com várias especialidades.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Clínica da Zona Verde'::text, NULL, 'Maputo'::text, 'Zona Verde'::text, NULL, NULL, NULL, NULL, 'Clínica privada de referência na Zona Verde.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Clínica Cruz Azul'::text, NULL, 'Maputo'::text, NULL, NULL, NULL, NULL, NULL, 'Clínica privada de longa data em Maputo.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde 1º de Maio'::text, NULL, 'Maputo'::text, '1º de Maio'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Alto Maé'::text, NULL, 'Maputo'::text, 'Alto Maé'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Bagamoyo'::text, NULL, 'Maputo'::text, 'Bagamoyo'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Polana Caniço A'::text, NULL, 'Maputo'::text, 'Polana Caniço A'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Polana Caniço B'::text, NULL, 'Maputo'::text, 'Polana Caniço B'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Malhangalene'::text, NULL, 'Maputo'::text, 'Malhangalene'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Xipamanine'::text, NULL, 'Maputo'::text, 'Xipamanine'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Maxaquene'::text, NULL, 'Maputo'::text, 'Maxaquene'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Chamanculo C'::text, NULL, 'Maputo'::text, 'Chamanculo C'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Laulane'::text, NULL, 'Maputo'::text, 'Laulane'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Inhagoia'::text, NULL, 'Maputo'::text, 'Inhagoia'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Albazine'::text, NULL, 'Maputo'::text, 'Albazine'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Jardim'::text, NULL, 'Maputo'::text, 'Jardim'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Magoanine'::text, NULL, 'Maputo'::text, 'Magoanine'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde Zimpeto'::text, NULL, 'Maputo'::text, 'Zimpeto'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária (MISAU).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital da Machava'::text, NULL, 'Matola'::text, NULL, NULL, NULL, NULL, NULL, 'Hospital público da cidade da Matola.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Rural de Boane'::text, NULL, 'Boane'::text, NULL, -26.034::float8, 32.31::float8, NULL, NULL, 'Hospital rural de referência do distrito de Boane.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde da Zona Verde'::text, 'Bairro Zona Verde, Célula C'::text, 'Matola'::text, 'Zona Verde'::text, NULL, NULL, '+258 84 808 5844'::text, NULL, 'Centro público de atenção primária — Matola.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Manhiça'::text, NULL, 'Manhiça'::text, NULL, -25.402::float8, 32.702::float8, NULL, NULL, 'Hospital distrital de Manhiça.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'lab'::text, 'CISM — Centro de Investigação em Saúde de Manhiça'::text, NULL, 'Manhiça'::text, NULL, -25.403::float8, 32.706::float8, NULL, 'https://www.manhica.org'::text, 'Centro de investigação em saúde de renome internacional (malária, HIV, vacinas).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Xinavane'::text, NULL, 'Xinavane'::text, NULL, -25.108::float8, 32.918::float8, NULL, NULL, 'Hospital de referência da vila de Xinavane.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Magude'::text, NULL, 'Magude'::text, NULL, -24.226::float8, 32.648::float8, NULL, NULL, 'Hospital distrital de Magude.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Moamba'::text, NULL, 'Moamba'::text, NULL, -25.476::float8, 32.369::float8, NULL, NULL, 'Hospital distrital de Moamba.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Ressano Garcia'::text, NULL, 'Ressano Garcia'::text, NULL, -25.899::float8, 32.383::float8, NULL, NULL, 'Hospital de fronteira em Ressano Garcia.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Namaacha'::text, NULL, 'Namaacha'::text, NULL, -25.964::float8, 32.236::float8, NULL, NULL, 'Hospital distrital de Namaacha.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Marracuene'::text, NULL, 'Marracuene'::text, NULL, -25.756::float8, 32.668::float8, NULL, NULL, 'Hospital distrital de Marracuene.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Provincial de Xai-Xai'::text, NULL, 'Xai-Xai'::text, NULL, -25.0519::float8, 33.6442::float8, NULL, NULL, 'Hospital provincial de referência de Gaza. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Rural de Chókwè'::text, 'Av. 7 de Abril'::text, 'Chókwè'::text, NULL, -24.5228::float8, 33.0083::float8, NULL, NULL, 'Hospital rural de referência — um dos maiores do país. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Chibuto'::text, NULL, 'Chibuto'::text, NULL, -24.686::float8, 34.185::float8, NULL, NULL, 'Hospital distrital de Chibuto.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Manjacaze'::text, NULL, 'Manjacaze'::text, NULL, -24.717::float8, 34.133::float8, NULL, NULL, 'Hospital distrital de Manjacaze (Mandlakazi).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Quissico'::text, NULL, 'Quissico'::text, NULL, -24.61::float8, 34.867::float8, NULL, NULL, 'Hospital distrital de Quissico (Zavala).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Provincial de Inhambane'::text, '56 Av. Eduardo Mondlane'::text, 'Inhambane'::text, NULL, -23.864::float8, 35.381::float8, '+258 29 320 345'::text, NULL, 'Hospital provincial de referência de Inhambane. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Rural de Vilanculos'::text, NULL, 'Vilanculos'::text, NULL, -22.0::float8, 35.317::float8, NULL, NULL, 'Hospital rural de referência — Vilanculos.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Massinga'::text, NULL, 'Massinga'::text, NULL, -23.522::float8, 35.346::float8, NULL, NULL, 'Hospital distrital de Massinga.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Homoine'::text, NULL, 'Homoine'::text, NULL, -22.433::float8, 35.434::float8, NULL, NULL, 'Hospital rural de Homoine.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Morrumbene'::text, NULL, 'Morrumbene'::text, NULL, -23.74::float8, 35.318::float8, NULL, NULL, 'Hospital rural de Morrumbene.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde da Maxixe'::text, NULL, 'Maxixe'::text, NULL, -23.859::float8, 35.347::float8, NULL, NULL, 'Centro público de atenção primária.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Central da Beira'::text, 'Av. das FPLM'::text, 'Beira'::text, 'Macurungo'::text, -19.8325::float8, 34.8625::float8, '+258 23 312 071'::text, NULL, 'Hospital central de referência da região centro. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Centro de Saúde da Munhava'::text, NULL, 'Beira'::text, 'Munhava'::text, NULL, NULL, NULL, NULL, 'Centro público de atenção primária — Munhava.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Dondo'::text, NULL, 'Dondo'::text, NULL, -19.611::float8, 34.743::float8, NULL, NULL, 'Hospital distrital de Dondo.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Nhamatanda'::text, NULL, 'Nhamatanda'::text, NULL, -19.502::float8, 34.688::float8, NULL, NULL, 'Hospital rural de Nhamatanda.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Gorongosa'::text, NULL, 'Gorongosa'::text, NULL, -18.678::float8, 34.054::float8, NULL, NULL, 'Hospital distrital de Gorongosa.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Marromeu'::text, NULL, 'Marromeu'::text, NULL, -18.289::float8, 35.942::float8, NULL, NULL, 'Hospital rural de Marromeu.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Caia'::text, NULL, 'Caia'::text, NULL, -18.037::float8, 35.415::float8, NULL, NULL, 'Hospital distrital de Caia.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Central de Chimoio'::text, 'Rua do Hospital'::text, 'Chimoio'::text, NULL, -19.116::float8, 33.483::float8, '+258 25 124 256'::text, NULL, 'Hospital central de referência de Manica. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Gondola'::text, NULL, 'Gondola'::text, NULL, -18.665::float8, 32.723::float8, NULL, NULL, 'Hospital rural de Gondola.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Catandica'::text, NULL, 'Catandica'::text, NULL, -18.677::float8, 32.812::float8, NULL, NULL, 'Hospital rural de Catandica (Báruè).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Manica'::text, NULL, 'Manica'::text, NULL, -18.926::float8, 32.863::float8, NULL, NULL, 'Hospital distrital de Manica.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Sussundenga'::text, NULL, 'Sussundenga'::text, NULL, -19.557::float8, 33.25::float8, NULL, NULL, 'Hospital rural de Sussundenga.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Provincial de Tete'::text, 'Av. 25 de Junho'::text, 'Tete'::text, NULL, -16.156::float8, 33.587::float8, '+258 25 222 380'::text, NULL, 'Hospital provincial de referência de Tete. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Moatize'::text, NULL, 'Moatize'::text, NULL, -16.132::float8, 33.485::float8, NULL, NULL, 'Hospital distrital de Moatize.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Cahora Bassa'::text, NULL, 'Songo'::text, NULL, -15.586::float8, 32.755::float8, NULL, NULL, 'Hospital distrital de Cahora Bassa (Songo).'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Zumbo'::text, NULL, 'Zumbo'::text, NULL, -15.594::float8, 30.384::float8, NULL, NULL, 'Hospital distrital de Zumbo.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Central de Quelimane'::text, 'Av. Julius Nyerere, Bairro Namuinho'::text, 'Quelimane'::text, NULL, -17.872::float8, 36.895::float8, NULL, NULL, 'Hospital central de referência da Zambézia (inaugurado em 2016). Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Provincial de Quelimane'::text, NULL, 'Quelimane'::text, NULL, -17.879::float8, 36.888::float8, '+258 24 212 914'::text, NULL, 'Hospital provincial histórico de Quelimane.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Mocuba'::text, 'Av. Eduardo Mondlane'::text, 'Mocuba'::text, NULL, -16.839::float8, 36.986::float8, '+258 24 810 296'::text, NULL, 'Hospital rural de referência de Mocuba.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Gurué'::text, NULL, 'Gurué'::text, NULL, -16.166::float8, 37.016::float8, '+258 25 910 702'::text, NULL, 'Hospital rural de Gurué.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Milange'::text, NULL, 'Milange'::text, NULL, -16.678::float8, 37.139::float8, NULL, NULL, 'Hospital rural de Milange.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Nicoadala'::text, NULL, 'Nicoadala'::text, NULL, -17.633::float8, 36.843::float8, NULL, NULL, 'Hospital rural de Nicoadala.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Pebane'::text, NULL, 'Pebane'::text, NULL, -17.18::float8, 37.195::float8, NULL, NULL, 'Hospital rural de Pebane.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Morrumbala'::text, NULL, 'Morrumbala'::text, NULL, -17.469::float8, 35.749::float8, NULL, NULL, 'Hospital rural de Morrumbala.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Central de Nampula'::text, 'Av. Samora Machel'::text, 'Nampula'::text, 'Central'::text, -15.116::float8, 39.266::float8, '+258 26 216 681'::text, NULL, 'Hospital central de referência do norte do país. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Rural de Marrere'::text, NULL, 'Nampula'::text, 'Marrere'::text, -15.086::float8, 39.216::float8, NULL, NULL, 'Hospital rural de Marrere — serve os bairros norte de Nampula.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Nacala'::text, NULL, 'Nacala'::text, NULL, -14.563::float8, 40.68::float8, NULL, NULL, 'Hospital de referência de Nacala Porto.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Angoche'::text, NULL, 'Angoche'::text, NULL, -16.217::float8, 39.912::float8, NULL, NULL, 'Hospital rural de Angoche.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Monapo'::text, NULL, 'Monapo'::text, NULL, -15.168::float8, 39.27::float8, NULL, NULL, 'Hospital rural de Monapo.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Ribáuè'::text, NULL, 'Ribáuè'::text, NULL, -15.047::float8, 39.15::float8, NULL, NULL, 'Hospital rural de Ribáuè.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text)
+) as v(source, entity_type, name, address, city, neighborhood, latitude, longitude, phone, website, description, country_id, search_meta, status)
+where not exists (
+  select 1 from public.place_proposals p
+  where p.name = v.name and p.city = v.city
+);
+insert into public.place_proposals
+  (source, entity_type, name, address, city, neighborhood, latitude, longitude, phone, website, description, country_id, search_meta, status)
+select * from (values
+  ('google_places'::text, 'hospital'::text, 'Hospital Central de Pemba'::text, NULL, 'Pemba'::text, NULL, -12.974::float8, 40.518::float8, NULL, NULL, 'Hospital central de referência de Cabo Delgado. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Rural de Montepuez'::text, 'N14'::text, 'Montepuez'::text, NULL, -13.126::float8, 40.065::float8, NULL, NULL, 'Hospital rural de referência de Montepuez.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Mocímboa da Praia'::text, NULL, 'Mocímboa da Praia'::text, NULL, -11.363::float8, 40.362::float8, NULL, NULL, 'Hospital distrital de Mocímboa da Praia.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Macomia'::text, NULL, 'Macomia'::text, NULL, -13.265::float8, 40.526::float8, NULL, NULL, 'Hospital rural de Macomia.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Mueda'::text, NULL, 'Mueda'::text, NULL, -11.703::float8, 39.591::float8, NULL, NULL, 'Hospital rural de Mueda.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital Provincial de Lichinga'::text, NULL, 'Lichinga'::text, NULL, -13.313::float8, 35.241::float8, NULL, NULL, 'Hospital provincial de referência de Niassa. Urgências 24/7.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Cuamba'::text, NULL, 'Cuamba'::text, NULL, -14.807::float8, 36.537::float8, NULL, NULL, 'Hospital rural de Cuamba.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'hospital'::text, 'Hospital de Mandimba'::text, NULL, 'Mandimba'::text, NULL, -14.366::float8, 35.62::float8, NULL, NULL, 'Hospital rural de Mandimba.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'lab'::text, 'Instituto Nacional de Saúde (INS)'::text, 'Av. Eduardo Mondlane 1008'::text, 'Maputo'::text, NULL, -25.962::float8, 32.584::float8, '+258 21 431 103'::text, 'https://ins.gov.mz'::text, 'Instituto nacional de saúde pública — laboratórios de referência e investigação.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text),
+  ('google_places'::text, 'clinic'::text, 'Clínica Especial do Hospital Central de Maputo'::text, 'Av. Eduardo Mondlane (Hospital Central de Maputo)'::text, 'Maputo'::text, NULL, NULL, NULL, '+258 84 900 7911 / +258 84 900 7418'::text, NULL, 'Clínica especial do HCM — consultas especializadas e exames. Contactos oficiais HCM.'::text, 'MZ'::text, '{"registry": "fontes_públicas_verificadas", "imported_by": "seed_task17"}'::jsonb, 'pending'::text)
+) as v(source, entity_type, name, address, city, neighborhood, latitude, longitude, phone, website, description, country_id, search_meta, status)
 where not exists (
   select 1 from public.place_proposals p
   where p.name = v.name and p.city = v.city
 );
 
--- ============================================================
--- CLÍNICAS (15 principais) — várias cidades
--- ============================================================
-insert into public.place_proposals
-  (source, entity_type, name, address, city, neighborhood, latitude, longitude, description, status, is_featured)
-select * from (values
-  ('google_places'::text, 'clinic'::text, 'Clinica CDPI (Centro de Diagnostico)',       'Av. Vlademir Lenine',      'Maputo'::text,  'Sommerschield'::text,  -25.9693::float8, 32.5846::float8, 'Centro de diagnostico — analises clinicas, imagiologia.'::text,                            'pending'::text, true),
-  ('google_places', 'clinic', 'Clinica Sommerschield',                            'Av. da Sommerschield',     'Maputo',  'Sommerschield',  -25.9680, 32.5811, 'Clinica privada com varias especialidades.',                                            'pending', false),
-  ('google_places', 'clinic', 'Clinica Polana',                                   'Av. Eduardo Mondlane',     'Maputo',  'Polana',         -25.9635, 32.5857, 'Clinica geral e pediatria.',                                                              'pending', false),
-  ('google_places', 'clinic', 'Clinica de Saude da Mulher (CSM)',                  'Av. 24 de Julho',          'Maputo',  'Polana',         -25.9711, 32.5895, 'Especializada em ginecologia, obstetricia, fertilidade.',                              'pending', true),
-  ('google_places', 'clinic', 'Clinica de Olhos de Maputo',                        'Av. do Zimbabwe',          'Maputo',  'Sommerschield',  -25.9648, 32.5823, 'Especializada em oftalmologia.',                                                          'pending', false),
-  ('google_places', 'clinic', 'Centro de Saude de Polana Canico',                  'Av. das FPLM',             'Maputo',  'Polana Canico',  -25.9458, 32.6025, 'Centro publico de atencao primaria.',                                                     'pending', false),
-  ('google_places', 'clinic', 'Centro de Saude de Mavalane',                       'Av. do Trabalho',          'Maputo',  'Mavalane',       -25.8946, 32.6043, 'Centro publico de atencao primaria — atende Mavalane, Hulene, George Dimitrov.',     'pending', false),
-  ('google_places', 'clinic', 'Centro de Saude do Jardim',                         'Av. das FPLM',             'Maputo',  'Jardim',         -25.9268, 32.5984, 'Centro publico de atencao primaria.',                                                     'pending', false),
-  ('google_places', 'clinic', 'Centro de Saude da Beira',                          'Av. das FPLM',             'Beira',   'Macurungo',      -19.8298, 34.8612, 'Centro publico de atencao primaria.',                                                     'pending', false),
-  ('google_places', 'clinic', 'Clinica da Beira (Rede diagnostico)',               'Av. das FPLM',             'Beira',   'Macurungo',      -19.8322, 34.8584, 'Diagnostico e analises clinicas.',                                                          'pending', false),
-  ('google_places', 'clinic', 'Centro de Saude de Nampula',                        'Av. do Trabalho',          'Nampula', 'Centro',         -15.1216, 39.2651, 'Centro publico de atencao primaria.',                                                     'pending', false),
-  ('google_places', 'clinic', 'Centro de Saude da Matola',                         'Av. 25 de Setembro',       'Matola',  'Matola A',       -25.9625, 32.4641, 'Centro publico de atencao primaria.',                                                     'pending', false),
-  ('google_places', 'clinic', 'Centro de Saude de Tete',                           'Av. 24 de Julho',          'Tete',    'Centro',         -16.1564, 33.5867, 'Centro publico de atencao primaria.',                                                     'pending', false),
-  ('google_places', 'clinic', 'Centro de Saude de Xai-Xai',                        'Av. 25 de Setembro',       'Xai-Xai', 'Centro',         -25.0519, 33.6442, 'Centro publico de atencao primaria.',                                                     'pending', false)
-) as v(source, entity_type, name, address, city, neighborhood, latitude, longitude, description, status, is_featured)
-where not exists (
-  select 1 from public.place_proposals p
-  where p.name = v.name and p.city = v.city
-);
-
--- ============================================================
--- FARMÁCIAS (12 redes conhecidas) — várias cidades
--- ============================================================
-insert into public.place_proposals
-  (source, entity_type, name, address, city, neighborhood, latitude, longitude, description, status, is_featured)
-select * from (values
-  ('google_places'::text, 'pharmacy'::text, 'Pharmacia Mocambique — sede',                  'Av. 25 de Setembro',         'Maputo'::text,  'Polana'::text,         -25.9658::float8, 32.5901::float8, 'Maior rede de farmacias do pais. Varios balcoes em Maputo.'::text,                  'pending'::text, true),
-  ('google_places', 'pharmacy', 'Farmacia Avenida',                                'Av. Eduardo Mondlane',       'Maputo',  'Polana',         -25.9667, 32.5873, 'Farmacia de bairro bem referenciada.',                                       'pending', false),
-  ('google_places', 'pharmacy', 'Farmacia do Centro',                              'Av. 25 de Setembro',         'Maputo',  'Baixa',          -25.9736, 32.5712, 'Farmacia tradicional no centro de Maputo.',                                  'pending', false),
-  ('google_places', 'pharmacy', 'Farmacia do Jardim',                              'Av. das FPLM',               'Maputo',  'Jardim',         -25.9262, 32.5998, 'Farmacia de bairro — atende Jardim e Mahotas.',                                'pending', false),
-  ('google_places', 'pharmacy', 'Farmacia da Polana Canico',                       'Av. das FPLM',               'Maputo',  'Polana Canico',  -25.9462, 32.6038, 'Farmacia de referencia para zona da Polana Canico.',                          'pending', false),
-  ('google_places', 'pharmacy', 'Farmacia da Matola',                              'Av. 25 de Setembro',         'Matola',  'Matola A',       -25.9618, 32.4653, 'Farmacia central da Matola.',                                                  'pending', false),
-  ('google_places', 'pharmacy', 'Farmacia da Beira',                               'Av. das FPLM',               'Beira',   'Macurungo',      -19.8337, 34.8617, 'Farmacia central da Beira.',                                                   'pending', true),
-  ('google_places', 'pharmacy', 'Farmacia do Chingussura',                         'Av. das FPLM',               'Beira',   'Chingussura',    -19.8401, 34.8589, 'Farmacia de bairro.',                                                          'pending', false),
-  ('google_places', 'pharmacy', 'Farmacia Nampula',                                'Av. do Trabalho',            'Nampula', 'Centro',         -15.1205, 39.2650, 'Farmacia central de Nampula.',                                                'pending', true),
-  ('google_places', 'pharmacy', 'Farmacia da Muhala',                              'Av. do Trabalho',            'Nampula', 'Muhala',         -15.1258, 39.2733, 'Farmacia de bairro — atende bairro da Muhala.',                                'pending', false),
-  ('google_places', 'pharmacy', 'Farmacia de Tete',                                'Av. 24 de Julho',            'Tete',    'Centro',         -16.1572, 33.5878, 'Farmacia de referencia em Tete.',                                             'pending', false),
-  ('google_places', 'pharmacy', 'Farmacia de Xai-Xai',                             'Av. 25 de Setembro',         'Xai-Xai', 'Centro',         -25.0527, 33.6451, 'Farmacia central de Xai-Xai.',                                                'pending', false)
-) as v(source, entity_type, name, address, city, neighborhood, latitude, longitude, description, status, is_featured)
-where not exists (
-  select 1 from public.place_proposals p
-  where p.name = v.name and p.city = v.city
-);
-
--- ============================================================
--- 4) Confirmar contagem
--- ============================================================
-select entity_type, status, count(*)
-from public.place_proposals
-group by entity_type, status
-order by entity_type, status;
--- Esperado: ~10 hospital + ~14 clinic + ~12 pharmacy em 'pending'
-
--- ============================================================================
--- PRÓXIMO PASSO:
---   Vai a https://medwalletmz.lovable.app/admin/curation
---   → Tab "Pendentes" → seleccionar todas da página
---   → "Aprovar 25" (bulk action)
---   → Repetir para as outras páginas até tudo approved
--- ============================================================================
+-- Contagem final
+select entity_type, status, count(*) from public.place_proposals group by 1,2 order by 1,2;
