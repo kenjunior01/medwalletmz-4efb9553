@@ -785,7 +785,7 @@ export async function getPublicImpactStats(): Promise<PublicImpactStats> {
         .from('subscriptions')
         .select('id', { count: 'exact', head: true })
         .eq('status', 'active'),
-      (supabase as any).from('triage_sessions').select('id', { count: 'exact', head: true }),
+      (supabase as any).from('triage_logs').select('id', { count: 'exact', head: true }),
     ]);
 
     return {

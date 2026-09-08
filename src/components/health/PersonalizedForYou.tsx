@@ -62,17 +62,7 @@ export function PersonalizedForYou() {
     },
   });
 
-  const { data: articles } = useQuery({
-    queryKey: ["articles-suggest"],
-    queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from("health_articles")
-        .select("slug, title, category")
-        .eq("is_published", true)
-        .limit(50);
-      return (data as any[]) ?? [];
-    },
-  });
+  const articles: any[] = [];
 
   const hint: Hint | null = useMemo(() => {
     if (!user) return null;

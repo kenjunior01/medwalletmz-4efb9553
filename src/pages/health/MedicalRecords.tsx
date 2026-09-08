@@ -90,11 +90,13 @@ export default function MedicalRecords() {
 
   useEffect(() => { load(); }, [user]);
   useEffect(() => {
-    supabase
-      .from('doctor_profiles')
-      .select('user_id, specialty, profile:profiles!doctor_profiles_user_id_fkey(full_name)')
-      .eq('is_verified', true)
-      .then(({ data }) => setDoctors(data ?? []));
+    (supabase as any)
+      .rpc('list_public_doctors', { _specialty_id: null })
+      .then(({ data }: any) => setDoctors((data ?? []).filter((doctor: any) => doctor.is_verified).map((doctor: any) => ({
+        ...doctor,
+        specialty: doctor.specialty_name,
+        profile: { full_name: doctor.full_name },
+      }))));
   }, []);
 
   const save = async () => {

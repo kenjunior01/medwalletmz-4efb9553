@@ -31,19 +31,14 @@ export default function Ranking() {
       setLoading(true);
       const cfg = TABS_CONFIG.find(tc => tc.id === tab)!;
       if (cfg.id === 'doctors') {
-        const { data } = await (supabase as any)
-          .from('doctor_profiles')
-          .select('user_id, rating, total_consultations, specialty, profiles:profiles!doctor_profiles_user_id_fkey(full_name, avatar_url)')
-          .order('rating', { ascending: false })
-          .order('total_consultations', { ascending: false })
-          .limit(50);
+        const { data } = await (supabase as any).rpc('list_public_doctors', { _specialty_id: null });
         setRows((data || []).map((d: any) => ({
           id: d.user_id,
-          name: d.profiles?.full_name || 'Médico',
-          avatar: d.profiles?.avatar_url,
+          name: d.full_name || 'Médico',
+          avatar: d.profile_avatar_url || d.avatar_url,
           rating: Number(d.rating || 0),
           reviews: d.total_consultations || 0,
-          subtitle: d.specialty,
+          subtitle: d.specialty_name,
         })));
       } else {
         let query = (supabase as any)

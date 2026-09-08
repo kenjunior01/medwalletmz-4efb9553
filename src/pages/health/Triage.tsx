@@ -127,13 +127,12 @@ export default function Triage() {
         .ilike('name', `%${specialtyName}%`)
         .limit(1);
       const specialtyId = specs?.[0]?.id;
-      let q = supabase
-        .from('doctor_profiles')
-        .select('*, medical_specialties(name, icon)')
-        .eq('is_available', true);
-      if (specialtyId) q = q.eq('specialty_id', specialtyId);
-      const { data } = await q.order('is_verified', { ascending: false }).limit(10);
-      let list = (data as any[]) || [];
+      const { data } = await (supabase as any).rpc('list_public_doctors', { _specialty_id: specialtyId || null });
+      let list = ((data as any[]) || []).slice(0, 10).map((doctor) => ({
+        ...doctor,
+        profiles: { full_name: doctor.full_name, avatar_url: doctor.profile_avatar_url },
+        medical_specialties: { name: doctor.specialty_name, icon: doctor.specialty_icon },
+      }));
       if (coordinates) {
         list = list
           .map((d) => ({
@@ -143,13 +142,6 @@ export default function Triage() {
           .sort((a, b) => (a._dist ?? 9999) - (b._dist ?? 9999));
       }
       const top = list.slice(0, 3);
-      const ids = top.map((d) => d.user_id);
-      if (ids.length) {
-        const { data: profs } = await (supabase as any).from('profiles').select('user_id, full_name').in('user_id', ids);
-        top.forEach((d: any) => {
-          d.profiles = profs?.find((p: any) => p.user_id === d.user_id) || null;
-        });
-      }
       setNearbyDoctors(top);
     } catch (e) {
       logger.warn('nearby doctors failed', { error: e });
