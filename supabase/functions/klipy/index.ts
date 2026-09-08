@@ -1,4 +1,4 @@
-// KLIPY proxy via Lovable Connector Gateway.
+// KLIPY proxy (GIFs/stickers/emojis) via gateway de conectores configurável.
 // Usage: POST { kind: 'trending'|'search', media: 'gifs'|'stickers'|'emojis', query?, page?, customer_id }
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -7,7 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const GATEWAY = "https://connector-gateway.lovable.dev/klipy";
+const GATEWAY = Deno.env.get("KLIPY_GATEWAY_URL") ?? "";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -31,10 +31,10 @@ Deno.serve(async (req) => {
       }
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const GATEWAY_KEY = Deno.env.get("AI_GATEWAY_API_KEY");
     const KLIPY_API_KEY = Deno.env.get("KLIPY_API_KEY");
-    if (!LOVABLE_API_KEY || !KLIPY_API_KEY) {
-      console.error("Missing credentials: LOVABLE_API_KEY or KLIPY_API_KEY not set");
+    if (!GATEWAY || !GATEWAY_KEY || !KLIPY_API_KEY) {
+      console.error("Missing credentials: KLIPY_GATEWAY_URL / AI_GATEWAY_API_KEY / KLIPY_API_KEY not set");
       return new Response(JSON.stringify({ error: "missing_credentials" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
 
     const res = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GATEWAY_KEY}`,
         "X-Connection-Api-Key": KLIPY_API_KEY,
       },
     });

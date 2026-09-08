@@ -8,7 +8,7 @@
 import { getSpeechLocale } from '@/lib/speechLocale';
 
 import { logger } from '@/lib/logger';
-const API_KEY = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
+const API_KEY = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
 
 /**
  * Speaks the given text aloud in the specified locale.

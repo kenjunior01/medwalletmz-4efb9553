@@ -15,7 +15,6 @@ import {
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 
-import { MOCK_TRIP } from './types';
 import type { TripStep, SimulatedTrip } from './types';
 import { StepProgressBar, TimerBar, CancelDialog } from './ui';
 import { Step1GoingToStore } from './steps/Step1GoingToStore';
@@ -36,6 +35,34 @@ function LoadingScreen() {
           className="w-12 h-12 rounded-full border-2 border-zinc-700 border-t-emerald-500"
         />
         <p className="text-zinc-500 text-sm">A carregar entrega...</p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Empty trip state (dados reais apenas) ───────────────────────
+
+function EmptyTripScreen() {
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+      <div className="max-w-md w-full text-center space-y-4">
+        <div className="w-20 h-20 mx-auto rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+          <Package className="h-10 w-10 text-zinc-600" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-white mb-2">Nenhuma entrega activa</h2>
+          <p className="text-sm text-zinc-400">
+            Não há uma entrega atribuída a ti neste momento. Aceita uma nova entrega
+            no painel do estafeta para começar.
+          </p>
+        </div>
+        <button
+          onClick={() => navigate('/driver')}
+          className="w-full py-3 rounded-xl bg-emerald-500 text-zinc-950 font-semibold hover:bg-emerald-400 transition-colors"
+        >
+          Ir para o painel do estafeta
+        </button>
       </div>
     </div>
   );
@@ -107,8 +134,8 @@ export default function ActiveTrip() {
               customerName: order.customer_name,
               customerPhone: order.customer_phone,
               customerAddress: order.delivery_address,
-              estimatedDistance: '2.8 km',
-              estimatedTime: '10 min',
+              estimatedDistance: '—',
+              estimatedTime: '—',
               items: (data.order_items || []).map((oi: any) => ({
                 id: oi.id,
                 name: oi.product_name,
@@ -122,19 +149,20 @@ export default function ActiveTrip() {
               paymentMethod: order.payment_method || 'M-Pesa',
             });
           } else {
-            // Fallback to mock
-            setTrip(MOCK_TRIP);
+            // Entrega não encontrada ou não pertence a este estafeta
+            setTrip(null);
           }
-        } catch {
-          setTrip(MOCK_TRIP);
+        } catch (e) {
+          logger.error('Falha ao carregar entrega:', { error: e });
+          setTrip(null);
         } finally {
           setLoading(false);
         }
       };
       fetchTrip();
     } else {
-      // No tripId — use simulated data
-      setTrip(MOCK_TRIP);
+      // Sem tripId no URL — estado vazio honesto (sem dados simulados)
+      setTrip(null);
       setLoading(false);
     }
   }, [searchParams, user?.id]);
@@ -254,8 +282,10 @@ export default function ActiveTrip() {
     );
   }
 
-  // ─── Main trip screen ──────────────────────────────────────────
-  if (!trip) return null;
+  // ─── Empty state (sem entrega real atribuída) ───────────────────────
+  if (!trip) {
+    return <EmptyTripScreen />;
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col">

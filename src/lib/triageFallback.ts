@@ -9,11 +9,9 @@
  *   3. OpenRouter (gateway multi-modelo — Llama/Mistral/Gemma free)
  *   4. Motor local de regras clínicas (sempre funciona)
  *
- * NOTA sobre "Lovable AI":
- *   Lovable (lovable.dev) é um construtor de sites no-code; não oferece
- *   API pública de inferência. Por isso, OpenRouter foi usado como 3ª
- *   camada de IA — cumpre o mesmo papel (provedor de inferência
- *   alternativo com free tier generoso e API compatível com OpenAI).
+ * NOTA sobre a 3ª camada:
+ *   OpenRouter é usado como 3ª camada de IA — provedor de inferência
+ *   alternativo com free tier generoso e API compatível com OpenAI.
  *
  * Isto garante que a triagem continua a funcionar mesmo se:
  *   - O Edge Function não estiver deployed
@@ -330,7 +328,7 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
 }
 
 // =====================================================================
-// CAMADA 3: OPENROUTER (gateway multi-modelo — substituto "Lovable AI")
+// CAMADA 3: OPENROUTER (gateway multi-modelo)
 // =====================================================================
 
 export async function triageWithOpenRouterLocal(
@@ -396,7 +394,7 @@ export async function triageLocalFallback(
   const groqResult = await triageWithGroqLocal(symptoms, age, duration, config);
   if (groqResult) return groqResult;
 
-  // Camada 3: OpenRouter (substituto "Lovable AI" — gateway multi-modelo)
+  // Camada 3: OpenRouter (gateway multi-modelo)
   const openRouterResult = await triageWithOpenRouterLocal(
     symptoms,
     age,

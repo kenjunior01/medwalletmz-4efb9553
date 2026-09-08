@@ -5,10 +5,10 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 // Body: { city: string, types: string[], reset?: boolean }
 // types: 'pharmacy' | 'hospital' | 'clinic' | 'laboratory' | 'veterinary'
 
-const GATEWAY = 'https://connector-gateway.lovable.dev/google_maps';
+const GATEWAY = Deno.env.get('MAPS_GATEWAY_URL') ?? '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const LOVABLE_KEY = Deno.env.get('LOVABLE_API_KEY')!;
+const GATEWAY_KEY = Deno.env.get('AI_GATEWAY_API_KEY')!;
 const MAPS_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY')!;
 
 const PHOTO_PROXY = `${SUPABASE_URL}/functions/v1/place-photo?name=`;
@@ -35,7 +35,7 @@ async function placesSearch(query: string, city: string) {
     const res = await fetch(`${GATEWAY}/places/v1/places:searchText`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_KEY}`,
+        'Authorization': `Bearer ${GATEWAY_KEY}`,
         'X-Connection-Api-Key': MAPS_KEY,
         'Content-Type': 'application/json',
         'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount,places.photos,places.googleMapsUri,nextPageToken',

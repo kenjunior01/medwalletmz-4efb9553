@@ -14,7 +14,6 @@ import { DataSaverProvider } from "@/contexts/DataSaverContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
 import { OAuthCallbackHandler } from "@/components/auth/OAuthCallbackHandler";
-import { OAuthBrokerRedirect } from "@/components/auth/OAuthBrokerRedirect";
 import { PWAUpdateToast } from "@/components/pwa/PWAInstallBanner";
 import { OfflineIndicator } from "@/components/offline";
 const SupabaseConfigBanner = import.meta.env.DEV
@@ -105,6 +104,7 @@ const MapsPremium = lazy(() => import("./pages/health/MapsPremium"));
 const SupportCircles = lazy(() => import("./pages/health/SupportCircles"));
 const HealthRidersNetwork = lazy(() => import("./pages/health/HealthRidersNetwork"));
 const PatientDeliveries = lazy(() => import("./pages/health/PatientDeliveries"));
+const AuthCallback = lazy(() => import("./pages/auth/AuthCallback"));
 const HealthWorkerMarketplace = lazy(() => import("./pages/health/HealthWorkerMarketplace"));
 const HealthWorkerProfile = lazy(() => import("./pages/health/HealthWorkerProfile"));
 const HealthPlans = lazy(() => import("./pages/health/HealthPlans"));
@@ -583,11 +583,8 @@ const App = () => {
                   <Route path="/lab/register" element={<RegistrationWizard />} />
                   <Route path="/lab/dashboard" element={<ProtectedRoute allowedRoles={['lab']}><LabDashboard /></ProtectedRoute>} />
 
-                  {/* Rota especial: /~oauth/* — broker OAuth da Lovable Cloud
-                      capturada pelo React Router quando SW antigo serve index.html
-                      em vez de deixar o servidor redirecionar para o Google.
-                      Ver OAuthBrokerRedirect.tsx para detalhes. */}
-                  <Route path="/~oauth/*" element={<OAuthBrokerRedirect />} />
+                  {/* Callback OAuth — destino do redirect do Supabase Auth (fluxo PKCE) */}
+                  <Route path="/auth/callback" element={<AuthCallback />} />
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>

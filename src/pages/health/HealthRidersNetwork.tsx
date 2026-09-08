@@ -33,7 +33,7 @@ import {
   getAvailableDeliveries, getMyActiveDeliveries, getMyDeliveryHistory,
   acceptDelivery, updateDeliveryStatus, rateDelivery,
   getEarningsSummary, computeDeliveryFee,
-  VEHICLE_LABELS, PACKAGE_LABELS, STATUS_LABELS, MOCK_DELIVERIES,
+  VEHICLE_LABELS, PACKAGE_LABELS, STATUS_LABELS,
 } from '@/services/healthRiders';
 
 type View = 'onboarding' | 'dashboard';
@@ -541,7 +541,8 @@ function RiderDashboard({ rider, onChange, t }: { rider: HealthRider; onChange: 
     setLoading(true);
     try {
       const [avail, act, hist, earn] = await Promise.all([
-        getAvailableDeliveries(rider).catch(() => MOCK_DELIVERIES.map((d) => ({ ...d, id: Math.random().toString() })) as HealthDelivery[]),
+        // Dados reais apenas — entregas pendentes visíveis via RLS de marketplace
+        getAvailableDeliveries(rider).catch(() => []),
         getMyActiveDeliveries(rider.id!).catch(() => []),
         getMyDeliveryHistory(rider.id!).catch(() => []),
         getEarningsSummary(rider.id!).catch(() => null),

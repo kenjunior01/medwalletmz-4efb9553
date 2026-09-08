@@ -1,3 +1,4 @@
+import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 /**
  * Maps Premium Service
@@ -14,7 +15,7 @@ import { logger } from '@/lib/logger';
  * All distances in km, durations in minutes.
  */
 
-const API_KEY = (import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY) as string | undefined;
+const API_KEY = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY) as string | undefined;
 
 export interface GeoPoint {
   lat: number;
@@ -299,15 +300,49 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '');
 }
 
-/* ---------- Mock facility data (for demo when no backend) ---------- */
+/* ---------- Instalações de saúde reais (health_facilities) ---------- */
 
-export const MOCK_FACILITIES: FacilityWithDistance[] = [
-  { id: '1', name: 'Hospital Central de Maputo', type: 'hospital', address: 'Av. Eduardo Mondlane, Maputo', geo: { lat: -25.9655, lng: 32.5832 }, phone: '+258 84 000 0000', is_24h: true, rating: 4.2 },
-  { id: '2', name: 'Hospital Geral José Macamo', type: 'hospital', address: 'Maputo', geo: { lat: -25.9453, lng: 32.5701 }, is_24h: true, rating: 4.0 },
-  { id: '3', name: 'Clínica Cruz Azul', type: 'clinic', address: 'Av. 24 de Julho, Maputo', geo: { lat: -25.9715, lng: 32.5732 }, phone: '+258 21 000 0000', opening_hours: '07h-19h', rating: 4.5 },
-  { id: '4', name: 'Farmácia Moderna', type: 'pharmacy', address: 'Av. Julius Nyerere', geo: { lat: -25.9689, lng: 32.5801 }, opening_hours: '08h-21h', rating: 4.3 },
-  { id: '5', name: 'Lab. Clínico Instituto Nacional', type: 'lab', address: 'Maputo', geo: { lat: -25.9620, lng: 32.5780 }, opening_hours: '07h-16h', rating: 4.1 },
-  { id: '6', name: 'Maternidade Hospital Machava', type: 'maternity', address: 'Matola', geo: { lat: -25.9167, lng: 32.4667 }, is_24h: true, rating: 3.9 },
-  { id: '7', name: 'Hospital Provincial de Beira', type: 'hospital', address: 'Beira', geo: { lat: -19.8336, lng: 34.8736 }, is_24h: true, rating: 4.0 },
-  { id: '8', name: 'Farmácia Sónia', type: 'pharmacy', address: 'Av. Kim Il Sung, Maputo', geo: { lat: -25.9690, lng: 32.5750 }, opening_hours: '08h-22h', rating: 4.4 },
-];
+/**
+ * Carrega instalações de saúde reais da tabela health_facilities.
+ * Devolve apenas unidades com coordenadas (lat/lng no JSONB address),
+ * porque a lista ordena por distância real ao utilizador.
+ */
+export async function fetchNearbyFacilities(countryCode: string, limit = 60): Promise<FacilityWithDistance[]> {
+  const { data, error } = await (supabase as any)
+    .from('health_facilities')
+    .select('id, name, type, status, rating, address, contact')
+    .eq('country_id', countryCode)
+    .limit(limit);
+  if (error) throw new Error(error.message);
+
+  const rows = (data ?? []) as Array<{
+    id: string; name: string; type: string; status?: string;
+    rating: number | null; address: Record<string, any> | null; contact: Record<string, any> | null;
+  }>;
+
+  const KNOWN_TYPES = ['hospital', 'clinic', 'pharmacy', 'lab', 'maternity'];
+  const facilities: FacilityWithDistance[] = [];
+
+  for (const row of rows) {
+    const lat = Number(row.address?.lat ?? row.address?.latitude);
+    const lng = Number(row.address?.lng ?? row.address?.longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+
+    const addressLine = [row.address?.street, row.address?.city]
+      .filter(Boolean).join(', ');
+
+    facilities.push({
+      id: row.id,
+      name: row.name,
+      type: (KNOWN_TYPES.includes(row.type) ? row.type : 'clinic') as FacilityWithDistance['type'],
+      address: addressLine || undefined,
+      geo: { lat, lng, label: row.name },
+      phone: row.contact?.phone ?? row.contact?.telephone ?? undefined,
+      opening_hours: row.contact?.opening_hours ?? undefined,
+      is_24h: Boolean(row.address?.is_24h ?? row.contact?.is_24h),
+      rating: row.rating ?? undefined,
+    });
+  }
+
+  return facilities;
+}

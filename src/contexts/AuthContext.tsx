@@ -1,7 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { lovable } from '@/integrations/lovable';
 import { offlineManager } from '@/services/offline/OfflineManager';
 import { identifyUser, resetAnalytics } from '@/services/analytics';
 import { logError, logInfo, logWarn, newRequestId } from '@/lib/logger';
@@ -289,23 +288,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       localStorage.removeItem('pending_auth_next');
     }
-    // Usa o broker OAuth da Lovable Cloud em vez de supabase.auth.signInWithOAuth directo.
-    // O broker da Lovable (https://oauth.lovable.app) trata do redirect URI / callback,
-    // evitando o erro "redirect_uri_mismatch" no Supabase (cujo Dashboard é gerido pela Lovable).
-    // Após o redirect, o broker devolve tokens que são aplicados via supabase.auth.setSession().
+    // OAuth Google directo via Supabase Auth (fluxo PKCE).
+    // O Google redireciona para /auth/callback, onde o código é trocado pela sessão.
+    // Requer: provider Google activo no Supabase Auth + redirect URL registado
+    // (https://<dominio>/auth/callback) no dashboard do Supabase.
     try {
-      const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: window.location.origin,
-        extraParams: { prompt: 'select_account' },
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: { prompt: 'select_account' },
+        },
       });
-      if (result.redirected) {
-        // Página está a redirecionar para o Google via broker Lovable
-        return { error: null };
-      }
-      if (result.error) {
-        return { error: result.error };
-      }
-      // Se chegou aqui, setSession já foi chamado dentro de lovable.auth.signInWithOAuth
+      if (error) return { error: error as Error };
+      // O browser está a redirecionar para o Google
       return { error: null };
     } catch (e) {
       return { error: e instanceof Error ? e : new Error(String(e)) };

@@ -2,8 +2,8 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createLogger, getRequestId, requestIdHeaders } from '../_shared/log.ts';
 
 // =====================================================================
-// AI TRIAGE — PRIORIDADE MÁXIMA: LOVABLE AI GATEWAY
-// 1. Lovable AI Gateway (google/gemini-3.6-flash) — PRIMÁRIA
+// AI TRIAGE — PRIORIDADE MÁXIMA: IA GATEWAY
+// 1. AI Gateway (endpoint OpenAI-compatível via AI_GATEWAY_URL) — PRIMÁRIA
 // 2. Motor local de regras clínicas — fallback de emergência
 // =====================================================================
 
@@ -305,15 +305,16 @@ NUNCA dês diagnóstico definitivo. Em caso de "emergência" recomenda ligar par
 }
 
 // =====================================================================
-// CAMADA 3: LOVABLE AI GATEWAY (fallback)
-// Requer: LOVABLE_API_KEY env var
+// CAMADA 1: AI GATEWAY (endpoint OpenAI-compatível configurável)
+// Requer: AI_GATEWAY_URL + AI_GATEWAY_API_KEY (secrets do Supabase)
 // =====================================================================
-async function triageWithLovable(
+async function triageWithAiGateway(
   symptoms: string, age: number | null, duration: string | null, config: CountryConfig
 ): Promise<TriageResult | null> {
-  const KEY = Deno.env.get('LOVABLE_API_KEY');
-  if (!KEY) {
-    console.error('LOVABLE_API_KEY não configurada');
+  const KEY = Deno.env.get('AI_GATEWAY_API_KEY');
+  const GATEWAY_URL = Deno.env.get('AI_GATEWAY_URL');
+  if (!KEY || !GATEWAY_URL) {
+    console.error('AI Gateway não configurado (AI_GATEWAY_URL / AI_GATEWAY_API_KEY ausentes)');
     return null;
   }
 
@@ -331,11 +332,10 @@ Adapta ao contexto local: ${config.health_system}. Em emergência recomenda ${co
 
     const userMsg = `Sintomas: ${symptoms}\nIdade: ${age ?? 'n/d'}\nDuração: ${duration ?? 'n/d'}\nPaís: ${config.name}`;
 
-    const aiRes = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiRes = await fetch(GATEWAY_URL, {
       method: 'POST',
       headers: {
-        'Lovable-API-Key': KEY,
-        'X-Lovable-AIG-SDK': 'manual-edge-fetch',
+        'Authorization': `Bearer ${KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -351,7 +351,7 @@ Adapta ao contexto local: ${config.health_system}. Em emergência recomenda ${co
 
     if (!aiRes.ok) {
       const errTxt = await aiRes.text().catch(() => '');
-      console.error('Lovable AI error', aiRes.status, errTxt);
+      console.error('AI Gateway error', aiRes.status, errTxt);
       return null;
     }
 
@@ -365,12 +365,12 @@ Adapta ao contexto local: ${config.health_system}. Em emergência recomenda ${co
     const jsonText = text.trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
     const parsed = jsonText ? JSON.parse(jsonText) : null;
     if (!parsed?.severity || !parsed?.recommendation || !parsed?.suggested_specialty) {
-      console.error('Lovable AI: resposta inválida', JSON.stringify(data).slice(0, 500));
+      console.error('AI Gateway: resposta inválida', JSON.stringify(data).slice(0, 500));
       return null;
     }
-    return { ...parsed, _provider: 'lovable' };
+    return { ...parsed, _provider: 'ai_gateway' };
   } catch (e) {
-    console.error('Lovable AI exception:', e);
+    console.error('AI Gateway exception:', e);
     return null;
   }
 }
@@ -401,22 +401,22 @@ Deno.serve(async (req) => {
     const config = COUNTRY_CONFIGS[country] || COUNTRY_CONFIGS.MZ;
     logger.info('Triagem iniciada', { country, age, duration, symptomsLength: symptoms.length });
 
-    // CAMADA 1 (PRIORITÁRIA): Lovable AI Gateway
-    const lovableResult = await triageWithLovable(symptoms, age, duration, config);
-    if (lovableResult) {
-      logger.info('Triagem concluída via Lovable AI', { ms: Date.now() - startedAt });
-      return new Response(JSON.stringify({ ...lovableResult, _request_id: requestId }), {
+    // CAMADA 1 (PRIORITÁRIA): AI Gateway
+    const gatewayResult = await triageWithAiGateway(symptoms, age, duration, config);
+    if (gatewayResult) {
+      logger.info('Triagem concluída via AI Gateway', { ms: Date.now() - startedAt });
+      return new Response(JSON.stringify({ ...gatewayResult, _request_id: requestId }), {
         headers: jsonHeaders,
       });
     }
 
     // CAMADA 2 (fallback): Regras clínicas locais
     const localResult = localTriage(symptoms, age, duration, config);
-    logger.warn('Lovable AI indisponível — fallback local', { ms: Date.now() - startedAt });
+    logger.warn('AI Gateway indisponível — fallback local', { ms: Date.now() - startedAt });
     return new Response(JSON.stringify({
       ...localResult,
       _provider: 'local_rules',
-      _note: 'Lovable AI indisponível — usando triagem local de fallback.',
+      _note: 'AI Gateway indisponível — usando triagem local de fallback.',
       _request_id: requestId,
     }), { headers: jsonHeaders });
 

@@ -11,11 +11,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Tabelas (migração jobs_module 20260828000000):
 ///   • `health_riders`      — perfil do estafeta (INSERT/UPDATE próprio via RLS;
 ///                             leitura pública de verificados);
-///   • `health_deliveries`  — entregas. RLS: o estafeta só vê/actualiza as
-///                             suas; entregas `pending` SEM estafeta ficam
-///                             invisíveis (igual à web) → quando a consulta
-///                             devolve vazio/erro, o ecrã mostra entregas de
-///                             DEMONSTRAÇÃO, tal como `MOCK_DELIVERIES`;
+///   • `health_deliveries`  — entregas. RLS: o estafeta vê/actualiza as suas;
+///                             a policy "Riders can view pending unassigned
+///                             deliveries" (20260908120000) expõe as pendentes
+///                             SEM estafeta (fila real do marketplace);
 ///   • `rider_earnings_daily`— agregado diário (leitura própria).
 /// Bucket `rider-documents` para carta/cópia de BI/livrete. Entrega
 /// concluída → RPC `increment_rider_stats` (com fallback directo, como na
@@ -309,7 +308,6 @@ class HealthDelivery {
     required this.dropoffAddress,
     required this.packageType,
     required this.status,
-    this.isMock = false,
     this.riderId,
     this.packageDescription,
     this.requiresColdChain = false,
@@ -335,7 +333,6 @@ class HealthDelivery {
   final String dropoffAddress;
   final PackageType packageType;
   final DeliveryStatus status;
-  final bool isMock;
   final String? riderId;
   final String? packageDescription;
   final bool requiresColdChain;
@@ -488,9 +485,10 @@ class RiderRepository {
     }
   }
 
-  /// Entregas disponíveis no país do estafeta. Como a RLS esconde entregas
-  /// ainda sem estafeta, uma lista vazia cai no modo demonstração (igual à
-  /// web: `.catch(() => MOCK_DELIVERIES)`).
+  /// Entregas disponíveis no país do estafeta. A policy RLS
+  /// "Riders can view pending unassigned deliveries" (migration
+  /// 20260908120000) expõe as pendências reais sem estafeta —
+  /// lista vazia significa genuinamente não há pedidos.
   Future<List<HealthDelivery>> fetchAvailable(HealthRider rider,
       {int limit = 10}) async {
     final rows = await _client
@@ -658,76 +656,6 @@ class RiderRepository {
       weekCount: weekCount,
       monthCount: monthCount,
     );
-  }
-
-  /// Entregas de demonstração — espelham `MOCK_DELIVERIES` da web, usadas
-  /// quando a RLS não devolve entregas pendentes reais.
-  List<HealthDelivery> mockDeliveries() {
-    final ts = DateTime.now().toUtc().microsecondsSinceEpoch;
-    return [
-      HealthDelivery(
-        id: 'mock-$ts-1',
-        customerName: 'Ana Macuácua',
-        customerPhone: '+258 84 123 4567',
-        countryCode: 'MZ',
-        pickupType: 'pharmacy',
-        pickupName: 'Farmácia Moderna — Av. Julius Nyerere',
-        pickupAddress: 'Av. Julius Nyerere, Maputo',
-        dropoffName: 'Ana Macuácua (Casa)',
-        dropoffAddress: 'Bairro Sommerschield, Maputo',
-        packageType: PackageType.medication,
-        requiresColdChain: true,
-        estimatedDistanceKm: 4.2,
-        estimatedDurationMin: 22,
-        deliveryFee: 143,
-        riderEarnings: 114,
-        platformFee: 29,
-        status: DeliveryStatus.pending,
-        isMock: true,
-        createdAt: DateTime.now().toUtc(),
-      ),
-      HealthDelivery(
-        id: 'mock-$ts-2',
-        customerName: 'Carlos Tembe',
-        customerPhone: '+258 82 765 4321',
-        countryCode: 'MZ',
-        pickupType: 'lab',
-        pickupName: 'Laboratório Central — Maputo',
-        pickupAddress: 'Av. Eduardo Mondlane, Maputo',
-        dropoffName: 'Clínica da Sommerschield',
-        dropoffAddress: 'Rua do Rovuma, Maputo',
-        packageType: PackageType.labSample,
-        requiresColdChain: true,
-        estimatedDistanceKm: 6.8,
-        estimatedDurationMin: 30,
-        deliveryFee: 199,
-        riderEarnings: 159,
-        platformFee: 40,
-        status: DeliveryStatus.pending,
-        isMock: true,
-        createdAt: DateTime.now().toUtc(),
-      ),
-      HealthDelivery(
-        id: 'mock-$ts-3',
-        customerName: 'Dra. Isabel Nhaca',
-        customerPhone: '+258 87 222 3344',
-        countryCode: 'MZ',
-        pickupType: 'clinic',
-        pickupName: 'Clínica Cruz Vermelha — Matola',
-        pickupAddress: 'Matola, Avenida das FPLM',
-        dropoffName: 'Paciente Domicílio',
-        dropoffAddress: 'Bairro Fomento, Matola',
-        packageType: PackageType.equipment,
-        estimatedDistanceKm: 9.1,
-        estimatedDurationMin: 35,
-        deliveryFee: 287,
-        riderEarnings: 230,
-        platformFee: 57,
-        status: DeliveryStatus.pending,
-        isMock: true,
-        createdAt: DateTime.now().toUtc(),
-      ),
-    ];
   }
 }
 

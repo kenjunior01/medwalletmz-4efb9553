@@ -1,14 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
-import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
 
 export default defineConfig(({ mode }) => {
-  // Lovable Cloud exposes canonical SUPABASE_* variables during deployment.
-  // Map them to the VITE_* names expected by the generated browser client.
-  // Fallbacks garantem que o build publicado nunca fica sem credenciais públicas.
+  // Variáveis canónicas SUPABASE_* do deployment são mapeadas para os nomes
+  // VITE_* esperados pelo cliente do browser. Fallbacks garantem que o build
+  // publicado nunca fica sem credenciais públicas (anon key — pública por design).
   const FALLBACK_URL = "https://pfqruzusjjxyidhqkiob.supabase.co";
   const FALLBACK_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXJ1enVzamp4eWlkaHFraW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NTYwODMsImV4cCI6MjA5NzMzMjA4M30.zPcOEd5AKFg5KHa3xdhJPBFOphkWpf-huTvWh_V_f50";
   const FALLBACK_PROJECT_ID = "pfqruzusjjxyidhqkiob";
@@ -21,6 +19,7 @@ export default defineConfig(({ mode }) => {
   define['import.meta.env.VITE_SUPABASE_URL'] = JSON.stringify(supabaseUrl);
   define['import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY'] = JSON.stringify(supabasePublishableKey);
   define['import.meta.env.VITE_SUPABASE_PROJECT_ID'] = JSON.stringify(supabaseProjectId);
+
 
 
   return {
@@ -105,8 +104,6 @@ export default defineConfig(({ mode }) => {
   },
   plugins: [
     react(),
-    mode === "development" && componentTagger(),
-    mode === 'development' && mcpPlugin(),
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: 'auto',
@@ -116,17 +113,10 @@ export default defineConfig(({ mode }) => {
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
         // Não fazer cache de:
         // - API do Supabase (sempre fresh)
-        // - OAuth broker da Lovable — caminho /~oauth/initiate no MESMO origin
-        //   (este caminho é interceptado pelo servidor da Lovable Cloud e redireciona
-        //   para o Google. Se o SW fizer fallback para index.html, o user vê "página
-        //   não existe" em vez do redirect OAuth.)
         // - Google Fonts (CDN externo)
         navigateFallbackDenylist: [
           /^https:\/\/pfqruzusjjxyidhqkiob\.supabase\.co\//,
-          /^https:\/\/oauth\.lovable\.app\//,
           /^https:\/\/fonts\.(googleapis|gstatic)\.com\//,
-          // Caminho relativo /~oauth/ no mesmo origin (broker Lovable Cloud)
-          /\/~oauth\//,
         ],
         runtimeCaching: [
           {

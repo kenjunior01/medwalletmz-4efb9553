@@ -14,8 +14,8 @@ import '../data/rider_repository.dart';
 /// Rede de Riders de Saúde (paridade com `HealthRidersNetwork.tsx`):
 /// onboarding em passos (dados → veículo → documentos → pagamento) e
 /// dashboard do estafeta com modo online, ganhos (hoje/semana/mês),
-/// entregas disponíveis (modo demonstração quando a RLS esconde as
-/// pendentes, tal como na web), activas com avanço de estado e histórico.
+/// entregas disponíveis reais (RLS 20260908120000 expõe as pendentes
+/// sem estafeta), activas com avanço de estado e histórico.
 class RiderScreen extends ConsumerStatefulWidget {
   const RiderScreen({super.key});
 
@@ -32,7 +32,6 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
   List<HealthDelivery> _active = [];
   List<HealthDelivery> _history = [];
   EarningsSummary? _earnings;
-  bool _demoMode = false;
   PositionBroadcaster? _broadcaster;
 
   @override
@@ -54,7 +53,7 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
   /// Liga/desliga o GPS do tracking ao vivo conforme as entregas
   /// activas (F14 — broadcast no canal dw-delivery-{id}).
   void _syncBroadcast() {
-    final active = _active.where((d) => !d.isMock && d.status.isActiveRide);
+    final active = _active.where((d) => d.status.isActiveRide);
     final b = _broadcaster;
     if (b == null) return;
     if (active.isNotEmpty) {
@@ -89,9 +88,7 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
       final available = await repo.fetchAvailable(rider);
       if (!mounted) return;
       setState(() {
-        _demoMode = available.isEmpty;
-        _available =
-            available.isEmpty ? repo.mockDeliveries() : available;
+        _available = available;
       });
       final active = await repo.fetchActive(rider.id);
       final history = await repo.fetchHistory(rider.id);
@@ -105,10 +102,7 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
       _syncBroadcast();
     } catch (_) {
       if (!mounted) return;
-      setState(() {
-        _demoMode = true;
-        _available = repo.mockDeliveries();
-      });
+      setState(() => _available = []);
     }
   }
 
@@ -116,14 +110,10 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
     final repo = ref.read(ridersRepositoryProvider);
     final rider = _rider!;
     try {
-      if (!d.isMock) {
-        await repo.acceptDelivery(d.id, rider.id);
-      }
+      await repo.acceptDelivery(d.id, rider.id);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(d.isMock
-            ? 'Demonstração: entrega aceite localmente'
-            : 'Entrega aceite! Boa viagem 🛵'),
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Entrega aceite! Boa viagem 🛵'),
         backgroundColor: AppColors.success,
       ));
       await _loadDashboard();
@@ -140,9 +130,7 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
   Future<void> _advance(HealthDelivery d, DeliveryStatus next) async {
     final repo = ref.read(ridersRepositoryProvider);
     try {
-      if (!d.isMock) {
-        await repo.advanceStatus(d.id, next);
-      }
+      await repo.advanceStatus(d.id, next);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Estado: ${next.label}'),
@@ -206,7 +194,6 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
                         active: _active,
                         history: _history,
                         earnings: _earnings,
-                        demoMode: _demoMode,
                         isOnline: _rider!.isOnline,
                         onToggleOnline: _toggleOnline,
                         onAccept: _accept,
@@ -819,7 +806,6 @@ class _Dashboard extends StatelessWidget {
     required this.active,
     required this.history,
     required this.earnings,
-    required this.demoMode,
     required this.isOnline,
     required this.onToggleOnline,
     required this.onAccept,
@@ -833,7 +819,6 @@ class _Dashboard extends StatelessWidget {
   final List<HealthDelivery> active;
   final List<HealthDelivery> history;
   final EarningsSummary? earnings;
-  final bool demoMode;
   final bool isOnline;
   final ValueChanged<bool> onToggleOnline;
   final Future<void> Function(HealthDelivery) onAccept;
@@ -855,22 +840,6 @@ class _Dashboard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _EarningsCard(earnings: earnings, rider: rider),
-          if (demoMode) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.warning.withOpacity(0.4)),
-              ),
-              child: const Text(
-                'ℹ️ Modo demonstração: ainda não há entregas reais publicadas '
-                'para o teu país. Estas entregas de exemplo mostram como o fluxo funciona.',
-                style: TextStyle(color: AppColors.warning, fontSize: 12.5, height: 1.4),
-              ),
-            ),
-          ],
           const SizedBox(height: 16),
           TabBar(
             controller: tabs,
@@ -1174,7 +1143,7 @@ class _DeliveryCard extends StatelessWidget {
                           fontSize: 14),
                     ),
                     Text(
-                      d.isMock ? 'Entrega de demonstração' : d.customerName,
+                      d.customerName,
                       style: const TextStyle(
                           color: AppColors.textMuted, fontSize: 11),
                     ),
