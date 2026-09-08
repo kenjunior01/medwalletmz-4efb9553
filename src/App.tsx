@@ -358,8 +358,8 @@ const App = () => {
                     <Route path="/health/exams" element={<Exams />} />
                     <Route path="/health/exams/lab/:id" element={<LabDetail />} />
                     <Route path="/health/exams/my" element={<MyLabOrders />} />
-                    <Route path="/health/education" element={<HealthEducation />} />
-                    <Route path="/health/education/:slug" element={<HealthEducation />} />
+                    <Route path="/health/education" element={<HealthEducationHub />} />
+                    <Route path="/health/education/:slug" element={<HealthEducationHub />} />
                     <Route path="/health/veterinary" element={<Veterinary />} />
                     <Route path="/partners" element={<Partners />} />
                     <Route path="/referrals" element={<Referrals />} />

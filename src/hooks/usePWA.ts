@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { logger } from '@/lib/logger';
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
-  readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed';
-    platform: string;
-  }>;
-  prompt(): Promise<void>;
-}
-
 interface PwaState {
   /** Se a app pode ser instalada (beforeinstallprompt disparou) */
   canInstall: boolean;
@@ -35,11 +26,10 @@ interface PwaState {
  *   - Funciona com vite-plugin-pwa
  */
 export function usePWA(): PwaState {
-  const [canInstall, setCanInstall] = useState(false);
+  const canInstall = false;
   const [isInstalled, setIsInstalled] = useState(false);
   const [swRegistered, setSwRegistered] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     // ── Detectar modo standalone (app instalada) ────────────────────────────
@@ -52,19 +42,8 @@ export function usePWA(): PwaState {
     checkStandalone();
     window.matchMedia('(display-mode: standalone)').addEventListener('change', checkStandalone);
 
-    // ── Capturar beforeinstallprompt ────────────────────────────────────────
-    const handleBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setCanInstall(true);
-      logger.info('[PWA] App pronta para instalar');
-    };
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-
     // ── Detectar appinstalled ───────────────────────────────────────────────
     const handleAppInstalled = () => {
-      setCanInstall(false);
-      setDeferredPrompt(null);
       setIsInstalled(true);
       logger.info('[PWA] App instalada com sucesso');
     };
@@ -107,18 +86,12 @@ export function usePWA(): PwaState {
     }
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
   const promptInstall = async (): Promise<'accepted' | 'dismissed' | 'unavailable'> => {
-    if (!deferredPrompt) return 'unavailable';
-    await deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-    setDeferredPrompt(null);
-    setCanInstall(false);
-    return choice.outcome;
+    return 'unavailable';
   };
 
   const applyUpdate = () => {

@@ -6213,6 +6213,44 @@ export type Database = {
           vehicle_type: string
         }[]
       }
+      list_public_clinic_doctors: {
+        Args: { _clinic_id: string }
+        Returns: {
+          avatar_url: string
+          clinic_id: string
+          doctor_id: string
+          full_name: string
+          id: string
+          is_verified: boolean
+          joined_at: string
+          role: string
+          specialty_name: string
+        }[]
+      }
+      list_public_doctors: {
+        Args: { _specialty_id?: string }
+        Returns: {
+          avatar_url: string
+          bio: string
+          consultation_fee: number
+          default_city: string
+          full_name: string
+          id: string
+          is_available: boolean
+          is_verified: boolean
+          languages: string[]
+          latitude: number
+          longitude: number
+          profile_avatar_url: string
+          rating: number
+          specialty_icon: string
+          specialty_id: string
+          specialty_name: string
+          total_consultations: number
+          user_id: string
+          years_experience: number
+        }[]
+      }
       login_rate_check: { Args: { _email: string }; Returns: Json }
       manager_performance_ranking: {
         Args: { _days?: number }

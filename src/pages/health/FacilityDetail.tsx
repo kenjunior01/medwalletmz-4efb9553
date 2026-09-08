@@ -59,10 +59,7 @@ export default function FacilityDetail() {
     const { data: clinicDoctors } = useQuery({
         queryKey: ['facility-doctors', id],
         queryFn: async () => {
-            const { data } = await supabase
-                .from('clinic_doctors')
-                .select('*, doctor_profiles(*)')
-                .eq('clinic_id', id);
+            const { data } = await (supabase as any).rpc('list_public_clinic_doctors', { _clinic_id: id });
             return data;
         },
         enabled: !!facility && (facility.type === 'clinic' || facility.type === 'hospital')
@@ -261,15 +258,15 @@ export default function FacilityDetail() {
                                 {clinicDoctors.map((cd: any) => (
                                     <div key={cd.id} className="bento-card p-4 flex items-center gap-3 border-transparent bg-muted/30" onClick={() => navigate(`/health/book/${cd.doctor_id}`)}>
                                         <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                                            {cd.doctor_profiles?.avatar_url ? (
-                                                <img src={cd.doctor_profiles.avatar_url} className="h-full w-full object-cover" />
+                                            {cd.avatar_url ? (
+                                                <img src={cd.avatar_url} alt={cd.full_name || 'Médico'} className="h-full w-full object-cover" />
                                             ) : (
                                                 <Stethoscope className="h-6 w-6 text-primary" />
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="font-bold text-sm">Médico Verificado</p>
-                                            <p className="text-[10px] text-muted-foreground">{cd.role || 'Especialista'}</p>
+                                            <p className="font-bold text-sm">{cd.full_name || 'Médico Verificado'}</p>
+                                            <p className="text-[10px] text-muted-foreground">{cd.specialty_name || cd.role || 'Especialista'}</p>
                                         </div>
                                         <ArrowLeft className="h-4 w-4 rotate-180 text-muted-foreground" />
                                     </div>

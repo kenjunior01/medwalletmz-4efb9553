@@ -51,17 +51,10 @@ export function NearbyProvidersWidget() {
   const { data: doctors } = useQuery<any[]>({
     queryKey: ['nearby-doctors', city, onlyMyCity],
     queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from('doctor_profiles')
-        .select('id, user_id, latitude, longitude, rating, consultation_fee, medical_specialties(name, icon)')
-        .eq('is_available', true)
-        .limit(50);
-      const ids = (data || []).map((d: any) => d.user_id);
-      const { data: profs } = await supabase.from('profiles').select('user_id, full_name, default_city').in('user_id', ids);
-      return (data || []).map((d: any) => ({
+      const { data } = await (supabase as any).rpc('list_public_doctors', { _specialty_id: null });
+      return ((data || []) as any[]).slice(0, 50).map((d: any) => ({
         ...d,
-        full_name: profs?.find((p: any) => p.user_id === d.user_id)?.full_name,
-        default_city: profs?.find((p: any) => p.user_id === d.user_id)?.default_city,
+        medical_specialties: { name: d.specialty_name, icon: d.specialty_icon },
       })).filter((d: any) => !onlyMyCity || !d.default_city || d.default_city === city);
     },
   });

@@ -57,18 +57,9 @@ export default function Doctors() {
 
   useEffect(() => {
     setLoading(true);
-    let q = supabase
-      .from('doctor_profiles')
-      .select('*, medical_specialties(name, icon)')
-      .eq('is_available', true);
-    if (selectedSpecialty) q = q.eq('specialty_id', selectedSpecialty);
-    q.order('is_verified', { ascending: false }).then(async ({ data }) => {
-      let list = (data as any) || [];
-      const ids = list.map((d: any) => d.user_id);
-      if (ids.length) {
-        const { data: profs } = await supabase.from('profiles').select('user_id, full_name, default_city').in('user_id', ids);
-        list = list.map((d: any) => {
-          const profile = profs?.find((p: any) => p.user_id === d.user_id) || null;
+    (supabase as any).rpc('list_public_doctors', { _specialty_id: selectedSpecialty }).then(({ data }: any) => {
+      let list = ((data as any[]) || []).map((d: any) => {
+          const profile = { full_name: d.full_name, avatar_url: d.profile_avatar_url, default_city: d.default_city };
           let distance = Infinity;
           if (coordinates && d.latitude && d.longitude) {
             distance = haversineKm(
@@ -76,9 +67,8 @@ export default function Doctors() {
               { lat: Number(d.latitude), lng: Number(d.longitude) }
             );
           }
-          return { ...d, profiles: profile, distance };
+          return { ...d, profiles: profile, medical_specialties: { name: d.specialty_name, icon: d.specialty_icon }, distance };
         });
-      }
       setDoctors(list.sort((a: any, b: any) => a.distance - b.distance));
       setLoading(false);
     });

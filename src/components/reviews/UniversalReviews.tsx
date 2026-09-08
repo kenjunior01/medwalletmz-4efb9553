@@ -29,9 +29,9 @@ export function UniversalReviews({ storeId, clinicId, entityName }: UniversalRev
   const { data: reviews, isLoading } = useQuery({
     queryKey: ['reviews', storeId || clinicId],
     queryFn: async () => {
-      let q: any = supabase.from('reviews').select('*');
-      if (storeId) q = q.eq('store_id', storeId);
-      if (clinicId) q = q.eq('clinic_id', clinicId);
+      let q: any = clinicId
+        ? (supabase as any).from('institution_reviews').select('*').eq('entity_type', 'clinic').eq('entity_id', clinicId)
+        : supabase.from('reviews').select('*').eq('store_id', storeId);
       const { data, error } = await q.order('created_at', { ascending: false }).limit(20);
       if (error) throw error;
       return data;
@@ -44,13 +44,11 @@ export function UniversalReviews({ storeId, clinicId, entityName }: UniversalRev
     if (rating === 0) return toast.error('Escolhe uma pontuação');
     setSubmitting(true);
     try {
-      const { error } = await supabase.from('reviews').insert({
-        user_id: user.id,
-        store_id: storeId || null,
-        clinic_id: clinicId || null,
-        rating,
-        comment: comment.trim() || null
-      });
+      const payload = clinicId
+        ? { user_id: user.id, entity_type: 'clinic', entity_id: clinicId, rating, comment: comment.trim() || null }
+        : { user_id: user.id, store_id: storeId, rating, comment: comment.trim() || null };
+      const table = clinicId ? 'institution_reviews' : 'reviews';
+      const { error } = await (supabase as any).from(table).insert(payload);
       if (error) throw error;
       toast.success('Avaliação enviada!');
       setIsModalOpen(false);
