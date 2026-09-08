@@ -185,7 +185,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ],
               )
-                  .animate(interval: 60.ms)
+                  .animate()
                   .fadeIn(duration: 320.ms)
                   .slideY(begin: 0.15, curve: Curves.easeOutCubic),
 
@@ -216,7 +216,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ],
               )
-                  .animate(interval: 60.ms)
+                  .animate()
                   .fadeIn(duration: 320.ms)
                   .slideY(begin: 0.15, curve: Curves.easeOutCubic),
 
@@ -247,7 +247,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ],
               )
-                  .animate(interval: 60.ms)
+                  .animate()
                   .fadeIn(duration: 320.ms)
                   .slideY(begin: 0.15, curve: Curves.easeOutCubic),
 
@@ -285,7 +285,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                 ],
               )
-                  .animate(interval: 60.ms)
+                  .animate()
                   .fadeIn(duration: 320.ms)
                   .slideY(begin: 0.15, curve: Curves.easeOutCubic),
 
@@ -621,7 +621,7 @@ class _FeaturedDoctors extends ConsumerWidget {
                 ),
               ),
           ],
-        ).animate(interval: 60.ms).fadeIn(duration: 320.ms);
+        ).animate().fadeIn(duration: 320.ms);
       },
       orElse: () => const Padding(
         padding: EdgeInsets.only(top: 8),

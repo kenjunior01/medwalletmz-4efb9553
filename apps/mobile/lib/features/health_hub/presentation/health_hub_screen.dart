@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/theme/app_background.dart';
@@ -97,7 +99,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
   String? _error;
   HealthArticle? _reading;
 
-  static const _categories = <(String, String)>[
+  static const _categories = <(String?, String)>[
     (null, 'Todas'),
     ('prevention', 'Prevenção'),
     ('nutrition', 'Nutrição'),
@@ -520,6 +522,6 @@ class _ArticleCard extends StatelessWidget {
           ],
         ),
       ),
-    ).animate(interval: 45.ms).fadeIn(duration: 300.ms);
+    ).animate().fadeIn(duration: 300.ms);
   }
 }

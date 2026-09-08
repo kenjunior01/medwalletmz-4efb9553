@@ -115,7 +115,7 @@ enum DeliveryStatus {
 
   const DeliveryStatus(this.label, this.color);
   final String label;
-  final int color;
+  final Color color;
 
   /// Entrega em curso — o estafeta está em trânsito e o broadcast GPS
   /// do tracking ao vivo deve estar ligado (F14).

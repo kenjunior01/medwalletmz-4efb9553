@@ -195,9 +195,10 @@ class CirclesRepository {
         try {
           final res = await _client
               .from('support_circle_members')
-              .select('id', const FetchOptions(count: CountOption.exact))
-              .eq('circle_id', c.id);
-          counts[c.id] = res.count ?? 0;
+              .select('id')
+              .eq('circle_id', c.id)
+              .count(CountOption.exact);
+          counts[c.id] = res.count;
         } catch (_) {
           counts[c.id] = 0;
         }
@@ -398,14 +399,14 @@ class CirclesRepository {
         try {
           var q = _client
               .from('support_circle_messages')
-              .select('id', const FetchOptions(count: CountOption.exact))
+              .select('id')
               .eq('circle_id', circleId)
               .neq('user_id', uid);
           if (lastRead != null && lastRead.isNotEmpty) {
             q = q.gt('created_at', lastRead);
           }
-          final res = await q;
-          final n = res.count ?? 0;
+          final res = await q.count(CountOption.exact);
+          final n = res.count;
           if (n > 0) result[circleId] = n;
         } catch (_) {}
       }

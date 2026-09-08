@@ -18,6 +18,7 @@ import '../../doctor/presentation/doctor_dashboard_screen.dart';
 import '../../bookings/presentation/bookings_controller.dart';
 import '../../regional/data/regional_models.dart';
 import '../../wallet/presentation/wallet_controller.dart';
+import '../data/address_repository.dart';
 import '../data/profile_controller.dart';
 
 /// Tipo de perfil actual (profiles.user_type — persona principal).

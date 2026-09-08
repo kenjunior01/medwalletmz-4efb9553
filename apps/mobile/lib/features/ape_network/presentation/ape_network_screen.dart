@@ -106,7 +106,7 @@ class ApeNetworkScreen extends StatelessWidget {
                       const SizedBox(width: 14),
                       _HeroStat(
                           value:
-                              '${_byProvince.fold<int>(0, (a, b) => a + b.$3 ~/ 4)}k+',
+                              '${_byProvince.fold<int>(0, (a, b) => a + b.$2 ~/ 4)}k+',
                           label: 'pacientes acompanhados'),
                       const SizedBox(width: 14),
                       _HeroStat(value: '11', label: 'províncias'),

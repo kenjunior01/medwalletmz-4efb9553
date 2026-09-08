@@ -70,7 +70,7 @@ class PrescriptionsScreen extends ConsumerWidget {
               const SizedBox(height: 14),
               Expanded(
                 child: prescriptions.when(
-                  loading: () => const ListView(
+                  loading: () => ListView(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     children: [ListSkeleton(count: 4, itemHeight: 92)],
                   ),
@@ -309,7 +309,9 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
                               color: AppColors.textMuted, fontSize: 12),
                         ),
                       )
-                    : ...items.map((item) => _ItemRow(item: item)),
+                    : Column(
+                        children: items.map((item) => _ItemRow(item: item)).toList(),
+                      ),
         ],
       ),
     )

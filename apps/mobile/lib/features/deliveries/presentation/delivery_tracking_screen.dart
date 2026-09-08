@@ -514,7 +514,7 @@ class _StatusTimeline extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: last ? 0 : 12),
+                      padding: EdgeInsets.only(bottom: last ? 0 : 12),
                       child: Row(
                         children: [
                           Expanded(

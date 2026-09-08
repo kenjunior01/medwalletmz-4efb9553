@@ -287,6 +287,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       itemBuilder: (context, i) => _MessageBubble(
                         message: list[i],
                         facilityColor: facility.typeColor,
+                        staffMode: target.staffMode,
                       ),
                     );
                   },
@@ -376,7 +377,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ])
               _QuickChip(label: q, onTap: () => _send(body: q)),
           ],
-        ).animate(interval: 40.ms).fadeIn(duration: 260.ms),
+        ).animate().fadeIn(duration: 260.ms),
       ],
     );
   }
@@ -400,14 +401,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 // ── Bolha de mensagem ───────────────────────────────────────────────────
 
 class _MessageBubble extends ConsumerWidget {
-  const _MessageBubble({required this.message, required this.facilityColor});
+  const _MessageBubble({
+    required this.message,
+    required this.facilityColor,
+    required this.staffMode,
+  });
 
   final FacilityMessage message;
   final Color facilityColor;
+  final bool staffMode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mine = message.isMineFor(target.staffMode);
+    final mine = message.isMineFor(staffMode);
     final align = mine ? Alignment.centerRight : Alignment.centerLeft;
 
     return Align(

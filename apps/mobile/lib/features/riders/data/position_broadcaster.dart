@@ -68,7 +68,7 @@ class PositionBroadcaster {
     try {
       ch.sendBroadcastMessage(
         event: 'rider_position',
-        message: {'lat': p.latitude, 'lng': p.longitude},
+        payload: {'lat': p.latitude, 'lng': p.longitude},
       );
     } catch (_) {}
   }

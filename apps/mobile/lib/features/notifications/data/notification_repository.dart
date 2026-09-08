@@ -26,7 +26,7 @@ class NotificationRepository {
       final rows = await _client
           .from('automated_notifications')
           .select()
-          .isNull('user_id')
+          .isFilter('user_id', null)
           .order('created_at', ascending: false)
           .limit(limit);
       return rows.map(AppNotification.fromJson).toList();

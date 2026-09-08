@@ -1088,13 +1088,13 @@ class _DeliveryCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: Color(d.status.color).withOpacity(0.15),
+                  color: d.status.color.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   d.status.label,
                   style: TextStyle(
-                      color: Color(d.status.color),
+                      color: d.status.color,
                       fontSize: 10.5,
                       fontWeight: FontWeight.w700),
                 ),
@@ -1169,7 +1169,7 @@ class _DeliveryCard extends StatelessWidget {
                   icon: Icon(_nextIcon(nextStatus!), size: 16),
                   label: Text(_nextLabel(nextStatus!)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(nextStatus!.color),
+                    backgroundColor: nextStatus!.color,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     shape: RoundedRectangleBorder(

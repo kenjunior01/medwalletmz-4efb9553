@@ -1,34 +1,33 @@
 import 'package:flutter/foundation.dart';
-import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 
-/// Áudio/vídeo EMBUTIDO — o Jitsi Meet corre dentro da app (SDK oficial
-/// `jitsi_meet_flutter_sdk`), sem sair para o browser.
+/// Áudio/vídeo — consultas por link EXTERNO (meet.jit.si no browser).
 ///
-/// • `join()` tenta abrir a conferência in-app e devolve `true` se
-///   conseguiu; em caso de falha (SDK não inicializado, permissões
-///   negadas, plataforma sem suporte) devolve `false` e o chamador faz
-///   fallback para o link externo (`meet.jit.si` no browser).
-/// • `onTerminated` é invocado quando a conferência termina dentro do
-///   SDK (utilizador desligou-se pela UI do Jitsi) — o ecrã de chamada
-///   usa isto para voltar ao estado "fora da sala".
+/// A variante EMBUTIDA (SDK `jitsi_meet_flutter_sdk`) foi retirada do build
+/// Android: o SDK oficial carrega ~400 MB de bibliotecas nativas (todas as
+/// ABIs) e inviabilizava a compilação em ambientes com disco reduzido, para
+/// uma funcionalidade cujo fluxo primário já era o link externo.
 ///
-/// Requisitos nativos (documentados no README):
-///   Android: minSdkVersion ≥ 26; iOS: plataforma ≥ 15 + permissões de
-///   câmara/microfone no Info.plist. O pacote faz o merge dos manifests.
+/// Esta classe MANTÉM a mesma API do serviço antigo:
+///   • `join()` devolve sempre `false` — o chamador cai no fallback
+///     documentado: abre a sala no browser (meet.jit.si).
+///   • `hangUp()` é no-op (a sala do browser encerra sozinha quando todos
+///     saem; o ecrã de chamada já trata o regresso ao estado normal).
+///   • `onTerminated` mantém-se para compatibilidade do ecrã de chamada.
+///
+/// Reintegrar o modo embutido no futuro: voltar a adicionar
+/// `jitsi_meet_flutter_sdk` ao pubspec e restaurar `join()` com o SDK.
 class JitsiEmbeddedService {
   JitsiEmbeddedService._();
 
   static final JitsiEmbeddedService instance = JitsiEmbeddedService._();
 
-  final JitsiMeet _jitsi = JitsiMeet();
-  bool _listenerBound = false;
-
-  /// Chamado quando a conferência termina dentro do SDK.
+  /// Mantido por compatibilidade: invocado quando uma conferência embutida
+  /// termina. Sem SDK embutido, nunca é disparado (o browser é a sala).
   VoidCallback? onTerminated;
 
-  /// Tenta entrar na sala EMBUTIDO. Devolve:
+  /// Devolve:
   ///   true  — a conferência abriu in-app;
-  ///   false — falhou (o chamador deve abrir o link externo).
+  ///   false — falhou/indisponível (o chamador abre o link externo).
   Future<bool> join({
     required String roomUrl,
     required String displayName,
@@ -37,52 +36,10 @@ class JitsiEmbeddedService {
     bool audioMuted = false,
     bool videoMuted = false,
   }) async {
-    try {
-      if (!_listenerBound) {
-        _jitsi.addListener(
-          JitsiMeetEventListener(
-            conferenceTerminated: (url, error) {
-              onTerminated?.call();
-            },
-          ),
-        );
-        _listenerBound = true;
-      }
-
-      final options = JitsiMeetConferenceOptions(
-        room: roomUrl,
-        configOverrides: {
-          'startWithAudioMuted': audioMuted,
-          'startWithVideoMuted': videoMuted,
-          'subject': 'MedWallet MZ · Consulta',
-        },
-        featureFlags: {
-          FeatureFlags.welcomePageEnabled: false,
-          FeatureFlags.pipEnabled: true,
-          FeatureFlags.inviteEnabled: false,
-          FeatureFlags.addPeopleEnabled: false,
-          FeatureFlags.kickoutEnabled: false,
-        },
-        userInfo: JitsiMeetUserInfo(
-          displayName: displayName,
-          email: email,
-          avatar: avatarUrl,
-        ),
-      );
-
-      await _jitsi.join(options);
-      return true;
-    } catch (_) {
-      return false;
-    }
+    // Sem SDK embutido nesta build — o fallback externo do chamador assume.
+    return false;
   }
 
-  /// Desliga-se da conferência (usado pelo botão Encerrar chamada).
-  Future<void> hangUp() async {
-    try {
-      await _jitsi.hangUp();
-    } catch (_) {
-      // nada — a sala Jitsi encerra sozinha quando todos saem
-    }
-  }
+  /// Desligar da conferência — no-op sem SDK embutido.
+  Future<void> hangUp() async {}
 }

@@ -572,13 +572,13 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
   late String? _bloodType = widget.member?.bloodType;
   late String _color = widget.member?.color ?? _colors.first;
   final _birth = TextEditingController();
-  final _allergies = TextEditingController(
+  late final _allergies = TextEditingController(
       text: widget.member?.allergies.join(', ') ?? '');
-  final _chronics = TextEditingController(
+  late final _chronics = TextEditingController(
       text: widget.member?.chronicConditions.join(', ') ?? '');
-  final _meds = TextEditingController(
+  late final _meds = TextEditingController(
       text: widget.member?.medications.join(', ') ?? '');
-  final _emergency = TextEditingController(
+  late final _emergency = TextEditingController(
       text: widget.member?.emergencyContact ?? '');
   bool _saving = false;
 
@@ -789,9 +789,9 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
                         margin: const EdgeInsets.only(right: 8),
                         decoration: BoxDecoration(
                           color: Color(0xFF000000 |
-                              int.tryParse(c.replaceFirst('#', ''),
+                              (int.tryParse(c.replaceFirst('#', ''),
                                       radix: 16) ??
-                                  0x3B82F6),
+                                  0x3B82F6)),
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: _color == c

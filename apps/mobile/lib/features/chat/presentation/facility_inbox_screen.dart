@@ -342,6 +342,6 @@ class _ConvTile extends StatelessWidget {
           ],
         ),
       ),
-    ).animate(interval: 45.ms).fadeIn(duration: 300.ms);
+    ).animate().fadeIn(duration: 300.ms);
   }
 }

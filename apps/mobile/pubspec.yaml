@@ -53,7 +53,7 @@ dependencies:
   # Requer: Android minSdkVersion ≥ 26 · iOS plataforma ≥ 15.
   # O ecrã de chamada faz fallback automático para o link externo
   # se o SDK falhar no dispositivo.
-  jitsi_meet_flutter_sdk: ^11.0.0
+  # jitsi_meet_flutter_sdk removido (17-a): ~400MB libs nativas; videochamada por link externo
 
   # F8 — cache OFFLINE (sqflite local, sem codegen): laboratórios e
   # medicação continuam visíveis sem internet (stale-while-revalidate).

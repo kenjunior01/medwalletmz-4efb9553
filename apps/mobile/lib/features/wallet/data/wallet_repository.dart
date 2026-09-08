@@ -1,7 +1,10 @@
 import 'dart:math';
+import 'dart:typed_data';
 
+import 'package:flutter/material.dart' show IconData, Icons, Color;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/theme/app_colors.dart';
 import '../domain/wallet_models.dart';
 
 /// Carteira: streams realtime de saldo e transações + pedidos de
@@ -89,7 +92,7 @@ class WalletRepository {
     final path = 'proofs/$reference.$ext';
     await _client.storage.from('mpesa-proofs').uploadBinary(
           path,
-          bytes,
+          Uint8List.fromList(bytes),
           fileOptions: const FileOptions(upsert: true),
         );
     return path;
@@ -110,6 +113,24 @@ class WalletRepository {
     } catch (_) {
       return const [];
     }
+  }
+
+  /// Regista um pedido de levantamento via RPC `request_withdrawal`,
+  /// que debita a carteira e cria a transação de reserva.
+  Future<void> requestWithdrawal({
+    required double amount,
+    required String method,
+    required String destination,
+    String? destinationName,
+    String? notes,
+  }) async {
+    await _client.rpc('request_withdrawal', params: {
+      '_amount': amount,
+      '_method': method,
+      '_destination': destination,
+      '_destination_name': destinationName,
+      '_notes': notes,
+    });
   }
 
   String _rand() =>

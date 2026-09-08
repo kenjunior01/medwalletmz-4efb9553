@@ -9,6 +9,7 @@ import '../../../core/widgets/gradient_button.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../services/domain/service_models.dart';
 import '../data/bookings_repository.dart';
+import 'bookings_controller.dart';
 
 /// Agendar consulta.
 ///
@@ -226,7 +227,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
                 color: Colors.white.withOpacity(0.4), fontSize: 11.5),
           ),
         ]
-            .animate(interval: 45.ms)
+            .animate()
             .fadeIn(duration: 320.ms)
             .slideY(begin: 0.12, curve: Curves.easeOutCubic),
       );

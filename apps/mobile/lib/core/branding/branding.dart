@@ -78,7 +78,7 @@ class EffectivePalette {
   final List<Color> heroCardGradient;
   final List<Color> buttonGradient;
   final Color glowPrimary;
-  final String countryName;
+  final String? countryName;
 
   static const EffectivePalette defaults = EffectivePalette(
     primary: AppColors.primary,

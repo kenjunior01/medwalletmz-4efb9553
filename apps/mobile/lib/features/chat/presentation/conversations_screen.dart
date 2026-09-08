@@ -123,7 +123,7 @@ class ConversationsScreen extends ConsumerWidget {
                     children: [
                       // ── Tab 1: instituições ────────────────────────
                       conversations.when(
-                        loading: () => const ListView(
+                        loading: () => ListView(
                           padding:
                               EdgeInsets.symmetric(horizontal: 20),
                           children: [
@@ -159,7 +159,7 @@ class ConversationsScreen extends ConsumerWidget {
                                 const SizedBox(height: 10),
                             itemBuilder: (context, i) => _ConversationTile(
                               conversation: list[i],
-                            ).animate(interval: 45.ms).fadeIn(
+                            ).animate().fadeIn(
                                   duration: 280.ms,
                                 ),
                           );
@@ -168,7 +168,7 @@ class ConversationsScreen extends ConsumerWidget {
 
                       // ── Tab 2: especialistas ──────────────────────
                       threads.when(
-                        loading: () => const ListView(
+                        loading: () => ListView(
                           padding:
                               EdgeInsets.symmetric(horizontal: 20),
                           children: [
@@ -204,7 +204,7 @@ class ConversationsScreen extends ConsumerWidget {
                                 const SizedBox(height: 10),
                             itemBuilder: (context, i) => _ThreadTile(
                               thread: list[i],
-                            ).animate(interval: 45.ms).fadeIn(
+                            ).animate().fadeIn(
                                   duration: 280.ms,
                                 ),
                           );

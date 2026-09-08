@@ -111,9 +111,9 @@ class ManagerRepository {
     String table,
     PostgrestFilterBuilder Function(PostgrestFilterBuilder) f,
   ) async {
-    final res = await f(_client.from(table).select(
-        'id', const FetchOptions(count: CountOption.exact))).limit(1);
-    return res.count ?? 0;
+    final res =
+        await f(_client.from(table).select('id')).count(CountOption.exact);
+    return res.count;
   }
 
   /// Agregado global — stats de todos os países (admin).
@@ -246,11 +246,15 @@ class ManagerRepository {
 
   Future<List<ManagerUserRow>> fetchUsers(String? countryId) async {
     try {
-      final rows = await _client
-          .rpc('list_profiles_admin_full',
-              params: countryId == null ? {} : {'p_country_id': countryId})
-          .limit(200);
-      return rows.map(ManagerUserRow.fromJson).toList();
+      final rows = await (_client
+              .rpc('list_profiles_admin_full',
+                  params:
+                      countryId == null ? {} : {'p_country_id': countryId})
+              .limit(200)) as List;
+      return rows
+          .map((j) =>
+              ManagerUserRow.fromJson(Map<String, dynamic>.from(j as Map)))
+          .toList();
     } catch (_) {
       return const [];
     }

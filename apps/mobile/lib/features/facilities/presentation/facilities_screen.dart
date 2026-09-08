@@ -106,7 +106,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                       value: onlyMyCity,
                       activeColor: AppColors.accent,
                       onChanged: (v) {
-                        ref.read(onlyMyCityProvider.not).state = v;
+                        ref.read(onlyMyCityProvider.notifier).state = v;
                         ref.invalidate(facilitiesProvider);
                       },
                     ),
@@ -119,7 +119,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
               TextField(
                 controller: _searchCtrl,
                 onChanged: (v) {
-                  ref.read(facilitySearchProvider.not).state = v.trim();
+                  ref.read(facilitySearchProvider.notifier).state = v.trim();
                   ref.invalidate(facilitiesProvider);
                 },
                 style: const TextStyle(color: AppColors.textPrimary),
@@ -143,7 +143,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                       label: f.label,
                       selected: ref.watch(facilityFilterProvider) == f,
                       onTap: () {
-                        ref.read(facilityFilterProvider.not).state = f;
+                        ref.read(facilityFilterProvider.notifier).state = f;
                         ref.invalidate(facilitiesProvider);
                       },
                     );
@@ -169,7 +169,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                           label: s.$2,
                           selected: sort == s.$1,
                           onTap: () {
-                            ref.read(facilitySortProvider.not).state = s.$1;
+                            ref.read(facilitySortProvider.notifier).state = s.$1;
                             ref.invalidate(facilitiesProvider);
                           },
                         ),
@@ -214,7 +214,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                         ),
                     ],
                   )
-                      .animate(interval: 45.ms)
+                      .animate()
                       .fadeIn(duration: 300.ms)
                       .slideY(begin: 0.07, curve: Curves.easeOutCubic);
                 },

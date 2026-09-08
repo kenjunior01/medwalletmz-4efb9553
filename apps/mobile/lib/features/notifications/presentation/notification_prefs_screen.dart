@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
@@ -86,7 +87,7 @@ class _NotificationPrefsScreenState
         child: SafeArea(
           bottom: false,
           child: _loading
-              ? const ListView(
+              ? ListView(
                   padding: EdgeInsets.all(20),
                   children: [ListSkeleton(count: 5, itemHeight: 72)],
                 )

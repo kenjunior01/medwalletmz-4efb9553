@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/gradient_button.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../../bookings/presentation/booking_sheet.dart';
 import '../domain/service_models.dart';
@@ -167,7 +168,7 @@ class _SpecialistsScreenState extends ConsumerState<SpecialistsScreen> {
               // ── Lista ────────────────────────────────────────────
               Expanded(
                 child: doctors.when(
-                  loading: () => const ListView(
+                  loading: () => ListView(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     children: [ListSkeleton(count: 5, itemHeight: 108)],
                   ),

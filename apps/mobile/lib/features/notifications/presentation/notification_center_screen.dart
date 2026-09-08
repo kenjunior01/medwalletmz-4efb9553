@@ -127,7 +127,7 @@ class _NotificationCenterScreenState
               // ── Lista ────────────────────────────────────────────
               Expanded(
                 child: notifications.when(
-                  loading: () => const ListView(
+                  loading: () => ListView(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     children: [ListSkeleton(count: 5, itemHeight: 88)],
                   ),

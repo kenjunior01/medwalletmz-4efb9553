@@ -212,7 +212,7 @@ class _Dashboard extends ConsumerWidget {
           children: [
             for (final (key, label, icon) in const [
               ('pendentes', 'Pendentes', Icons.inbox_rounded),
-              ('kpis', 'KPIs', Icons.monitoring_rounded),
+              ('kpis', 'KPIs', Icons.query_stats_rounded),
               ('metas', 'Metas', Icons.flag_rounded),
             ])
               _TabChip(
@@ -543,7 +543,7 @@ class _ReviewCard extends ConsumerWidget {
         ],
       ),
     )
-        .animate(interval: 45.ms)
+        .animate()
         .fadeIn(duration: 260.ms)
         .slideY(begin: 0.07, curve: Curves.easeOutCubic);
   }
@@ -632,7 +632,7 @@ class _KpiPanelState extends ConsumerState<_KpiPanel> {
         }
         if (latest.isEmpty) {
           return const EmptyState(
-            icon: Icons.monitoring_rounded,
+            icon: Icons.query_stats_rounded,
             title: 'Sem KPIs registados',
             message:
                 'Os KPIs regionais aparecem aqui quando a equipa central '

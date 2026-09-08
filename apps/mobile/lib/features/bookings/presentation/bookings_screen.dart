@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/gradient_button.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../data/bookings_repository.dart';
 import '../domain/booking_models.dart';
@@ -74,7 +75,7 @@ class BookingsScreen extends ConsumerWidget {
                       itemCount: list.length,
                       itemBuilder: (context, i) => _ConsultTile(
                         consultation: list[i],
-                      ).animate(interval: 55.ms).fadeIn(duration: 320.ms).slideY(
+                      ).animate().fadeIn(duration: 320.ms).slideY(
                             begin: 0.08,
                             curve: Curves.easeOutCubic,
                           ),
@@ -415,7 +416,7 @@ class _ReviewSheetState extends ConsumerState<_ReviewSheet> {
                       ),
                     );
                   }),
-                ).animate(interval: 40.ms).fadeIn(duration: 250.ms),
+                ).animate().fadeIn(duration: 250.ms),
                 const SizedBox(height: 18),
                 TextField(
                   controller: _comment,

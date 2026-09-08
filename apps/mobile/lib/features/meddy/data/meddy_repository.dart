@@ -239,7 +239,8 @@ class MeddyRepository {
     final actions = _parseActions(reply);
     reply = _stripActions(reply);
     if (isCrisis) {
-      final c = CrisisResource.forCountry(countryCode);
+      final c =
+          CrisisResource.forCountry(countryCode) ?? CrisisResource.list.first;
       reply =
           '$reply\n\n📞 ${c.name}: ${c.phone} (${c.hours})';
     }

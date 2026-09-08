@@ -234,9 +234,11 @@ class _SosScreenState extends ConsumerState<SosScreen>
                 _ActiveAlertCard(
                   alert: activeAlert,
                   onCancel: () async {
+                    final alert = activeAlert;
+                    if (alert == null) return;
                     await ref
                         .read(sosRepositoryProvider)
-                        .cancel(activeAlert.id);
+                        .cancel(alert.id);
                   },
                 )
               else

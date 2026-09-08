@@ -69,12 +69,12 @@ class WalletTransaction {
       type == TxType.commission ||
       type == TxType.referral;
 
-  static TxType _type(String t) => TxType.values.firstWhere(
+  static TxType _type(String? t) => TxType.values.firstWhere(
         (e) => e.name == t,
         orElse: () => TxType.debit,
       );
 
-  static TxStatus _status(String s) => TxStatus.values.firstWhere(
+  static TxStatus _status(String? s) => TxStatus.values.firstWhere(
         (e) => e.name == s,
         orElse: () => TxStatus.completed,
       );

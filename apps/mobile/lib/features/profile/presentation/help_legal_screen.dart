@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_background.dart';
@@ -267,7 +268,7 @@ class _FaqCard extends StatelessWidget {
           ],
         ),
       ),
-    ).animate(interval: 40.ms).fadeIn(duration: 260.ms);
+    ).animate().fadeIn(duration: 260.ms);
   }
 }
 

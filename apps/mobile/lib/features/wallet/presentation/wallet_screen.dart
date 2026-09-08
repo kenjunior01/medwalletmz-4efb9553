@@ -162,7 +162,7 @@ class WalletScreen extends ConsumerWidget {
                         _TxTile(tx: tx),
                     ],
                   )
-                      .animate(interval: 45.ms)
+                      .animate()
                       .fadeIn(duration: 300.ms)
                       .slideX(begin: 0.05, curve: Curves.easeOutCubic);
                 },

@@ -412,7 +412,7 @@ class _Bubble extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
                   ),
-                  listItemBullet: const TextStyle(color: AppColors.accent),
+                  listBullet: const TextStyle(color: AppColors.accent),
                   h2: const TextStyle(
                     color: Colors.white,
                     fontSize: 14.5,
@@ -422,7 +422,7 @@ class _Bubble extends StatelessWidget {
                       color: AppColors.glassBorder, width: 0.5),
                   tableHead: const TextStyle(
                       color: Colors.white, fontWeight: FontWeight.w700),
-                  tableCell: const TextStyle(
+                  tableBody: const TextStyle(
                       color: AppColors.textPrimary, fontSize: 12),
                 ),
               ),

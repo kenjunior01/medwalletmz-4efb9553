@@ -40,7 +40,7 @@ class _ManagerConsoleScreenState extends ConsumerState<ManagerConsoleScreen> {
     ('overview', 'Visão geral', Icons.dashboard_rounded),
     ('submissions', 'Submissões', Icons.inbox_rounded),
     ('institutions', 'Instituições', Icons.local_pharmacy_rounded),
-    ('kpis', 'KPIs', Icons.monitoring_rounded),
+    ('kpis', 'KPIs', Icons.query_stats_rounded),
     ('goals', 'Metas', Icons.flag_rounded),
     ('content', 'Conteúdo', Icons.campaign_rounded),
     ('payments', 'Pagamentos', Icons.payments_rounded),
@@ -476,6 +476,12 @@ class _ActionTile extends StatelessWidget {
     this.badge = 0,
     this.danger = false,
   });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final int badge;
+  final bool danger;
 
   @override
   Widget build(BuildContext context) {

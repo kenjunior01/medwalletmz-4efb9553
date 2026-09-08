@@ -60,7 +60,7 @@ class FacilityRepository {
                 'latitude, longitude, image_url, phone, delivery_time, '
                 'google_place_id')
             .eq('is_active', true)
-        : const [];
+        : <Map<String, dynamic>>[];
 
     // ── Clínicas / hospitais / laboratórios (clinics) ─────────────────
     final clinicRows = wanted
@@ -71,7 +71,7 @@ class FacilityRepository {
                 'latitude, longitude, image_url, phone, email, website, '
                 'is_verified, google_place_id')
             .eq('is_active', true)
-        : const [];
+        : <Map<String, dynamic>>[];
 
     // ── Veterinárias (veterinary_clinics) ─────────────────────────────
     final vetRows = wanted.contains(FacilityType.veterinary)
@@ -81,7 +81,7 @@ class FacilityRepository {
                 'latitude, longitude, image_url, phone, email, website, '
                 'is_verified, emergency_24h')
             .eq('is_active', true)
-        : const [];
+        : <Map<String, dynamic>>[];
 
     var facilities = <HealthFacility>[
       ...storeRows.map<HealthFacility>(HealthFacility.fromStore),

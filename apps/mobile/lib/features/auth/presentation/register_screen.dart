@@ -145,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ]
-                        .animate(interval: 45.ms)
+                        .animate()
                         .fadeIn(duration: 350.ms)
                         .slideY(
                           begin: 0.2,

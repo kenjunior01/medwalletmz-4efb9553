@@ -14,7 +14,10 @@
 ///     `PositionBroadcaster`), o cliente subscreve. Sem tabelas novas.
 import 'dart:async';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'delivery_models.dart';
 
 class DeliveryRepository {
   DeliveryRepository(this._client);
@@ -157,7 +160,8 @@ class DeliveryRepository {
           .order('created_at', ascending: false)
           .limit(30);
       return (rows as List)
-          .map((m) => PatientDelivery.fromMap(Map<String, dynamic>.from(m)))
+          .map((m) =>
+              PatientDelivery.fromMap(Map<String, dynamic>.from(m as Map)))
           .toList();
     } catch (_) {
       return const [];
@@ -216,3 +220,7 @@ class DeliveryRepository {
     await _client.removeChannel(channel);
   }
 }
+
+final deliveryRepositoryProvider = Provider<DeliveryRepository>(
+  (ref) => DeliveryRepository(Supabase.instance.client),
+);
