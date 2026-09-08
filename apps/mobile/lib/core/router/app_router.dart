@@ -30,6 +30,7 @@ import '../../features/facilities/presentation/facilities_screen.dart';
 import '../../features/facilities/presentation/facility_detail_screen.dart';
 import '../../features/health_hub/presentation/health_hub_screen.dart';
 import '../../features/health_workers/presentation/health_workers_screen.dart';
+import '../../features/vision/presentation/qr_scan_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/ads/presentation/ads_screen.dart';
 import '../../features/ape_network/presentation/ape_network_screen.dart';
@@ -302,6 +303,10 @@ final router = GoRouter(
     GoRoute(
         path: '/verify-prescription',
         builder: (_, __) => const VerifyPrescriptionScreen()),
+
+    // Scanner de QR em tempo real (exclusivo móvel) — devolve o texto
+    // lido ao chamador via Navigator.pop.
+    GoRoute(path: '/scan-qr', builder: (_, __) => const QrScanScreen()),
 
     // F9 — Educação em saúde (health_articles).
     GoRoute(

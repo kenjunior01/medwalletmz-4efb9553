@@ -7,6 +7,7 @@ import 'app.dart';
 import 'core/config.dart';
 import 'core/push/push_service.dart';
 import 'core/reminders/meds_reminder_service.dart';
+import 'core/security/app_lock.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,12 @@ Future<void> main() async {
   // Falha silenciosa em dispositivos/emuladores sem suporte.
   try {
     await MedsReminderService.instance.ensureInitialized();
+  } catch (_) {}
+
+  // Bloqueio biométrico: carrega a preferência local ANTES do primeiro
+  // frame para a app já abrir bloqueada se o utilizador activou.
+  try {
+    await AppLock.instance.ensureInitialized();
   } catch (_) {}
 
   // Push real (FCM) — apenas se FCM_ENABLED=true e o Firebase nativo

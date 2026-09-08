@@ -1,7 +1,7 @@
 name: medwallet
 description: "MedWallet MZ — Carteira digital de saúde de Moçambique. Consultas, farmácia, transportes e pagamentos M-Pesa numa só app."
 publish_to: "none"
-version: 0.1.0+1
+version: 0.6.0+6
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
@@ -80,6 +80,15 @@ dependencies:
 
   # F11 — directório temporário para os ficheiros de gravação.
   path_provider: ^2.1.4
+
+  # F12 — Bloqueio biométrico da app (impressão digital / FaceID /
+  # PIN do dispositivo). EXCLUSIVO MÓVEL: a web não tem este nível de
+  # segurança nativa. Requer FlutterFragmentActivity + USE_BIOMETRIC.
+  local_auth: ^2.3.0
+
+  # F12 — Scanner de QR em tempo real (receitas impressas, cartões
+  # MedWallet). EXCLUSIVO MÓVEL: usa a câmara nativa via CameraX.
+  mobile_scanner: ^5.2.3
 
 dev_dependencies:
   flutter_test:

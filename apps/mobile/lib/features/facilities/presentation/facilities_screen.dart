@@ -77,6 +77,66 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
               ),
               const SizedBox(height: 18),
 
+              // ── Indicador OFFLINE (exclusivo móvel) ───────────────
+              // Quando a rede falha e o catálogo serve a cópia local,
+              // o utilizador fica a saber que a pesquisa continua a
+              // funcionar sobre os últimos dados sincronizados.
+              ValueListenableBuilder<bool>(
+                valueListenable:
+                    ref.watch(facilityRepositoryProvider).servedOffline,
+                builder: (_, offline, __) => offline
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                                color:
+                                    AppColors.warning.withOpacity(0.4)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.cloud_off_rounded,
+                                  color: AppColors.warning, size: 18),
+                              const SizedBox(width: 10),
+                              const Expanded(
+                                child: Text(
+                                  'Sem internet — a pesquisar na cópia '
+                                  'guardada no telemóvel',
+                                  style: TextStyle(
+                                    color: AppColors.warning,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => ref
+                                    .invalidate(facilitiesProvider),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8),
+                                  minimumSize: Size.zero,
+                                ),
+                                child: const Text(
+                                  'Tentar de novo',
+                                  style: TextStyle(
+                                    color: AppColors.accent,
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+
               // ── Interruptor "só a minha cidade" (igual à web) ────────
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),

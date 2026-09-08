@@ -8,6 +8,7 @@ import '../../../core/config.dart';
 import '../../../core/l10n/app_strings.dart';
 import '../../../core/l10n/locale_provider.dart';
 import '../../../core/push/push_service.dart';
+import '../../../core/security/app_lock.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
@@ -572,6 +573,21 @@ class ProfileScreen extends ConsumerWidget {
                     label: 'Segurança (palavra-passe)',
                     onTap: () => context.push('/change-password'),
                   ),
+                  // Bloqueio biométrico — EXCLUSIVO MÓVEL (impressão
+                  // digital / FaceID / PIN do dispositivo).
+                  _MenuItem(
+                    icon: Icons.fingerprint_rounded,
+                    label: 'Desbloqueio biométrico',
+                    onTap: () => _toggleBiometrics(context, ref),
+                    trailing: ValueListenableBuilder<bool>(
+                      valueListenable: AppLock.instance.enabledNotifier,
+                      builder: (_, on, __) => Switch.adaptive(
+                        value: on,
+                        activeColor: AppColors.accent,
+                        onChanged: (_) => _toggleBiometrics(context, ref),
+                      ),
+                    ),
+                  ),
                   _MenuItem(
                     icon: Icons.help_outline_rounded,
                     label: 'Ajuda & Legal',
@@ -614,6 +630,40 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Activa/desactiva o bloqueio biométrico (exclusivo móvel).
+  /// Ao activar, pede um desafio de confirmação ao utilizador.
+  Future<void> _toggleBiometrics(
+      BuildContext context, WidgetRef ref) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final enabling = !AppLock.instance.isEnabled;
+    if (!enabling) {
+      await AppLock.instance.setEnabled(false);
+      messenger.showSnackBar(const SnackBar(
+        content: Text('Desbloqueio biométrico desactivado.'),
+      ));
+      return;
+    }
+    final canAuth = await AppLock.instance.canAuthenticate();
+    if (!canAuth) {
+      messenger.showSnackBar(const SnackBar(
+        backgroundColor: AppColors.warning,
+        content: Text(
+            'Este telemóvel não tem biometria nem PIN configurados. '
+            'Configura primeiro em Definições › Segurança.'),
+      ));
+      return;
+    }
+    final ok = await AppLock.instance.authenticate();
+    if (!ok) return;
+    await AppLock.instance.setEnabled(true);
+    messenger.showSnackBar(const SnackBar(
+      backgroundColor: AppColors.success,
+      content: Text(
+          'Desbloqueio biométrico activado. A app bloqueia sempre que '
+          'fica em segundo plano.'),
+    ));
   }
 
   void _showLanguagePicker(BuildContext context, WidgetRef ref) {

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/branding/branding.dart';
 import 'core/config.dart';
 import 'core/router/app_router.dart';
+import 'core/security/app_lock.dart';
 import 'core/theme/app_theme.dart';
 
 /// Raiz da app — aplica o tema dark glassmorphism com a PALETA EFECTIVA
@@ -27,7 +28,9 @@ class MedWalletApp extends ConsumerWidget {
         if (!AppConfig.isConfigured) {
           return _MissingConfig(child: child);
         }
-        return child ?? const SizedBox.shrink();
+        // Bloqueio biométrico (exclusivo móvel): véu + desafio quando a
+        // preferência está activa e a app volta do segundo plano.
+        return AppLockGate(child: child ?? const SizedBox.shrink());
       },
     );
   }

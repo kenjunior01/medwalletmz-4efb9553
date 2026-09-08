@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -166,21 +167,25 @@ class HomeScreen extends ConsumerWidget {
                   _QuickAction(
                     icon: Icons.add_card_rounded,
                     label: tr(S.deposit, locale),
+                    tint: AppColors.teal,
                     onTap: () => _deposit(context, ref),
                   ),
                   _QuickAction(
                     icon: Icons.medical_services_rounded,
                     label: tr(S.services, locale),
+                    tint: AppColors.accent,
                     onTap: () => context.go('/services'),
                   ),
                   _QuickAction(
                     icon: Icons.auto_awesome_rounded,
                     label: tr(S.triage, locale),
+                    tint: _Tints.violet,
                     onTap: () => context.push('/triage'),
                   ),
                   _QuickAction(
                     icon: Icons.location_on_rounded,
                     label: tr(S.institutions, locale),
+                    tint: _Tints.green,
                     onTap: () => context.go('/facilities'),
                   ),
                 ],
@@ -197,21 +202,25 @@ class HomeScreen extends ConsumerWidget {
                   _QuickAction(
                     icon: Icons.forum_rounded,
                     label: tr(S.chats, locale),
+                    tint: _Tints.blue,
                     onTap: () => context.push('/chats'),
                   ),
                   _QuickAction(
                     icon: Icons.description_rounded,
                     label: tr(S.prescriptions, locale),
+                    tint: _Tints.amber,
                     onTap: () => context.push('/prescriptions'),
                   ),
                   _QuickAction(
                     icon: Icons.medication_rounded,
                     label: tr(S.meds, locale),
+                    tint: _Tints.pink,
                     onTap: () => context.push('/meds'),
                   ),
                   _QuickAction(
                     icon: Icons.emergency_rounded,
                     label: tr(S.sos, locale),
+                    tint: AppColors.danger,
                     onTap: () => context.push('/sos'),
                   ),
                 ],
@@ -228,21 +237,25 @@ class HomeScreen extends ConsumerWidget {
                   _QuickAction(
                     icon: Icons.biotech_rounded,
                     label: tr(S.labs, locale),
+                    tint: _Tints.green,
                     onTap: () => context.push('/labs'),
                   ),
                   _QuickAction(
                     icon: Icons.savings_rounded,
                     label: tr(S.earn, locale),
+                    tint: AppColors.teal,
                     onTap: () => context.push('/earn'),
                   ),
                   _QuickAction(
                     icon: Icons.shield_outlined,
                     label: tr(S.insurance, locale),
+                    tint: _Tints.blue,
                     onTap: () => context.push('/insurance'),
                   ),
                   _QuickAction(
                     icon: Icons.groups_rounded,
                     label: tr(S.circles, locale),
+                    tint: _Tints.violet,
                     onTap: () => context.push('/circles'),
                   ),
                 ],
@@ -259,28 +272,33 @@ class HomeScreen extends ConsumerWidget {
                   _QuickAction(
                     icon: Icons.folder_shared_rounded,
                     label: tr(S.records, locale),
+                    tint: AppColors.accent,
                     onTap: () => context.push('/records'),
                   ),
                   _QuickAction(
                     icon: Icons.card_giftcard_rounded,
                     label: tr(S.referrals, locale),
+                    tint: _Tints.pink,
                     onTap: () => context.push('/referrals'),
                   ),
                   _QuickAction(
                     icon: Icons.event_note_rounded,
                     label: tr(S.consultations, locale),
+                    tint: _Tints.amber,
                     onTap: () => context.push('/bookings'),
                   ),
                   if (isManager)
                     _QuickAction(
                       icon: Icons.admin_panel_settings_rounded,
                       label: tr(S.management, locale),
+                      tint: _Tints.violet,
                       onTap: () => context.push('/manager-hub'),
                     )
                   else
                     _QuickAction(
                       icon: Icons.emergency_rounded,
                       label: 'SOS',
+                      tint: AppColors.danger,
                       onTap: () => context.push('/sos'),
                     ),
                 ],
@@ -374,47 +392,82 @@ class HomeScreen extends ConsumerWidget {
 // Componentes locais
 // ══════════════════════════════════════════════════════════════════
 
-class _QuickAction extends StatelessWidget {
+class _QuickAction extends StatefulWidget {
   const _QuickAction({
     required this.icon,
     required this.label,
     required this.onTap,
+    required this.tint,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final Color tint;
+
+  @override
+  State<_QuickAction> createState() => _QuickActionState();
+}
+
+class _QuickActionState extends State<_QuickAction> {
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Container(
-              height: 56,
-              decoration: BoxDecoration(
-                color: AppColors.glassFill,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.glassBorder),
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => setState(() => _pressed = true),
+        onTapCancel: () => setState(() => _pressed = false),
+        onTapUp: (_) => setState(() => _pressed = false),
+        onTap: () {
+          HapticFeedback.selectionClick();
+          widget.onTap();
+        },
+        child: AnimatedScale(
+          scale: _pressed ? 0.92 : 1,
+          duration: const Duration(milliseconds: 110),
+          curve: Curves.easeOut,
+          child: Column(
+            children: [
+              Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: widget.tint.withOpacity(_pressed ? 0.24 : 0.12),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: widget.tint.withOpacity(_pressed ? 0.55 : 0.26),
+                  ),
+                ),
+                child: Icon(widget.icon, color: widget.tint, size: 24),
               ),
-              child: Icon(icon, color: AppColors.accent, size: 24),
-            ),
-            const SizedBox(height: 7),
-            Text(
-              label,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 11.5,
-                fontWeight: FontWeight.w600,
+              const SizedBox(height: 7),
+              Text(
+                widget.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+/// Paleta de realce das ações rápidas — cada serviço tem a sua cor
+/// para leitura instantânea (reconhecimento em vez de memória).
+abstract final class _Tints {
+  static const Color violet = Color(0xFFA78BFA);
+  static const Color green = Color(0xFF34D399);
+  static const Color blue = Color(0xFF60A5FA);
+  static const Color amber = Color(0xFFF5A623);
+  static const Color pink = Color(0xFFF472B6);
 }
 
 class _NextConsultationCard extends StatelessWidget {

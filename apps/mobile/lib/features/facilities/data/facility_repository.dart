@@ -1,5 +1,10 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/offline/offline_cache.dart';
 import '../../../core/utils/geo.dart';
 import 'facility_model.dart';
 
@@ -32,10 +37,23 @@ extension FacilityFilterX on FacilityFilter {
 /// da versão web (stores, clinics, veterinary_clinics) e unifica num só
 /// modelo de apresentação. Sem produtos: apenas identidade, localização,
 /// contactos e chat.
+///
+/// ── Catálogo OFFLINE (exclusivo móvel) ───────────────────────────────
+/// O conjunto completo é sincronizado em cache local (sqflite) na
+/// primeira consulta bem-sucedida e renovado a cada rede viva. Sem
+/// internet, a pesquisa, filtros e ordenação CONTINUAM a funcionar
+/// sobre a última cópia — essencial em Moçambique, onde a rede cai
+/// com frequência e uma farmácia não pode esperar por dados.
 class FacilityRepository {
   FacilityRepository(this._client);
 
   final SupabaseClient _client;
+
+  static const _catalogKey = 'facilities_catalog_v1';
+
+  /// Última consulta veio do cache offline? Observado pelo ecrã para
+  /// mostrar o indicador "Offline · dados guardados".
+  final ValueNotifier<bool> servedOffline = ValueNotifier<bool>(false);
 
   /// Lista unificada de instituições activas, com pesquisa, filtro por
   /// tipo, cidade e ordenação (avaliação / proximidade / nome).
@@ -50,43 +68,26 @@ class FacilityRepository {
     double? userLat,
     double? userLng,
   }) async {
-    final wanted = _matchingTypes(filter);
-
-    // ── Farmácias (stores.type = 'pharmacy') ──────────────────────────
-    final storeRows = wanted.contains(FacilityType.pharmacy)
-        ? await _client
-            .from('stores')
-            .select('id, name, type, city, address, description, rating, '
-                'latitude, longitude, image_url, phone, delivery_time, '
-                'google_place_id')
-            .eq('is_active', true)
-        : <Map<String, dynamic>>[];
-
-    // ── Clínicas / hospitais / laboratórios (clinics) ─────────────────
-    final clinicRows = wanted
-        .any((t) => t != FacilityType.pharmacy && t != FacilityType.veterinary)
-        ? await _client
-            .from('clinics')
-            .select('id, name, type, city, address, description, '
-                'latitude, longitude, image_url, phone, email, website, '
-                'is_verified, google_place_id')
-            .eq('is_active', true)
-        : <Map<String, dynamic>>[];
-
-    // ── Veterinárias (veterinary_clinics) ─────────────────────────────
-    final vetRows = wanted.contains(FacilityType.veterinary)
-        ? await _client
-            .from('veterinary_clinics')
-            .select('id, name, city, address, description, rating, '
-                'latitude, longitude, image_url, phone, email, website, '
-                'is_verified, emergency_24h')
-            .eq('is_active', true)
-        : <Map<String, dynamic>>[];
+    // ── Rede-primeiro, cache-como-reserva ─────────────────────────────
+    // Busca SEMPRE o conjunto completo (as três tabelas) — depois os
+    // filtros são aplicados em memória, tanto a dados frescos como a
+    // dados em cache. Assim a pesquisa offline mantém o mesmo poder.
+    List<Map<String, dynamic>> rows;
+    try {
+      rows = await _fetchAllRows().timeout(const Duration(seconds: 12));
+      await OfflineCache.instance
+          .write(_catalogKey, jsonEncode(rows))
+          .timeout(const Duration(seconds: 6), onTimeout: () {});
+      servedOffline.value = false;
+    } catch (_) {
+      final cached = await OfflineCache.instance.readRows(_catalogKey);
+      if (cached.isEmpty) rethrow;
+      rows = cached;
+      servedOffline.value = true;
+    }
 
     var facilities = <HealthFacility>[
-      ...storeRows.map<HealthFacility>(HealthFacility.fromStore),
-      ...clinicRows.map<HealthFacility>(HealthFacility.fromClinic),
-      ...vetRows.map<HealthFacility>(HealthFacility.fromVet),
+      for (final r in rows) _facilityFromRow(r),
     ];
 
     // Deduplicação por nome+cidade (a base web semeia a mesma instituição
@@ -97,15 +98,21 @@ class FacilityRepository {
       return seen.add(key);
     }).toList();
 
-    // Filtros de texto e cidade.
+    // Filtros de texto, tipo e cidade.
     final q = query.trim().toLowerCase();
     if (q.isNotEmpty) {
       facilities = facilities
           .where((f) =>
               f.name.toLowerCase().contains(q) ||
               (f.city ?? '').toLowerCase().contains(q) ||
-              (f.description ?? '').toLowerCase().contains(q))
+              (f.description ?? '').toLowerCase().contains(q) ||
+              (f.address ?? '').toLowerCase().contains(q))
           .toList();
+    }
+    if (filter != FacilityFilter.all) {
+      final wanted = _matchingTypes(filter);
+      facilities =
+          facilities.where((f) => wanted.contains(f.type)).toList();
     }
     if (city != null && city.trim().isNotEmpty) {
       final c = city.trim().toLowerCase();
@@ -159,7 +166,67 @@ class FacilityRepository {
       _lastDistances[facility.id] ?? double.infinity;
 
   /// Detalhe de uma instituição, qualquer que seja a tabela de origem.
+  /// Detalhe também respeita o padrão offline: se a rede falhar, serve a
+  /// última cópia guardada.
   Future<HealthFacility?> fetchFacility(
+    FacilitySource source,
+    String id,
+  ) async {
+    final detailKey = 'facility_detail_${source.name}_$id';
+    try {
+      final raw = await _fetchSingleRaw(source, id)
+          .timeout(const Duration(seconds: 12));
+      if (raw != null) {
+        await OfflineCache.instance
+            .write(detailKey, jsonEncode(raw))
+            .timeout(const Duration(seconds: 6), onTimeout: () {});
+      }
+      return raw == null ? null : _facilityFromRow(raw);
+    } catch (_) {
+      final cached = await OfflineCache.instance.readRows(detailKey);
+      if (cached.isNotEmpty) return _facilityFromRow(cached.first);
+      rethrow;
+    }
+  }
+
+  // ── Rede ────────────────────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> _fetchAllRows() async {
+    // Farmácias (stores.type = 'pharmacy')
+    final storeRows = await _client
+        .from('stores')
+        .select('id, name, type, city, address, description, rating, '
+            'latitude, longitude, image_url, phone, delivery_time, '
+            'google_place_id')
+        .eq('is_active', true);
+
+    // Clínicas / hospitais / laboratórios (clinics)
+    final clinicRows = await _client
+        .from('clinics')
+        .select('id, name, type, city, address, description, '
+            'latitude, longitude, image_url, phone, email, website, '
+            'is_verified, google_place_id')
+        .eq('is_active', true);
+
+    // Veterinárias (veterinary_clinics)
+    final vetRows = await _client
+        .from('veterinary_clinics')
+        .select('id, name, city, address, description, rating, '
+            'latitude, longitude, image_url, phone, email, website, '
+            'is_verified, emergency_24h')
+        .eq('is_active', true);
+
+    return [
+      for (final r in (storeRows as List))
+        {...Map<String, dynamic>.from(r as Map), '_src': 'store'},
+      for (final r in (clinicRows as List))
+        {...Map<String, dynamic>.from(r as Map), '_src': 'clinic'},
+      for (final r in (vetRows as List))
+        {...Map<String, dynamic>.from(r as Map), '_src': 'vet'},
+    ];
+  }
+
+  Future<Map<String, dynamic>?> _fetchSingleRaw(
     FacilitySource source,
     String id,
   ) async {
@@ -172,7 +239,11 @@ class FacilityRepository {
                 'google_place_id')
             .eq('id', id)
             .maybeSingle();
-        return rows == null ? null : HealthFacility.fromStore(rows);
+        if (rows == null) return null;
+        return {
+          ...Map<String, dynamic>.from(rows as Map),
+          '_src': 'store',
+        };
 
       case FacilitySource.clinic:
         final rows = await _client
@@ -182,7 +253,11 @@ class FacilityRepository {
                 'is_verified, google_place_id')
             .eq('id', id)
             .maybeSingle();
-        return rows == null ? null : HealthFacility.fromClinic(rows);
+        if (rows == null) return null;
+        return {
+          ...Map<String, dynamic>.from(rows as Map),
+          '_src': 'clinic',
+        };
 
       case FacilitySource.veterinary:
         final rows = await _client
@@ -192,7 +267,25 @@ class FacilityRepository {
                 'is_verified, emergency_24h')
             .eq('id', id)
             .maybeSingle();
-        return rows == null ? null : HealthFacility.fromVet(rows);
+        if (rows == null) return null;
+        return {
+          ...Map<String, dynamic>.from(rows as Map),
+          '_src': 'vet',
+        };
+    }
+  }
+
+  // ── Cache helpers ───────────────────────────────────────────────────
+
+  HealthFacility _facilityFromRow(Map<String, dynamic> row) {
+    switch (row['_src'] as String?) {
+      case 'store':
+        return HealthFacility.fromStore(row);
+      case 'vet':
+        return HealthFacility.fromVet(row);
+      case 'clinic':
+      default:
+        return HealthFacility.fromClinic(row);
     }
   }
 
