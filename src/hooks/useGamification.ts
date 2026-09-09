@@ -158,7 +158,7 @@ export function useGamification() {
     queryFn: async () => {
       if (!user) return [];
       const { data } = await (supabase as any)
-        .from('userachievements')
+        .from('user_achievements')
         .select('*, achievement:achievements(*)')
         .eq('user_id', user.id)
         .order('unlocked_at', { ascending: false });

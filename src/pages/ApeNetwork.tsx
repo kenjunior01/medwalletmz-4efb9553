@@ -24,35 +24,81 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 import NumberFlow from '@number-flow/react';
 
-const APE_BY_PROVINCE = [
-  { province: 'Maputo Cidade', count: 184, color: 'bg-emerald-500' },
-  { province: 'Maputo Província', count: 312, color: 'bg-teal-500' },
-  { province: 'Gaza', count: 248, color: 'bg-cyan-500' },
-  { province: 'Inhambane', count: 156, color: 'bg-blue-500' },
-  { province: 'Sofala', count: 287, color: 'bg-indigo-500' },
-  { province: 'Manica', count: 174, color: 'bg-violet-500' },
-  { province: 'Tete', count: 198, color: 'bg-purple-500' },
-  { province: 'Zambézia', count: 412, color: 'bg-fuchsia-500' },
-  { province: 'Nampula', count: 386, color: 'bg-pink-500' },
-  { province: 'Cabo Delgado', count: 142, color: 'bg-rose-500' },
-  { province: 'Niassa', count: 98, color: 'bg-orange-500' },
+interface ApeProfile {
+  full_name: string;
+  service_zones: string[] | null;
+  rating: number | null;
+  total_bookings: number | null;
+  is_verified: boolean | null;
+}
+
+const PROVINCES: { name: string; color: string }[] = [
+  { name: 'Maputo Cidade', color: 'bg-emerald-500' },
+  { name: 'Maputo Província', color: 'bg-teal-500' },
+  { name: 'Gaza', color: 'bg-cyan-500' },
+  { name: 'Inhambane', color: 'bg-blue-500' },
+  { name: 'Sofala', color: 'bg-indigo-500' },
+  { name: 'Manica', color: 'bg-violet-500' },
+  { name: 'Tete', color: 'bg-purple-500' },
+  { name: 'Zambézia', color: 'bg-fuchsia-500' },
+  { name: 'Nampula', color: 'bg-pink-500' },
+  { name: 'Cabo Delgado', color: 'bg-rose-500' },
+  { name: 'Niassa', color: 'bg-orange-500' },
 ];
 
-const TOTAL_APES = APE_BY_PROVINCE.reduce((a, b) => a + b.count, 0);
-const MAX_PROVINCE = Math.max(...APE_BY_PROVINCE.map((p) => p.count));
+const initialsOf = (name: string): string =>
+  name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? '').join('.') + '.';
 
-const TOP_APES = [
-  { initials: 'A.M.', province: 'Zambézia', patients: 184, monthsActive: 14 },
-  { initials: 'F.C.', province: 'Nampula', patients: 167, monthsActive: 11 },
-  { initials: 'H.J.', province: 'Sofala', patients: 142, monthsActive: 9 },
-  { initials: 'M.S.', province: 'Maputo Prov.', patients: 138, monthsActive: 12 },
-  { initials: 'R.T.', province: 'Tete', patients: 121, monthsActive: 8 },
-];
+const zoneMatchesProvince = (zones: string[] | null, province: string): boolean =>
+  (zones ?? []).some((z) => z.toLowerCase().includes(province.toLowerCase()));
 
 export default function ApeNetwork() {
   const navigate = useNavigate();
+  const [apes, setApes] = useState<ApeProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      setLoading(true);
+      // Apenas APEs verificados (a policy RLS 'Anyone can view verified workers'
+      // já filtra) — números reais da rede, sem valores ilustrativos.
+      const { data, error } = await supabase
+        .from('health_worker_profiles')
+        .select('full_name,service_zones,rating,total_bookings,is_verified')
+        .eq('profession', 'ape')
+        .eq('is_verified', true)
+        .limit(1000);
+      if (!alive) return;
+      if (error) logger.error('[ape-network] fetch failed', { error: error.message });
+      setApes((data ?? []) as unknown as ApeProfile[]);
+      setLoading(false);
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  const apeByProvince = PROVINCES.map((p) => ({
+    ...p,
+    count: apes.filter((a) => zoneMatchesProvince(a.service_zones, p.name)).length,
+  }));
+  const unassigned = apes.filter(
+    (a) => !PROVINCES.some((p) => zoneMatchesProvince(a.service_zones, p.name))).length;
+  const totalApes = apes.length;
+  const maxProvince = Math.max(1, ...apeByProvince.map((p) => p.count));
+  const topApes = [...apes]
+    .sort((a, b) => (b.total_bookings ?? 0) - (a.total_bookings ?? 0))
+    .slice(0, 5)
+    .map((a) => ({
+      initials: initialsOf(a.full_name),
+      province: PROVINCES.find((p) => zoneMatchesProvince(a.service_zones, p.name))?.name ?? 'Moçambique',
+      bookings: a.total_bookings ?? 0,
+      rating: typeof a.rating === 'number' ? a.rating : null,
+    }));
 
   return (
     <>
@@ -80,7 +126,7 @@ export default function ApeNetwork() {
             <div className="mt-4 flex items-center gap-3">
               <div>
                 <div className="text-2xl font-bold">
-                  <NumberFlow value={TOTAL_APES} />
+                  <NumberFlow value={loading ? 0 : totalApes} />
                 </div>
                 <div className="text-xs text-amber-100">APEs activos</div>
               </div>
@@ -106,19 +152,27 @@ export default function ApeNetwork() {
               <h2 className="text-lg font-bold">Distribuição por província</h2>
             </div>
             <div className="space-y-2">
-              {APE_BY_PROVINCE.map((p, i) => (
+              {!loading && totalApes === 0 && (
+                <div className="mb-4 rounded-xl border border-dashed border-amber-300 bg-amber-50/60 p-4 text-center">
+                  <p className="text-sm font-semibold text-amber-800">A rede está a arrancar — sê o primeiro APE da tua província.</p>
+                  <p className="mt-1 text-xs text-amber-700">
+                    Os números abaixo mostram apenas APEs verificados na plataforma. Candidata-te em «Como se tornar APE» e o teu perfil aparece aqui após verificação.
+                  </p>
+                </div>
+              )}
+              {apeByProvince.map((p, i) => (
                 <motion.div
-                  key={p.province}
+                  key={p.name}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.04 }}
                   className="flex items-center gap-3"
                 >
-                  <div className="w-32 text-xs text-muted-foreground shrink-0">{p.province}</div>
+                  <div className="w-32 text-xs text-muted-foreground shrink-0">{p.name}</div>
                   <div className="flex-1 h-6 bg-muted rounded-md overflow-hidden relative">
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: `${(p.count / MAX_PROVINCE) * 100}%` }}
+                      animate={{ width: `${(p.count / maxProvince) * 100}%` }}
                       transition={{ duration: 0.8, delay: i * 0.04, ease: 'easeOut' }}
                       className={`h-full ${p.color} flex items-center justify-end pr-2`}
                     >
@@ -140,7 +194,7 @@ export default function ApeNetwork() {
             <h2 className="text-lg font-bold">APEs em destaque</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {TOP_APES.map((ape, i) => (
+            {topApes.map((ape, i) => (
               <motion.div
                 key={ape.initials}
                 initial={{ opacity: 0, y: 20 }}
@@ -167,14 +221,14 @@ export default function ApeNetwork() {
                     </div>
                     <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
                       <div className="rounded-md bg-muted/50 p-2">
-                        <div className="text-muted-foreground text-[10px]">Pacientes activos</div>
+                        <div className="text-muted-foreground text-[10px]">Atendimentos</div>
                         <div className="font-bold text-base">
-                          <NumberFlow value={ape.patients} />
+                          <NumberFlow value={ape.bookings} />
                         </div>
                       </div>
                       <div className="rounded-md bg-muted/50 p-2">
-                        <div className="text-muted-foreground text-[10px]">Meses activos</div>
-                        <div className="font-bold text-base">{ape.monthsActive}</div>
+                        <div className="text-muted-foreground text-[10px]">Avaliação</div>
+                        <div className="font-bold text-base">{ape.rating ? ape.rating.toFixed(1) : '—'}</div>
                       </div>
                     </div>
                   </CardContent>
@@ -261,7 +315,7 @@ export default function ApeNetwork() {
         {/* Contacto supervisor */}
         <div className="mt-4 text-center text-xs text-muted-foreground">
           <Phone className="inline h-3 w-3 mr-1" />
-          Suporte APE: <a href="tel:+258840000000" className="underline">+258 84 000 0000</a> ·
+          Perguntas? <button onClick={() => navigate('/health-workers')} className="underline font-semibold">Fala com a equipa APE</button> ·
           WhatsApp 24/7
         </div>
       </div>

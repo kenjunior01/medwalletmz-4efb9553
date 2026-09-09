@@ -21,7 +21,7 @@ import {
 import { useCountry } from '@/contexts/CountryContext';
 import {
   RegionalRanking,
-  getRankings, getMockRankings, getCountryRankingHistory,
+  getRankings, getCountryRankingHistory,
   getAvailablePeriods, computeTrends, getMyCountryRanking,
   BADGES, COUNTRY_INFO,
 } from '@/services/globalRanking';
@@ -43,16 +43,15 @@ export default function GlobalRanking() {
     setError(null);
     try {
       const [cur, prev] = await Promise.all([
-        getRankings(period).catch(() => getMockRankings(period)),
-        getRankings(periods[1].value).catch(() => getMockRankings(periods[1].value)),
+        getRankings(period).catch(() => [] as RegionalRanking[]),
+        getRankings(periods[1].value).catch(() => [] as RegionalRanking[]),
       ]);
-      setRankings(cur.length === 0 ? getMockRankings(period) : cur);
+      setRankings(cur);
       setPreviousRankings(prev);
       const cc = (country as any)?.code ?? country?.id;
       if (cc) {
-        const me = cur.find((r) => r.country_code === cc) ??
-                   getMockRankings(period).find((r) => r.country_code === cc);
-        setMyCountry(me ?? null);
+        const me = cur.find((r) => r.country_code === cc) ?? null;
+        setMyCountry(me);
         const hist = await getCountryRankingHistory(cc).catch(() => []);
         setHistory(hist);
       }

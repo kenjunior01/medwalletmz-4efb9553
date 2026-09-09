@@ -366,7 +366,6 @@ export default function HealthWorkerMarketplace() {
                   <div>
                     <p className="font-semibold">{t('healthWorkers.errorTitle')}</p>
                     <p className="text-sm mt-1">{error}</p>
-                    <p className="text-xs mt-2 text-amber-700">{t('healthWorkers.usingMockData')}</p>
                   </div>
                 </div>
               </div>

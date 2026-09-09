@@ -155,26 +155,6 @@ export function computeTrends(rankings: RegionalRanking[], previousRankings: Reg
   return map;
 }
 
-/** Generate mock rankings if database is empty (for demo). */
-export function getMockRankings(period: string): RegionalRanking[] {
-  const mock: Omit<RegionalRanking, 'period' | 'country_name' | 'country_flag'>[] = [
-    { country_code: 'MZ', health_score: 78, medication_adherence_pct: 82, active_users_count: 15420, consultations_per_1000: 45, partner_satisfaction_score: 4.3, sos_response_time_avg_min: 12, rank_overall: 1, rank_adherence: 2, rank_growth: 1, badges: ['top_adherence', 'community_heart', 'jobs_creator'] },
-    { country_code: 'BR', health_score: 75, medication_adherence_pct: 85, active_users_count: 32100, consultations_per_1000: 62, partner_satisfaction_score: 4.5, sos_response_time_avg_min: 8, rank_overall: 2, rank_adherence: 1, rank_growth: 3, badges: ['top_adherence', 'champion'] },
-    { country_code: 'PT', health_score: 72, medication_adherence_pct: 79, active_users_count: 8900, consultations_per_1000: 51, partner_satisfaction_score: 4.4, sos_response_time_avg_min: 6, rank_overall: 3, rank_adherence: 3, rank_growth: 4, badges: ['best_sos'] },
-    { country_code: 'AO', health_score: 68, medication_adherence_pct: 71, active_users_count: 6800, consultations_per_1000: 38, partner_satisfaction_score: 4.1, sos_response_time_avg_min: 15, rank_overall: 4, rank_adherence: 5, rank_growth: 2, badges: ['fastest_growth', 'rising_star'] },
-    { country_code: 'ZA', health_score: 66, medication_adherence_pct: 74, active_users_count: 11200, consultations_per_1000: 42, partner_satisfaction_score: 4.0, sos_response_time_avg_min: 11, rank_overall: 5, rank_adherence: 4, rank_growth: 5, badges: ['most_improved'] },
-    { country_code: 'KE', health_score: 63, medication_adherence_pct: 68, active_users_count: 9400, consultations_per_1000: 35, partner_satisfaction_score: 3.9, sos_response_time_avg_min: 18, rank_overall: 6, rank_adherence: 6, rank_growth: 2, badges: ['rising_star'] },
-    { country_code: 'IN', health_score: 61, medication_adherence_pct: 65, active_users_count: 28500, consultations_per_1000: 28, partner_satisfaction_score: 3.8, sos_response_time_avg_min: 14, rank_overall: 7, rank_adherence: 7, rank_growth: 6, badges: [] },
-    { country_code: 'NG', health_score: 58, medication_adherence_pct: 62, active_users_count: 17800, consultations_per_1000: 22, partner_satisfaction_score: 3.7, sos_response_time_avg_min: 22, rank_overall: 8, rank_adherence: 8, rank_growth: 7, badges: [] },
-  ];
-  return mock.map((r) => ({
-    ...r,
-    period,
-    country_name: COUNTRY_INFO[r.country_code]?.name ?? r.country_code,
-    country_flag: COUNTRY_INFO[r.country_code]?.flag ?? '🏳️',
-  }));
-}
-
 /** Get the user's country ranking position with details. */
 export async function getMyCountryRanking(countryCode: string, period: string): Promise<RegionalRanking | null> {
   const { data, error } = await supabase

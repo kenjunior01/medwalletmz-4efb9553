@@ -36,7 +36,7 @@ import {
   VEHICLE_LABELS, PACKAGE_LABELS, STATUS_LABELS,
 } from '@/services/healthRiders';
 
-type View = 'onboarding' | 'dashboard';
+type View = 'onboarding' | 'dashboard' | 'pending';
 
 export default function HealthRidersNetwork() {
   // t() + country come from useCountry(); user comes from useAuth().
@@ -53,7 +53,7 @@ export default function HealthRidersNetwork() {
     try {
       const r = await getMyRiderProfile(user.id);
       setRider(r);
-      setView(r?.is_verified ? 'dashboard' : 'onboarding');
+      setView(r?.is_verified ? 'dashboard' : (r ? 'pending' : 'onboarding'));
     } catch (e: any) {
       logger.error('Unexpected error', { error: e });
     } finally {
@@ -113,7 +113,35 @@ export default function HealthRidersNetwork() {
           </button>
         </div>
         {!isDashboard ? (
-          <RiderOnboarding rider={rider} onCompleted={load} userId={user?.id ?? ''} countryId={country?.id ?? 'MZ'} t={t} />
+          view === 'pending' ? (
+            <div className="max-w-2xl mx-auto rounded-3xl border border-amber-300/60 bg-amber-50 p-8 text-center shadow-sm">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/15">
+                <ShieldCheck className="h-7 w-7 text-amber-600" aria-hidden />
+              </div>
+              <h2 className="text-xl font-black text-slate-900">Candidatura em análise</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">
+                Recebemos os teus dados e documentos. A nossa equipa está a verificar a tua
+                conta de Health Rider — normalmente demora até 48 horas. Vais poder começar
+                a aceitar entregas logo que sejas aprovado.
+              </p>
+              <div className="mt-5 flex items-center justify-center gap-3">
+                <button
+                  onClick={() => { setView('onboarding'); }}
+                  className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50"
+                >
+                  Ver os meus dados
+                </button>
+                <button
+                  onClick={() => navigate('/health/deliveries')}
+                  className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-md transition hover:bg-emerald-500"
+                >
+                  Sou paciente — pedir entrega
+                </button>
+              </div>
+            </div>
+          ) : (
+            <RiderOnboarding rider={rider} onCompleted={load} userId={user?.id ?? ''} countryId={country?.id ?? 'MZ'} t={t} />
+          )
         ) : (
           <RiderDashboard rider={rider} onChange={load} t={t} />
         )}
@@ -174,9 +202,10 @@ function RiderOnboarding({ rider, onCompleted, userId, countryId, t }: {
       await updateRiderProgress(id!, nextStep, progress);
 
       if (nextStep === 'review') {
-        // Auto-submit for verification at review step
-        await updateRider(id!, { is_verified: true, verified_at: new Date().toISOString() } as Partial<HealthRider>);
-        onCompleted();
+        // Submeter para verificação — a aprovação é feita pela equipa em
+        // /admin (verificação de riders); o rider não se auto-verifica.
+        await updateRiderProgress(id!, 'completed', 100);
+        onCompleted(); // load() reavalia e mostra o estado 'pending'
       } else {
         setStep(nextStep);
       }
