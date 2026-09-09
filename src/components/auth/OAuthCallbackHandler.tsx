@@ -19,21 +19,21 @@ const consumePendingNextPath = () => {
 /**
  * OAuthCallbackHandler
  *
- * Processa o regresso do OAuth nativo do Supabase (Google).
+ * Processa o regresso do login Google (OAuth directo via Supabase).
  *
  * Fluxo:
- *  1. App chama supabase.auth.signInWithOAuth({provider:'google', redirectTo: origin})
- *  2. Supabase redirecciona para o Google
- *  3. Google autentica → callback do Supabase troca os tokens
- *  4. Supabase redirecciona para a app com tokens no HASH da URL:
- *       https://medwalletmz.online/#access_token=...&refresh_token=...&expires_in=3600
+ *  1. App chama supabase.auth.signInWithOAuth({ provider: 'google' })
+ *  2. Google autentica → Supabase troca o código → redirect para a app:
+ *       - Fluxo implicit (hash):  https://medwalletmz.online/#access_token=...&refresh_token=...
+ *       - Fluxo PKCE (query):    https://medwalletmz.online/?code=...
  *     OU com erro:
  *       https://medwalletmz.online/#error=...&error_description=...
  *
  * Este componente:
  *  - Detecta tokens no hash e aguarda o Supabase processá-los (detectSessionInUrl)
+ *  - Detecta código PKCE em ?code= e aguarda a troca automática do cliente
  *  - Detecta erros no hash/query e mostra toast amigável
- *  - Limpa o hash depois de processar (segurança)
+ *  - Limpa o URL depois de processar (segurança)
  *  - Mostra um overlay de loading enquanto processa
  *
  * Deve ser renderizado DENTRO do <BrowserRouter> mas ANTES das routes,
@@ -181,13 +181,57 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
     }
 
     // ────────────────────────────────────────────────────────────────────────
+    // CASO 2b: Código PKCE em ?code= (fluxo pkce — padrão deste projecto)
+    //   Ex: ?code=abc123...
+    // O cliente Supabase (detectSessionInUrl: true + flowType: 'pkce') troca
+    // automaticamente o código por uma sessão. Aqui apenas mostramos o overlay
+    // e aguardamos a sessão ficar disponível (com timeout de segurança).
+    // ────────────────────────────────────────────────────────────────────────
+    if (allParams.code && !hasAccessToken && !hasError && !hasErrorCode) {
+      setOauthState('processing');
+
+      let cancelled = false;
+      const deadline = Date.now() + 15000; // timeout de 15 s
+      const poll = async (): Promise<void> => {
+        while (!cancelled && Date.now() < deadline) {
+          try {
+            const { data, error } = await supabase.auth.getSession();
+            if (error) throw error;
+            if (data.session) {
+              if (cancelled) return;
+              const next = consumePendingNextPath();
+              window.history.replaceState(null, '', next);
+              setOauthState('idle');
+              toast.success('Login Google concluído');
+              window.dispatchEvent(new Event('medwallet:oauth-complete'));
+              return;
+            }
+          } catch {
+            // rede instável — continuar a tentar até ao timeout
+          }
+          await new Promise((r) => setTimeout(r, 400));
+        }
+        if (!cancelled) {
+          setOauthState('error');
+          setErrorMessage('Não foi possível finalizar o login Google.');
+          toast.error('Falha no login Google', {
+            description: 'Tenta novamente ou usa e-mail/password.',
+            duration: 8000,
+          });
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      };
+      void poll();
+
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
     // CASO 3: URL normal sem tokens nem erros
     //   Não fazer nada — fluxo normal da app
     // ────────────────────────────────────────────────────────────────────────
-    // Log só se houver algo suspeito no URL (ex: ?code= sem access_token)
-    if (allParams.code && !hasAccessToken) {
-      logger.warn('[OAuthCallbackHandler] URL tem ?code= mas sem access_token. URL:', fullPath);
-    }
   }, []);
 
   // ── Overlay de processamento ──────────────────────────────────────────────

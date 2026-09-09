@@ -449,12 +449,13 @@ class OfflineManager {
   private static CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
   /** Cache nearby health facilities (non-sensitive, no encryption).
-   * Stores in memory + localStorage with timestamp for SWR. */
+   * Stores in memory + localStorage with timestamp for SWR.
+   * Fonte: tabela `clinics` — o catálogo real de instituições. */
   async cacheNearbyFacilities(city?: string): Promise<void> {
     try {
       const query = supabase
-        .from('health_facilities')
-        .select('id, name, type, latitude, longitude, address, phone, is_verified, rating, image_url')
+        .from('clinics')
+        .select('id, name, type, city, address, phone, latitude, longitude, rating, is_verified')
         .eq('is_active', true)
         .limit(100);
 

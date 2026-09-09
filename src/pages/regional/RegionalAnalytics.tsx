@@ -34,60 +34,21 @@ interface MetricData {
   totalUsers: number;
   newUsers: number;
   activeUsers: number;
-  retentionRate: number;
-  monthlyRevenue: number;
-  avgOrderValue: number;
-  revenueGrowth: number;
-  revenueVsLastMonth: number;
-  consultations: number;
-  verifiedDoctors: number;
-  avgWaitTime: number;
-  satisfaction: number;
+  retentionRate: number | null;
+  consultations: number | null;
+  verifiedDoctors: number | null;
+  avgWaitTime: number | null;
+  satisfaction: number | null;
   totalDeliveries: number;
-  avgDeliveryTime: number;
-  onTimeRate: number;
-  monthlyChart: { month: string; value: number; prev: number }[];
+  avgDeliveryTime: number | null;
+  onTimeRate: number | null;
+  monthlyChart: { month: string; value: number; prev: number | null }[];
   provinceRankings: { id: string; name: string; score: number }[];
-  topDoctors: { name: string; specialty: string; rating: number; consultations: number; avatar: string }[];
-  topRiders: { name: string; deliveries: number; rating: number; onTimeRate: number; avatar: string }[];
-  hourlyActivity: number[];
+  institutionsCount: number;
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 const MONTH_LABELS_MZ = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-const SPECIALTIES_PT = [
-  'Medicina Geral', 'Pediatria', 'Ginecologia', 'Cardiologia',
-  'Dermatologia', 'Ortopedia', 'Oftalmologia', 'Psiquiatria',
-];
-const RIDER_NAMES = [
-  'João Macamo', 'Ana Mondlane', 'Carlos Tembe', 'Fernando Nhaca',
-  'Luis Sitoe', 'Marta Chissano', 'Pedro Mondlane', 'Sofia Machel',
-];
-const DOCTOR_NAMES = [
-  'Dr. Armando Guebuza', 'Dra. Maria Lurdes', 'Dr. Nelson Mabunda',
-  'Dra. Beatriz Nhaca', 'Dr. Paulo Mondlane', 'Dra. Cristina Sitoe',
-  'Dr. Hugo Chissano', 'Dra. Elsa Macamo',
-];
-const AVATAR_EMOJIS = ['👨🏾‍⚕️', '👩🏾‍⚕️', '👨🏿‍⚕️', '👩🏿‍⚕️', '🧑🏾‍⚕️', '🧑🏿‍⚕️', '👨🏾‍⚕️', '👩🏾‍⚕️'];
-
-function seededRandom(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 16807 + 0) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
-
-function hashString(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const ch = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + ch;
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
 // ─── Period Labels ────────────────────────────────────────────────────────
 const PERIOD_CONFIG: Record<Period, { labelKey: string; fallback: string }> = {
   '7d': { labelKey: 'analytics.last_7_days', fallback: 'Últimos 7 dias' },
@@ -177,30 +138,33 @@ function MiniBarChart({
   provinceGradient,
   accentColor,
 }: {
-  data: { month: string; value: number; prev: number }[];
+  data: { month: string; value: number; prev: number | null }[];
   provinceGradient: string;
   accentColor: string;
 }) {
-  const maxVal = Math.max(...data.map(d => Math.max(d.value, d.prev)));
+  const hasPrev = data.some(d => d.prev != null);
+  const maxVal = Math.max(1, ...data.map(d => Math.max(d.value, d.prev ?? 0)));
   return (
     <div className="flex items-end gap-2 h-full w-full pt-4 pb-2">
       {data.map((d, i) => (
         <div key={d.month} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
           <div className="relative w-full flex items-end gap-[2px] justify-center" style={{ height: '100%' }}>
-            {/* Previous month bar */}
-            <motion.div
-              initial={{ height: 0 }}
-              animate={{ height: `${(d.prev / maxVal) * 100}%` }}
-              transition={{ delay: 0.2 + i * 0.06, type: 'spring', stiffness: 200, damping: 22 }}
-              className="w-[40%] rounded-t-sm opacity-30"
-              style={{ background: accentColor }}
-            />
+            {/* Previous month bar (apenas quando existem dados do período anterior) */}
+            {hasPrev && (
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: `${((d.prev ?? 0) / maxVal) * 100}%` }}
+                transition={{ delay: 0.2 + i * 0.06, type: 'spring', stiffness: 200, damping: 22 }}
+                className="w-[40%] rounded-t-sm opacity-30"
+                style={{ background: accentColor }}
+              />
+            )}
             {/* Current month bar */}
             <motion.div
               initial={{ height: 0 }}
               animate={{ height: `${(d.value / maxVal) * 100}%` }}
               transition={{ delay: 0.3 + i * 0.06, type: 'spring', stiffness: 200, damping: 22 }}
-              className="w-[40%] rounded-t-sm"
+              className={hasPrev ? 'w-[40%] rounded-t-sm' : 'w-[80%] rounded-t-sm'}
               style={{ background: provinceGradient }}
             />
           </div>
@@ -371,119 +335,107 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
     dark: 'linear-gradient(135deg, #004D56, #0D1347)',
   };
 
-  // ── Generate deterministic mock data from province identity ──
-  const generateData = useCallback(
-    (p: Period): MetricData => {
-      const id = managedProvinceId || province?.id || 'maputo-cidade';
-      const rng = seededRandom(hashString(id + p));
-      const mult: Record<Period, number> = { '7d': 0.25, '30d': 1, '90d': 2.8, '12m': 11 };
-      const m = mult[p];
-
-      const totalUsers = Math.round((12000 + rng() * 48000) * (hashString(id) % 3 === 0 ? 2.5 : 1));
-      const newUsers = Math.round(totalUsers * (0.02 + rng() * 0.06) * m / 12);
-      const activeUsers = Math.round(totalUsers * (0.35 + rng() * 0.35));
-      const retentionRate = +(65 + rng() * 28).toFixed(1);
-
-      const monthlyRevenue = Math.round((80000 + rng() * 420000) * m / 12);
-      const avgOrderValue = Math.round(250 + rng() * 750);
-      const revenueGrowth = +(rng() > 0.25 ? rng() * 35 : -(rng() * 15)).toFixed(1);
-      const revenueVsLastMonth = +(rng() * 100).toFixed(1);
-
-      const consultations = Math.round((800 + rng() * 4200) * m / 12);
-      const verifiedDoctors = Math.round(12 + rng() * 88);
-      const avgWaitTime = Math.round(8 + rng() * 22);
-      const satisfaction = +(3.2 + rng() * 1.7).toFixed(1);
-
-      const totalDeliveries = Math.round((600 + rng() * 3400) * m / 12);
-      const avgDeliveryTime = Math.round(25 + rng() * 35);
-      const onTimeRate = +(72 + rng() * 24).toFixed(1);
-
-      const now = new Date();
-      const monthlyChart: { month: string; value: number; prev: number }[] = [];
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const v = Math.round((30000 + rng() * 200000) * (i === 0 ? 1.15 : 1));
-        monthlyChart.push({
-          month: MONTH_LABELS_MZ[d.getMonth()],
-          value: v,
-          prev: Math.round(v * (0.7 + rng() * 0.4)),
-        });
-      }
-
-      const provinceRankings = provinces.map((prov) => ({
-        id: prov.id,
-        name: prov.name,
-        score: +(40 + seededRandom(hashString(prov.id + 'rank'))() * 55).toFixed(1),
-      })).sort((a, b) => b.score - a.score);
-
-      const topDoctors = DOCTOR_NAMES.slice(0, 6).map((name, i) => ({
-        name,
-        specialty: SPECIALTIES_PT[i % SPECIALTIES_PT.length],
-        rating: +(3.5 + rng() * 1.4).toFixed(1),
-        consultations: Math.round(50 + rng() * 450),
-        avatar: AVATAR_EMOJIS[i % AVATAR_EMOJIS.length],
-      })).sort((a, b) => b.consultations - a.consultations).slice(0, 3);
-
-      const topRiders = RIDER_NAMES.slice(0, 6).map((name, i) => ({
-        name,
-        deliveries: Math.round(80 + rng() * 620),
-        rating: +(3.8 + rng() * 1.1).toFixed(1),
-        onTimeRate: +(75 + rng() * 22).toFixed(1),
-        avatar: AVATAR_EMOJIS[(i + 3) % AVATAR_EMOJIS.length],
-      })).sort((a, b) => b.deliveries - a.deliveries).slice(0, 3);
-
-      const hourlyActivity = Array.from({ length: 24 }, (_, h) => {
-        const base = h >= 7 && h <= 20 ? 40 + Math.sin((h - 7) / 13 * Math.PI) * 55 : 5 + rng() * 15;
-        return Math.round(base + rng() * 20);
-      });
-
-      return {
-        totalUsers, newUsers, activeUsers, retentionRate,
-        monthlyRevenue, avgOrderValue, revenueGrowth, revenueVsLastMonth,
-        consultations, verifiedDoctors, avgWaitTime, satisfaction,
-        totalDeliveries, avgDeliveryTime, onTimeRate,
-        monthlyChart, provinceRankings, topDoctors, topRiders, hourlyActivity,
-      };
-    },
-    [province?.id],
-  );
-
-  // ── Fetch real data when possible, fall back to generated ──
+  // ── Carregar dados REAIS do Supabase (perfis, entregas, instituições) ──
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
 
-    const fetchData = async () => {
-      try {
-        if (!province?.id) return;
-        // Attempt real fetch — gracefully fall back to generated data
-        const { data: agg, error } = await (supabase as any)
-          .from('province_analytics')
-          .select('*')
-          .eq('province_id', managedProvinceId || province?.id || 'maputo-cidade')
-          .eq('period', period)
-          .single();
+    const periodDays: Record<Period, number> = { '7d': 7, '30d': 30, '90d': 90, '12m': 365 };
+    const TABLES = { health_deliveries: 'health_deliveries', clinics: 'clinics' } as const;
 
-        if (agg && !error && !cancelled) {
-          setData(agg as unknown as MetricData);
-          setLoading(false);
-          return;
-        }
+    const count = async (table: keyof typeof TABLES, filters: Record<string, string> = {}) => {
+      try {
+        let q: any = supabase.from(TABLES[table]).select('id', { count: 'exact', head: true });
+        for (const [c, v] of Object.entries(filters)) q = q.eq(c, v);
+        const { count: n, error } = await q;
+        if (error) return null;
+        return n ?? 0;
       } catch {
-        // Real data not available — use generated
-      }
-      if (!cancelled) {
-        setData(generateData(period));
-        setLoading(false);
+        return null;
       }
     };
 
-    const timer = setTimeout(fetchData, 200); // Small delay for UX polish
+    const fetchData = async () => {
+      const provId = managedProvinceId || province?.id || '';
+      const sinceDate = new Date(Date.now() - periodDays[period] * 86400000).toISOString().slice(0, 10);
+
+      // Perfis (utilizadores) — fonte real de utilizadores
+      let profiles: any[] = [];
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('id, created_at, last_login, province_id, country_id, is_active')
+          .limit(1000);
+        profiles = (data ?? []) as any[];
+      } catch {
+        profiles = [];
+      }
+
+      const inProvince = profiles.filter((pr) => provId && pr.province_id === provId);
+      const scoped = provId && inProvince.length > 0 ? inProvince : profiles.filter((pr) => pr.country_id === 'MZ');
+
+      const totalUsers = scoped.length;
+      const newUsers = scoped.filter((pr) => (pr.created_at ?? '') >= sinceDate).length;
+      const activeUsers = scoped.filter((pr) => (pr.last_login ?? '') >= sinceDate).length;
+      const retentionRate = totalUsers > 0 ? +((activeUsers / totalUsers) * 100).toFixed(1) : null;
+
+      // Entregas reais (país)
+      const deliveries = await count('health_deliveries', { country_code: 'MZ' });
+
+      // Instituições reais no catálogo
+      const institutions = await count('clinics', { country_id: 'MZ', is_active: 'true' });
+
+      // Novos utilizadores por mês (últimos 6 meses) — real
+      const monthlyChart: { month: string; value: number; prev: number | null }[] = [];
+      const now = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+        const monthLabel = MONTH_LABELS_MZ[d.getMonth()];
+        const value = scoped.filter((pr) => {
+          const c = pr.created_at ? new Date(pr.created_at) : null;
+          return c && c >= d && c < next;
+        }).length;
+        monthlyChart.push({ month: monthLabel, value, prev: null });
+      }
+
+      // Ranking de províncias por utilizadores reais
+      const countsByProvince: Record<string, number> = {};
+      for (const pr of profiles) {
+        if (pr.province_id) countsByProvince[pr.province_id] = (countsByProvince[pr.province_id] ?? 0) + 1;
+      }
+      const provinceRankings = provinces.map((prov) => ({
+        id: prov.id,
+        name: prov.name,
+        score: countsByProvince[prov.id] ?? 0,
+      })).sort((a, b) => b.score - a.score);
+
+      if (cancelled) return;
+      setData({
+        totalUsers,
+        newUsers,
+        activeUsers,
+        retentionRate,
+        consultations: null,
+        verifiedDoctors: null,
+        avgWaitTime: null,
+        satisfaction: null,
+        totalDeliveries: deliveries ?? 0,
+        avgDeliveryTime: null,
+        onTimeRate: null,
+        monthlyChart,
+        provinceRankings,
+        institutionsCount: institutions ?? 0,
+      });
+      setLoading(false);
+    };
+
+    const timer = setTimeout(fetchData, 200);
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [province?.id, period, generateData]);
+  }, [province?.id, managedProvinceId, period]);
 
   // ── Derived values ──
   const currentRank = useMemo(
@@ -628,7 +580,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     label="Utilizadores Activos"
                     labelKey="analytics.active_users"
                     value={data.activeUsers}
-                    sub={`${((data.activeUsers / data.totalUsers) * 100).toFixed(0)}% ${t('analytics.of_total', { _: 'do total' })}`}
+                    sub={data.totalUsers > 0 ? `${((data.activeUsers / data.totalUsers) * 100).toFixed(0)}% ${t('analytics.of_total', { _: 'do total' })}` : t('analytics.no_data_yet', { _: 'Sem dados reais ainda' })}
                     gradient={pGradients.accent}
                     t={t}
                     delay={0.08}
@@ -637,8 +589,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     icon={Target}
                     label="Taxa de Retenção"
                     labelKey="analytics.retention_rate"
-                    value={`${data.retentionRate}%`}
-                    trend={{ value: data.retentionRate > 70 ? 5.2 : -2.1, direction: data.retentionRate > 70 ? 'up' : 'down' }}
+                    value={data.retentionRate != null ? `${data.retentionRate}%` : '—'}
                     gradient={pGradients.card}
                     t={t}
                     delay={0.12}
@@ -646,127 +597,26 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                 </div>
               </motion.section>
 
-              {/* ── 3. Revenue ─────────────────────────────────────── */}
+              {/* ── 3. Receitas — aguardando dados financeiros reais ── */}
               <motion.section variants={stagger} initial="hidden" animate="show">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
                   <Wallet className="w-3.5 h-3.5" />
                   {t('analytics.revenue', { _: 'Receitas' })}
                 </h3>
-                <BentoGrid>
-                  <motion.div variants={fadeUp}>
-                    <GlassCard className="relative overflow-hidden h-full">
-                      <div className="absolute inset-0 opacity-[0.05]" style={{ background: pGradients.accent }} />
-                      <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Wallet className="w-3.5 h-3.5" style={{ color: pColors.primary }} />
-                          <span className="text-[10px] text-muted-foreground font-medium uppercase">
-                            {t('analytics.monthly_revenue', { _: 'Receita Mensal' })}
-                          </span>
-                        </div>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-lg text-muted-foreground font-medium">MT</span>
-                          <NumberFlow
-                            value={data.monthlyRevenue}
-                            format={{ maximumFractionDigits: 0 }}
-                            className="text-2xl font-bold tracking-tight"
-                            style={{ color: pColors.primary }}
-                          />
-                        </div>
-                        <p className="text-[10px] text-muted-foreground/60 mt-1">MZN</p>
-                      </div>
-                    </GlassCard>
-                  </motion.div>
-                  <motion.div variants={fadeUp}>
-                    <GlassCard className="relative overflow-hidden h-full">
-                      <div className="absolute inset-0 opacity-[0.05]" style={{ background: pGradients.accent }} />
-                      <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Package className="w-3.5 h-3.5" style={{ color: pColors.secondary }} />
-                          <span className="text-[10px] text-muted-foreground font-medium uppercase">
-                            {t('analytics.avg_order_value', { _: 'Valor Médio Pedido' })}
-                          </span>
-                        </div>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-lg text-muted-foreground font-medium">MT</span>
-                          <NumberFlow
-                            value={data.avgOrderValue}
-                            format={{ maximumFractionDigits: 0 }}
-                            className="text-2xl font-bold tracking-tight"
-                            style={{ color: pColors.secondary }}
-                          />
-                        </div>
-                      </div>
-                    </GlassCard>
-                  </motion.div>
-                  <motion.div variants={fadeUp}>
-                    <GlassCard className="relative overflow-hidden h-full flex flex-col justify-between">
-                      <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="w-3.5 h-3.5" style={{ color: data.revenueGrowth >= 0 ? '#10B981' : '#EF4444' }} />
-                        <span className="text-[10px] text-muted-foreground font-medium uppercase">
-                          {t('analytics.growth', { _: 'Crescimento' })}
-                        </span>
-                      </div>
-                      <div className="flex items-baseline gap-1">
-                        <NumberFlow
-                          value={Math.abs(data.revenueGrowth)}
-                          format={{ maximumFractionDigits: 1, signDisplay: 'always' }}
-                          className="text-2xl font-bold tracking-tight"
-                          style={{ color: data.revenueGrowth >= 0 ? '#10B981' : '#EF4444' }}
-                        />
-                        <span className="text-lg text-muted-foreground">%</span>
-                      </div>
-                      <div className="mt-2 h-1.5 rounded-full bg-muted/40 overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${Math.min(Math.abs(data.revenueGrowth) * 3, 100)}%` }}
-                          transition={{ delay: 0.3, type: 'spring', stiffness: 180, damping: 22 }}
-                          className="h-full rounded-full"
-                          style={{ background: data.revenueGrowth >= 0 ? '#10B981' : '#EF4444' }}
-                        />
-                      </div>
-                    </GlassCard>
-                  </motion.div>
-                  <motion.div variants={fadeUp}>
-                    <GlassCard className="relative overflow-hidden h-full flex flex-col justify-between">
-                      <span className="text-[10px] text-muted-foreground font-medium uppercase">
-                        {t('analytics.vs_last_month', { _: 'vs Mês Anterior' })}
-                      </span>
-                      <div className="flex items-end gap-2 mt-3">
-                        {/* Last month bar */}
-                        <div className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full h-16 rounded-md bg-muted/40 relative overflow-hidden">
-                            <motion.div
-                              initial={{ height: 0 }}
-                              animate={{ height: '60%' }}
-                              transition={{ delay: 0.3, type: 'spring', stiffness: 180, damping: 22 }}
-                              className="absolute bottom-0 w-full rounded-md"
-                              style={{ background: pColors.secondary, opacity: 0.4 }}
-                            />
-                          </div>
-                          <span className="text-[8px] text-muted-foreground">{t('analytics.prev', { _: 'Ant.' })}</span>
-                        </div>
-                        {/* Current month bar */}
-                        <div className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full h-16 rounded-md bg-muted/40 relative overflow-hidden">
-                            <motion.div
-                              initial={{ height: 0 }}
-                              animate={{ height: `${data.revenueVsLastMonth}%` }}
-                              transition={{ delay: 0.4, type: 'spring', stiffness: 180, damping: 22 }}
-                              className="absolute bottom-0 w-full rounded-md"
-                              style={{ background: pGradients.accent }}
-                            />
-                          </div>
-                          <span className="text-[8px] text-muted-foreground">{t('analytics.current', { _: 'Act.' })}</span>
-                        </div>
-                      </div>
-                      <div className="text-center mt-1">
-                        <span className="text-xs font-bold" style={{ color: pColors.primary }}>
-                          +{data.revenueVsLastMonth}%
-                        </span>
-                      </div>
-                    </GlassCard>
-                  </motion.div>
-                </BentoGrid>
+                <GlassCard className="relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.03]" style={{ background: pGradients.accent }} />
+                  <div className="relative z-10 flex items-center gap-3 py-3 px-1">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: pGradients.accent, opacity: 0.15 }}>
+                      <Wallet className="w-4 h-4" style={{ color: 'var(--province-primary, #00838F)' }} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">—</p>
+                      <p className="text-[11px] text-muted-foreground/70">
+                        As métricas financeiras reais ficam disponíveis assim que houver transacções registadas nesta região.
+                      </p>
+                    </div>
+                  </div>
+                </GlassCard>
               </motion.section>
 
               {/* ── 4. Healthcare ──────────────────────────────────── */}
@@ -780,8 +630,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     icon={Stethoscope}
                     label="Consultas"
                     labelKey="analytics.consultations"
-                    value={data.consultations}
-                    trend={{ value: 15.7, direction: 'up' }}
+                    value={data.consultations ?? '—'}
                     gradient={pGradients.hero}
                     t={t}
                   />
@@ -789,7 +638,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     icon={Award}
                     label="Médicos Verificados"
                     labelKey="analytics.verified_doctors"
-                    value={data.verifiedDoctors}
+                    value={data.verifiedDoctors ?? '—'}
                     sub={t('analytics.active_on_platform', { _: 'Activos na plataforma' })}
                     gradient={pGradients.accent}
                     t={t}
@@ -799,9 +648,8 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     icon={Clock}
                     label="Tempo Médio Espera"
                     labelKey="analytics.avg_wait_time"
-                    value={`${data.avgWaitTime}min`}
+                    value={data.avgWaitTime != null ? `${data.avgWaitTime}min` : '—'}
                     sub={t('analytics.per_consultation', { _: 'por consulta' })}
-                    trend={{ value: 3.2, direction: 'down' }}
                     gradient={pGradients.card}
                     t={t}
                     delay={0.08}
@@ -810,9 +658,8 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     icon={Heart}
                     label="Satisfação"
                     labelKey="analytics.satisfaction"
-                    value={`${data.satisfaction}`}
+                    value={data.satisfaction != null ? `${data.satisfaction}` : '—'}
                     sub={`/ 5.0 ${t('analytics.stars', { _: 'estrelas' })}`}
-                    trend={{ value: 2.4, direction: 'up' }}
                     gradient={pGradients.hero}
                     t={t}
                     delay={0.12}
@@ -832,7 +679,6 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     label="Total de Entregas"
                     labelKey="analytics.total_deliveries"
                     value={data.totalDeliveries}
-                    trend={{ value: 9.8, direction: 'up' }}
                     gradient={pGradients.accent}
                     t={t}
                   />
@@ -840,7 +686,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     icon={Clock}
                     label="Tempo Médio"
                     labelKey="analytics.avg_delivery_time"
-                    value={`${data.avgDeliveryTime}min`}
+                    value={data.avgDeliveryTime != null ? `${data.avgDeliveryTime}min` : '—'}
                     sub={t('analytics.per_delivery', { _: 'por entrega' })}
                     gradient={pGradients.hero}
                     t={t}
@@ -850,8 +696,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     icon={Target}
                     label="Taxa Pontualidade"
                     labelKey="analytics.on_time_rate"
-                    value={`${data.onTimeRate}%`}
-                    trend={{ value: 1.5, direction: 'up' }}
+                    value={data.onTimeRate != null ? `${data.onTimeRate}%` : '—'}
                     gradient={pGradients.card}
                     t={t}
                     delay={0.08}
@@ -863,7 +708,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
               <motion.section variants={stagger} initial="hidden" animate="show">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
                   <BarChart3 className="w-3.5 h-3.5" />
-                  {t('analytics.revenue_trend', { _: 'Tendência de Receitas (6 meses)' })}
+                  {t('analytics.users_trend', { _: 'Novos Utilizadores (6 meses)' })}
                 </h3>
                 <GlassCard className="relative overflow-hidden">
                   <div className="absolute inset-0 opacity-[0.03]" style={{ background: pGradients.hero }} />
@@ -887,7 +732,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                 </GlassCard>
               </motion.section>
 
-              {/* ── 7 & 8. Province Ranking + Top Performers ──────── */}
+              {/* ── 7 & 8. Ranking Provincial + Instituições ──────── */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Province Ranking */}
                 <motion.section variants={stagger} initial="hidden" animate="show">
@@ -918,96 +763,27 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                   </GlassCard>
                 </motion.section>
 
-                {/* Top Performers */}
-                <motion.section variants={stagger} initial="hidden" animate="show" className="space-y-5">
-                  {/* Top Doctors */}
-                  <div>
-                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                      <Stethoscope className="w-3.5 h-3.5" />
-                      {t('analytics.top_doctors', { _: 'Médicos Destaque' })}
-                    </h3>
-                    <GlassCard className="relative overflow-hidden">
-                      <div className="absolute inset-0 opacity-[0.02]" style={{ background: pGradients.hero }} />
-                      <motion.div variants={stagger} initial="hidden" animate="show" className="relative z-10 space-y-3">
-                        {data.topDoctors.map((doc, i) => (
-                          <TopPerformerCard
-                            key={doc.name}
-                            rank={i + 1}
-                            name={doc.name}
-                            sub={doc.specialty}
-                            metric={doc.consultations}
-                            metricLabel={t('analytics.consultations_short', { _: 'consultas' })}
-                            rating={doc.rating}
-                            avatar={doc.avatar}
-                            primaryColor={pColors.primary}
-                          />
-                        ))}
-                      </motion.div>
-                    </GlassCard>
-                  </div>
-
-                  {/* Top Riders */}
-                  <div>
-                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                      <Truck className="w-3.5 h-3.5" />
-                      {t('analytics.top_riders', { _: 'Entregadores Destaque' })}
-                    </h3>
-                    <GlassCard className="relative overflow-hidden">
-                      <div className="absolute inset-0 opacity-[0.02]" style={{ background: pGradients.accent }} />
-                      <motion.div variants={stagger} initial="hidden" animate="show" className="relative z-10 space-y-3">
-                        {data.topRiders.map((rider, i) => (
-                          <TopPerformerCard
-                            key={rider.name}
-                            rank={i + 1}
-                            name={rider.name}
-                            sub={`${t('analytics.on_time', { _: 'Pontualidade' })}: ${rider.onTimeRate}%`}
-                            metric={rider.deliveries}
-                            metricLabel={t('analytics.deliveries_short', { _: 'entregas' })}
-                            rating={rider.rating}
-                            avatar={rider.avatar}
-                            primaryColor={pColors.accent}
-                          />
-                        ))}
-                      </motion.div>
-                    </GlassCard>
-                  </div>
+                {/* Instituições reais no catálogo */}
+                <motion.section variants={stagger} initial="hidden" animate="show">
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <Building2 className="w-3.5 h-3.5" />
+                    {t('analytics.institutions', { _: 'Instituições no Catálogo' })}
+                  </h3>
+                  <GlassCard className="relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-[0.02]" style={{ background: pGradients.accent }} />
+                    <div className="relative z-10 py-6 flex flex-col items-center justify-center text-center gap-2">
+                      <span className="text-4xl font-bold" style={{ color: pColors.primary }}>
+                        {data.institutionsCount}
+                      </span>
+                      <p className="text-[11px] text-muted-foreground/70 max-w-[240px]">
+                        Clínicas, hospitais e laboratórios reais registados no catálogo nacional — verificáveis nos Mapas e no perfil de cada instituição.
+                      </p>
+                    </div>
+                  </GlassCard>
                 </motion.section>
               </div>
 
-              {/* ── 9. Activity by Hour ────────────────────────────── */}
-              <motion.section variants={stagger} initial="hidden" animate="show">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5" />
-                  {t('analytics.hourly_activity', { _: 'Actividade por Hora (24h)' })}
-                </h3>
-                <GlassCard className="relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-[0.02]" style={{ background: pGradients.hero }} />
-                  <div className="relative z-10 space-y-3">
-                    {/* Intensity legend */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-[9px] text-muted-foreground">{t('analytics.low', { _: 'Baixo' })}</span>
-                      <div className="flex gap-0.5">
-                        {[0.1, 0.3, 0.55, 0.8, 1].map((intensity, i) => (
-                          <div
-                            key={i}
-                            className="w-4 h-3 rounded-sm"
-                            style={{
-                              background: pColors.primary,
-                              opacity: intensity,
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-[9px] text-muted-foreground">{t('analytics.high', { _: 'Alto' })}</span>
-                    </div>
-                    <HourlyGrid
-                      data={data.hourlyActivity}
-                      primaryColor={pColors.primary}
-                      secondaryColor={pColors.secondary}
-                    />
-                  </div>
-                </GlassCard>
-              </motion.section>
+
 
               {/* ── Summary Footer ────────────────────────────────── */}
               <motion.section variants={stagger} initial="hidden" animate="show">
@@ -1017,7 +793,7 @@ const { managedProvinceId, provinceFilter, canManageProvince } = useManagedProvi
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Zap className="w-3.5 h-3.5" style={{ color: pColors.primary }} />
                       <span>
-                        {t('analytics.generated_for', { _: 'Dados gerados para' })} <strong>{province?.name ?? 'Maputo Cidade'}</strong>
+                        {t('analytics.real_data_for', { _: 'Dados reais de' })} <strong>{province?.name ?? 'Maputo Cidade'}</strong>
                         {t('analytics.period', { _: ' — período' })}: {t(PERIOD_CONFIG[period].labelKey, { _: PERIOD_CONFIG[period].fallback })}
                       </span>
                     </div>
