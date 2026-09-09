@@ -8,18 +8,18 @@ import '../../../core/config.dart';
 import '../../../core/l10n/app_strings.dart';
 import '../../../core/l10n/locale_provider.dart';
 import '../../../core/push/push_service.dart';
-import '../../../core/security/app_lock.dart';
+import '../../../core/security/app_lock_service.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/gradient_button.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../chat/presentation/facility_inbox_screen.dart';
+import '../data/address_repository.dart';
 import '../../doctor/presentation/doctor_dashboard_screen.dart';
 import '../../bookings/presentation/bookings_controller.dart';
 import '../../regional/data/regional_models.dart';
 import '../../wallet/presentation/wallet_controller.dart';
-import '../data/address_repository.dart';
 import '../data/profile_controller.dart';
 
 /// Tipo de perfil actual (profiles.user_type — persona principal).
@@ -54,6 +54,203 @@ const _userTypeCatalog = <(String, String, String, IconData)>[
       'Indica parceiros e instituições e ganha comissões.',
       Icons.campaign_rounded),
 ];
+
+/// F18 — folha "Segurança": bloqueio da app por biometria/PIN do
+/// dispositivo (exclusivo móvel, opt-in). Se o aparelho não tiver
+/// biometria nem PIN, explica e mantém o interruptor desligado.
+Future<void> _showSecuritySheet(BuildContext context) async {
+  await showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => const _SecuritySheet(),
+  );
+}
+
+class _SecuritySheet extends StatefulWidget {
+  const _SecuritySheet();
+
+  @override
+  State<_SecuritySheet> createState() => _SecuritySheetState();
+}
+
+class _SecuritySheetState extends State<_SecuritySheet> {
+  bool _loading = true;
+  bool _enabled = false;
+  bool _supported = false;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final enabled = await AppLockService.instance.isEnabled();
+    final supported = await AppLockService.instance.isSupported();
+    if (!mounted) return;
+    setState(() {
+      _enabled = enabled;
+      _supported = supported;
+      _loading = false;
+    });
+  }
+
+  Future<void> _toggle(bool value) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      if (value) {
+        // confirma a identidade antes de ACTIVAR o bloqueio
+        final ok = await AppLockService.instance.unlock();
+        if (!ok) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Não foi possível confirmar a tua identidade.')),
+            );
+          }
+          return;
+        }
+      }
+      await AppLockService.instance.setEnabled(value);
+      if (mounted) {
+        setState(() => _enabled = value);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(value
+                ? 'Bloqueio biométrico activado — a app pede impressão '
+                    'digital/rosto/PIN ao abrir e ao voltar do fundo.'
+                : 'Bloqueio biométrico desactivado.'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0B1220),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 42,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Row(
+            children: [
+              Icon(Icons.fingerprint_rounded, color: Color(0xFF38BDF8), size: 22),
+              SizedBox(width: 10),
+              Text(
+                'Segurança da app',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 17,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Exclusivo da app móvel — a versão web não tem bloqueio local.',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.45),
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (_loading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(12),
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else ...[
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withOpacity(0.06)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Bloquear com biometria',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _supported
+                              ? 'Impressão digital, rosto ou PIN do '
+                                  'dispositivo ao abrir a app.'
+                              : 'Este dispositivo não tem biometria nem PIN '
+                                  'configurado — adiciona um nas definições '
+                                  'do sistema.',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.5),
+                            fontSize: 12,
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Switch(
+                    value: _enabled && _supported,
+                    activeColor: const Color(0xFF38BDF8),
+                    onChanged: _supported && !_busy ? _toggle : null,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Porquê? As consultas, receitas e o saldo da carteira ficam '
+              'protegidos mesmo que alguém tenha acesso ao teu telefone '
+              'desbloqueado.',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.4),
+                fontSize: 11.5,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
 
 Future<void> _showUserTypePicker(
     BuildContext context, WidgetRef ref) async {
@@ -352,6 +549,11 @@ class ProfileScreen extends ConsumerWidget {
                     onTap: () => context.push('/profile-edit'),
                   ),
                   _MenuItem(
+                    icon: Icons.fingerprint_rounded,
+                    label: 'Segurança: bloqueio biométrico',
+                    onTap: () => _showSecuritySheet(context),
+                  ),
+                  _MenuItem(
                     icon: Icons.health_and_safety_rounded,
                     label: 'Perfil de saúde (ficha médica)',
                     onTap: () => context.push('/health-profile'),
@@ -573,21 +775,6 @@ class ProfileScreen extends ConsumerWidget {
                     label: 'Segurança (palavra-passe)',
                     onTap: () => context.push('/change-password'),
                   ),
-                  // Bloqueio biométrico — EXCLUSIVO MÓVEL (impressão
-                  // digital / FaceID / PIN do dispositivo).
-                  _MenuItem(
-                    icon: Icons.fingerprint_rounded,
-                    label: 'Desbloqueio biométrico',
-                    onTap: () => _toggleBiometrics(context, ref),
-                    trailing: ValueListenableBuilder<bool>(
-                      valueListenable: AppLock.instance.enabledNotifier,
-                      builder: (_, on, __) => Switch.adaptive(
-                        value: on,
-                        activeColor: AppColors.accent,
-                        onChanged: (_) => _toggleBiometrics(context, ref),
-                      ),
-                    ),
-                  ),
                   _MenuItem(
                     icon: Icons.help_outline_rounded,
                     label: 'Ajuda & Legal',
@@ -630,40 +817,6 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  /// Activa/desactiva o bloqueio biométrico (exclusivo móvel).
-  /// Ao activar, pede um desafio de confirmação ao utilizador.
-  Future<void> _toggleBiometrics(
-      BuildContext context, WidgetRef ref) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final enabling = !AppLock.instance.isEnabled;
-    if (!enabling) {
-      await AppLock.instance.setEnabled(false);
-      messenger.showSnackBar(const SnackBar(
-        content: Text('Desbloqueio biométrico desactivado.'),
-      ));
-      return;
-    }
-    final canAuth = await AppLock.instance.canAuthenticate();
-    if (!canAuth) {
-      messenger.showSnackBar(const SnackBar(
-        backgroundColor: AppColors.warning,
-        content: Text(
-            'Este telemóvel não tem biometria nem PIN configurados. '
-            'Configura primeiro em Definições › Segurança.'),
-      ));
-      return;
-    }
-    final ok = await AppLock.instance.authenticate();
-    if (!ok) return;
-    await AppLock.instance.setEnabled(true);
-    messenger.showSnackBar(const SnackBar(
-      backgroundColor: AppColors.success,
-      content: Text(
-          'Desbloqueio biométrico activado. A app bloqueia sempre que '
-          'fica em segundo plano.'),
-    ));
   }
 
   void _showLanguagePicker(BuildContext context, WidgetRef ref) {

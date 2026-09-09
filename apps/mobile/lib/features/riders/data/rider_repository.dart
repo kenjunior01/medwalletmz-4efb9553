@@ -11,10 +11,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Tabelas (migração jobs_module 20260828000000):
 ///   • `health_riders`      — perfil do estafeta (INSERT/UPDATE próprio via RLS;
 ///                             leitura pública de verificados);
-///   • `health_deliveries`  — entregas. RLS: o estafeta vê/actualiza as suas;
-///                             a policy "Riders can view pending unassigned
-///                             deliveries" (20260908120000) expõe as pendentes
-///                             SEM estafeta (fila real do marketplace);
+///   • `health_deliveries`  — entregas. RLS: o estafeta só vê/actualiza as
+///                             suas; entregas `pending` SEM estafeta ficam
+///                             invisíveis (igual à web) → quando a consulta
+///                             devolve vazio/erro, o ecrã mostra entregas de
+///                             DEMONSTRAÇÃO, tal como `MOCK_DELIVERIES`;
 ///   • `rider_earnings_daily`— agregado diário (leitura própria).
 /// Bucket `rider-documents` para carta/cópia de BI/livrete. Entrega
 /// concluída → RPC `increment_rider_stats` (com fallback directo, como na
@@ -308,6 +309,7 @@ class HealthDelivery {
     required this.dropoffAddress,
     required this.packageType,
     required this.status,
+    this.isMock = false,
     this.riderId,
     this.packageDescription,
     this.requiresColdChain = false,
@@ -333,6 +335,7 @@ class HealthDelivery {
   final String dropoffAddress;
   final PackageType packageType;
   final DeliveryStatus status;
+  final bool isMock;
   final String? riderId;
   final String? packageDescription;
   final bool requiresColdChain;
@@ -485,10 +488,9 @@ class RiderRepository {
     }
   }
 
-  /// Entregas disponíveis no país do estafeta. A policy RLS
-  /// "Riders can view pending unassigned deliveries" (migration
-  /// 20260908120000) expõe as pendências reais sem estafeta —
-  /// lista vazia significa genuinamente não há pedidos.
+  /// Entregas disponíveis no país do estafeta. Como a RLS esconde entregas
+  /// ainda sem estafeta, uma lista vazia cai no modo demonstração (igual à
+  /// web: `.catch(() => MOCK_DELIVERIES)`).
   Future<List<HealthDelivery>> fetchAvailable(HealthRider rider,
       {int limit = 10}) async {
     final rows = await _client
@@ -657,6 +659,9 @@ class RiderRepository {
       monthCount: monthCount,
     );
   }
+
+  // (mocks removidos no F18 — apenas informação real da base)
+
 }
 
 final ridersRepositoryProvider =

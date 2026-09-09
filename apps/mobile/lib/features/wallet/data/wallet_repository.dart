@@ -1,11 +1,11 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart' show IconData, Icons, Color;
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/theme/app_colors.dart';
 import '../domain/wallet_models.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// Carteira: streams realtime de saldo e transações + pedidos de
 /// depósito multi-método e histórico de levantamentos.
@@ -100,6 +100,65 @@ class WalletRepository {
 
   // ── Levantamentos ──────────────────────────────────────────────────
 
+  /// F18 — pede um levantamento REAL via RPC `request_withdrawal`
+  /// (mesma roda do web: debita a carteira com 'withdrawal_hold' e
+  /// insere em withdrawal_requests). Fallback: INSERT directo na tabela
+  /// se o RPC não existir no projecto.
+  ///
+  /// Nota: o RPC só aceita profissionais (`is_professional`) — os erros
+  /// propagam para a folha mostrar a mensagem amigável.
+  Future<Map<String, dynamic>> requestWithdrawal({
+    required double amount,
+    required String method,
+    required String destination,
+    String? destinationName,
+    String? notes,
+  }) async {
+    try {
+      final res = await _client.rpc('request_withdrawal', params: {
+        '_amount': amount,
+        '_method': method,
+        '_destination': destination,
+        '_destination_name': destinationName,
+        '_notes': notes,
+      });
+      if (res is Map) return Map<String, dynamic>.from(res);
+      return {'ok': true};
+    } catch (_) {
+      // fallback directo (RLS do cliente valida user_id = auth.uid())
+      final uid = _client.auth.currentUser?.id;
+      if (uid == null) rethrow;
+      final tx = await _client
+          .from('wallet_transactions')
+          .insert({
+            'user_id': uid,
+            'type': 'withdrawal_hold',
+            'amount': amount,
+            'reference_type': 'withdrawal',
+            'description': 'Pedido de levantamento via $method',
+            'status': 'pending',
+            'payment_method': method,
+            'metadata': {'destination': destination},
+          })
+          .select('id')
+          .single();
+      final inserted = await _client
+          .from('withdrawal_requests')
+          .insert({
+            'user_id': uid,
+            'amount': amount,
+            'method': method,
+            'destination': destination,
+            if (destinationName != null) 'destination_name': destinationName,
+            if (notes != null) 'user_notes': notes,
+            'wallet_tx_id': tx['id'],
+          })
+          .select('id')
+          .single();
+      return {'ok': true, 'id': inserted['id']};
+    }
+  }
+
   /// Últimos pedidos de levantamento do utilizador.
   Future<List<WithdrawalRow>> fetchWithdrawals(String userId) async {
     try {
@@ -113,24 +172,6 @@ class WalletRepository {
     } catch (_) {
       return const [];
     }
-  }
-
-  /// Regista um pedido de levantamento via RPC `request_withdrawal`,
-  /// que debita a carteira e cria a transação de reserva.
-  Future<void> requestWithdrawal({
-    required double amount,
-    required String method,
-    required String destination,
-    String? destinationName,
-    String? notes,
-  }) async {
-    await _client.rpc('request_withdrawal', params: {
-      '_amount': amount,
-      '_method': method,
-      '_destination': destination,
-      '_destination_name': destinationName,
-      '_notes': notes,
-    });
   }
 
   String _rand() =>

@@ -541,8 +541,7 @@ function RiderDashboard({ rider, onChange, t }: { rider: HealthRider; onChange: 
     setLoading(true);
     try {
       const [avail, act, hist, earn] = await Promise.all([
-        // Dados reais apenas — entregas pendentes visíveis via RLS de marketplace
-        getAvailableDeliveries(rider).catch(() => []),
+        getAvailableDeliveries(rider).catch(() => [] as HealthDelivery[]),
         getMyActiveDeliveries(rider.id!).catch(() => []),
         getMyDeliveryHistory(rider.id!).catch(() => []),
         getEarningsSummary(rider.id!).catch(() => null),

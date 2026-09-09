@@ -70,12 +70,10 @@ export default function HealthWorkerMarketplace() {
         telehealth_only: telehealthOnly,
         limit: 30,
       });
-      // Dados reais apenas — sem fallback de demonstração
       setWorkers(result);
     } catch (e: any) {
       logger.error('searchWorkers error', { error: e });
       setError(e?.message ?? 'Erro ao carregar profissionais');
-      setWorkers([]);
     } finally {
       setLoading(false);
     }
@@ -368,7 +366,7 @@ export default function HealthWorkerMarketplace() {
                   <div>
                     <p className="font-semibold">{t('healthWorkers.errorTitle')}</p>
                     <p className="text-sm mt-1">{error}</p>
-                    <p className="text-xs mt-2 text-amber-700">Verifica a tua ligação e tenta novamente.</p>
+                    <p className="text-xs mt-2 text-amber-700">{t('healthWorkers.usingMockData')}</p>
                   </div>
                 </div>
               </div>
@@ -390,7 +388,7 @@ export default function HealthWorkerMarketplace() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredWorkers.map((w, idx) => (
                   <motion.div
-                    key={w.id ?? `worker-${idx}`}
+                    key={w.id ?? `mock-${idx}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(idx * 0.04, 0.4) }}

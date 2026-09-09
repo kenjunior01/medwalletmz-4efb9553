@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -53,8 +54,10 @@ class WalletScreen extends ConsumerWidget {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () =>
-                        ref.read(balanceHiddenProvider.notifier).toggle(),
+                    onPressed: () {
+                      HapticFeedback.selectionClick(); // F18: tacto no toggle do saldo
+                      ref.read(balanceHiddenProvider.notifier).toggle();
+                    },
                     icon: Icon(
                       hidden
                           ? Icons.visibility_off_rounded
@@ -162,7 +165,7 @@ class WalletScreen extends ConsumerWidget {
                         _TxTile(tx: tx),
                     ],
                   )
-                      .animate()
+                      .animate(delay: 45.ms)
                       .fadeIn(duration: 300.ms)
                       .slideX(begin: 0.05, curve: Curves.easeOutCubic);
                 },

@@ -325,7 +325,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                       for (final d in filtered) _DoctorCard(doctor: d),
                     ],
                   )
-                      .animate()
+                      .animate(delay: 55.ms)
                       .fadeIn(duration: 320.ms)
                       .slideY(begin: 0.08, curve: Curves.easeOutCubic);
                 },

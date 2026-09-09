@@ -40,7 +40,7 @@ class _ManagerConsoleScreenState extends ConsumerState<ManagerConsoleScreen> {
     ('overview', 'Visão geral', Icons.dashboard_rounded),
     ('submissions', 'Submissões', Icons.inbox_rounded),
     ('institutions', 'Instituições', Icons.local_pharmacy_rounded),
-    ('kpis', 'KPIs', Icons.query_stats_rounded),
+    ('kpis', 'KPIs', Icons.insights_rounded),
     ('goals', 'Metas', Icons.flag_rounded),
     ('content', 'Conteúdo', Icons.campaign_rounded),
     ('payments', 'Pagamentos', Icons.payments_rounded),

@@ -177,7 +177,7 @@ export default function Triage() {
     setLoading(true);
     setResult(null);
     try {
-      // CAMADA 0: IA cloud via Edge Function (primária), com timeout para nunca travar a UI.
+      // CAMADA 0: IA via função cloud (primária), com timeout para nunca travar a UI.
       const invokeTriage = supabase.functions.invoke('ai-triage', {
         body: { symptoms, age: age ? Number(age) : null, duration, country: countryCode },
       });
@@ -191,7 +191,7 @@ export default function Triage() {
       if (error || !data || data.error) {
         // CAMADA FALLBACK: Gemini browser + regras locais (em src/lib/triageFallback.ts)
         logger.warn('Edge Function ai-triage falhou, usando fallback local:', error || data?.error);
-        toast.info("IA cloud indisponível — a usar modo local seguro", {
+        toast.info("Assistente IA indisponível — a usar modo local seguro", {
           icon: <Sparkles className="h-4 w-4" />,
         });
         triageData = (await triageLocalFallback(

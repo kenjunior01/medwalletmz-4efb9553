@@ -75,7 +75,7 @@ class BookingsScreen extends ConsumerWidget {
                       itemCount: list.length,
                       itemBuilder: (context, i) => _ConsultTile(
                         consultation: list[i],
-                      ).animate().fadeIn(duration: 320.ms).slideY(
+                      ).animate(delay: 55.ms).fadeIn(duration: 320.ms).slideY(
                             begin: 0.08,
                             curve: Curves.easeOutCubic,
                           ),
@@ -416,7 +416,7 @@ class _ReviewSheetState extends ConsumerState<_ReviewSheet> {
                       ),
                     );
                   }),
-                ).animate().fadeIn(duration: 250.ms),
+                ).animate(delay: 40.ms).fadeIn(duration: 250.ms),
                 const SizedBox(height: 18),
                 TextField(
                   controller: _comment,

@@ -259,8 +259,7 @@ class HealthWorkersRepository {
     if (profession != null && profession.isNotEmpty) {
       query = query.eq('profession', profession);
     }
-    final rows =
-        await query.order('rating', ascending: false).limit(50);
+    final rows = await query.order('rating', ascending: false).limit(50);
     return (rows as List)
         .map((m) => HealthWorker.fromMap(m as Map<String, dynamic>))
         .where((w) => w.fullName.isNotEmpty)

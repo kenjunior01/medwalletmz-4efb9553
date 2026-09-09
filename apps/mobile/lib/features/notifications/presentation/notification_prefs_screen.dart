@@ -88,8 +88,8 @@ class _NotificationPrefsScreenState
           bottom: false,
           child: _loading
               ? ListView(
-                  padding: EdgeInsets.all(20),
-                  children: [ListSkeleton(count: 5, itemHeight: 72)],
+                  padding: const EdgeInsets.all(20),
+                  children: const [ListSkeleton(count: 5, itemHeight: 72)],
                 )
               : ListView(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),

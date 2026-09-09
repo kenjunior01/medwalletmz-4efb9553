@@ -50,7 +50,7 @@ class WalletTransaction {
 
   factory WalletTransaction.fromJson(Map<String, dynamic> json) =>
       WalletTransaction(
-        id: json['id'] as String,
+        id: json['id'] as String? ?? '',
         type: _type(json['type'] as String?),
         amount: _toNum(json['amount']),
         balanceAfter: _toNum(json['balance_after']),

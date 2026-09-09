@@ -288,20 +288,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       localStorage.removeItem('pending_auth_next');
     }
-    // OAuth Google directo via Supabase Auth (fluxo PKCE).
-    // O Google redireciona para /auth/callback, onde o código é trocado pela sessão.
-    // Requer: provider Google activo no Supabase Auth + redirect URL registado
-    // (https://<dominio>/auth/callback) no dashboard do Supabase.
+    // OAuth nativo do Supabase: redirect para o Google e regresso à origem da
+    // app com os tokens no hash da URL, processados pelo OAuthCallbackHandler.
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: window.location.origin,
           queryParams: { prompt: 'select_account' },
         },
       });
-      if (error) return { error: error as Error };
-      // O browser está a redirecionar para o Google
+      if (error) {
+        return { error };
+      }
+      // A página está a redireccionar para o Google
       return { error: null };
     } catch (e) {
       return { error: e instanceof Error ? e : new Error(String(e)) };

@@ -198,7 +198,7 @@ class CirclesRepository {
               .select('id')
               .eq('circle_id', c.id)
               .count(CountOption.exact);
-          counts[c.id] = res.count;
+          counts[c.id] = res.count ?? 0;
         } catch (_) {
           counts[c.id] = 0;
         }
@@ -406,7 +406,7 @@ class CirclesRepository {
             q = q.gt('created_at', lastRead);
           }
           final res = await q.count(CountOption.exact);
-          final n = res.count;
+          final n = res.count ?? 0;
           if (n > 0) result[circleId] = n;
         } catch (_) {}
       }

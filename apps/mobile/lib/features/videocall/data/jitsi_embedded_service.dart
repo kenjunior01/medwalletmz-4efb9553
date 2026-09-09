@@ -1,33 +1,20 @@
-import 'package:flutter/foundation.dart';
+import 'dart:ui' show VoidCallback;
 
-/// Áudio/vídeo — consultas por link EXTERNO (meet.jit.si no browser).
+/// Videochamada — MODO EXTERNO (F18).
 ///
-/// A variante EMBUTIDA (SDK `jitsi_meet_flutter_sdk`) foi retirada do build
-/// Android: o SDK oficial carrega ~400 MB de bibliotecas nativas (todas as
-/// ABIs) e inviabilizava a compilação em ambientes com disco reduzido, para
-/// uma funcionalidade cujo fluxo primário já era o link externo.
-///
-/// Esta classe MANTÉM a mesma API do serviço antigo:
-///   • `join()` devolve sempre `false` — o chamador cai no fallback
-///     documentado: abre a sala no browser (meet.jit.si).
-///   • `hangUp()` é no-op (a sala do browser encerra sozinha quando todos
-///     saem; o ecrã de chamada já trata o regresso ao estado normal).
-///   • `onTerminated` mantém-se para compatibilidade do ecrã de chamada.
-///
-/// Reintegrar o modo embutido no futuro: voltar a adicionar
-/// `jitsi_meet_flutter_sdk` ao pubspec e restaurar `join()` com o SDK.
+/// A sala Jitsi abre no browser / app Jitsi do dispositivo
+/// (o ecrã de chamada trata `join() == false` como link externo).
+/// O SDK nativo foi removido do build: arrastava o React Native
+/// inteiro como dependência e excedia o espaço do pipeline local.
 class JitsiEmbeddedService {
   JitsiEmbeddedService._();
-
   static final JitsiEmbeddedService instance = JitsiEmbeddedService._();
 
-  /// Mantido por compatibilidade: invocado quando uma conferência embutida
-  /// termina. Sem SDK embutido, nunca é disparado (o browser é a sala).
+  /// Chamado quando a conferência termina (modo externo: null).
   VoidCallback? onTerminated;
 
-  /// Devolve:
-  ///   true  — a conferência abriu in-app;
-  ///   false — falhou/indisponível (o chamador abre o link externo).
+  /// Sem SDK nativo: devolve sempre false — o ecrã de chamada abre
+  /// automaticamente a sala por link externo (launchUrl).
   Future<bool> join({
     required String roomUrl,
     required String displayName,
@@ -36,10 +23,9 @@ class JitsiEmbeddedService {
     bool audioMuted = false,
     bool videoMuted = false,
   }) async {
-    // Sem SDK embutido nesta build — o fallback externo do chamador assume.
     return false;
   }
 
-  /// Desligar da conferência — no-op sem SDK embutido.
+  /// Modo externo: o utilizador encerra pela app Jitsi/browser.
   Future<void> hangUp() async {}
 }

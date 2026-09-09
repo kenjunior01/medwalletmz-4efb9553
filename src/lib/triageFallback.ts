@@ -9,9 +9,11 @@
  *   3. OpenRouter (gateway multi-modelo — Llama/Mistral/Gemma free)
  *   4. Motor local de regras clínicas (sempre funciona)
  *
- * NOTA sobre a 3ª camada:
- *   OpenRouter é usado como 3ª camada de IA — provedor de inferência
- *   alternativo com free tier generoso e API compatível com OpenAI.
+ * NOTA sobre gateways de inferência:
+ *   Construtores no-code não expõem
+ *   API pública de inferência. Por isso, OpenRouter foi usado como 3ª
+ *   camada de IA — cumpre o mesmo papel (provedor de inferência
+ *   alternativo com free tier generoso e API compatível com OpenAI).
  *
  * Isto garante que a triagem continua a funcionar mesmo se:
  *   - O Edge Function não estiver deployed

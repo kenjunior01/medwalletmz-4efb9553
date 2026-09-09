@@ -23,11 +23,10 @@ import {
   TrafficCone,
 } from '@/components/icons/lucide-compat';
 import { useCountry } from '@/contexts/CountryContext';
-import { logger } from '@/lib/logger';
 import {
   FacilityWithDistance, GeoPoint, RouteResult,
   computeDistances, getRoute, getCurrentLocation, getEmbedMapUrl,
-  openInExternalMaps, reverseGeocode, isMapsConfigured, fetchNearbyFacilities,
+  openInExternalMaps, reverseGeocode, isMapsConfigured, fetchRealFacilities,
 } from '@/services/mapsPremium';
 
 type FacilityTypeKey = 'hospital' | 'clinic' | 'pharmacy' | 'lab' | 'maternity';
@@ -55,7 +54,7 @@ const TRAFFIC_COLORS = {
 };
 
 export default function MapsPremium() {
-  const { t, country } = useCountry();
+  const { t } = useCountry();
   const [origin, setOrigin] = useState<GeoPoint | null>(null);
   const [originLabel, setOriginLabel] = useState<string>('');
   const [facilities, setFacilities] = useState<FacilityWithDistance[]>([]);
@@ -69,38 +68,39 @@ export default function MapsPremium() {
   const [showRoute, setShowRoute] = useState(false);
 
   const mapsConfigured = useMemo(() => isMapsConfigured(), []);
+  const [allFacilities, setAllFacilities] = useState<FacilityWithDistance[]>([]);
+
+  // Carrega as instituições reais uma única vez
+  useEffect(() => {
+    fetchRealFacilities()
+      .then(setAllFacilities)
+      .catch(() => setAllFacilities([]));
+  }, []);
 
   const detectLocation = useCallback(async () => {
     setLoading(true);
     setError(null);
+    const source = allFacilities.length > 0 ? allFacilities : await fetchRealFacilities().catch(() => []);
+    if (allFacilities.length === 0) setAllFacilities(source);
     try {
       const loc = await getCurrentLocation();
       setOrigin(loc);
       const geocoded = await reverseGeocode(loc);
       setOriginLabel(geocoded.address ?? `${loc.lat.toFixed(3)}, ${loc.lng.toFixed(3)}`);
-      // Instalações reais da base de dados (health_facilities)
-      const real = await fetchNearbyFacilities(country?.id ?? 'MZ');
-      const withDistances = await computeDistances(loc, real);
+      const withDistances = await computeDistances(loc, source);
       setFacilities(withDistances);
     } catch (e: any) {
-      logger.warn('MapsPremium: geolocalização falhou, usando centro por defeito', { error: e?.message });
-      // Fallback de LOCALIZAÇÃO (não de dados) — centro de Maputo
+      setError(e?.message ?? 'Não foi possível obter a sua localização');
+      // Fallback: centro de Maputo
       const fallback: GeoPoint = { lat: -25.9692, lng: 32.5732, label: 'Maputo' };
       setOrigin(fallback);
       setOriginLabel('Maputo (localização por defeito)');
-      try {
-        const real = await fetchNearbyFacilities(country?.id ?? 'MZ');
-        const withDistances = await computeDistances(fallback, real);
-        setFacilities(withDistances);
-      } catch (e2: any) {
-        logger.error('MapsPremium: falha ao carregar instalações', { error: e2?.message });
-        setError(e2?.message ?? 'Não foi possível carregar as unidades de saúde');
-        setFacilities([]);
-      }
+      const withDistances = await computeDistances(fallback, source);
+      setFacilities(withDistances);
     } finally {
       setLoading(false);
     }
-  }, [country?.id]);
+  }, [allFacilities]);
 
   useEffect(() => {
     detectLocation();

@@ -125,8 +125,8 @@ class ConversationsScreen extends ConsumerWidget {
                       conversations.when(
                         loading: () => ListView(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 20),
-                          children: [
+                              const EdgeInsets.symmetric(horizontal: 20),
+                          children: const [
                             ListSkeleton(count: 4, itemHeight: 84),
                           ],
                         ),
@@ -159,7 +159,7 @@ class ConversationsScreen extends ConsumerWidget {
                                 const SizedBox(height: 10),
                             itemBuilder: (context, i) => _ConversationTile(
                               conversation: list[i],
-                            ).animate().fadeIn(
+                            ).animate(delay: 45.ms).fadeIn(
                                   duration: 280.ms,
                                 ),
                           );
@@ -204,7 +204,7 @@ class ConversationsScreen extends ConsumerWidget {
                                 const SizedBox(height: 10),
                             itemBuilder: (context, i) => _ThreadTile(
                               thread: list[i],
-                            ).animate().fadeIn(
+                            ).animate(delay: 45.ms).fadeIn(
                                   duration: 280.ms,
                                 ),
                           );

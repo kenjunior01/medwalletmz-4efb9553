@@ -359,7 +359,7 @@ class _AgendaTabState extends ConsumerState<_AgendaTab> {
             for (final c in rest.take(40))
               _AgendaTile(consultation: c, busy: _busy, onAction: _act),
           ],
-        ).animate().fadeIn(duration: 300.ms);
+        ).animate(delay: 45.ms).fadeIn(duration: 300.ms);
       },
     );
   }
@@ -680,7 +680,7 @@ class _SlotsTabState extends ConsumerState<_SlotsTab> {
               _SlotTile(slot: s, busy: _busy, onDelete: _delete),
           ],
       ],
-    ).animate().fadeIn(duration: 300.ms);
+    ).animate(delay: 45.ms).fadeIn(duration: 300.ms);
   }
 
   String _dayLabel(DateTime d) {
@@ -1118,7 +1118,7 @@ class _PatientsTabState extends ConsumerState<_PatientsTab> {
                 ),
               ],
             ),
-          ).animate().fadeIn(duration: 280.ms);
+          ).animate(delay: 40.ms).fadeIn(duration: 280.ms);
         },
       ),
     );

@@ -571,16 +571,26 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
       widget.member?.relationship ?? 'parent';
   late String? _bloodType = widget.member?.bloodType;
   late String _color = widget.member?.color ?? _colors.first;
-  final _birth = TextEditingController();
-  late final _allergies = TextEditingController(
-      text: widget.member?.allergies.join(', ') ?? '');
-  late final _chronics = TextEditingController(
-      text: widget.member?.chronicConditions.join(', ') ?? '');
-  late final _meds = TextEditingController(
-      text: widget.member?.medications.join(', ') ?? '');
-  late final _emergency = TextEditingController(
-      text: widget.member?.emergencyContact ?? '');
   bool _saving = false;
+  late final TextEditingController _birth;
+  late final TextEditingController _allergies;
+  late final TextEditingController _chronics;
+  late final TextEditingController _meds;
+  late final TextEditingController _emergency;
+
+  @override
+  void initState() {
+    super.initState();
+    _birth = TextEditingController();
+    _allergies = TextEditingController(
+        text: widget.member?.allergies.join(', ') ?? '');
+    _chronics = TextEditingController(
+        text: widget.member?.chronicConditions.join(', ') ?? '');
+    _meds = TextEditingController(
+        text: widget.member?.medications.join(', ') ?? '');
+    _emergency = TextEditingController(
+        text: widget.member?.emergencyContact ?? '');
+  }
 
   @override
   void dispose() {

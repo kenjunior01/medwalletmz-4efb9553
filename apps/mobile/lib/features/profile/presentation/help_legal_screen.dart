@@ -268,7 +268,7 @@ class _FaqCard extends StatelessWidget {
           ],
         ),
       ),
-    ).animate().fadeIn(duration: 260.ms);
+    ).animate(delay: 40.ms).fadeIn(duration: 260.ms);
   }
 }
 

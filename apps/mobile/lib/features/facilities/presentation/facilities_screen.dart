@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/location/location_service.dart';
 import '../../../core/utils/geo.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../data/facility_model.dart';
@@ -36,6 +38,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
     final facilities = ref.watch(facilitiesProvider);
     final onlyMyCity = ref.watch(onlyMyCityProvider);
     final sort = ref.watch(facilitySortProvider);
+    final gpsMode = sort == FacilitySort.nearby;
 
     return Scaffold(
       body: AppBackground(
@@ -76,66 +79,6 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                 ),
               ),
               const SizedBox(height: 18),
-
-              // ── Indicador OFFLINE (exclusivo móvel) ───────────────
-              // Quando a rede falha e o catálogo serve a cópia local,
-              // o utilizador fica a saber que a pesquisa continua a
-              // funcionar sobre os últimos dados sincronizados.
-              ValueListenableBuilder<bool>(
-                valueListenable:
-                    ref.watch(facilityRepositoryProvider).servedOffline,
-                builder: (_, offline, __) => offline
-                    ? Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: AppColors.warning.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                                color:
-                                    AppColors.warning.withOpacity(0.4)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.cloud_off_rounded,
-                                  color: AppColors.warning, size: 18),
-                              const SizedBox(width: 10),
-                              const Expanded(
-                                child: Text(
-                                  'Sem internet — a pesquisar na cópia '
-                                  'guardada no telemóvel',
-                                  style: TextStyle(
-                                    color: AppColors.warning,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () => ref
-                                    .invalidate(facilitiesProvider),
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8),
-                                  minimumSize: Size.zero,
-                                ),
-                                child: const Text(
-                                  'Tentar de novo',
-                                  style: TextStyle(
-                                    color: AppColors.accent,
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
 
               // ── Interruptor "só a minha cidade" (igual à web) ────────
               Container(
@@ -203,6 +146,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                       label: f.label,
                       selected: ref.watch(facilityFilterProvider) == f,
                       onTap: () {
+                        HapticFeedback.selectionClick();
                         ref.read(facilityFilterProvider.notifier).state = f;
                         ref.invalidate(facilitiesProvider);
                       },
@@ -229,6 +173,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                           label: s.$2,
                           selected: sort == s.$1,
                           onTap: () {
+                            HapticFeedback.selectionClick();
                             ref.read(facilitySortProvider.notifier).state = s.$1;
                             ref.invalidate(facilitiesProvider);
                           },
@@ -238,6 +183,17 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                 ),
               ),
               const SizedBox(height: 18),
+
+              // ── Banner GPS exclusivo móvel (ordenar por proximidade real) ──
+              if (gpsMode) ...[
+                _GpsBanner(onRefresh: () {
+                  HapticFeedback.lightImpact();
+                  LocationService.instance
+                      .getCurrentPosition(forceRefresh: true);
+                  ref.invalidate(facilitiesProvider);
+                }),
+                const SizedBox(height: 12),
+              ],
 
               // ── Lista ───────────────────────────────────────────────
               facilities.when(
@@ -274,7 +230,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                         ),
                     ],
                   )
-                      .animate()
+                      .animate(delay: 45.ms)
                       .fadeIn(duration: 300.ms)
                       .slideY(begin: 0.07, curve: Curves.easeOutCubic);
                 },
@@ -282,6 +238,100 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ── Banner GPS ───────────────────────────────────────────────────────
+
+/// Estados do GPS quando a ordenação é "Mais próximas":
+///  - a obter posição → barra de progresso;
+///  - permissão negada / GPS off → aviso com acção;
+///  - posição OK → confirmação discreta com a precisão aproximada.
+class _GpsBanner extends ConsumerWidget {
+  const _GpsBanner({required this.onRefresh});
+
+  final VoidCallback onRefresh;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pos = ref.watch(devicePositionProvider);
+
+    return pos.when(
+      loading: () => _shell(
+        const SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent),
+        ),
+        'A obter a tua localização para ordenar por proximidade real…',
+      ),
+      error: (_, __) => _shell(
+        const Icon(Icons.error_outline_rounded, size: 18, color: AppColors.warning),
+        'Não foi possível usar o GPS — as distâncias ficam aproximadas.',
+      ),
+      data: (p) {
+        if (p == null) {
+          return _shell(
+            const Icon(Icons.location_off_rounded, size: 18, color: AppColors.warning),
+            'Localização indisponível — activa o GPS ou concede permissão '
+                'nas definições para veres as distâncias reais.',
+            actionLabel: 'Tentar novamente',
+            onAction: onRefresh,
+          );
+        }
+        final acc = p.accuracyM == null
+            ? ''
+            : ' · precisão ~${p.accuracyM!.round()} m';
+        return _shell(
+          const Icon(Icons.my_location_rounded, size: 17, color: Color(0xFF34D399)),
+          'A ordenar pela tua posição GPS$acc',
+        );
+      },
+    );
+  }
+
+  Widget _shell(
+    Widget leading,
+    String message, {
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.glassFill,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.glassBorder),
+      ),
+      child: Row(
+        children: [
+          leading,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+                height: 1.35,
+              ),
+            ),
+          ),
+          if (actionLabel != null && onAction != null)
+            GestureDetector(
+              onTap: onAction,
+              child: Text(
+                actionLabel,
+                style: const TextStyle(
+                  color: AppColors.accent,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

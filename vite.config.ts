@@ -4,9 +4,8 @@ import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode }) => {
-  // Variáveis canónicas SUPABASE_* do deployment são mapeadas para os nomes
-  // VITE_* esperados pelo cliente do browser. Fallbacks garantem que o build
-  // publicado nunca fica sem credenciais públicas (anon key — pública por design).
+  // Map canonical SUPABASE_* variables to the VITE_* names expected by the browser client.
+  // Fallbacks garantem que o build publicado nunca fica sem credenciais públicas.
   const FALLBACK_URL = "https://pfqruzusjjxyidhqkiob.supabase.co";
   const FALLBACK_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcXJ1enVzamp4eWlkaHFraW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NTYwODMsImV4cCI6MjA5NzMzMjA4M30.zPcOEd5AKFg5KHa3xdhJPBFOphkWpf-huTvWh_V_f50";
   const FALLBACK_PROJECT_ID = "pfqruzusjjxyidhqkiob";
@@ -20,7 +19,14 @@ export default defineConfig(({ mode }) => {
   define['import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY'] = JSON.stringify(supabasePublishableKey);
   define['import.meta.env.VITE_SUPABASE_PROJECT_ID'] = JSON.stringify(supabaseProjectId);
 
-
+  // Google Maps: aceita a variável canónica e, para compatibilidade com deploys
+  // antigos, cai para a variável legada caso a nova não esteja definida.
+  const mapsKey = process.env.VITE_GOOGLE_MAPS_API_KEY
+    ?? process.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY
+    ?? "";
+  define['import.meta.env.VITE_GOOGLE_MAPS_API_KEY'] = JSON.stringify(mapsKey);
+  const mapsChannel = process.env.VITE_GOOGLE_MAPS_CHANNEL ?? "";
+  define['import.meta.env.VITE_GOOGLE_MAPS_CHANNEL'] = JSON.stringify(mapsChannel);
 
   return {
   define,
@@ -40,7 +46,6 @@ export default defineConfig(({ mode }) => {
     },
     dedupe: ["react", "react-dom"],
   },
-  // Desativar esbuild para minificação e usar o padrão interno do Vite de forma conservadora
   build: {
     target: 'es2020',
     minify: 'esbuild',
@@ -52,18 +57,9 @@ export default defineConfig(({ mode }) => {
     },
     rollupOptions: {
       // firebase is NOT installed — dynamic imports are try/catch in FcmService.ts.
-      // external makes Rollup leave the bare specifier; the browser rejects it at
-      // runtime and the catch block degrades gracefully.
-      // Dev mode is handled by /* @vite-ignore */ in the source.
       external: ['firebase/app', 'firebase/messaging'],
       output: {
-        // Chunks estratégicos para melhor cache do browser:
-        // - vendor-react: React, ReactDOM, Router (muda raramente)
-        // - vendor-supabase: Supabase client (muda raramente)
-        // - vendor-ui: shadcn/ui + Radix + Tailwind (muda raramente)
-        // - vendor-maps: Google Maps + tracking (grande, lazy)
-        // Isto faz com que o utilizador só re-download do vendor-*
-        // quando há update de dependências, não a cada deploy.
+        // Chunks estratégicos para melhor cache do browser
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
           'vendor-supabase': ['@supabase/supabase-js'],
@@ -92,7 +88,6 @@ export default defineConfig(({ mode }) => {
             '@radix-ui/react-collapsible',
             '@radix-ui/react-avatar',
           ],
-            // Heavy libs that should only load in their specific pages
           'vendor-charts': ['recharts'],
           'vendor-pdf': ['jspdf'],
           'vendor-video': ['@daily-co/daily-js'],
@@ -155,6 +150,6 @@ export default defineConfig(({ mode }) => {
         enabled: false,
       },
     }),
-  ].filter(Boolean),
+  ],
   };
 });

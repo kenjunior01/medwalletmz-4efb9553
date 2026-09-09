@@ -179,7 +179,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
                 color: Colors.white.withOpacity(0.4), fontSize: 11.5),
           ),
         ]
-            .animate()
+            .animate(delay: 45.ms)
             .fadeIn(duration: 320.ms)
             .slideY(begin: 0.12, curve: Curves.easeOutCubic),
       );

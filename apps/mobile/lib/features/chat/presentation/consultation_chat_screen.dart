@@ -417,7 +417,7 @@ class _ConsultationChatScreenState
             for (final q in quick)
               _QuickChip(label: q, onTap: () => _send(body: q)),
           ],
-        ).animate().fadeIn(duration: 260.ms),
+        ).animate(delay: 40.ms).fadeIn(duration: 260.ms),
       ],
     );
   }

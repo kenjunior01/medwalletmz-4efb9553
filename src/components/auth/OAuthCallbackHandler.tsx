@@ -19,16 +19,13 @@ const consumePendingNextPath = () => {
 /**
  * OAuthCallbackHandler
  *
- * Processa tokens OAuth que chegam no URL (fluxo implicit) — utilizado como
- * rede de segurança para clientes antigos (PWA em cache) que aterram na raiz
- * da app com tokens no hash.
+ * Processa o regresso do OAuth nativo do Supabase (Google).
  *
  * Fluxo:
- *  1. App chama supabase.auth.signInWithOAuth('google')
- *  2. Supabase redireciona para o Google
- *  3. Google autentica → callback do Supabase → redirect para /auth/callback
- *     (fluxo PKCE, tratado por AuthCallback.tsx)
- *  4. Clientes antigos podem aterrar com tokens no HASH da URL:
+ *  1. App chama supabase.auth.signInWithOAuth({provider:'google', redirectTo: origin})
+ *  2. Supabase redirecciona para o Google
+ *  3. Google autentica → callback do Supabase troca os tokens
+ *  4. Supabase redirecciona para a app com tokens no HASH da URL:
  *       https://medwalletmz.online/#access_token=...&refresh_token=...&expires_in=3600
  *     OU com erro:
  *       https://medwalletmz.online/#error=...&error_description=...
@@ -104,8 +101,6 @@ export function OAuthCallbackHandler({ children }: { children: React.ReactNode }
         'unsupported_response_type': 'Tipo de resposta não suportado. Contacta o suporte.',
         'invalid_grant': 'A autorização expirou ou foi revogada. Tenta novamente.',
         'legacy_flow': 'Este fluxo não é suportado em modo preview. Abre a app num novo separador.',
-        'validation_failed': 'Não foi possível validar o login Google. Tenta novamente.',
-        'unclaimed_user': 'Conta não encontrada. Regista-te primeiro ou usa e-mail/password.',
       };
 
       const friendly = friendlyMessages[errorCode] || errorDesc;

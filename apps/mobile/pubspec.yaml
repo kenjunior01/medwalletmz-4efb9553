@@ -1,7 +1,7 @@
 name: medwallet
 description: "MedWallet MZ — Carteira digital de saúde de Moçambique. Consultas, farmácia, transportes e pagamentos M-Pesa numa só app."
 publish_to: "none"
-version: 0.6.0+6
+version: 0.6.0+18
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
@@ -49,11 +49,10 @@ dependencies:
   flutter_local_notifications: ^17.2.2
   timezone: ^0.9.4
 
-  # F8 — SDK Jitsi EMBUTIDO: áudio/vídeo dentro da app (sem browser).
-  # Requer: Android minSdkVersion ≥ 26 · iOS plataforma ≥ 15.
-  # O ecrã de chamada faz fallback automático para o link externo
-  # se o SDK falhar no dispositivo.
-  # jitsi_meet_flutter_sdk removido (17-a): ~400MB libs nativas; videochamada por link externo
+  # F8→F18 — a videochamada Jitsi abre por LINK EXTERNO (browser/app
+  # Jitsi). O SDK nativo foi removido: trazia o React Native inteiro
+  # como dependência (~500 MB no build) e não cabe no pipeline local;
+  # a experiência de chamada mantém-se igual pela sala externa.
 
   # F8 — cache OFFLINE (sqflite local, sem codegen): laboratórios e
   # medicação continuam visíveis sem internet (stale-while-revalidate).
@@ -76,24 +75,22 @@ dependencies:
 
   # F11 — gravação de áudio do Diário de Voz (m4a/AAC-LC).
   # Requer RECORD_AUDIO (Android) e NSMicrophoneUsageDescription (iOS).
-  record: ^5.1.2
+  record: ^7.1.1  # F18: 5.x quebra no kernel AOT (record_linux/platform_interface) — 7.x corrige
 
   # F11 — directório temporário para os ficheiros de gravação.
   path_provider: ^2.1.4
 
-  # F12 — Bloqueio biométrico da app (impressão digital / FaceID /
-  # PIN do dispositivo). EXCLUSIVO MÓVEL: a web não tem este nível de
-  # segurança nativa. Requer FlutterFragmentActivity + USE_BIOMETRIC.
+  # F18 — bloqueio da app por biometria/PIN (exclusivo móvel, opt-in).
   local_auth: ^2.3.0
 
-  # F12 — Scanner de QR em tempo real (receitas impressas, cartões
-  # MedWallet). EXCLUSIVO MÓVEL: usa a câmara nativa via CameraX.
-  mobile_scanner: ^5.2.3
+  # F18 — preferências locais do bloqueio de segurança (flag leve).
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+
 
 flutter:
   uses-material-design: true

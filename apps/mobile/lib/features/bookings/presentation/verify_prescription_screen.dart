@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/theme/app_background.dart';
@@ -84,7 +83,6 @@ class _VerifyPrescriptionScreenState
   PrescriptionCheck? _result;
   bool _loading = false;
   String? _error;
-  bool _scanning = false;
 
   @override
   void dispose() {
@@ -170,38 +168,6 @@ class _VerifyPrescriptionScreenState
                         prefixIcon: Icon(Icons.badge_rounded),
                       ),
                       onSubmitted: (_) => _verify(),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Scanner em tempo real (exclusivo móvel): lê o QR
-                    // impresso na receita ou mostrado noutro ecrã.
-                    OutlinedButton.icon(
-                      onPressed: _loading ? null : _scanQr,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.accent,
-                        side: BorderSide(
-                            color: AppColors.accent.withOpacity(0.45)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      icon: _scanning
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: AppColors.accent),
-                            )
-                          : const Icon(Icons.qr_code_scanner_rounded,
-                              size: 20),
-                      label: const Text(
-                        'Escanear QR da receita',
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 14),
                     GradientButton(
@@ -352,30 +318,6 @@ class _VerifyPrescriptionScreenState
           ],
         ),
       );
-
-  /// Abre o scanner em tempo real e preenche o código automaticamente.
-  /// Aceita payloads que contenham um código MW-… em qualquer texto
-  /// (ex.: link partilhado) ou o código cru.
-  Future<void> _scanQr() async {
-    if (_loading) return;
-    setState(() => _scanning = true);
-    try {
-      final raw = await context.push('/scan-qr');
-      if (raw is! String || raw.trim().isEmpty) return;
-      final match =
-          RegExp(r'MW-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}').firstMatch(raw);
-      final code = (match?.group(0) ?? raw).trim().toUpperCase();
-      if (!mounted) return;
-      setState(() {
-        _codeCtrl.text = code;
-        _result = null;
-        _error = null;
-      });
-      await _verify();
-    } finally {
-      if (mounted) setState(() => _scanning = false);
-    }
-  }
 
   Future<void> _verify() async {
     final code = _codeCtrl.text.trim().toUpperCase();

@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'delivery_models.dart';
+import '../../auth/presentation/auth_controller.dart';
 
 class DeliveryRepository {
   DeliveryRepository(this._client);
@@ -222,5 +223,5 @@ class DeliveryRepository {
 }
 
 final deliveryRepositoryProvider = Provider<DeliveryRepository>(
-  (ref) => DeliveryRepository(Supabase.instance.client),
+  (ref) => DeliveryRepository(ref.watch(supabaseClientProvider)),
 );

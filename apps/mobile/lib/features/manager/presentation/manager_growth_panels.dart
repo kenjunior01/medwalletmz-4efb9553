@@ -204,7 +204,7 @@ class _KpisPanelState extends ConsumerState<KpisPanel> {
           const ListSkeleton(count: 3, itemHeight: 90)
         else if (rows.isEmpty)
           const EmptyState(
-            icon: Icons.query_stats_rounded,
+            icon: Icons.insights_rounded,
             title: 'Sem KPIs',
             message:
                 'Ainda não há indicadores registados para este país. '
@@ -1119,9 +1119,7 @@ class _ContentCard extends StatelessWidget {
   Color? get _accent {
     final hex = (c.accentColor ?? '').replaceAll('#', '');
     if (hex.length != 6) return null;
-    final value = int.tryParse('FF$hex', radix: 16);
-    if (value == null) return null;
-    return Color(value);
+    return Color(int.tryParse('FF$hex', radix: 16) ?? 0xFF888888);
   }
 
   @override

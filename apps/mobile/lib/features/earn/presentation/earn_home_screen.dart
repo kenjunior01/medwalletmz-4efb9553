@@ -449,7 +449,7 @@ class _ProposalCard extends StatelessWidget {
         ],
       ),
     )
-        .animate()
+        .animate(delay: 45.ms)
         .fadeIn(duration: 260.ms)
         .slideY(begin: 0.07, curve: Curves.easeOutCubic);
   }

@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 20),
                       _registerLink(),
                     ]
-                        .animate() // stagger
+                        .animate(delay: 55.ms) // stagger
                         .fadeIn(duration: 380.ms)
                         .slideY(
                           begin: 0.25,

@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/ai/gemini_client.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/ai/gemini_client.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../data/vision_repository.dart';

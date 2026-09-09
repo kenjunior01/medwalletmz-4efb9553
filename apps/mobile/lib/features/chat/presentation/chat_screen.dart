@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -287,7 +288,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       itemBuilder: (context, i) => _MessageBubble(
                         message: list[i],
                         facilityColor: facility.typeColor,
-                        staffMode: target.staffMode,
+                        target: target,
                       ),
                     );
                   },
@@ -377,7 +378,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ])
               _QuickChip(label: q, onTap: () => _send(body: q)),
           ],
-        ).animate().fadeIn(duration: 260.ms),
+        ).animate(delay: 40.ms).fadeIn(duration: 260.ms),
       ],
     );
   }
@@ -401,19 +402,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 // ── Bolha de mensagem ───────────────────────────────────────────────────
 
 class _MessageBubble extends ConsumerWidget {
-  const _MessageBubble({
-    required this.message,
-    required this.facilityColor,
-    required this.staffMode,
-  });
+  const _MessageBubble({required this.message, required this.facilityColor, required this.target});
 
   final FacilityMessage message;
   final Color facilityColor;
-  final bool staffMode;
+  final ChatTarget target;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mine = message.isMineFor(staffMode);
+    final mine = message.isMineFor(target.staffMode);
     final align = mine ? Alignment.centerRight : Alignment.centerLeft;
 
     return Align(

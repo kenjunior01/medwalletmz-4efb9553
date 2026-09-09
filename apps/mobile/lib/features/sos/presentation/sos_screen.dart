@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
@@ -56,7 +53,6 @@ class _SosScreenState extends ConsumerState<SosScreen>
 
   Future<void> _activate() async {
     if (_activating) return;
-    HapticFeedback.heavyImpact();
     setState(() => _activating = true);
     try {
       final id = await ref.read(sosRepositoryProvider).activate(
@@ -238,11 +234,9 @@ class _SosScreenState extends ConsumerState<SosScreen>
                 _ActiveAlertCard(
                   alert: activeAlert,
                   onCancel: () async {
-                    final alert = activeAlert;
-                    if (alert == null) return;
-                    await ref
-                        .read(sosRepositoryProvider)
-                        .cancel(alert.id);
+                    final id = activeAlert?.id;
+                    if (id == null) return;
+                    await ref.read(sosRepositoryProvider).cancel(id);
                   },
                 )
               else
@@ -324,15 +318,6 @@ class _SosScreenState extends ConsumerState<SosScreen>
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              // ── SMS de emergência (exclusivo móvel — funciona SEM internet) ──
-              _SmsEmergencyCard(
-                bloodType: _bloodType,
-                conditions: _conditionsCtrl.text,
-                allergies: _allergiesCtrl.text,
-                contacts: contacts.value ?? const [],
               ),
               const SizedBox(height: 16),
 
@@ -708,243 +693,5 @@ class _SectionCard extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-/// ── SMS de emergência (EXCLUSIVO MÓVEL) ─────────────────────────────
-///
-/// Rede móvel sem dados continua a transportar SMS — em Moçambique é a
-/// forma mais fiável de pedir socorro quando a internet cai. Este cartão
-/// abre a app de mensagens com o resumo médico já escrito (grupo
-/// sanguíneo, condições, alergias) e a localização GPS como link do
-/// Google Maps, dirigido aos contactos de emergência guardados e aos
-/// números oficiais (117 · 119 · 198).
-class _SmsEmergencyCard extends StatelessWidget {
-  const _SmsEmergencyCard({
-    required this.bloodType,
-    required this.conditions,
-    required this.allergies,
-    required this.contacts,
-  });
-
-  final String? bloodType;
-  final String conditions;
-  final String allergies;
-  final List<EmergencyContact> contacts;
-
-  static const _officialNumbers = <(String, String, IconData)>[
-    ('117', 'Ambulância', Icons.local_hospital_rounded),
-    ('119', 'Polícia', Icons.local_police_rounded),
-    ('198', 'Bombeiros', Icons.fire_truck_rounded),
-  ];
-
-  Future<String?> _positionLink() async {
-    try {
-      final permission = await Geolocator.checkPermission();
-      var granted = permission == LocationPermission.whileInUse ||
-          permission == LocationPermission.always;
-      if (!granted) {
-        final asked = await Geolocator.requestPermission();
-        granted = asked == LocationPermission.whileInUse ||
-            asked == LocationPermission.always;
-      }
-      if (!granted) return null;
-      final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
-      ).timeout(const Duration(seconds: 8));
-      return 'https://maps.google.com/?q='
-          '${pos.latitude.toStringAsFixed(6)},${pos.longitude.toStringAsFixed(6)}';
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<String> _buildBody() async {
-    final b = StringBuffer('EMERGENCIA MEDICA! Preciso de ajuda urgente.');
-    if (bloodType != null && bloodType!.isNotEmpty) {
-      b.write(' Grupo sanguineo: $bloodType.');
-    }
-    final cond = conditions.trim();
-    if (cond.isNotEmpty) b.write(' Condicoes: $cond.');
-    final alg = allergies.trim();
-    if (alg.isNotEmpty) b.write(' Alergias: $alg.');
-    final link = await _positionLink();
-    if (link != null) b.write(' Localizacao: $link');
-    return b.toString();
-  }
-
-  Future<void> _send(String phone) async {
-    final body = await _buildBody();
-    final clean = phone.replaceAll(RegExp(r'[^\d+]'), '');
-    if (clean.isEmpty) return;
-    final uri = Uri(
-      scheme: 'sms',
-      path: clean,
-      queryParameters: {'body': body},
-    );
-    try {
-      await launchUrl(uri);
-    } catch (_) {}
-  }
-
-  Future<void> _sendToAll() async {
-    for (final c in contacts) {
-      if (c.phone.trim().isNotEmpty) await _send(c.phone);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppColors.glassFill,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.warning.withOpacity(0.35)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.warning.withOpacity(0.15),
-                  border:
-                      Border.all(color: AppColors.warning.withOpacity(0.4)),
-                ),
-                child: const Icon(Icons.sms_failed_rounded,
-                    color: AppColors.warning, size: 20),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'SMS de emergência',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                  border:
-                      Border.all(color: AppColors.success.withOpacity(0.4)),
-                ),
-                child: const Text(
-                  'SEM INTERNET',
-                  style: TextStyle(
-                    color: AppColors.success,
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Abre a app de mensagens com o teu resumo médico e a '
-            'localização GPS já escritos — só precisa de rede móvel, '
-            'nem dados nem Wi-Fi.',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
-              fontSize: 12,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 14),
-          if (contacts.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: GestureDetector(
-                onTap: () {
-                  HapticFeedback.mediumImpact();
-                  _sendToAll();
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 13),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                        colors: AppColors.buttonGradient),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.forward_to_inbox_rounded,
-                          color: Colors.white, size: 18),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Enviar SMS aos meus contactos (${contacts.length})',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          Row(
-            children: [
-              for (final (num, label, icon) in _officialNumbers) ...[
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      _send(num);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.glassFill,
-                        borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: AppColors.glassBorder),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(icon, color: AppColors.accent, size: 20),
-                          const SizedBox(height: 4),
-                          Text(
-                            num,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          Text(
-                            label,
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.45),
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                if (num != '198') const SizedBox(width: 8),
-              ],
-            ],
-          ),
-        ],
-      ),
-    ).animate().fadeIn(duration: 320.ms);
   }
 }

@@ -71,8 +71,8 @@ class PrescriptionsScreen extends ConsumerWidget {
               Expanded(
                 child: prescriptions.when(
                   loading: () => ListView(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    children: [ListSkeleton(count: 4, itemHeight: 92)],
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    children: const [ListSkeleton(count: 4, itemHeight: 92)],
                   ),
                   error: (e, _) => EmptyState(
                     icon: Icons.wifi_off_rounded,
@@ -290,28 +290,30 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
             ),
           ),
           if (_expanded)
-            items == null
-                ? const Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: AppColors.accent),
-                    ),
-                  )
-                : items.isEmpty
-                    ? const Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Text(
-                          'Sem medicamentos registados.',
-                          style: TextStyle(
-                              color: AppColors.textMuted, fontSize: 12),
-                        ),
-                      )
-                    : Column(
-                        children: items.map((item) => _ItemRow(item: item)).toList(),
+            ...((items == null
+                ? [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: AppColors.accent),
                       ),
+                    )
+                  ]
+                : !items.isEmpty
+                    ? items.map((item) => _ItemRow(item: item)).toList()
+                    : [
+                        const Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Text(
+                            'Sem medicamentos registados.',
+                            style: TextStyle(
+                                color: AppColors.textMuted, fontSize: 12),
+                          ),
+                        )
+                      ])),
         ],
       ),
     )

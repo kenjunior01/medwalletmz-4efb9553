@@ -300,48 +300,85 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '');
 }
 
-/* ---------- Instalações de saúde reais (health_facilities) ---------- */
+/* ---------- Dados reais de instituições (Supabase) ---------- */
 
 /**
- * Carrega instalações de saúde reais da tabela health_facilities.
- * Devolve apenas unidades com coordenadas (lat/lng no JSONB address),
- * porque a lista ordena por distância real ao utilizador.
+ * Carrega instituições de saúde REAIS (com coordenadas) das tabelas
+ * clinics / stores / laboratories da base Supabase da plataforma.
  */
-export async function fetchNearbyFacilities(countryCode: string, limit = 60): Promise<FacilityWithDistance[]> {
-  const { data, error } = await (supabase as any)
-    .from('health_facilities')
-    .select('id, name, type, status, rating, address, contact')
-    .eq('country_id', countryCode)
-    .limit(limit);
-  if (error) throw new Error(error.message);
-
-  const rows = (data ?? []) as Array<{
-    id: string; name: string; type: string; status?: string;
-    rating: number | null; address: Record<string, any> | null; contact: Record<string, any> | null;
-  }>;
-
-  const KNOWN_TYPES = ['hospital', 'clinic', 'pharmacy', 'lab', 'maternity'];
+export async function fetchRealFacilities(): Promise<FacilityWithDistance[]> {
   const facilities: FacilityWithDistance[] = [];
 
-  for (const row of rows) {
-    const lat = Number(row.address?.lat ?? row.address?.latitude);
-    const lng = Number(row.address?.lng ?? row.address?.longitude);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+  try {
+    const { data: clinics, error } = await supabase
+      .from('clinics')
+      .select('id,name,type,address,latitude,longitude,phone,avg_rating')
+      .eq('is_active', true)
+      .not('latitude', 'is', null)
+      .limit(600);
+    if (!error && clinics) {
+      for (const c of clinics) {
+        facilities.push({
+          id: `c-${c.id}`,
+          name: c.name,
+          type: c.type === 'hospital' ? 'hospital' : 'clinic',
+          address: c.address ?? undefined,
+          geo: { lat: Number(c.latitude), lng: Number(c.longitude) },
+          phone: c.phone ?? undefined,
+          rating: c.avg_rating != null ? Number(c.avg_rating) : undefined,
+        });
+      }
+    }
+  } catch (e) {
+    logger.warn('fetchRealFacilities: clinics indisponível', { error: e });
+  }
 
-    const addressLine = [row.address?.street, row.address?.city]
-      .filter(Boolean).join(', ');
+  try {
+    const { data: stores } = await supabase
+      .from('stores')
+      .select('id,name,address,latitude,longitude,phone,rating')
+      .eq('type', 'pharmacy')
+      .eq('is_active', true)
+      .not('latitude', 'is', null)
+      .limit(300);
+    if (stores) {
+      for (const s of stores) {
+        facilities.push({
+          id: `s-${s.id}`,
+          name: s.name,
+          type: 'pharmacy',
+          address: s.address ?? undefined,
+          geo: { lat: Number(s.latitude), lng: Number(s.longitude) },
+          phone: s.phone ?? undefined,
+          rating: s.rating != null ? Number(s.rating) : undefined,
+        });
+      }
+    }
+  } catch (e) {
+    logger.warn('fetchRealFacilities: farmácias indisponível', { error: e });
+  }
 
-    facilities.push({
-      id: row.id,
-      name: row.name,
-      type: (KNOWN_TYPES.includes(row.type) ? row.type : 'clinic') as FacilityWithDistance['type'],
-      address: addressLine || undefined,
-      geo: { lat, lng, label: row.name },
-      phone: row.contact?.phone ?? row.contact?.telephone ?? undefined,
-      opening_hours: row.contact?.opening_hours ?? undefined,
-      is_24h: Boolean(row.address?.is_24h ?? row.contact?.is_24h),
-      rating: row.rating ?? undefined,
-    });
+  try {
+    const { data: labs } = await supabase
+      .from('laboratories')
+      .select('id,name,address,latitude,longitude,phone')
+      .eq('is_active', true)
+      .not('latitude', 'is', null)
+      .limit(100);
+    if (labs) {
+      for (const l of labs) {
+        facilities.push({
+          id: `l-${l.id}`,
+          name: l.name,
+          type: 'lab',
+          address: l.address ?? undefined,
+          geo: { lat: Number(l.latitude), lng: Number(l.longitude) },
+          phone: l.phone ?? undefined,
+        });
+      }
+    }
+  } catch (e) {
+    logger.warn('fetchRealFacilities: laboratórios indisponível', { error: e });
   }
 
   return facilities;

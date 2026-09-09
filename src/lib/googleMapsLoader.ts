@@ -1,7 +1,7 @@
 let loadPromise: Promise<any> | null = null;
 
 const KEY = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY) as string | undefined;
-const CHANNEL = import.meta.env.VITE_GOOGLE_MAPS_TRACKING_ID as string | undefined;
+const CHANNEL = import.meta.env.VITE_GOOGLE_MAPS_CHANNEL as string | undefined;
 
 /** Load Google Maps JS API once (async, with callback), returns the `google` global. */
 export function loadGoogleMaps(): Promise<any> {

@@ -104,7 +104,6 @@ const MapsPremium = lazy(() => import("./pages/health/MapsPremium"));
 const SupportCircles = lazy(() => import("./pages/health/SupportCircles"));
 const HealthRidersNetwork = lazy(() => import("./pages/health/HealthRidersNetwork"));
 const PatientDeliveries = lazy(() => import("./pages/health/PatientDeliveries"));
-const AuthCallback = lazy(() => import("./pages/auth/AuthCallback"));
 const HealthWorkerMarketplace = lazy(() => import("./pages/health/HealthWorkerMarketplace"));
 const HealthWorkerProfile = lazy(() => import("./pages/health/HealthWorkerProfile"));
 const HealthPlans = lazy(() => import("./pages/health/HealthPlans"));
@@ -582,9 +581,6 @@ const App = () => {
                   {/* Lab Routes — protegido ao nível da rota */}
                   <Route path="/lab/register" element={<RegistrationWizard />} />
                   <Route path="/lab/dashboard" element={<ProtectedRoute allowedRoles={['lab']}><LabDashboard /></ProtectedRoute>} />
-
-                  {/* Callback OAuth — destino do redirect do Supabase Auth (fluxo PKCE) */}
-                  <Route path="/auth/callback" element={<AuthCallback />} />
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>

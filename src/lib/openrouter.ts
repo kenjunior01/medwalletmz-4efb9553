@@ -4,9 +4,12 @@
  * OpenRouter é um gateway multi-modelo (OpenAI, Anthropic, Meta, Mistral,
  * Google, etc.) com free tier generoso e API compatível com OpenAI.
  *
- * Papel no produto:
- *  - 3ª camada de IA da cadeia de fallback da triagem, cobrindo o papel de
- *    provedor de inferência alternativo caso Gemini e Groq falhem.
+ * IMPORTANTE — gateway de inferência:
+ *  - Plataformas no-code de IA oferecem gateways de inferência,
+ *    NÃO oferece API pública de inferência (chat/completions).
+ *  - Por isso, OpenRouter é usado como 3ª camada de IA no lugar de
+ *    o gateway cumpre o mesmo papel: um provedor de inferência
+ *    alternativo caso Gemini e Groq falhem.
  *
  * Modelos recomendados (Free Tier, set 2025):
  *   - meta-llama/llama-3.3-70b-instruct:free

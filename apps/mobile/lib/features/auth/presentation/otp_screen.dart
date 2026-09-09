@@ -149,7 +149,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ],
               ]
-                  .animate()
+                  .animate(delay: 50.ms)
                   .fadeIn(duration: 350.ms)
                   .slideY(begin: 0.15, curve: Curves.easeOutCubic),
             ),
