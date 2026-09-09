@@ -116,7 +116,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
             MobileScanner(
               controller: _controller!,
               onDetect: _onDetect,
-              errorBuilder: (context, error, __) => _ScanError(
+              errorBuilder: (context, error) => _ScanError(
                 message: 'Câmara indisponível. ${error.errorCode.name}',
                 onRetry: _start,
               ),

@@ -33,9 +33,11 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Assinado com a chave debug (instalável para testes internos).
             signingConfig = signingConfigs.getByName("debug")
+            // Sem extração de símbolos nativos (só para Play Store; evita
+            // llvm-objcopy do NDK no ambiente de build).
+            ndk { debugSymbolLevel = "NONE" }
         }
     }
 

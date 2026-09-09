@@ -75,6 +75,9 @@ dependencies:
 
   # F11 — gravação de áudio do Diário de Voz (m4a/AAC-LC).
   # Requer RECORD_AUDIO (Android) e NSMicrophoneUsageDescription (iOS).
+  # F18 — scanner de QR em tempo real (receitas impressas, rota /scan-qr).
+  mobile_scanner: ^7.0.1
+
   record: ^7.1.1  # F18: 5.x quebra no kernel AOT (record_linux/platform_interface) — 7.x corrige
 
   # F11 — directório temporário para os ficheiros de gravação.
@@ -85,6 +88,11 @@ dependencies:
 
   # F18 — preferências locais do bloqueio de segurança (flag leve).
   shared_preferences: ^2.3.2
+
+dependency_overrides:
+  # path_provider_android 2.3.1 → jni/jni_flutter (build cmake que exige
+  # NDK completo). A 2.2.x usa platform channels puros — mesma API.
+  path_provider_android: 2.2.17
 
 dev_dependencies:
   flutter_test:
