@@ -16,6 +16,13 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
+    externalNativeBuild {
+        cmake {
+            path = file("src/native/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "mz.medwallet"
@@ -29,6 +36,14 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    packaging {
+        jniLibs {
+            // Sem NDK real no ambiente de build: mantém símbolos (sem strip);
+            // os .so dos plugins vêm já compilados dos AARs do Maven.
+            keepDebugSymbols.add("**/*.so")
+        }
     }
 
     buildTypes {
