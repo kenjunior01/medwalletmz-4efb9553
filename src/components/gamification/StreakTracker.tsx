@@ -88,7 +88,7 @@ export default function StreakTracker() {
             {streak}
           </motion.span>
           <span className="text-[10px]" style={{ color: theme.colors.textMuted }}>
-            {t('gamification.streak_days')}
+            {t('gamification.streak_days', { days: String(streak) })}
           </span>
         </div>
       </div>

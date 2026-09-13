@@ -1,1 +1,0 @@
-export { HealthChallenges } from './HealthChallenges';

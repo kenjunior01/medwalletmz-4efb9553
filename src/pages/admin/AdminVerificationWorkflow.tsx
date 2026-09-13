@@ -11,7 +11,6 @@
  *   - Pending count
  *   - Approved today
  *   - Rejected today
- *   - Average review time (mock for now)
  */
 
 import { useState, useEffect, useCallback } from 'react';

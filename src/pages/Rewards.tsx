@@ -2,13 +2,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Coins, Trophy, Flame, Star, Gift, Users, ChevronRight, Lock, Target } from "@/components/icons/lucide-compat";
+import { ArrowLeft, Coins, Trophy, Flame, Star, Gift, Lock, Target } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { WeeklyLeaderboard } from "@/components/gamification/WeeklyLeaderboard";
 import { WeeklyChallenges } from "@/components/gamification/WeeklyChallenges";
+import StreakTracker from "@/components/gamification/StreakTracker";
 
 export default function Rewards() {
   const { user } = useAuth();
@@ -187,7 +188,8 @@ export default function Rewards() {
             <TabsTrigger value="history" className="text-xs">Histórico</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="challenges">
+          <TabsContent value="challenges" className="space-y-4">
+            <StreakTracker />
             <WeeklyChallenges />
           </TabsContent>
 
@@ -260,25 +262,6 @@ export default function Rewards() {
                 </span>
               </div>
             ))}
-          </TabsContent>
-
-          <TabsContent value="referral">
-            <div className="text-center py-6">
-              <div className="w-20 h-20 rounded-full gradient-gold mx-auto flex items-center justify-center mb-4">
-                <Users className="h-11 w-11 text-white" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">Indique Amigos</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Ganhe 100 Pulse por cada amigo que fizer o primeiro pedido!
-              </p>
-              <div className="bg-muted rounded-lg p-4 mb-4">
-                <p className="text-xs text-muted-foreground mb-1">Seu código de indicação</p>
-                <p className="font-mono font-bold text-xl">JOY{user.id.slice(0, 6).toUpperCase()}</p>
-              </div>
-              <Button className="w-full gradient-premium text-white">
-                Partilhar código <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
           </TabsContent>
         </Tabs>
       </div>
