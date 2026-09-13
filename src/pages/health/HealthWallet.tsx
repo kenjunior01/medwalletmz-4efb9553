@@ -66,6 +66,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { jsPDF } from 'jspdf';
 
 import { logger } from '@/lib/logger';
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -380,17 +381,88 @@ export function HealthWallet({ isDoctorView = false, patientId }: HealthWalletPr
     }
   };
 
-  // ─── PDF handler ───────────────────────────────────────────────────────
+  // ─── PDF handler — exportação real do cartão de saúde ─────────────────
   const handlePdf = () => {
-    toast.info(t('healthWallet.pdf_coming_soon'));
+    try {
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+      const W = doc.internal.pageSize.getWidth();
+      const L = 56;
+
+      // Cabeçalho
+      doc.setFillColor(30, 107, 156);
+      doc.rect(0, 0, W, 90, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(22);
+      doc.text('MedWallet', L, 42);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.text(t('healthWallet.title'), L, 62);
+
+      // Identificação
+      doc.setTextColor(30, 30, 30);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text(userProfile?.full_name || t('healthWallet.title'), L, 130);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.text(`${t('healthWallet.medical_id')}: ${medicalId || '—'}`, L, 150);
+      doc.text(
+        `${t('common.date')}: ${new Date().toLocaleDateString('pt-PT')}`,
+        L,
+        168,
+      );
+
+      const rows: Array<[string, string]> = [
+        [t('healthWallet.blood_type'), patientProfile?.blood_type || '—'],
+        [t('healthWallet.allergies'), allergiesSummary || '—'],
+        [t('healthWallet.chronic_conditions'), conditionsSummary || '—'],
+        [t('healthWallet.current_medications'), medicationsSummary || '—'],
+        [
+          t('healthWallet.emergency_contact'),
+          patientProfile?.emergency_contact_name
+            ? `${patientProfile.emergency_contact_name}${patientProfile?.emergency_contact_phone ? ` · ${patientProfile.emergency_contact_phone}` : ''}`
+            : '—',
+        ],
+      ];
+
+      let y = 210;
+      for (const [label, value] of rows) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(110, 110, 110);
+        doc.text(label.toUpperCase(), L, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.setTextColor(30, 30, 30);
+        const lines = doc.splitTextToSize(value, W - L * 2) as string[];
+        doc.text(lines, L, y + 16);
+        y += 22 + lines.length * 16;
+      }
+
+      // Rodapé
+      doc.setFontSize(9);
+      doc.setTextColor(140, 140, 140);
+      doc.text(
+        'medwalletmz.online — documento informativo, não substitui identificação oficial do MISAU',
+        L,
+        doc.internal.pageSize.getHeight() - 40,
+      );
+
+      doc.save(`medwallet-${(medicalId || 'cartao').replace(/[^a-zA-Z0-9_-]/g, '')}.pdf`);
+      toast.success('Cartão de saúde PDF descarregado.');
+    } catch (err) {
+      logger.error('HealthWallet PDF error', err);
+      toast.error(t('common.error'));
+    }
   };
 
   // ─── Quick actions ─────────────────────────────────────────────────────
   const handleAddDocument = () => {
-    toast.info(t('healthWallet.add_document_coming_soon'));
+    navigate('/health/records');
   };
   const handleShareWithDoctor = () => {
-    toast.info(t('healthWallet.share_with_doctor_coming_soon'));
+    void handleShare();
   };
   const handleBookConsultation = () => {
     navigate('/health/doctors');

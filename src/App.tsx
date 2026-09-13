@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { ShopifyCartProvider } from "@/contexts/ShopifyCartContext";
 import { CountryProvider } from "@/contexts/CountryContext";
 import { ProvinceProvider } from "@/themes";
 import { LocationProvider } from "@/contexts/LocationContext";
@@ -202,6 +203,12 @@ const ManageCountryPermissions = lazy(() => import("./pages/admin/ManageCountryP
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 const ChangePassword = lazy(() => import("./pages/auth/ChangePassword"));
 const Favorites = lazy(() => import("./pages/Favorites"));
+
+// ---- Loja Global (Shopify Storefront — dropshipping EUA/Canadá) ----
+const ShopifyStore = lazy(() => import("./pages/shopify/ShopifyStore"));
+const ShopifyProductPage = lazy(() => import("./pages/shopify/ShopifyProductPage"));
+const ShopifyCartPage = lazy(() => import("./pages/shopify/ShopifyCartPage"));
+const ShopifySettings = lazy(() => import("./pages/shopify/ShopifySettings"));
 const Withdraw = lazy(() => import("./pages/Withdraw"));
 const CancelAppointment = lazy(() => import("./pages/health/CancelAppointment"));
 const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute"));
@@ -298,6 +305,7 @@ const App = () => {
         <CountryProvider>
           <ProvinceProvider>
           <CartProvider>
+          <ShopifyCartProvider>
             <DataSaverProvider>
               <TooltipProvider>
                 <Toaster />
@@ -352,6 +360,12 @@ const App = () => {
                     <Route path="/health/exams/lab/:id" element={<LabDetail />} />
                     <Route path="/health/exams/my" element={<MyLabOrders />} />
                     <Route path="/health/education" element={<HealthEducationHub />} />
+
+                    {/* ---- Loja Global (Shopify — dropshipping EUA/Canadá) ---- */}
+                    <Route path="/shop" element={<ShopifyStore />} />
+                    <Route path="/shop/p/:handle" element={<ShopifyProductPage />} />
+                    <Route path="/shop/cart" element={<ShopifyCartPage />} />
+                    <Route path="/shop/config" element={<ShopifySettings />} />
                     <Route path="/health/education/:slug" element={<HealthEducationHub />} />
                     <Route path="/health/veterinary" element={<Veterinary />} />
                     <Route path="/partners" element={<Partners />} />
@@ -595,6 +609,7 @@ const App = () => {
               </BrowserRouter>
             </TooltipProvider>
           </DataSaverProvider>
+          </ShopifyCartProvider>
         </CartProvider>
       </ProvinceProvider>
       </CountryProvider>

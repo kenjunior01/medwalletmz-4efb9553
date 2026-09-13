@@ -289,6 +289,37 @@ class HomeScreen extends ConsumerWidget {
                   .fadeIn(duration: 320.ms)
                   .slideY(begin: 0.15, curve: Curves.easeOutCubic),
 
+              const SizedBox(height: 12),
+
+              // ── Ações rápidas (fila 5) ──────────────────────────────
+              Row(
+                children: [
+                  _QuickAction(
+                    icon: Icons.shopping_bag_rounded,
+                    label: 'Loja',
+                    onTap: () => context.push('/shop'),
+                  ),
+                  _QuickAction(
+                    icon: Icons.pedal_bike_rounded,
+                    label: 'Riders',
+                    onTap: () => context.push('/riders'),
+                  ),
+                  _QuickAction(
+                    icon: Icons.campaign_rounded,
+                    label: 'Anúncios',
+                    onTap: () => context.push('/ads'),
+                  ),
+                  _QuickAction(
+                    icon: Icons.trending_up_rounded,
+                    label: 'Monetização',
+                    onTap: () => context.push('/monetization'),
+                  ),
+                ],
+              )
+                  .animate(delay: 60.ms)
+                  .fadeIn(duration: 320.ms)
+                  .slideY(begin: 0.15, curve: Curves.easeOutCubic),
+
               const SizedBox(height: 24),
 
               // ── Próxima consulta ────────────────────────────────────

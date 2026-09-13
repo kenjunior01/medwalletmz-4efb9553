@@ -724,7 +724,8 @@
     "doctor": "Médico",
     "clinic": "Clínica",
     "lab": "Lab",
-    "driver": "Condutor"
+    "driver": "Condutor",
+    "global_shop": "Loja Global"
   },
   "greeting": {
     "good_morning": "Bom dia, {{name}}!",

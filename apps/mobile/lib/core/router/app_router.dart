@@ -68,6 +68,10 @@ import '../../features/referrals/presentation/referrals_screen.dart';
 import '../../features/records/presentation/records_screen.dart';
 import '../../features/services/presentation/services_screen.dart';
 import '../../features/services/presentation/specialists_screen.dart';
+import '../../features/shop/presentation/shop_cart_screen.dart';
+import '../../features/shop/presentation/shop_config_screen.dart';
+import '../../features/shop/presentation/shop_product_screen.dart';
+import '../../features/shop/presentation/shop_screen.dart';
 import '../../features/solidarity/presentation/solidarity_screen.dart';
 import '../../features/sos/presentation/sos_screen.dart';
 import '../../features/subscriptions/presentation/plans_screen.dart';
@@ -350,6 +354,19 @@ final router = GoRouter(
     GoRoute(
         path: '/monetization',
         builder: (_, __) => const MonetizationHubScreen()),
+
+    // F20 — Loja Global (Shopify Storefront — dropshipping EUA/Canadá).
+    // A Shopify gere produtos, stock, encomendas e pagamentos; a app
+    // é a montra e entrega o checkout ao ecossistema Shopify.
+    GoRoute(path: '/shop', builder: (_, __) => const ShopScreen()),
+    GoRoute(
+      path: '/shop-product/:handle',
+      builder: (_, state) => ShopProductScreen(
+        handle: state.pathParameters['handle'] ?? '',
+      ),
+    ),
+    GoRoute(path: '/shop-cart', builder: (_, __) => const ShopCartScreen()),
+    GoRoute(path: '/shop-config', builder: (_, __) => const ShopConfigScreen()),
 
     // F14 — Logística do paciente: pedidos de entrega e tracking em
     // tempo real (estado + GPS via broadcast) + seletor de mapa partilhado.

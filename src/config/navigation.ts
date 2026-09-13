@@ -135,6 +135,7 @@ export const sidebarByRole: Record<RoleKey, NavItem[]> = {
     { path: "/blood", icon: Droplet, label: "nav.blood", group: "nav_group.community" },
     { path: "/ranking", icon: Crown, label: "nav.ranking", group: "nav_group.community" },
     { path: "/pharmacy", icon: Pill, label: "nav.pharmacy", group: "nav_group.shopping" },
+    { path: "/shop", icon: Globe, label: "nav.global_shop", group: "nav_group.shopping" },
     { path: "/orders", icon: ClipboardList, label: "nav.orders", group: "nav_group.shopping" },
     { path: "/wallet", icon: Wallet, label: "nav.wallet", group: "nav_group.account" },
     { path: "/subscriptions", icon: Shield, label: "nav.subscriptions", group: "nav_group.account" },
