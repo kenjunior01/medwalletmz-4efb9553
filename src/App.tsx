@@ -105,6 +105,7 @@ const MapsPremium = lazy(() => import("./pages/health/MapsPremium"));
 const SupportCircles = lazy(() => import("./pages/health/SupportCircles"));
 const HealthRidersNetwork = lazy(() => import("./pages/health/HealthRidersNetwork"));
 const PatientDeliveries = lazy(() => import("./pages/health/PatientDeliveries"));
+const MedsTracker = lazy(() => import("./pages/health/MedsTracker"));
 const HealthWorkerMarketplace = lazy(() => import("./pages/health/HealthWorkerMarketplace"));
 const HealthWorkerProfile = lazy(() => import("./pages/health/HealthWorkerProfile"));
 const HealthPlans = lazy(() => import("./pages/health/HealthPlans"));
@@ -355,6 +356,7 @@ const App = () => {
                     <Route path="/subscriptions" element={<MySubscriptions />} />
                     <Route path="/payment-settings" element={<PaymentSettings />} />
                     <Route path="/health/triage" element={<Triage />} />
+                    <Route path="/health/meds" element={<MedsTracker />} />
                     <Route path="/health/records" element={<MedicalRecords />} />
                     <Route path="/health/exams" element={<Exams />} />
                     <Route path="/health/exams/lab/:id" element={<LabDetail />} />

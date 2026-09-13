@@ -2,6 +2,7 @@ import {
   Wallet, MessageCircle, Gift, Sparkles, Calendar, ChevronRight,
   Heart, Mic, MapPin, Camera, Users, Bike, Trophy, Briefcase,
   Package, TrendingUp, Stethoscope, Home, Megaphone, UserCircle,
+  Pill,
 } from '@/components/icons/lucide-compat';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +21,7 @@ interface QuickItem {
 const PATIENT_ITEMS: QuickItem[] = [
   { icon: Calendar, label: "Minhas consultas", to: "/health/consultations" },
   { icon: MessageCircle, label: "Meddy Consulta", to: "/health/triage" },
+  { icon: Pill, label: "Medicação", to: "/health/meds" },
   { icon: Heart, label: "Família", to: "/health/family" },
   { icon: Mic, label: "Diário de Voz", to: "/health/voice-journal" },
   { icon: Camera, label: "Scanner IA", to: "/health/scanner" },

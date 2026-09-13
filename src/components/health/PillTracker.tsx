@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { startScheduler } from '@/services/meds/medsReminders';
 
 type Medication = { id: string; name: string; dosage: string; time: string; taken: boolean };
 
@@ -18,6 +19,11 @@ export function PillTracker() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [meds, setMeds] = useState<Medication[]>([]);
+
+  useEffect(() => {
+    // Lembretes de medicação (notificações do navegador) — igual ao app.
+    void startScheduler();
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -91,13 +97,18 @@ export function PillTracker() {
 
   return (
     <section className="px-4 mt-6">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between gap-2 mb-3">
         <h2 className="text-xl font-black flex items-center gap-2">
           <Pill className="h-5 w-5 text-emerald-500" /> {t('health.my_medications')}
         </h2>
-        <Button variant="ghost" size="sm" className="text-primary font-bold" onClick={() => navigate('/health/profile')}>
-          <Plus className="h-4 w-4 mr-1" /> {t('health.add')}
-        </Button>
+        <div className="flex items-center gap-1 shrink-0">
+          <Button variant="ghost" size="sm" className="text-primary font-bold" onClick={() => navigate('/health/meds')}>
+            Plano completo
+          </Button>
+          <Button variant="ghost" size="sm" className="text-primary font-bold" onClick={() => navigate('/health/profile')}>
+            <Plus className="h-4 w-4 mr-1" /> {t('health.add')}
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-3">
