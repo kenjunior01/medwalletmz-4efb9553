@@ -162,6 +162,8 @@ export function showMedNotification(title: string, body: string, silent = false)
       tag: silent ? undefined : 'medwallet-meds',
       icon: '/icons/icon-192.png',
       badge: '/icons/icon-192.png',
+      // vibração suave nos lembretes reais (não no teste silencioso)
+      ...(silent ? {} : { vibrate: [180, 90, 180] }),
     });
     n.onclick = () => {
       window.focus();

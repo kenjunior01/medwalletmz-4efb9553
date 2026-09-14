@@ -13,16 +13,16 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   Pill, Flame, BellRing, CheckCircle2, XCircle, Plus, Trash2,
-  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff,
+  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff, TrendingUp, Trophy,
 } from '@/components/icons/lucide-compat';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
-  addAdHoc, computeStreak, fetchDay, fetchPlanned, fetchRecent,
+  addAdHoc, computeBestStreak, computeStreak, fetchDay, fetchPlanned, fetchRecent,
   isTaken, removeAdHoc, skipPlanned, toggleAdHoc, togglePlanned,
-  todayKey, type MedicationLog, type PlannedMedication,
+  todayKey, weekAdherence, type MedicationLog, type PlannedMedication,
 } from '@/services/meds/medsService';
 import {
   frequencyLabel, hoursForFrequency, nextDoses, notificationPermission,
@@ -102,6 +102,11 @@ export default function MedsTracker() {
   const takenCount = planned.filter(p => takenIds.has(p.prescriptionItemId)).length;
   const streak = useMemo(() => computeStreak(recent), [recent]);
   const upcoming = useMemo(() => nextDoses(planned, now), [planned, now]);
+  const bestStreak = useMemo(() => computeBestStreak(recent), [recent]);
+  const adherence = useMemo(
+    () => weekAdherence(recent, planned.length),
+    [recent, planned.length],
+  );
 
   const last7 = useMemo(() => {
     const days: Array<{ key: string; label: string; taken: number }> = [];
@@ -313,6 +318,36 @@ export default function MedsTracker() {
             </div>
           </section>
 
+          {/* Estatísticas: adesão semanal + melhor sequência */}
+          {!empty && (
+            <section className="grid grid-cols-2 gap-3" aria-label="Estatísticas de adesão">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+                  <TrendingUp className="h-3.5 w-3.5 text-sky-400" /> Adesão · 7 dias
+                </div>
+                {adherence.pct === null ? (
+                  <p className="mt-1 text-sm text-slate-500">Sem plano para calcular</p>
+                ) : (
+                  <>
+                    <p className="mt-1 text-2xl font-bold text-sky-300">{adherence.pct}%</p>
+                    <p className="text-[11px] text-slate-500">
+                      {adherence.taken} de {adherence.planned} tomas planeadas
+                    </p>
+                  </>
+                )}
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+                  <Trophy className="h-3.5 w-3.5 text-amber-400" /> Melhor sequência
+                </div>
+                <p className="mt-1 text-2xl font-bold text-amber-300">{bestStreak}</p>
+                <p className="text-[11px] text-slate-500">
+                  {bestStreak === 1 ? 'dia seguido' : 'dias seguidos'} · últimos 30 dias
+                </p>
+              </div>
+            </section>
+          )}
+
           {/* Lembretes */}
           <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <div className="flex items-start justify-between gap-3">
@@ -411,6 +446,12 @@ export default function MedsTracker() {
                     l => l.prescriptionItemId === med.prescriptionItemId && l.skipped,
                   );
                   const busy = busyId === med.prescriptionItemId;
+                  // hora de toma já passada hoje e ainda sem registo → "Atrasada"
+                  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+                  const missed = hoursForFrequency(med.frequency).filter(h => h * 60 <= nowMinutes);
+                  const missedHour = !taken && !skippedLog && missed.length > 0
+                    ? missed[missed.length - 1]
+                    : null;
                   return (
                     <motion.li
                       key={med.prescriptionItemId}
@@ -458,6 +499,11 @@ export default function MedsTracker() {
                               <span className="rounded-full bg-sky-500/10 px-2 py-0.5 text-[10px] font-semibold text-sky-300">
                                 {frequencyLabel(med.frequency)}
                               </span>
+                              {missedHour !== null && (
+                                <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                                  Atrasada · {String(missedHour).padStart(2, '0')}:00
+                                </span>
+                              )}
                               <span className="text-[10px] text-slate-500">
                                 {hoursForFrequency(med.frequency).map(h => `${String(h).padStart(2, '0')}:00`).join(' · ')}
                               </span>

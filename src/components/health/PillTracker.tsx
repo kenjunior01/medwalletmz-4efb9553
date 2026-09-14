@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { useCountry } from '@/contexts/CountryContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { startScheduler } from '@/services/meds/medsReminders';
+import { hoursForFrequency, startScheduler } from '@/services/meds/medsReminders';
 
 type Medication = { id: string; name: string; dosage: string; time: string; taken: boolean };
 
@@ -51,11 +51,14 @@ export function PillTracker() {
 
       const rows = (rxData || [])
         .flatMap((rx: any) =>
-          (rx.prescription_items || []).map((item: any, index: number) => ({
+          (rx.prescription_items || []).map((item: any) => ({
             id: item.id,
             name: item.medication_name,
             dosage: item.dosage || 'Dose indicada',
-            time: item.frequency || ['08:00', '14:00', '20:00'][index % 3],
+            // horas derivadas da frequência (igual à página Medicação)
+            time: hoursForFrequency(item.frequency)
+              .map((h: number) => `${String(h).padStart(2, '0')}:00`)
+              .join(' · '),
             taken: takenIds.has(item.id),
           }))
         )
@@ -77,7 +80,9 @@ export function PillTracker() {
           {
             user_id: user!.id,
             prescription_item_id: med.id,
+            medication_name: med.name,
             taken_at: newTaken ? new Date().toISOString() : null,
+            skipped: false,
             logged_date: new Date().toISOString().split('T')[0],
           },
           { onConflict: 'user_id,prescription_item_id,logged_date' }

@@ -65,6 +65,31 @@ function writeCache(items: PlannedMedication[]) {
   }
 }
 
+// Cache dos registos (dia actual + histórico) para pintura instantânea e
+// leitura offline — mesma filosofia do cache do plano, acima.
+const LOGS_TODAY_KEY = 'medwallet.meds.logs.today.v1';
+const LOGS_RECENT_KEY = 'medwallet.meds.logs.recent.v1';
+
+function writeLogsCache(key: string, logs: MedicationLog[]) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ logs, savedAt: new Date().toISOString() }));
+  } catch {
+    // silencioso
+  }
+}
+
+function readLogsCache(key: string): MedicationLog[] {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as { logs?: MedicationLog[] };
+    return Array.isArray(parsed.logs) ? parsed.logs : [];
+  } catch {
+    return [];
+  }
+}
+
+
 // ─── Helpers de data ────────────────────────────────────────────────────
 
 export function todayKey(d = new Date()): string {
@@ -142,7 +167,10 @@ export async function fetchPlanned(): Promise<PlannedMedication[]> {
   }
 }
 
-/** Leituras de um dia (yyyy-mm-dd). */
+/**
+ * Leituras de um dia (yyyy-mm-dd). Em falha de rede serve a última cópia
+ * guardada (cache offline) — o dia de hoje nunca fica em branco.
+ */
 export async function fetchDay(day: string): Promise<MedicationLog[]> {
   const uid = await currentUserId();
   if (!uid) return [];
@@ -152,14 +180,19 @@ export async function fetchDay(day: string): Promise<MedicationLog[]> {
       .eq('user_id', uid)
       .eq('logged_date', day);
     if (error) throw error;
-    return (data ?? []).map(fromRow);
+    const logs = (data ?? []).map(fromRow);
+    writeLogsCache(LOGS_TODAY_KEY, logs);
+    return logs;
   } catch (err) {
-    logger.warn('meds: fetchDay falhou', err);
-    return [];
+    logger.warn('meds: fetchDay a partir da cache offline', err);
+    return readLogsCache(LOGS_TODAY_KEY);
   }
 }
 
-/** Histórico dos últimos N dias (streak, faixa semanal). */
+/**
+ * Histórico dos últimos N dias (streak, faixa semanal, adesão).
+ * Também com cache offline: a última versão bem-sucedida fica guardada.
+ */
 export async function fetchRecent(days = 30): Promise<MedicationLog[]> {
   const uid = await currentUserId();
   if (!uid) return [];
@@ -171,10 +204,12 @@ export async function fetchRecent(days = 30): Promise<MedicationLog[]> {
       .gte('logged_date', since)
       .order('logged_date', { ascending: false });
     if (error) throw error;
-    return (data ?? []).map(fromRow);
+    const logs = (data ?? []).map(fromRow);
+    writeLogsCache(LOGS_RECENT_KEY, logs);
+    return logs;
   } catch (err) {
-    logger.warn('meds: fetchRecent falhou', err);
-    return [];
+    logger.warn('meds: fetchRecent a partir da cache offline', err);
+    return readLogsCache(LOGS_RECENT_KEY);
   }
 }
 
@@ -293,6 +328,47 @@ export function computeStreak(recent: MedicationLog[]): number {
     day.setDate(day.getDate() - 1);
   }
   return streak;
+}
+
+/**
+ * Melhor sequência dentro da janela fornecida (por omissão 30 dias):
+ * o maior número de dias consecutivos com pelo menos uma toma registada.
+ */
+export function computeBestStreak(recent: MedicationLog[], windowDays = 30): number {
+  const days = new Set(recent.filter(l => l.takenAt).map(l => l.loggedDate));
+  let best = 0;
+  for (let i = 0; i < windowDays; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    if (!days.has(todayKey(d))) continue;
+    let run = 0;
+    const cur = new Date(d);
+    while (days.has(todayKey(cur)) && run < windowDays) {
+      run++;
+      cur.setDate(cur.getDate() - 1);
+    }
+    if (run > best) best = run;
+  }
+  return best;
+}
+
+/**
+ * Adesão dos últimos 7 dias: tomas registadas vs. doses planeadas
+ * (número de medicamentos do plano × 7 dias). Apenas tomas ligadas a
+ * receita contam para o numerador — registos ad-hoc não fazem parte do plano.
+ */
+export function weekAdherence(
+  recent: MedicationLog[],
+  plannedCount: number,
+): { taken: number; planned: number; pct: number | null } {
+  const planned = plannedCount * 7;
+  if (plannedCount <= 0 || planned <= 0) return { taken: 0, planned: 0, pct: null };
+  const since = dayKeyOffset(6);
+  const taken = recent.filter(
+    l => l.takenAt && l.prescriptionItemId && l.loggedDate >= since,
+  ).length;
+  const pct = Math.max(0, Math.min(100, Math.round((taken / planned) * 100)));
+  return { taken, planned, pct };
 }
 
 // ─── Internos ───────────────────────────────────────────────────────────
