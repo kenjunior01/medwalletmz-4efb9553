@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -202,6 +203,7 @@ class _Body extends StatelessWidget {
           dosage: d.dosage,
           state: d.isTaken ? _CardState.taken : _CardState.skipped,
           onToggle: () async {
+            HapticFeedback.lightImpact();
             await repo.toggleAdHoc(d);
             onChanged();
           },
@@ -213,6 +215,7 @@ class _Body extends StatelessWidget {
           frequency: p.frequency,
           state: _CardState.pending,
           onToggle: () async {
+            HapticFeedback.mediumImpact(); // toma registada: toque firme
             await repo.togglePlanned(
               prescriptionItemId: p.prescriptionItemId,
               name: p.name,
@@ -222,6 +225,7 @@ class _Body extends StatelessWidget {
             onChanged();
           },
           onSkip: () async {
+            HapticFeedback.selectionClick(); // "não tomei": toque leve
             await repo.skipPlanned(
               prescriptionItemId: p.prescriptionItemId,
               name: p.name,
@@ -235,6 +239,7 @@ class _Body extends StatelessWidget {
           dosage: l.dosage,
           state: l.isTaken ? _CardState.taken : _CardState.pending,
           onToggle: () async {
+            HapticFeedback.lightImpact();
             await repo.toggleAdHoc(l);
             onChanged();
           },

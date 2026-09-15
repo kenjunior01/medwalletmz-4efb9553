@@ -22,9 +22,21 @@ const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
 
 const BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 
-// Modelos suportados (na data de implementação). Lista em ordem de preferência.
-const CHAT_MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite"];
-const VISION_MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite"];
+// Modelos em ordem de preferência (2026: Gemini 3 no topo).
+// Se o preview/versão não estiver disponível para a chave (404), a cadeia
+// cai automaticamente para o modelo seguinte — nunca quebra a app.
+const CHAT_MODELS = [
+  "gemini-3-flash-preview",
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+];
+const VISION_MODELS = [
+  "gemini-3-flash-preview",
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+];
 
 export interface GeminiMessage {
   role: "user" | "model";

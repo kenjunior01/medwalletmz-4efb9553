@@ -33,11 +33,15 @@ const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY as string | undefined;
 
 const BASE_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-// Modelos free em ordem de preferência (capaz → rápido)
+// Modelos em ordem de preferência (2026: topo absoluto primeiro).
+// Sem créditos para os premium (402) ou modelo indisponível (404)?
+// A cadeia cai automaticamente para os gratuitos — nunca quebra.
 const CHAT_MODELS = [
+  "openai/gpt-5.1",
+  "google/gemini-3-flash-preview",
+  "anthropic/claude-sonnet-4.5",
   "meta-llama/llama-3.3-70b-instruct:free",
   "mistralai/mistral-7b-instruct:free",
-  "google/gemma-2-9b-it:free",
 ];
 
 export interface OpenRouterMessage {

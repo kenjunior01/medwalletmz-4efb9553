@@ -34,6 +34,19 @@ abstract final class AppTheme {
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.bgDeep,
       splashFactory: InkSparkle.splashFactory,
+      // Transições de página com feel de sistema: volta preditiva no
+      // Android 14+ (o ecrã segue o gesto antes de sair) e swipe-back
+      // estilo iOS. Em plataformas sem gesto, zoom Material 3.
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+          TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: ZoomPageTransitionsBuilder(),
+        },
+      ),
       textTheme: base.textTheme.copyWith(
         displaySmall: headline.copyWith(fontSize: 32, letterSpacing: -0.5),
         headlineMedium: headline.copyWith(fontSize: 26, letterSpacing: -0.4),

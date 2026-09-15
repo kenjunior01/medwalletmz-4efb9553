@@ -44,10 +44,19 @@ class HomeScreen extends ConsumerWidget {
         (upcoming != null && upcoming.isNotEmpty) ? upcoming.first : null;
 
     return Scaffold(
-      body: AppBackground(
+      body: RefreshIndicator(
+        onRefresh: () async {
+          // puxar-para-actualizar: recarrega os dados da Home
+          ref.invalidate(profileProvider);
+          ref.invalidate(myConsultationsProvider);
+          ref.invalidate(walletStreamProvider);
+          await Future<void>.delayed(const Duration(milliseconds: 450));
+        },
+        child: AppBackground(
         child: SafeArea(
           bottom: false,
           child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
             children: [
               // ── Saudação ────────────────────────────────────────────
@@ -371,6 +380,7 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

@@ -23,8 +23,11 @@ const API_KEY = import.meta.env.VITE_GROQ_API_KEY as string | undefined;
 
 const BASE_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-// Modelos em ordem de preferência (capaz → rápido)
+// Modelos em ordem de preferência (2026: Llama 4 no topo, MoE mais capaz).
+// Modelo indisponível (404) → tenta o seguinte automaticamente.
 const CHAT_MODELS = [
+  "meta-llama/llama-4-maverick-17b-128e-instruct",
+  "meta-llama/llama-4-scout-17b-16e-instruct",
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
 ];

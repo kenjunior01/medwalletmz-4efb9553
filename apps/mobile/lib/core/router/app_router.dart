@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -435,10 +436,14 @@ class _AppShellState extends ConsumerState<AppShell> {
       body: widget.shell,
       bottomNavigationBar: _GlassNavBar(
         currentIndex: widget.shell.currentIndex,
-        onTap: (i) => widget.shell.goBranch(
-          i,
-          initialLocation: i == widget.shell.currentIndex,
-        ),
+        onTap: (i) {
+          // feedback tátil subtil ao trocar de secção (feel nativo)
+          HapticFeedback.selectionClick();
+          widget.shell.goBranch(
+            i,
+            initialLocation: i == widget.shell.currentIndex,
+          );
+        },
       ),
     );
   }

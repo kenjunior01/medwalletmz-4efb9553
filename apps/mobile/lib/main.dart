@@ -12,6 +12,9 @@ import 'core/security/app_lock.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Edge-to-edge: conteúdo desenha atrás das barras de sistema
+  // (Android 15 impõe; aqui fica consistente em todas as versões).
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
