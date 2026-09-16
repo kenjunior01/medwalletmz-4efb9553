@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   Pill, Flame, BellRing, CheckCircle2, XCircle, Plus, Trash2,
-  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff, TrendingUp, Trophy, Share2,
+  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff, TrendingUp, Trophy, Share2, BarChart3,
 } from '@/components/icons/lucide-compat';
 import { MedsHeatmap } from '@/components/health/MedsHeatmap';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,13 @@ import {
 const QUICK_REASONS = ['Esqueci-me', 'Estou sem o medicamento', 'Efeitos secundários', 'Já não preciso'];
 
 const DOW_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const MONTHS_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+/** Data curta PT a partir de uma chave yyyy-mm-dd (sem desvio de fuso). */
+function fmtDay(key: string): string {
+  const [y, m, d] = key.split('-').map(Number);
+  return `${d} ${MONTHS_PT[(m ?? 1) - 1]}`;
+}
 
 export default function MedsTracker() {
   const navigate = useNavigate();
@@ -128,6 +135,34 @@ export default function MedsTracker() {
     return days;
   }, [recent]);
   const maxDay = Math.max(1, ...last7.map(d => d.taken));
+
+  // Tendências por medicamento: tomas registadas, consistência e últimos
+  // 14 dias (honesto: baseado só em registos reais — sem plano histórico).
+  const medStats = useMemo(() => {
+    const todayStr = todayKey();
+    const dayMs = 86_400_000;
+    return planned.map(med => {
+      const logs = recent.filter(
+        l => l.prescriptionItemId === med.prescriptionItemId && l.takenAt,
+      );
+      const daySet = new Set(logs.map(l => l.loggedDate));
+      const sorted = [...daySet].sort();
+      const first = sorted[0] ?? null;
+      const last = sorted[sorted.length - 1] ?? null;
+      let span = 1;
+      if (first) {
+        span = Math.min(84, Math.max(1, Math.round((Date.parse(todayStr) - Date.parse(first)) / dayMs) + 1));
+      }
+      const pct = first ? Math.round((daySet.size / span) * 100) : null;
+      const dots = Array.from({ length: 14 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (13 - i));
+        const key = todayKey(d);
+        return { key, taken: daySet.has(key) };
+      });
+      return { med, count: logs.length, first, last, pct, dots, todayTaken: daySet.has(todayStr) };
+    });
+  }, [planned, recent]);
 
   // ─── ações ────────────────────────────────────────────────────────────
   const handleTogglePlanned = async (med: PlannedMedication) => {
@@ -646,6 +681,85 @@ export default function MedsTracker() {
                     <span className="text-[10px] font-semibold text-slate-400">{d.label}</span>
                     <span className="text-[10px] text-slate-600">{d.taken > 0 ? d.taken : '·'}</span>
                   </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Tendências por medicamento */}
+          {!empty && medStats.length > 0 && (
+            <section aria-label="Tendências por medicamento">
+              <h3 className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
+                <BarChart3 className="h-3.5 w-3.5 text-sky-400" /> Por medicamento
+              </h3>
+              <div className="space-y-3">
+                {medStats.map(({ med, count, last, pct, dots, todayTaken }, idx) => (
+                  <motion.div
+                    key={med.prescriptionItemId}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold">{med.name}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          {med.dosage && (
+                            <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
+                              {med.dosage}
+                            </span>
+                          )}
+                          <span className="rounded-full bg-sky-500/10 px-2 py-0.5 text-[10px] font-semibold text-sky-300">
+                            {frequencyLabel(med.frequency)}
+                          </span>
+                        </div>
+                      </div>
+                      {pct !== null && (
+                        <div className="shrink-0 text-right">
+                          <p
+                            className={cn(
+                              'text-lg font-bold leading-none',
+                              pct >= 80 ? 'text-emerald-300' : pct >= 50 ? 'text-amber-300' : 'text-rose-300',
+                            )}
+                            title="Dias com toma ÷ dias desde o 1.º registo (máx. 84 dias)"
+                          >
+                            {pct}%
+                          </p>
+                          <p className="mt-0.5 text-[9px] uppercase tracking-wide text-slate-500">consistência</p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400">
+                      <span>
+                        {count} {count === 1 ? 'toma registada' : 'tomas registadas'}
+                      </span>
+                      <span className="text-slate-600">·</span>
+                      <span>
+                        {last === null
+                          ? 'sem registo ainda'
+                          : last === todayKey()
+                            ? 'última toma: hoje'
+                            : `última toma: ${fmtDay(last)}`}
+                      </span>
+                    </div>
+                    {/* Últimos 14 dias */}
+                    <div className="mt-2.5 flex items-center gap-[3px]">
+                      {dots.map(d => (
+                        <div
+                          key={d.key}
+                          title={`${fmtDay(d.key)}${d.taken ? ' — tomado' : ''}`}
+                          className={cn(
+                            'h-2.5 flex-1 rounded-full',
+                            d.taken ? 'bg-emerald-400/80' : 'bg-white/5',
+                            d.key === todayKey() && !d.taken && 'ring-1 ring-inset ring-sky-300/50',
+                            d.key === todayKey() && d.taken && todayTaken && 'bg-emerald-400',
+                          )}
+                        />
+                      ))}
+                      <span className="ml-1.5 shrink-0 text-[9px] text-slate-600">14 dias</span>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             </section>

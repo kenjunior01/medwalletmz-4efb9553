@@ -166,6 +166,8 @@ class _Body extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         _WeekDots(recent: recent),
+        const SizedBox(height: 18),
+        _MedTrends(planned: planned, recent: recent),
       ],
     );
   }
@@ -813,5 +815,208 @@ class _AdherenceHeatmap extends StatelessWidget {
           begin: 0.06,
           curve: Curves.easeOutCubic,
         );
+  }
+}
+
+/// Tendências por medicamento: nº de tomas registadas, consistência
+/// (dias com toma ÷ dias desde o 1.º registo, máx. 84) e os últimos 14
+/// dias em pontos. Métrica honesta — só registos reais; o plano histórico
+/// pode ter sido diferente, por isso não acusamos falhas.
+class _MedTrends extends StatelessWidget {
+  const _MedTrends({required this.planned, required this.recent});
+
+  final List<PlannedMedication> planned;
+  final List<MedicationLog> recent;
+
+  bool _sameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final rows = <Widget>[];
+    for (final med in planned) {
+      final takenLogs = [
+        for (final l in recent)
+          if (l.prescriptionItemId == med.prescriptionItemId && l.isTaken) l,
+      ];
+      final days = <DateTime>{
+        for (final l in takenLogs)
+          DateTime(l.loggedDate.year, l.loggedDate.month, l.loggedDate.day),
+      };
+      final sorted = days.toList()..sort();
+      final first = sorted.isEmpty ? null : sorted.first;
+      final last = sorted.isEmpty ? null : sorted.last;
+
+      var span = 1;
+      if (first != null) {
+        final raw = today.difference(first).inDays + 1;
+        span = raw < 1 ? 1 : (raw > 84 ? 84 : raw);
+      }
+      final pct = first == null ? null : ((days.length / span) * 100).round();
+
+      final pctColor = pct == null
+          ? AppColors.textMuted
+          : pct >= 80
+              ? AppColors.success
+              : pct >= 50
+                  ? AppColors.warning
+                  : AppColors.danger;
+
+      final lastLabel = last == null
+          ? 'sem registo ainda'
+          : _sameDay(last, today)
+              ? 'última toma: hoje'
+              : 'última toma: '
+                  '${last.day} ${_AdherenceHeatmap._monthsPt[last.month - 1]}';
+
+      rows.add(Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(13),
+        decoration: BoxDecoration(
+          color: AppColors.glassFill,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.glassBorder),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        med.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13.5,
+                        ),
+                      ),
+                      if (med.dosage?.isNotEmpty == true ||
+                          med.frequency?.isNotEmpty == true)
+                        Text(
+                          [
+                            if (med.dosage?.isNotEmpty == true) med.dosage!,
+                            if (med.frequency?.isNotEmpty == true)
+                              med.frequency!,
+                          ].join(' · '),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.45),
+                            fontSize: 11.5,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                if (pct != null) ...[
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '$pct%',
+                        style: TextStyle(
+                          color: pctColor,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        'consistência',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.35),
+                          fontSize: 9,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '${takenLogs.length} toma'
+              '${takenLogs.length == 1 ? '' : 's'} '
+              'registada${takenLogs.length == 1 ? '' : 's'} · $lastLabel',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.45),
+                fontSize: 11,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                for (var i = 13; i >= 0; i--)
+                  Expanded(
+                    child: Builder(
+                      key: ValueKey('trend-$i'),
+                      builder: (context) {
+                        final d = today.subtract(Duration(days: i));
+                        final taken =
+                            days.any((x) => _sameDay(x, d));
+                        return Container(
+                          height: 8,
+                          margin: EdgeInsets.only(
+                              right: i == 0 ? 0 : 3),
+                          decoration: BoxDecoration(
+                            color: taken
+                                ? AppColors.success
+                                    .withOpacity(0.85)
+                                : Colors.white.withOpacity(0.05),
+                            borderRadius:
+                                BorderRadius.circular(4),
+                            border: i == 0
+                                ? Border.all(
+                                    color: Colors.white
+                                        .withOpacity(0.5),
+                                    width: 1,
+                                  )
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                const SizedBox(width: 4),
+                Text(
+                  '14 dias',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.3),
+                    fontSize: 9,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ));
+    }
+
+    if (rows.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'POR MEDICAMENTO',
+          style: TextStyle(
+            color: AppColors.textMuted,
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: 10),
+        ...rows,
+      ],
+    ).animate().fadeIn(duration: 260.ms);
   }
 }
