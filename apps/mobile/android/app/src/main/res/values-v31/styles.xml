@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Splash do sistema no Android 12+ (API 31+): o SO desenha o emblema
+     MedWallet sobre a paleta da marca, sem flash branco antes do Flutter.
+     A resolução de recursos dá prioridade a -v31, por isto vale mesmo com
+     o modo escuro activo (as cores já são o fundo profundo da marca). -->
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <!-- Fundo do splash do sistema: navy profundo MedWallet -->
+        <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+        <!-- Círculo por trás do ícone: azul profundo do launcher -->
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
+        <!-- Sem animação vazia: ícone directo, entrada rápida -->
+        <item name="android:windowSplashScreenBehavior">icon_preferred</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

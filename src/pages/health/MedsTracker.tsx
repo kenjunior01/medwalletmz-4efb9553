@@ -92,6 +92,13 @@ export default function MedsTracker() {
     };
   }, [user, load]);
 
+  // Escritas feitas offline entram em fila no serviço — avisa o utilizador.
+  useEffect(() => {
+    const onPending = () => toast.info('Sem rede: registo guardado no dispositivo e será enviado ao voltar a ligação.');
+    window.addEventListener('meds:pending-sync', onPending);
+    return () => window.removeEventListener('meds:pending-sync', onPending);
+  }, []);
+
   // ─── derivados ────────────────────────────────────────────────────────
   const takenIds = useMemo(
     () => new Set(todayLogs.filter(l => isTaken(l) && l.prescriptionItemId).map(l => l.prescriptionItemId)),
@@ -125,12 +132,12 @@ export default function MedsTracker() {
   const handleTogglePlanned = async (med: PlannedMedication) => {
     const taken = !takenIds.has(med.prescriptionItemId);
     setBusyId(med.prescriptionItemId);
-    // optimista
+    // optimista (takenAt — o campo que isTaken() lê; taken_at não é lido)
     setTodayLogs(prev =>
       prev.some(l => l.prescriptionItemId === med.prescriptionItemId)
         ? prev.map(l =>
             l.prescriptionItemId === med.prescriptionItemId
-              ? { ...l, taken_at: taken ? new Date().toISOString() : null, skipped: false }
+              ? { ...l, takenAt: taken ? new Date().toISOString() : null, skipped: false }
               : l,
           )
         : [
@@ -141,7 +148,7 @@ export default function MedsTracker() {
               prescriptionItemId: med.prescriptionItemId,
               medicationName: med.name,
               dosage: med.dosage ?? null,
-              taken_at: taken ? new Date().toISOString() : null,
+              takenAt: taken ? new Date().toISOString() : null,
             },
           ],
     );
@@ -152,6 +159,8 @@ export default function MedsTracker() {
         dosage: med.dosage,
         taken,
       });
+      // Tacteo de confirmação (Android/Chrome; ignorado onde não existe).
+      try { navigator.vibrate?.(taken ? 14 : 8); } catch { /* sem suporte */ }
       if (taken) toast.success(`${med.name} marcado como tomado`);
       await load();
     } catch {

@@ -11,6 +11,7 @@ import { useCountry } from '@/contexts/CountryContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { hoursForFrequency, startScheduler } from '@/services/meds/medsReminders';
+import { togglePlanned } from '@/services/meds/medsService';
 
 type Medication = { id: string; name: string; dosage: string; time: string; taken: boolean };
 
@@ -24,6 +25,14 @@ export function PillTracker() {
     // Lembretes de medicação (notificações do navegador) — igual ao app.
     void startScheduler();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    // Escritas feitas offline entram em fila — avisa uma vez por sincronização.
+    const onPending = () => toast.info('Sem rede: registo guardado no dispositivo e será enviado ao voltar a ligação.');
+    window.addEventListener('meds:pending-sync', onPending);
+    return () => window.removeEventListener('meds:pending-sync', onPending);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -74,27 +83,22 @@ export function PillTracker() {
     setMeds(prev => prev.map(m => (m.id === med.id ? { ...m, taken: newTaken } : m)));
 
     try {
-      const { error } = await (supabase as any)
-        .from('medication_logs')
-        .upsert(
-          {
-            user_id: user!.id,
-            prescription_item_id: med.id,
-            medication_name: med.name,
-            taken_at: newTaken ? new Date().toISOString() : null,
-            skipped: false,
-            logged_date: new Date().toISOString().split('T')[0],
-          },
-          { onConflict: 'user_id,prescription_item_id,logged_date' }
-        );
+      // Passa pelo serviço: fila offline automática + data local consistente
+      // (igual à página Medicação). Sem dosage — upsert não substitui a dose.
+      await togglePlanned({
+        prescriptionItemId: med.id,
+        name: med.name,
+        taken: newTaken,
+      });
 
-      if (error) throw error;
+      // Tacteo subtil de confirmação (Android/Chrome; ignorado onde não existe).
+      try { navigator.vibrate?.(12); } catch { /* sem suporte */ }
 
       if (newTaken) {
         toast.success(t('health.med_taken_confirmed', { name: med.name }));
       }
     } catch (e: any) {
-      // Revert on error
+      // Revert on error (só erros reais — offline já foi enfileirado)
       setMeds(prev => prev.map(m => (m.id === med.id ? { ...m, taken: !newTaken } : m)));
       toast.error(t('health.med_taken_error'));
     }
