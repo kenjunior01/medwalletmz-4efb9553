@@ -41,7 +41,7 @@ class _MedsScreenState extends ConsumerState<MedsScreen> {
     final results = await Future.wait([
       repo.fetchPlanned(),
       repo.fetchDay(DateTime.now()),
-      repo.fetchRecent(days: 30),
+      repo.fetchRecent(days: 84), // 12 semanas — alimenta o mapa de adesão
     ]);
     if (!mounted) return;
     setState(() {
@@ -133,6 +133,8 @@ class _Body extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         _StreakCard(recent: recent),
+        const SizedBox(height: 14),
+        _AdherenceHeatmap(recent: recent),
         const SizedBox(height: 16),
         const Text(
           'HOJE',
@@ -561,5 +563,255 @@ class _WeekDots extends StatelessWidget {
     if (dayLogs.any((l) => l.isTaken)) return Icons.check_rounded;
     if (dayLogs.any((l) => l.skipped)) return Icons.remove_rounded;
     return Icons.circle_outlined;
+  }
+}
+
+/// Mapa de adesão tipo calendário (12 semanas × 7 dias, Seg → Dom),
+/// ao estilo das contribuições do GitHub: a cor do quadrado mostra quantas
+/// tomas registadas houve no dia, relativo ao dia mais forte da janela.
+/// Dias sem registos ficam neutros — o plano histórico pode ter sido outro.
+class _AdherenceHeatmap extends StatelessWidget {
+  const _AdherenceHeatmap({required this.recent});
+
+  final List<MedicationLog> recent;
+
+  static const double _cell = 13;
+  static const double _gap = 3;
+  static const _monthsPt = [
+    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
+  ];
+
+  bool _sameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
+  int _level(int count, int maxTaken) {
+    if (count == 0 || maxTaken <= 0) return 0;
+    final r = count / maxTaken;
+    if (r <= 0.34) return 1;
+    if (r <= 0.67) return 2;
+    if (r < 1) return 3;
+    return 4;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // Tomas por dia (só registos com toma efectiva).
+    final counts = <DateTime, int>{};
+    var maxTaken = 0;
+    for (final l in recent) {
+      if (l.takenAt == null) continue;
+      final d = DateTime(
+          l.loggedDate.year, l.loggedDate.month, l.loggedDate.day);
+      final v = (counts[d] ?? 0) + 1;
+      counts[d] = v;
+      if (v > maxTaken) maxTaken = v;
+    }
+
+    // Segunda-feira da semana actual; janela = últimas 12 semanas.
+    final monday = today.subtract(Duration(days: today.weekday - 1));
+    final start = monday.subtract(const Duration(days: 11 * 7));
+
+    const weeks = 12;
+    const dowLetters = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
+
+    // Rótulos dos meses na 1.ª coluna de cada mês.
+    final monthLabels = <int, String>{};
+    var lastMonth = -1;
+    for (var w = 0; w < weeks; w++) {
+      final m = start.add(Duration(days: w * 7)).month;
+      if (m != lastMonth) monthLabels[w] = _monthsPt[m - 1];
+      lastMonth = m;
+    }
+
+    Color levelColor(int level) {
+      switch (level) {
+        case -1:
+          return Colors.transparent; // dias futuros: fora da janela
+        case 1:
+          return AppColors.accent.withOpacity(0.25);
+        case 2:
+          return AppColors.accent.withOpacity(0.45);
+        case 3:
+          return AppColors.accent.withOpacity(0.70);
+        case 4:
+          return AppColors.accent;
+        default:
+          return Colors.white.withOpacity(0.05);
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.glassFill,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.glassBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'MAPA DE ADESÃO · 12 SEMANAS',
+            style: TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Rótulos dos meses, alinhados com as colunas.
+          Padding(
+            padding: const EdgeInsets.only(left: 17),
+            child: Row(
+              children: [
+                for (var w = 0; w < weeks; w++)
+                  SizedBox(
+                    width: _cell + _gap,
+                    child: (monthLabels[w] != null)
+                        ? Text(
+                            monthLabels[w]!,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.35),
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          )
+                        : null,
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Letras dos dias da semana (Seg → Dom).
+              SizedBox(
+                width: 12,
+                child: Column(
+                  children: [
+                    for (var d = 0; d < 7; d++)
+                      Container(
+                        width: 12,
+                        height: _cell,
+                        margin: EdgeInsets.only(bottom: _gap),
+                        alignment: Alignment.center,
+                        child: Text(
+                          dowLetters[d],
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.28),
+                            fontSize: 8,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 5),
+              // Grade: cada coluna é uma semana.
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var w = 0; w < weeks; w++)
+                    Column(
+                      children: [
+                        for (var d = 0; d < 7; d++)
+                          Builder(
+                            key: ValueKey('hm-$w-$d'),
+                            builder: (context) {
+                              final day = start
+                                  .add(Duration(days: w * 7 + d));
+                              final future = day.isAfter(today);
+                              final count =
+                                  future ? 0 : (counts[day] ?? 0);
+                              final isToday = _sameDay(day, today);
+                              return Container(
+                                width: _cell,
+                                height: _cell,
+                                margin:
+                                    EdgeInsets.only(bottom: _gap),
+                                decoration: BoxDecoration(
+                                  color: levelColor(
+                                      future ? -1 : _level(count, maxTaken)),
+                                  borderRadius: BorderRadius.circular(3.5),
+                                  border: isToday
+                                      ? Border.all(
+                                          color: Colors.white
+                                              .withOpacity(0.65),
+                                          width: 1,
+                                        )
+                                      : null,
+                                ),
+                              );
+                            },
+                          ),
+                      ],
+                    ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Text(
+                'Tomas registadas por dia',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.35),
+                  fontSize: 10,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                'menos',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.28),
+                  fontSize: 9,
+                ),
+              ),
+              const SizedBox(width: 4),
+              for (var i = 0; i <= 4; i++)
+                Container(
+                  width: 10,
+                  height: 10,
+                  margin: const EdgeInsets.only(left: 3),
+                  decoration: BoxDecoration(
+                    color: levelColor(i),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              const SizedBox(width: 4),
+              Text(
+                'mais',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.28),
+                  fontSize: 9,
+                ),
+              ),
+            ],
+          ),
+          if (maxTaken == 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Sem tomas registadas nesta janela — marca a primeira '
+                'toma para ver o mapa ganhar cor.',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.3),
+                  fontSize: 10,
+                ),
+              ),
+            ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 260.ms).slideY(
+          begin: 0.06,
+          curve: Curves.easeOutCubic,
+        );
   }
 }

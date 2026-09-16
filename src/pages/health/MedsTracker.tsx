@@ -13,8 +13,9 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   Pill, Flame, BellRing, CheckCircle2, XCircle, Plus, Trash2,
-  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff, TrendingUp, Trophy,
+  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff, TrendingUp, Trophy, Share2,
 } from '@/components/icons/lucide-compat';
+import { MedsHeatmap } from '@/components/health/MedsHeatmap';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
@@ -63,7 +64,7 @@ export default function MedsTracker() {
       const [p, t, r] = await Promise.all([
         fetchPlanned(),
         fetchDay(todayKey()),
-        fetchRecent(30),
+        fetchRecent(84), // 12 semanas — alimenta o mapa de adesão
       ]);
       setPlanned(p);
       setTodayLogs(t);
@@ -250,6 +251,25 @@ export default function MedsTracker() {
     toast.info('Lembretes desligados.');
   };
 
+  // Partilha o resumo de progresso (Web Share; fallback: copiar).
+  const handleShare = async () => {
+    const dias = streak === 1 ? 'dia' : 'dias';
+    const adesao = adherence.pct === null
+      ? ''
+      : `adesão de ${adherence.pct}% nos últimos 7 dias, `;
+    const text = `O meu progresso de medicação na MedWallet: ${adesao}sequência de ${streak} ${dias} e hoje ${takenCount}/${totalDoses} tomas registadas.`;
+    try {
+      if (typeof navigator.share === 'function') {
+        await navigator.share({ title: 'MedWallet — Progresso de Medicação', text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        toast.success('Resumo copiado — cola onde quiseres partilhar.');
+      }
+    } catch {
+      // partilha cancelada pelo utilizador — silencioso
+    }
+  };
+
   // ─── estados de guarda ────────────────────────────────────────────────
   if (!user) {
     return (
@@ -284,6 +304,13 @@ export default function MedsTracker() {
           <h1 className="truncate text-lg font-bold">Medicação</h1>
           <p className="text-xs text-slate-500">Plano diário · tomas · lembretes</p>
         </div>
+        <button
+          onClick={() => void handleShare()}
+          className="rounded-xl border border-white/10 bg-white/5 p-2 transition hover:bg-white/10"
+          aria-label="Partilhar resumo de progresso"
+        >
+          <Share2 className="h-5 w-5 text-slate-300" />
+        </button>
         <button
           onClick={() => void load(true)}
           className="rounded-xl border border-white/10 bg-white/5 p-2 transition hover:bg-white/10"
@@ -356,6 +383,9 @@ export default function MedsTracker() {
               </div>
             </section>
           )}
+
+          {/* Mapa de adesão: 12 semanas */}
+          {!empty && <MedsHeatmap logs={recent} weeks={12} />}
 
           {/* Lembretes */}
           <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
