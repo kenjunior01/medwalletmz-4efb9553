@@ -13,9 +13,10 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   Pill, Flame, BellRing, CheckCircle2, XCircle, Plus, Trash2,
-  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff, TrendingUp, Trophy, Share2, BarChart3,
+  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff, TrendingUp, Trophy, Share2, BarChart3, FileText,
 } from '@/components/icons/lucide-compat';
 import { MedsHeatmap } from '@/components/health/MedsHeatmap';
+import { MedsReport } from '@/components/health/MedsReport';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
@@ -54,6 +55,7 @@ export default function MedsTracker() {
   const [refreshing, setRefreshing] = useState(false);
 
   // dialogs
+  const [showReport, setShowReport] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [addName, setAddName] = useState('');
   const [addDosage, setAddDosage] = useState('');
@@ -345,6 +347,13 @@ export default function MedsTracker() {
           aria-label="Partilhar resumo de progresso"
         >
           <Share2 className="h-5 w-5 text-slate-300" />
+        </button>
+        <button
+          onClick={() => setShowReport(true)}
+          className="rounded-xl border border-white/10 bg-white/5 p-2 transition hover:bg-white/10"
+          aria-label="Relatório de adesão em PDF"
+        >
+          <FileText className="h-5 w-5 text-slate-300" />
         </button>
         <button
           onClick={() => void load(true)}
@@ -766,6 +775,17 @@ export default function MedsTracker() {
           )}
         </div>
       )}
+
+      {/* Relatório de adesão (portal — imprime só a folha A4) */}
+      <MedsReport
+        open={showReport}
+        onClose={() => setShowReport(false)}
+        planned={planned}
+        recent={recent}
+        adherence={adherence}
+        streak={streak}
+        bestStreak={bestStreak}
+      />
 
       {/* Dialog: medicação extra */}
       {showAdd && (
