@@ -1439,31 +1439,32 @@ a, button, [role="button"], input, select, textarea, label, .no-tap-target {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MEDS REPORT PRINT ISOLATION — só a folha A4 vai para o papel/PDF
-   (activado pela classe .print-meds-report no <body> enquanto o overlay
-   MedsReport está aberto; fora dele a impressão da app fica intacta)
+   REPORT PRINT ISOLATION — só a folha A4 vai para o papel/PDF
+   (activado pela classe .print-report-open no <body> enquanto um relatório
+   ReportShell está aberto — MedsReport, PrescriptionsReport, etc.; fora dele
+   a impressão da app fica intacta)
    ═══════════════════════════════════════════════════════════════════════════ */
 @media print {
-  body.print-meds-report #root {
+  body.print-report-open #root {
     display: none !important;
   }
-  #meds-report-print-root .report-backdrop {
+  #report-print-root .report-backdrop {
     position: static !important;
     overflow: visible !important;
     padding: 0 !important;
     background: #ffffff !important;
   }
-  #meds-report-print-root .report-toolbar {
+  #report-print-root .report-toolbar {
     display: none !important;
   }
-  #meds-report-print-root .report-paper {
+  #report-print-root .report-paper {
     max-width: 100% !important;
     margin: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     padding: 0 !important;
   }
-  #meds-report-print-root * {
+  #report-print-root * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

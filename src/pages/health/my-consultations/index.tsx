@@ -48,6 +48,7 @@ import { DATE_FNS_LOCALES, STATUS_MAP, TYPE_MAP } from './types';
 import { LoadingSkeleton } from './LoadingSkeleton';
 import { ErrorState } from './ErrorState';
 import { PageHeader } from './PageHeader';
+import { ConsultationsReport } from '@/components/health/ConsultationsReport';
 import { FiltersPanel } from './FiltersPanel';
 import { TabBar } from './TabBar';
 import { EmptyState } from './EmptyState';
@@ -69,6 +70,7 @@ export default function MyConsultations() {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [activeTab, setActiveTab] = useState<TabKey>('upcoming');
   const [showFilters, setShowFilters] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDoctor, setFilterDoctor] = useState<string>('all');
   const [filterSpecialty, setFilterSpecialty] = useState<string>('all');
@@ -469,6 +471,7 @@ export default function MyConsultations() {
         onViewModeChange={setViewMode}
         onBack={() => navigate(-1)}
         onPrescriptions={() => navigate('/health/prescriptions')}
+        onReport={items.length > 0 ? () => setShowReport(true) : undefined}
       />
 
       <PullToRefresh onRefresh={() => fetchData(true)}>
@@ -635,6 +638,7 @@ export default function MyConsultations() {
           </>
         )}
       </div>
+      <ConsultationsReport open={showReport} onClose={() => setShowReport(false)} items={items} />
       </PullToRefresh>
     </div>
   );

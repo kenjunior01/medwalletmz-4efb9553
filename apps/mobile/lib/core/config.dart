@@ -1,17 +1,27 @@
-/// Configuração de ambiente via --dart-define.
+/// Configuração de ambiente via --dart-define-from-file=env.json.
 ///
-/// Correr a app sempre com:
-///   --dart-define=SUPABASE_URL=https://pfqruzusjjxyidhqkiob.supabase.co
-///   --dart-define=SUPABASE_ANON_KEY=<anon key do projeto>
+/// A forma recomendada é o ficheiro `env.json` na raiz de apps/mobile
+/// (ver env.example.json — a anon key NÃO vive no repositório):
 ///
-/// A anon key encontra-se no painel do Supabase:
-///   Settings → API → Project API Keys → `anon` / `publishable`
+///   flutter run  --dart-define-from-file=env.json
+///   flutter build apk --dart-define-from-file=env.json
 ///
-/// Nota de segurança: a anon key é pública por desenho — a proteção real
-/// é feita por RLS (Row Level Security) no backend, que já está ativa em
-/// todas as tabelas usadas por esta app.
+/// O script ./run.sh detecta o env.json automaticamente.
+/// Sem env.json, a URL cai no default de produção (a mesma instância
+/// Supabase da versão web, projeto pfqruzusjjxyidhqkiob) e só falta
+/// passar a anon key.
+///
+/// Nota de segurança: a anon key é pública por desenho (shipa no bundle
+/// de qualquer visitante da versão web) — a proteção real é feita por
+/// RLS (Row Level Security) no backend, activa em todas as tabelas
+/// usadas por esta app.
 abstract final class AppConfig {
-  static const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  /// Mesma base de dados da versão web — default de produção embutido;
+  /// o env.json/dart-define só é preciso para override ou para a key.
+  static const supabaseUrl = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: 'https://pfqruzusjjxyidhqkiob.supabase.co',
+  );
   static const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
   static bool get isConfigured =>

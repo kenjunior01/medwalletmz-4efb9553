@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, CalendarDays, List, FileText } from '@/components/icons/lucide-compat';
+import { ArrowLeft, CalendarDays, List, FileText, ClipboardList } from '@/components/icons/lucide-compat';
 import { cn } from '@/lib/utils';
 import type { ViewMode } from './types';
 
@@ -11,6 +11,7 @@ interface PageHeaderProps {
   onViewModeChange: (mode: ViewMode) => void;
   onBack: () => void;
   onPrescriptions: () => void;
+  onReport?: () => void;
 }
 
 export function PageHeader({
@@ -19,6 +20,7 @@ export function PageHeader({
   onViewModeChange,
   onBack,
   onPrescriptions,
+  onReport,
 }: PageHeaderProps) {
   return (
     <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b p-4 flex items-center gap-3">
@@ -72,6 +74,18 @@ export function PageHeader({
           <List className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
+
+      {onReport && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onReport}
+          aria-label="Relatório de consultas em PDF"
+          className="min-h-[44px] min-w-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        >
+          <ClipboardList className="h-4 w-4" aria-hidden="true" />
+        </Button>
+      )}
 
       <Button
         variant="outline"

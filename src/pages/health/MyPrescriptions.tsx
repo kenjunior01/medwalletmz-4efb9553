@@ -13,6 +13,7 @@ import {
 } from '@/components/icons/lucide-compat';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
+import { PrescriptionsReport } from '@/components/health/PrescriptionsReport';
 import { useCountry } from '@/contexts/CountryContext';
 import { cn } from '@/lib/utils';
 
@@ -30,6 +31,7 @@ export default function MyPrescriptions() {
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [tab, setTab] = useState<FilterTab>('all');
   const [query, setQuery] = useState('');
+  const [showReport, setShowReport] = useState(false);
 
   const fetchData = async () => {
     if (!user) return;
@@ -96,6 +98,17 @@ export default function MyPrescriptions() {
           <h1 className="text-2xl font-bold">{t('prescriptions.title')}</h1>
           <p className="text-sm text-muted-foreground">{t('prescriptions.subtitle')}</p>
         </div>
+        {list.length > 0 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowReport(true)}
+            aria-label="Relatório de receitas em PDF"
+            className="min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <FileText className="h-4 w-4" aria-hidden="true" />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon"
@@ -314,6 +327,7 @@ export default function MyPrescriptions() {
         </div>
       )}
     </div>
+    <PrescriptionsReport open={showReport} onClose={() => setShowReport(false)} list={list} />
     </PullToRefresh>
   );
 }

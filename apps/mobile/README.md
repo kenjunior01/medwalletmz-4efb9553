@@ -53,20 +53,23 @@ abaixo.)
 
 ## 3. Configurar as variáveis de ambiente
 
-A app lê a config via `--dart-define` (mais seguro que ficheiros `.env`
-no cliente). Precisas da **anon key** do projeto:
+A app lê a config via `--dart-define-from-file` e já aponta para a
+**mesma base de dados da versão web** (projeto `pfqruzusjjxyidhqkiob` —
+URL de produção embutida como default). Só precisas da **anon key** uma vez:
 
 > Painel Supabase → **Settings → API → Project API Keys → `anon` / `publishable`**
 
-### Opção A — VS Code / Cursor (recomendada)
+### Opção A — env.json (recomendada)
+```bash
+cp env.example.json env.json   # e cola a tua anon key lá dentro
+chmod +x run.sh
+./run.sh                       # detecta o env.json automaticamente
+```
+O `env.json` está no .gitignore — a key nunca vai para o repositório.
+
+### Opção B — VS Code / Cursor
 Edita `.vscode/launch.json` e cola a tua key no campo
 `SUPABASE_ANON_KEY`. Depois corre com **F5**.
-
-### Opção B — Terminal (script incluído)
-```bash
-chmod +x run.sh
-./run.sh "COLA_A_TUA_ANON_KEY_AQUI"
-```
 
 ### Opção C — Comando directo
 ```bash
@@ -74,6 +77,15 @@ flutter run \
   --dart-define=SUPABASE_URL=https://pfqruzusjjxyidhqkiob.supabase.co \
   --dart-define=SUPABASE_ANON_KEY="COLA_A_TUA_ANON_KEY_AQUI" \
   --dart-define=MAPS_API_KEY="A_TUA_CHAVE_GOOGLE_MAPS_SDK"   # opcional
+```
+
+**Build do APK (release):**
+```bash
+flutter build apk --dart-define-from-file=env.json
+# sem env.json:
+flutter build apk \
+  --dart-define=SUPABASE_URL=https://pfqruzusjjxyidhqkiob.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY="COLA_A_TUA_ANON_KEY_AQUI"
 ```
 
 > **Push real (F8)** — opcional: adiciona
