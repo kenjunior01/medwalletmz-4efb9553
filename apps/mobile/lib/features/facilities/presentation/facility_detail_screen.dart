@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/gradient_button.dart';
 import '../../chat/chat_controller.dart';
 import '../../chat/data/chat_models.dart';
+import '../../favorites/data/favorites_repository.dart';
 import 'facility_image.dart';
 import '../data/facility_model.dart';
 
@@ -28,8 +29,48 @@ class FacilityDetailScreen extends ConsumerStatefulWidget {
 
 class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
   bool _openingChat = false;
+  bool? _isFavorite; // null = a verificar (só farmácias)
 
   HealthFacility get facility => widget.facility;
+
+  @override
+  void initState() {
+    super.initState();
+    // Coração sincronizado com a web (tabela `favorites`) — só
+    // faz sentido para farmácias (stores), como no StoreDetail do site.
+    if (facility.source == FacilitySource.store) {
+      _loadFavorite();
+    }
+  }
+
+  Future<void> _loadFavorite() async {
+    final ids = await ref.read(favoritesRepositoryProvider).favoriteStoreIds();
+    if (!mounted) return;
+    setState(() => _isFavorite = ids.contains(facility.id));
+  }
+
+  Future<void> _toggleFavorite() async {
+    final before = _isFavorite ?? false;
+    setState(() => _isFavorite = !before); // optimista
+    try {
+      final now = await ref
+          .read(favoritesRepositoryProvider)
+          .toggleStore(facility.id);
+      if (!mounted) return;
+      setState(() => _isFavorite = now);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            now
+                ? '${facility.name} adicionado aos favoritos (sincroniza com a web)'
+                : '${facility.name} removido dos favoritos',
+          ),
+        ),
+      );
+    } catch (_) {
+      if (mounted) setState(() => _isFavorite = before);
+    }
+  }
 
   // ── Ações externas ────────────────────────────────────────────────
 
@@ -105,6 +146,22 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
               leading: _circleIcon(Icons.arrow_back_rounded, () {
                 context.pop();
               }),
+              actions: [
+                // ♥ Favorito (farmácias) — mesma tabela `favorites` da web.
+                if (facility.source == FacilitySource.store)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: _circleIcon(
+                      (_isFavorite ?? false)
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      _toggleFavorite,
+                      iconColor: (_isFavorite ?? false)
+                          ? const Color(0xFFF43F5E)
+                          : null,
+                    ),
+                  ),
+              ],
               title: Text(
                 facility.name,
                 style: const TextStyle(
@@ -388,7 +445,9 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
     );
   }
 
-  Widget _circleIcon(IconData icon, VoidCallback onTap) => Padding(
+  Widget _circleIcon(IconData icon, VoidCallback onTap,
+          {Color? iconColor}) =>
+      Padding(
         padding: const EdgeInsets.only(left: 12),
         child: GestureDetector(
           onTap: onTap,
@@ -397,7 +456,8 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
               color: Color(0x660B1D31),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppColors.textPrimary, size: 20),
+            child: Icon(icon,
+                color: iconColor ?? AppColors.textPrimary, size: 20),
           ),
         ),
       );

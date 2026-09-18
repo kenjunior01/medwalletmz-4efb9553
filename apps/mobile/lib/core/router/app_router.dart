@@ -29,6 +29,9 @@ import '../../features/deliveries/presentation/deliveries_screen.dart';
 import '../../features/deliveries/presentation/delivery_tracking_screen.dart';
 import '../../features/facilities/presentation/facilities_screen.dart';
 import '../../features/facilities/presentation/facility_detail_screen.dart';
+import '../../features/favorites/presentation/favorites_screen.dart';
+import '../../features/orders/presentation/order_tracking_screen.dart';
+import '../../features/orders/presentation/orders_screen.dart';
 import '../../features/health_hub/presentation/health_hub_screen.dart';
 import '../../features/health_workers/presentation/health_workers_screen.dart';
 import '../../features/vision/presentation/qr_scan_screen.dart';
@@ -223,6 +226,18 @@ final router = GoRouter(
     GoRoute(
         path: '/insurance',
         builder: (_, __) => const InsuranceScreen()),
+
+    // F30 — Favoritos e Encomendas (paridade web ↔ app, realtime).
+    GoRoute(
+        path: '/favorites', builder: (_, __) => const FavoritesScreen()),
+    GoRoute(
+        path: '/orders', builder: (_, __) => const OrdersScreen()),
+    GoRoute(
+      path: '/order-tracking/:id',
+      builder: (_, state) => OrderTrackingScreen(
+        orderId: state.pathParameters['id']!,
+      ),
+    ),
 
     // F6 — Laboratórios (catálogo, pedido, histórico).
     GoRoute(path: '/labs', builder: (_, __) => const LabsScreen()),

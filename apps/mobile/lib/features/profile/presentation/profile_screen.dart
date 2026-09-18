@@ -569,6 +569,16 @@ class ProfileScreen extends ConsumerWidget {
                     onTap: () => context.go('/wallet'),
                   ),
                   _MenuItem(
+                    icon: Icons.favorite_rounded,
+                    label: 'Favoritos (sincroniza com a web)',
+                    onTap: () => context.push('/favorites'),
+                  ),
+                  _MenuItem(
+                    icon: Icons.receipt_long_rounded,
+                    label: 'Encomendas de farmácia',
+                    onTap: () => context.push('/orders'),
+                  ),
+                  _MenuItem(
                     icon: Icons.location_on_outlined,
                     label: 'Instituições de saúde',
                     onTap: () => context.go('/facilities'),
@@ -1318,6 +1328,38 @@ class _AddressesSheetState extends State<_AddressesSheet> {
                                   ),
                                 ],
                               ),
+                            ),
+                            // Definir padrão — paridade com a web.
+                            if (a['is_default'] != true)
+                              IconButton(
+                                tooltip: 'Definir como padrão',
+                                visualDensity: VisualDensity.compact,
+                                onPressed: () async {
+                                  try {
+                                    await widget.repo.setDefault(
+                                      userId: widget.userId,
+                                      id: a['id'] as String,
+                                    );
+                                    await _load();
+                                  } catch (_) {}
+                                },
+                                icon: const Icon(
+                                    Icons.star_border_rounded,
+                                    size: 19,
+                                    color: AppColors.textMuted),
+                              ),
+                            IconButton(
+                              tooltip: 'Remover morada',
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () async {
+                                try {
+                                  await widget.repo
+                                      .removeAddress(a['id'] as String);
+                                  await _load();
+                                } catch (_) {}
+                              },
+                              icon: const Icon(Icons.delete_outline_rounded,
+                                  size: 19, color: Color(0xFFFCA5A5)),
                             ),
                           ],
                         ),
