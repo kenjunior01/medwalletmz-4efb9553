@@ -19,7 +19,7 @@ class RankingScreen extends ConsumerStatefulWidget {
 
 class _RankingScreenState extends ConsumerState<RankingScreen>
     with SingleTickerProviderStateMixin {
-  late final TabController _tab = TabController(length: 4, vsync: this)
+  late final TabController _tab = TabController(length: 6, vsync: this)
     ..addListener(_onTab);
   RankingTab _current = RankingTab.doctors;
 
@@ -111,6 +111,8 @@ class _RankingScreenState extends ConsumerState<RankingScreen>
                     Tab(text: 'Farmácias'),
                     Tab(text: 'Clínicas'),
                     Tab(text: 'Hospitais'),
+                    Tab(text: 'Laboratórios'),
+                    Tab(text: 'Veterinário'),
                   ],
                 ),
               ),

@@ -5,11 +5,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 ///   • `user_gamification` — nível actual, XP, dias de streak, pontos;
 ///   • `achievements`      — catálogo activo ordenado por requisito;
 ///   • `user_achievements` — conquistas já desbloqueadas pelo utilizador;
-///   • `joy_coin_transactions` — histórico de pontos (últimos 10).
+///   • `joy_coin_transactions` — histórico de pontos (últimos 10);
+///   • `weekly_leaderboard` (view) + top de pontos — Ranking da comunidade;
+///   • `challenges` + `user_challenges` — Desafios da semana com adesão.
 /// O progresso de nível usa a mesma regra da web: cada nível = 500 XP,
 /// barra = (xp % 500) / 5 → percentagem. Zero alterações de backend.
 class UserGamification {
   const UserGamification({
+    required this.userId,
     required this.level,
     required this.experiencePoints,
     required this.joyCoins,
@@ -18,6 +21,7 @@ class UserGamification {
     required this.totalReviews,
   });
 
+  final String userId;
   final int level;
   final int experiencePoints;
   final int joyCoins;
@@ -32,6 +36,7 @@ class UserGamification {
 
   factory UserGamification.fromMap(Map<String, dynamic> m) {
     return UserGamification(
+      userId: m['user_id']?.toString() ?? '',
       level: (m['current_level'] as num?)?.toInt() ?? 1,
       experiencePoints: (m['experience_points'] as num?)?.toInt() ?? 0,
       joyCoins: (m['joy_coins'] as num?)?.toInt() ?? 0,
@@ -42,6 +47,7 @@ class UserGamification {
   }
 
   static const UserGamification empty = UserGamification(
+    userId: '',
     level: 1,
     experiencePoints: 0,
     joyCoins: 0,
@@ -156,6 +162,123 @@ class JoyTransaction {
   }
 }
 
+/// Entrada do ranking semanal — view `weekly_leaderboard` (mesma da web).
+/// Nota RLS: a view usa security_invoker; com as políticas actuais cada
+/// utilizador vê, no mínimo, a própria linha. Se a plataforma abrir o
+/// ranking público, a app mostra-o completo sem alterações.
+class LeaderboardEntry {
+  const LeaderboardEntry({
+    required this.userId,
+    this.fullName,
+    this.avatarUrl,
+    this.weeklyOrders = 0,
+    this.userLevel = 1,
+    this.joyCoins = 0,
+  });
+
+  final String userId;
+  final String? fullName;
+  final String? avatarUrl;
+  final int weeklyOrders;
+  final int userLevel;
+  final int joyCoins;
+
+  factory LeaderboardEntry.fromMap(Map<String, dynamic> m) =>
+      LeaderboardEntry(
+        userId: m['user_id']?.toString() ?? '',
+        fullName: m['full_name']?.toString(),
+        avatarUrl: m['avatar_url']?.toString(),
+        weeklyOrders: (m['weekly_orders'] as num?)?.toInt() ?? 0,
+        userLevel: (m['user_level'] as num?)?.toInt() ?? 1,
+        joyCoins: (m['joy_coins'] as num?)?.toInt() ?? 0,
+      );
+}
+
+/// Entrada do top de pontos — `user_gamification` ORDER BY joy_coins
+/// (mesma consulta de `useGamification.ts` da web, com join em profiles).
+class PointsEntry {
+  const PointsEntry({
+    required this.userId,
+    this.fullName,
+    this.avatarUrl,
+    this.joyCoins = 0,
+    this.level = 1,
+    this.streakDays = 0,
+  });
+
+  final String userId;
+  final String? fullName;
+  final String? avatarUrl;
+  final int joyCoins;
+  final int level;
+  final int streakDays;
+
+  factory PointsEntry.fromMap(Map<String, dynamic> m) {
+    final profile = (m['profiles'] as Map?)?.cast<String, dynamic>();
+    return PointsEntry(
+      userId: m['user_id']?.toString() ?? '',
+      fullName: profile?['full_name']?.toString(),
+      avatarUrl: profile?['avatar_url']?.toString(),
+      joyCoins: (m['joy_coins'] as num?)?.toInt() ?? 0,
+      level: (m['current_level'] as num?)?.toInt() ?? 1,
+      streakDays: (m['streak_days'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+/// Desafio da semana (`challenges`) + estado de adesão do utilizador
+/// (`user_challenges`) — mesmas tabelas do `WeeklyChallenges.tsx`.
+class Challenge {
+  const Challenge({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.targetValue,
+    required this.coinsReward,
+    required this.xpReward,
+    this.joined = false,
+    this.currentValue = 0,
+    this.completedAt,
+  });
+
+  final String id;
+  final String title;
+  final String description;
+  final String icon;
+  final int targetValue;
+  final int coinsReward;
+  final int xpReward;
+  final bool joined;
+  final int currentValue;
+  final DateTime? completedAt;
+
+  bool get isCompleted => completedAt != null;
+
+  /// Progresso 0–100 (só conta quando já aderiu, igual à web).
+  double get progressPercent =>
+      joined ? ((currentValue / targetValue) * 100).clamp(0, 100) : 0;
+
+  factory Challenge.fromMaps(
+    Map<String, dynamic> c,
+    Map<String, dynamic>? mine,
+  ) =>
+      Challenge(
+        id: c['id']?.toString() ?? '',
+        title: c['title']?.toString() ?? '',
+        description: c['description']?.toString() ?? '',
+        icon: c['icon']?.toString() ?? '🎯',
+        targetValue: (c['target_value'] as num?)?.toInt() ?? 1,
+        coinsReward: (c['joy_coins_reward'] as num?)?.toInt() ?? 0,
+        xpReward: (c['xp_reward'] as num?)?.toInt() ?? 0,
+        joined: mine != null,
+        currentValue: (mine?['current_value'] as num?)?.toInt() ?? 0,
+        completedAt: mine?['completed_at'] != null
+            ? DateTime.tryParse(mine!['completed_at'].toString())
+            : null,
+      );
+}
+
 class RewardsRepository {
   RewardsRepository(this._client);
 
@@ -226,6 +349,90 @@ class RewardsRepository {
     } catch (_) {
       return [];
     }
+  }
+  /// Ranking semanal — mesma view e limite da web (`WeeklyLeaderboard.tsx`).
+  Future<List<LeaderboardEntry>> fetchWeeklyLeaderboard({int limit = 10}) async {
+    try {
+      final rows = await _client
+          .from('weekly_leaderboard')
+          .select()
+          .limit(limit);
+      return [
+        for (final r in (rows as List))
+          LeaderboardEntry.fromMap(Map<String, dynamic>.from(r)),
+      ];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Top de pontos — mesma consulta de `useGamification.ts` da web.
+  Future<List<PointsEntry>> fetchPointsLeaderboard({int limit = 20}) async {
+    try {
+      final rows = await _client
+          .from('user_gamification')
+          .select(
+              'user_id, joy_coins, experience_points, current_level, streak_days, profiles!user_id(full_name, avatar_url)')
+          .order('joy_coins', ascending: false)
+          .limit(limit);
+      return [
+        for (final r in (rows as List))
+          PointsEntry.fromMap(Map<String, dynamic>.from(r)),
+      ];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Desafios activos com a janela vigente (mesmos filtros da web) + adesão.
+  Future<List<Challenge>> fetchChallenges() async {
+    final now = DateTime.now().toUtc().toIso8601String();
+    List<Map<String, dynamic>> rows;
+    try {
+      final data = await _client
+          .from('challenges')
+          .select()
+          .eq('is_active', true)
+          .gte('ends_at', now)
+          .lte('starts_at', now)
+          .order('joy_coins_reward', ascending: false);
+      rows = [
+        for (final r in (data as List))
+          Map<String, dynamic>.from(r as Map),
+      ];
+    } catch (_) {
+      return const [];
+    }
+    if (rows.isEmpty) return const [];
+    final mine = <String, Map<String, dynamic>>{};
+    final uid = _client.auth.currentUser?.id;
+    if (uid != null) {
+      try {
+        final uc = await _client
+            .from('user_challenges')
+            .select()
+            .eq('user_id', uid);
+        for (final r in (uc as List)) {
+          final m = Map<String, dynamic>.from(r);
+          mine[m['challenge_id']?.toString() ?? ''] = m;
+        }
+      } catch (_) {}
+    }
+    return [
+      for (final c in rows)
+        Challenge.fromMaps(c, mine[c['id']?.toString() ?? '']),
+    ];
+  }
+
+  /// Aderir a um desafio — mesmo INSERT da web
+  /// (`user_challenges {user_id, challenge_id}`).
+  Future<void> joinChallenge(String challengeId) async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) return;
+    await _client.from('user_challenges').insert({
+      'user_id': uid,
+      'challenge_id': challengeId,
+    });
   }
 }
 

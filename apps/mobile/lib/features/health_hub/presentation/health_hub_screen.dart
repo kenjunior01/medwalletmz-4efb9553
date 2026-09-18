@@ -8,6 +8,7 @@ import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/skeleton.dart';
+import '../data/offline_articles.dart';
 
 /// ── Modelos ──────────────────────────────────────────────────────────
 
@@ -65,6 +66,17 @@ class HealthArticle {
         _ => AppColors.accent,
       };
 
+  /// Converte um guia embutido (offline) no mesmo modelo usado pela BD,
+  /// para o leitor tratar as duas origens da mesma forma.
+  factory HealthArticle.fromOffline(OfflineArticle o) => HealthArticle(
+        id: o.id,
+        title: o.title,
+        excerpt: o.excerpt,
+        category: o.category,
+        bodyMd: o.paragraphs.join('\n\n'),
+        readMinutes: o.minutesRead,
+      );
+
   factory HealthArticle.fromJson(Map<String, dynamic> j) => HealthArticle(
         id: j['id'] as String,
         title: (j['title'] ?? '') as String,
@@ -98,6 +110,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
   bool _loading = true;
   String? _error;
   HealthArticle? _reading;
+  String _search = '';
 
   static const _categories = <(String?, String)>[
     (null, 'Todas'),
@@ -145,6 +158,55 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
         });
       }
     }
+  }
+
+  /// Lista visível: artigos da BD (se houver rede) filtrados pela busca;
+  /// em caso de falha/sem dados, os guias embutidos entram em cena.
+  List<HealthArticle> get _dbVisible {
+    final list = _articles ?? const <HealthArticle>[];
+    if (_search.isEmpty) return list;
+    final q = _search.toLowerCase();
+    return list
+        .where((a) =>
+            a.title.toLowerCase().contains(q) ||
+            a.excerpt.toLowerCase().contains(q))
+        .toList();
+  }
+
+  List<HealthArticle> get _offlineVisible {
+    Iterable<OfflineArticle> list = kOfflineArticles;
+    if (_category != null) {
+      list = list.where((a) => a.category == _category);
+    }
+    if (_search.isNotEmpty) {
+      final q = _search.toLowerCase();
+      list = list.where((a) =>
+          a.title.toLowerCase().contains(q) ||
+          a.excerpt.toLowerCase().contains(q));
+    }
+    return list.map(HealthArticle.fromOffline).toList();
+  }
+
+  bool get _showOfflineSection {
+    if (_loading) return false;
+    if (_error != null) return true; // sem rede → só os guias embutidos
+    if (_dbVisible.isEmpty) return true;
+    return false;
+  }
+
+  Future<void> _shareArticle(HealthArticle a) async {
+    final link = 'https://medwalletmz.online/health/education/${a.id}';
+    final text = '${a.title}\n\n${a.excerpt}\n\n$link';
+    try {
+      await Clipboard.setData(ClipboardData(text: text));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Resumo e link copiados — cola onde quiseres partilhar'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (_) {}
   }
 
   Future<void> _trackView(String articleId) async {
@@ -196,6 +258,32 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                   ],
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
+                child: TextField(
+                  onChanged: (v) => setState(() => _search = v.trim()),
+                  style: const TextStyle(
+                      color: AppColors.textPrimary, fontSize: 13.5),
+                  decoration: InputDecoration(
+                    hintText: 'Buscar artigos… (malária, gravidez, TB…)',
+                    hintStyle: const TextStyle(
+                        color: AppColors.textMuted, fontSize: 12.5),
+                    prefixIcon: const Icon(Icons.search_rounded,
+                        color: AppColors.textMuted, size: 20),
+                    isDense: true,
+                    filled: true,
+                    fillColor: AppColors.glassFill,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(color: AppColors.glassBorder),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(color: AppColors.glassBorder),
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 46,
                 child: ListView(
@@ -220,38 +308,101 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                         padding: EdgeInsets.symmetric(horizontal: 20),
                         child: ListSkeleton(count: 4, itemHeight: 110),
                       )
-                    : _error != null
-                        ? EmptyState(
-                            icon: Icons.wifi_off_rounded,
-                            title: 'Artigos indisponíveis',
-                            message: _error!,
-                            actionLabel: 'Recarregar',
-                            onAction: _load,
-                          )
-                        : (_articles?.isEmpty ?? true)
-                            ? const EmptyState(
-                                icon: Icons.menu_book_rounded,
-                                title: 'Ainda sem artigos',
-                                message:
-                                    'A equipa de saúde está a preparar conteúdo para esta categoria. Volta em breve.',
-                              )
-                            : RefreshIndicator(
-                                onRefresh: _load,
-                                color: AppColors.accent,
-                                child: ListView.builder(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      20, 10, 20, 40),
-                                  itemCount: _articles!.length,
-                                  itemBuilder: (context, i) => _ArticleCard(
-                                    article: _articles![i],
-                                    onTap: () => _open(_articles![i]),
-                                  ),
-                                ),
-                              ),
+                    : _buildList(),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// Lista combinada: artigos da BD + guias embutidos (offline), com banner
+  /// honesto quando estamos sem rede. Os guias ficam sempre acessíveis no fim
+  /// da lista (sem busca/filtro) — educação à saúde funciona sem internet.
+  Widget _buildList() {
+    final db = _dbVisible;
+    final offline = _offlineVisible;
+    final onlyOffline = _error != null || db.isEmpty;
+
+    if (db.isEmpty && offline.isEmpty) {
+      return ListView(
+        children: const [
+          EmptyState(
+            icon: Icons.menu_book_rounded,
+            title: 'Ainda sem artigos',
+            message:
+                'A equipa de saúde está a preparar conteúdo para esta categoria. Volta em breve.',
+          ),
+        ],
+      );
+    }
+
+    final children = <Widget>[];
+    if (_error != null) {
+      children.add(Container(
+        margin: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF59E0B).withOpacity(0.12),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.4)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.wifi_off_rounded,
+                color: Color(0xFFF59E0B), size: 18),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Sem internet — a mostrar os guias essenciais incluídos na app.',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 12,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ));
+    }
+    children.addAll([
+      for (final a in db)
+        _ArticleCard(article: a, onTap: () => _open(a)),
+    ]);
+    if (offline.isNotEmpty &&
+        (onlyOffline || (_search.isEmpty && _category == null))) {
+      if (!onlyOffline) {
+        children.add(Padding(
+          padding: const EdgeInsets.fromLTRB(0, 14, 0, 4),
+          child: Row(
+            children: [
+              const Icon(Icons.download_for_offline_outlined,
+                  color: AppColors.accent, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                'Guias essenciais · sempre disponíveis',
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ));
+      }
+      children.addAll([
+        for (final a in offline) _ArticleCard(article: a, onTap: () => _open(a)),
+      ]);
+    }
+    return RefreshIndicator(
+      onRefresh: _load,
+      color: AppColors.accent,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 40),
+        children: children,
       ),
     );
   }
@@ -316,6 +467,12 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                    ),
+                    IconButton(
+                      onPressed: () => _shareArticle(a),
+                      icon: const Icon(Icons.ios_share_rounded,
+                          color: AppColors.textSecondary, size: 20),
+                      tooltip: 'Partilhar',
                     ),
                   ],
                 ),
