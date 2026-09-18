@@ -35,13 +35,10 @@ android {
         versionName = flutter.versionName
     }
 
-    packaging {
-        jniLibs {
-            // Sem strip: os .so dos plugins vem ja compilados dos AARs do
-            // Maven (evita llvm-strip do NDK no ambiente de build).
-            keepDebugSymbols += "**/*.so"
-        }
-    }
+    // F31: sem keepDebugSymbols global em packaging.jniLibs — mantinha os
+    // símbolos de debug do próprio motor (libflutter.so 157MB → APK 550MB).
+    // O AGP faz o llvm-strip normal (NDK pré-instalado no CI / auto-download
+    // licenciado localmente).
 
     buildTypes {
         release {
