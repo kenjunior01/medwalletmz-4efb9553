@@ -601,6 +601,35 @@ Extensões naturais:
 | Recompensas zeradas | sem linha em `user_gamification` | normal — XP acumula com o uso; o cartão mostra Nível 1 |
 | Reserva de agente falha "saldo" | carteira insuficiente | carrega a carteira; a reserva é cancelada automaticamente se o débito falhar |
 
+### Novidades F32 — Excelência móvel (v0.7.0+19)
+
+- **Ficha de Emergência** (`/emergency-card`, exclusivo móvel): tipo de
+  sangue, alergias, condições crónicas, medicação actual, contacto ICE
+  com chamada de 1 toque e QR legível por qualquer câmara. Lê apenas o
+  cache local — funciona **sem internet** e é o **único ecrã acessível
+  com a app bloqueada** (bypass do bloqueio biométrico, pensado para
+  socorristas). Entradas: botão vermelho no ecrã de bloqueio, SOS,
+  Perfil → Ficha de Emergência, App Shortcut.
+- **App Shortcuts** (long-press no ícone, Android 7.1+): Escanear
+  receita · Medicação · SOS Emergência · Meddy IA. Cold e warm start
+  via `MethodChannel mz.medwallet/native` → GoRouter.
+- **Widget "Próxima Toma"** (AppWidget nativo em Kotlin): mostra no
+  ecrã inicial a próxima toma do plano (medicamento, dose, hora).
+  Persiste em `SharedPreferences` (sobrevive a reinícios), refresca em
+  tempo real quando o plano muda e o toque abre a Medicação.
+  Adicionar: long-press no ecrã inicial → Widgets → MedWallet.
+- **APK/AAB assinados com chave de produção**: keystore guardado nos
+  secrets do GitHub (`MEDWALLET_KEYSTORE_B64`, `MEDWALLET_STORE_PASS`,
+  `MEDWALLET_KEY_ALIAS`, `MEDWALLET_KEY_PASS`); o `build.gradle` usa a
+  chave de produção no CI e cai para debug em builds locais. O CI
+  produz também **AAB** (`medwallet-aab`) pronto para a Play Store.
+- FIX crítico de CI: o gatilho de push do workflow estava corrompido
+  (`branches: ain]`) — cada push em `apps/mobile` recompila de novo.
+
+> **Guarda o keystore** `medwallet-release.jks` + password em local
+> seguro (gestor de palavras). Sem ele, a Play Store não aceita
+> actualizações da mesma app. Validade: 30 anos.
+
 ## 8. Segurança
 
 - A anon key é **pública por desenho**; a protecção real é RLS —

@@ -7,9 +7,10 @@ plugins {
 android {
     namespace = "mz.medwallet"
     compileSdk = flutter.compileSdkVersion
-    // F32: NDK fixo (em vez de flutter.ndkVersion) — o CI instala
-    // exactamente esta versão; o strip nativo do AAB depende dela.
-    ndkVersion = "27.0.12077973"
+    // F32: NDK fixo — IGUAL ao do plugin Flutter (FlutterExtension.ndkVersion
+    // = 28.2.13676358). O CI instala exactamente esta versão; o strip
+    // nativo do AAB depende dela.
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
