@@ -505,7 +505,7 @@ class _MedicalParticlesState extends State<_MedicalParticles>
   static const _specs = <(IconData, double, double, double)>[
     // ícone, esquerda (0..1), fase (0..1), tamanho
     (Icons.medication_rounded, 0.10, 0.00, 15),
-    (Icons.stethoscope, 0.26, 0.22, 13),
+    (Icons.healing, 0.26, 0.22, 13),
     (Icons.monitor_heart_rounded, 0.48, 0.40, 17),
     (Icons.vaccines_rounded, 0.70, 0.10, 12),
     (Icons.favorite_rounded, 0.86, 0.55, 14),
