@@ -68,8 +68,13 @@ android {
             signingConfig = hasReleaseKey
                 ? signingConfigs.release
                 : signingConfigs.getByName("debug")
-            // Sem extracao de simbolos nativos (so para Play Store).
-            ndk { debugSymbolLevel = "NONE" }
+            // F32: SYMBOL_TABLE (não NONE!) — o flutter_tools EXIGE
+            // libflutter.so.sym + libapp.so.sym no AAB (verificação
+            // _isAabStrippedOfDebugSymbols); o AGP só os extrai com
+            // debugSymbolLevel != NONE. O APK não é afectado: os .sym
+            // só entram no AAB (BUNDLE-METADATA), o APK continua
+            // pequeno e stripado como no F31.
+            ndk { debugSymbolLevel = "SYMBOL_TABLE" }
         }
     }
 
