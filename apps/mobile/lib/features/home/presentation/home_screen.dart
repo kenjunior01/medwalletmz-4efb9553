@@ -743,7 +743,7 @@ class _JoyCoinsChip extends ConsumerWidget {
   }
 
   String _formatCoins(int v) =>
-      v.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), '.');
+      v.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => '.');
 }
 
 /// Cartão "Próxima dose" — countdown real a partir do plano de

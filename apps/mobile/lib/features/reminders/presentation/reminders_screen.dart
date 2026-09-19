@@ -8,6 +8,7 @@ import '../../../core/reminders/meds_reminder_service.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/confetti_overlay.dart';
+import '../../../core/widgets/gradient_button.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../meds/data/meds_repository.dart';

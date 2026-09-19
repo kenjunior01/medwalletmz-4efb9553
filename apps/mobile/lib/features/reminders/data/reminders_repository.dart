@@ -166,7 +166,7 @@ class NextDose {
     if (h > 0) {
       return 'em ${h}h${m > 0 ? '${m.toString().padLeft(2, '0')}min' : ''}';
     }
-    return 'em $mmin';
+    return 'em ${m}min';
   }
 }
 
