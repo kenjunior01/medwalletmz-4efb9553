@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/confetti_overlay.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../data/rewards_repository.dart';
 
@@ -76,6 +77,8 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen>
     try {
       await ref.read(rewardsRepositoryProvider).joinChallenge(c.id);
       if (!mounted) return;
+      // F32 — celebração ao aceitar desafio.
+      showConfetti(context, message: 'Desafio aceite! 🎯');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Desafio aceite! Boa sorte! 🎯'),

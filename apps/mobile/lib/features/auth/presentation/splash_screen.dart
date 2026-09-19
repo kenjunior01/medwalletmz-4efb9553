@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_background.dart';
@@ -20,13 +21,21 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1600), () {
+    Future.delayed(const Duration(milliseconds: 1600), () async {
       if (!mounted) return;
       final logged = authRefresh.session != null;
       // Sessão aberta: refresca o cache da Ficha de Emergência (o único
       // ecrã acessível com a app bloqueada — precisa de dados frescos).
       if (logged) EmergencyCardRepository.instance.refresh();
-      context.go(logged ? '/home' : '/login');
+      if (logged) {
+        context.go('/home');
+        return;
+      }
+      // F32 — primeira utilização → onboarding (uma única vez).
+      final prefs = await SharedPreferences.getInstance();
+      final seen = prefs.getBool('onboarding_done') ?? false;
+      if (!mounted) return;
+      context.go(seen ? '/login' : '/onboarding');
     });
   }
 

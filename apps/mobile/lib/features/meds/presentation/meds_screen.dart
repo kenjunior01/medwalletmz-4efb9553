@@ -129,6 +129,13 @@ class _Body extends StatelessWidget {
                 ),
               ),
             ),
+            // F32 — atalho para Lembretes (horários + notificações).
+            IconButton(
+              onPressed: () => context.push('/reminders'),
+              tooltip: 'Lembretes e horários',
+              icon: const Icon(Icons.alarm_rounded,
+                  color: AppColors.accent),
+            ),
           ],
         ),
         const SizedBox(height: 10),

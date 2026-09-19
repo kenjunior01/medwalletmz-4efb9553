@@ -14,8 +14,10 @@ import '../../../core/widgets/wallet_card.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../bookings/domain/booking_models.dart';
 import '../../bookings/presentation/bookings_controller.dart';
+import '../../health_hub/data/offline_articles.dart';
 import '../../notifications/presentation/notifications_controller.dart';
 import '../../regional/data/regional_models.dart';
+import '../../reminders/data/reminders_repository.dart';
 import '../../services/presentation/services_controller.dart';
 import '../../wallet/presentation/deposit_sheet.dart';
 import '../../wallet/presentation/wallet_controller.dart';
@@ -50,6 +52,8 @@ class HomeScreen extends ConsumerWidget {
           ref.invalidate(profileProvider);
           ref.invalidate(myConsultationsProvider);
           ref.invalidate(walletStreamProvider);
+          ref.invalidate(nextDoseProvider);
+          ref.invalidate(joyCoinsProvider);
           await Future<void>.delayed(const Duration(milliseconds: 450));
         },
         child: AppBackground(
@@ -117,7 +121,8 @@ class HomeScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  // F11 — Meddy 🐻: chat IA directo do ecrã principal.
+                  // F32 — Joy Coins visíveis na Home (→ /rewards).
+                  const _JoyCoinsChip(),
                   IconButton(
                     onPressed: () => context.push('/meddy'),
                     tooltip: 'Falar com o Meddy',
@@ -329,6 +334,22 @@ class HomeScreen extends ConsumerWidget {
                   .fadeIn(duration: 320.ms)
                   .slideY(begin: 0.15, curve: Curves.easeOutCubic),
 
+              const SizedBox(height: 24),
+
+              // ── F32 — Saúde hoje: próxima dose + dica do dia ────────
+              const Text(
+                'Saúde hoje',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.6,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const _NextDoseCard(),
+              const SizedBox(height: 12),
+              const _HealthTipCard(),
               const SizedBox(height: 24),
 
               // ── Próxima consulta ────────────────────────────────────
@@ -669,5 +690,238 @@ class _FeaturedDoctors extends ConsumerWidget {
         child: AppSkeleton(height: 72, radius: 18),
       ),
     );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// F32 — Saúde hoje (Joy Coins, próxima dose, dica do dia)
+// ══════════════════════════════════════════════════════════════════
+
+/// Chip dourado com o saldo de Joy Coins (`user_gamification`) —
+/// toca para abrir Recompensas. Esconde-se suavemente se falhar.
+class _JoyCoinsChip extends ConsumerWidget {
+  const _JoyCoinsChip();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final coins = ref.watch(joyCoinsProvider);
+    final value = coins.valueOrNull;
+
+    return GestureDetector(
+      onTap: () => context.push('/rewards'),
+      child: Container(
+        margin: const EdgeInsets.only(right: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: AppColors.warning.withOpacity(0.14),
+          border: Border.all(color: AppColors.warning.withOpacity(0.4)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🪙', style: TextStyle(fontSize: 13)),
+            const SizedBox(width: 5),
+            coins.isLoading
+                ? const SizedBox(
+                    width: 26,
+                    height: 12,
+                    child: AppSkeleton(height: 12, radius: 6),
+                  )
+                : Text(
+                    _formatCoins(value ?? 0),
+                    style: const TextStyle(
+                      color: AppColors.warning,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatCoins(int v) =>
+      v.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), '.');
+}
+
+/// Cartão "Próxima dose" — countdown real a partir do plano de
+/// medicação activo; abre o ecrã de Lembretes. Sem plano → some.
+class _NextDoseCard extends ConsumerWidget {
+  const _NextDoseCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final next = ref.watch(nextDoseProvider);
+
+    return next.when(
+      loading: () => const AppSkeleton(height: 92, radius: 20),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (d) {
+        if (d == null) return const SizedBox.shrink();
+        final hh = d.time.hour.toString().padLeft(2, '0');
+        final mm = d.time.minute.toString().padLeft(2, '0');
+        return GestureDetector(
+          onTap: () => context.push('/reminders'),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0x2E1E6B9C), Color(0x1414B8A6)],
+              ),
+              border: Border.all(color: AppColors.glassBorder),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.accent.withOpacity(0.16),
+                    border:
+                        Border.all(color: AppColors.accent.withOpacity(0.4)),
+                  ),
+                  child: const Icon(Icons.alarm_rounded,
+                      color: AppColors.accent, size: 24),
+                ),
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Próxima dose · ${d.countdownLabel}',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.6),
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        d.medName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$hh:$mm'
+                        '${d.dosage != null && d.dosage!.isNotEmpty ? ' · ${d.dosage}' : ''}'
+                        '${d.streak > 1 ? '  ·  🔥 ${d.streak} dias' : ''}',
+                        style: const TextStyle(
+                            color: AppColors.textSecondary, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppColors.textMuted),
+              ],
+            ),
+          ),
+        )
+            .animate(delay: 90.ms)
+            .fadeIn(duration: 320.ms)
+            .slideY(begin: 0.08, curve: Curves.easeOutCubic);
+      },
+    );
+  }
+}
+
+/// Dica de saúde do dia — rotação diária dos guias offline (MISAU/OMS)
+/// embutidos na app. Toca para abrir o hub de educação à saúde.
+class _HealthTipCard extends StatelessWidget {
+  const _HealthTipCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
+    final article = kOfflineArticles[dayOfYear % kOfflineArticles.length];
+
+    return GestureDetector(
+      onTap: () => context.push('/health-hub'),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.glassFill,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.glassBorder),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                    colors: AppColors.successGradient),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.success.withOpacity(0.3),
+                    blurRadius: 12,
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.health_and_safety_rounded,
+                  color: Colors.white, size: 23),
+            ),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Dica de saúde · ${article.minutesRead} min de leitura',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.55),
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    article.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    article.excerpt,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 11.5),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded,
+                color: AppColors.textMuted),
+          ],
+        ),
+      ),
+    )
+        .animate(delay: 150.ms)
+        .fadeIn(duration: 320.ms)
+        .slideY(begin: 0.08, curve: Curves.easeOutCubic);
   }
 }

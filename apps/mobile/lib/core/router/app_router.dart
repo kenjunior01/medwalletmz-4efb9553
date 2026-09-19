@@ -35,6 +35,8 @@ import '../../features/orders/presentation/order_tracking_screen.dart';
 import '../../features/orders/presentation/orders_screen.dart';
 import '../../features/health_hub/presentation/health_hub_screen.dart';
 import '../../features/health_workers/presentation/health_workers_screen.dart';
+import '../../features/onboarding/presentation/onboarding_screen.dart';
+import '../../features/reminders/presentation/reminders_screen.dart';
 import '../../features/vision/presentation/qr_scan_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/ads/presentation/ads_screen.dart';
@@ -120,7 +122,10 @@ final router = GoRouter(
   redirect: (context, state) {
     final session = authRefresh.session;
     final loc = state.matchedLocation;
-    final isPublic = loc == '/login' || loc == '/register' || loc == '/otp';
+    final isPublic = loc == '/login' ||
+        loc == '/register' ||
+        loc == '/otp' ||
+        loc == '/onboarding';
     final onSplash = loc == '/splash';
 
     if (session == null && !isPublic && !onSplash) return '/login';
@@ -137,6 +142,10 @@ final router = GoRouter(
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
     GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
     GoRoute(path: '/otp', builder: (_, __) => const OtpScreen()),
+    // F32 — Onboarding de primeira utilização (flag local).
+    GoRoute(
+        path: '/onboarding',
+        builder: (_, __) => const OnboardingScreen()),
 
     // Shell com navegação inferior (5 abas em IndexedStack — estado vivo).
     StatefulShellRoute.indexedStack(
@@ -227,6 +236,8 @@ final router = GoRouter(
         path: '/emergency-card',
         builder: (_, __) => const EmergencyCardScreen()),
     GoRoute(path: '/meds', builder: (_, __) => const MedsScreen()),
+    // F32 — Lembretes de medicação (notificações locais, offline).
+    GoRoute(path: '/reminders', builder: (_, __) => const RemindersScreen()),
     GoRoute(
         path: '/insurance',
         builder: (_, __) => const InsuranceScreen()),
