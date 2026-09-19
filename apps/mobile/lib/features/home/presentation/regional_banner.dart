@@ -91,19 +91,38 @@ final regionalContentProvider =
     }
   } catch (_) {}
 
-  final now = DateTime.now().toUtc().toIso8601String();
+  final now = DateTime.now().toUtc();
+
+  // FIX F32: as duas janelas de data (starts_at/ends_at) eram dois
+  // `.or()` encadeados — no postgrest-dart o 2.º SOBRESCREVE o 1.º, e
+  // campanhas com starts_at no futuro apareciam antes do tempo. O
+  // PostgREST não expressa (a‖b)∧(c‖d) num só parâmetro `or`, por isso
+  // a janela temporal é aplicada aqui no cliente, com honestidade de
+  // dados: só entra o que está activo AGORA.
+  bool windowOk(Map<String, dynamic> row) {
+    final starts = DateTime.tryParse('${row['starts_at'] ?? ''}');
+    final ends = DateTime.tryParse('${row['ends_at'] ?? ''}');
+    if (starts != null && starts.isAfter(now)) return false;
+    if (ends != null && ends.isBefore(now)) return false;
+    return true;
+  }
+
   try {
     final rows = await Supabase.instance.client
         .from('regional_content')
         .select()
         .eq('is_active', true)
         .eq('country_code', countryCode)
-        .or('starts_at.is.null,starts_at.lte.$now')
-        .or('ends_at.is.null,ends_at.gte.$now')
         .order('is_pinned', ascending: false)
         .order('created_at', ascending: false)
-        .limit(3);
-    return rows.map(HomeRegionalContent.fromJson).toList();
+        .limit(8);
+    final items = rows
+        .cast<Map<String, dynamic>>()
+        .where(windowOk)
+        .take(3)
+        .map(HomeRegionalContent.fromJson)
+        .toList();
+    return items;
   } catch (_) {
     return const [];
   }

@@ -8,6 +8,15 @@ final walletRepositoryProvider = Provider<WalletRepository>(
   (ref) => WalletRepository(ref.watch(supabaseClientProvider)),
 );
 
+/// Histórico de levantamentos (F32: movido para o controller — era
+/// declarado no wallet_screen, o que impedia o WithdrawSheet de o
+/// invalidar sem import circular).
+final withdrawalsProvider = FutureProvider<List<WithdrawalRow>>((ref) async {
+  final uid = ref.watch(currentUserIdProvider);
+  if (uid == null) return const [];
+  return ref.watch(walletRepositoryProvider).fetchWithdrawals(uid);
+});
+
 /// Saldo em tempo real — null enquanto não existir carteira.
 final walletStreamProvider = StreamProvider<Wallet?>((ref) {
   final uid = ref.watch(currentUserIdProvider);

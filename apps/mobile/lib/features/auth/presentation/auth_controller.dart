@@ -17,9 +17,20 @@ final authRepositoryProvider = Provider<AuthRepository>(
 );
 
 /// ID do utilizador autenticado (reage a mudanças de sessão).
+///
+/// FIX F32: antes era um Provider estático que cachava o uid na 1.ª
+/// leitura — após logout→login os dependentes (carteira, perfil,
+/// papéis, notificações) ficavam presos ao uid antigo/vazio: saldo
+/// 0,00 MT, "Utilizador" no lugar do nome, badge de notificações morto.
+/// Agora re-avalia em CADA evento de auth, e todos os providers que
+/// fazem `ref.watch(currentUserIdProvider)` recarregam sozinhos.
 final currentUserIdProvider = Provider<String?>((ref) {
   if (!AppConfig.isConfigured) return null;
   final client = ref.watch(supabaseClientProvider);
+  final sub = client.auth.onAuthStateChange.listen((_) {
+    ref.invalidateSelf();
+  });
+  ref.onDispose(sub.cancel);
   return client.auth.currentUser?.id;
 });
 

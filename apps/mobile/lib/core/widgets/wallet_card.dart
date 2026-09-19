@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
-import '../utils/formatters.dart';
 import 'amount_counter.dart';
 
 /// Cartão-herói da carteira: gradiente Medical Blue, reflexo diagonal
@@ -174,12 +173,21 @@ class _WalletCardState extends State<WalletCard> {
           const Spacer(),
           Row(
             children: [
-              Text(
-                maskMzPhone(_ownerDisplay()),
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.85),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+              // FIX F32: o nome do titular era passado por maskMzPhone
+              // e saía "+Ana Ma ria Chissano". Nome é nome — mostra-se
+              // tal e qual, com ellipsis para nomes longos.
+              Flexible(
+                child: Text(
+                  _ownerDisplay().isEmpty
+                      ? 'Titular MedWallet'
+                      : _ownerDisplay(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.85),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const Spacer(),

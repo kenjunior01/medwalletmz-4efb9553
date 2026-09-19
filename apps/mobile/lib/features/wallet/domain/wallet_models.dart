@@ -57,7 +57,12 @@ class WalletTransaction {
         status: _status(json['status'] as String? ?? 'completed'),
         description: json['description'] as String?,
         paymentMethod: json['payment_method'] as String?,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt:
+            // F32: toLocal() + tryParse — histórico da carteira mostrava
+            // horas em UTC ("Hoje"/"Ontem" viravam às 2 h da manhã em MZ)
+            // e uma linha com created_at inválido matava o stream todo.
+            DateTime.tryParse('${json['created_at'] ?? ''}')?.toLocal() ??
+                DateTime.now(),
       );
 
   /// Depósitos e créditos aumentam o saldo; débitos gastam.

@@ -17,13 +17,8 @@ import 'deposit_sheet.dart';
 import 'wallet_controller.dart';
 import 'withdraw_sheet.dart';
 
-/// Histórico de levantamentos (recarrega ao abrir a aba).
-final withdrawalsProvider = FutureProvider<List<WithdrawalRow>>((ref) async {
-  final uid = ref.watch(currentUserIdProvider);
-  if (uid == null) return const [];
-  return ref.watch(walletRepositoryProvider).fetchWithdrawals(uid);
-});
-
+/// Histórico de levantamentos — F32: provider movido para
+/// wallet_controller.dart (para o WithdrawSheet o poder invalidar).
 /// Carteira: saldo hero + ações + histórico realtime.
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
@@ -35,6 +30,8 @@ class WalletScreen extends ConsumerWidget {
     final profileAsync = ref.watch(profileProvider);
     final hidden = ref.watch(balanceHiddenProvider);
 
+    // F32 FIX: levantamentos agora recarregam de facto após um pedido
+    // (o invalidation acontece no WithdrawSheet, quando o pedido ok).
     return Scaffold(
       body: AppBackground(
         child: SafeArea(
@@ -194,7 +191,8 @@ class WalletScreen extends ConsumerWidget {
       ),
     );
     // Refresh após voltar (o realtime já cuida, mas garantimos o perfil).
-    ref.invalidate(profileProvider);
+    // F32 FIX: guard com context.mounted — o ecrã pode ter saído da árvore.
+    if (context.mounted) ref.invalidate(profileProvider);
   }
 }
 

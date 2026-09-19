@@ -210,8 +210,13 @@ final router = GoRouter(
         builder: (_, __) => const ManagerHubScreen()),
     GoRoute(
       path: '/manager-console',
-      builder: (_, state) =>
-          ManagerConsoleScreen(countryId: state.extra as String?),
+      builder: (_, state) {
+        // F32 FIX: cast defensivo — extra nunca derruba a rota.
+        final extra = state.extra;
+        return ManagerConsoleScreen(
+          countryId: extra is String ? extra : null,
+        );
+      },
     ),
     GoRoute(
         path: '/global-dashboard',
@@ -416,7 +421,8 @@ final router = GoRouter(
       builder: (_, state) {
         final extra = state.extra;
         LatLng? initial;
-        if (extra is List && extra.length >= 2) {
+        // F32 FIX: checks `is` em vez de casts que lançam TypeError.
+        if (extra is List && extra.length >= 2 && extra[0] is num) {
           initial = LatLng(
             (extra[0] as num).toDouble(),
             (extra[1] as num).toDouble(),
@@ -533,6 +539,31 @@ class _GlassNavBar extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // F32: indicador superior do item activo — paridade
+                    // com o .mw-nav-active::before da web (cápsula com
+                    // glow no topo do ícone).
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 260),
+                      curve: Curves.easeOutCubic,
+                      width: active ? 24 : 0,
+                      height: 3,
+                      margin: const EdgeInsets.only(bottom: 3),
+                      decoration: BoxDecoration(
+                        color: active
+                            ? const Color(0xFF38BDF8)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(3),
+                        boxShadow: active
+                            ? [
+                                BoxShadow(
+                                  color: const Color(0xFF38BDF8)
+                                      .withOpacity(0.55),
+                                  blurRadius: 8,
+                                ),
+                              ]
+                            : null,
+                      ),
+                    ),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 260),
                       curve: Curves.easeOutCubic,
@@ -543,6 +574,17 @@ class _GlassNavBar extends ConsumerWidget {
                             ? const Color(0x2E1E6B9C)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(14),
+                        // F32: mw-nav-glow — o ícone activo "acende".
+                        boxShadow: active
+                            ? [
+                                BoxShadow(
+                                  color: const Color(0xFF38BDF8)
+                                      .withOpacity(0.30),
+                                  blurRadius: 14,
+                                  spreadRadius: 1,
+                                ),
+                              ]
+                            : null,
                       ),
                       child: Icon(
                         d.icon,

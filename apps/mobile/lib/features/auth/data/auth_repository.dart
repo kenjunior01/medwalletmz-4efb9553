@@ -71,17 +71,33 @@ class AuthRepository {
     if (rows.isNotEmpty) return Profile.fromJson(rows.first);
 
     // Fallback: cria perfil a partir dos metadados da conta.
-    final meta = currentUser?.userMetadata ?? const {};
-    final inserted = await _client
-        .from('profiles')
-        .insert({
-          'user_id': uid,
-          'full_name': meta['full_name'] as String?,
-          'phone': currentUser?.phone ?? meta['phone'] as String?,
-        })
-        .select()
-        .single();
-    return Profile.fromJson(inserted);
+    // F32 FIX: com try/catch — se o trigger de signup já criou a linha
+    // (corrida) ou o RLS recusar o insert, o perfil devolve null em vez
+    // de derrubar profileProvider para erro ("Não foi possível carregar").
+    try {
+      final meta = currentUser?.userMetadata ?? const {};
+      final inserted = await _client
+          .from('profiles')
+          .insert({
+            'user_id': uid,
+            'full_name': meta['full_name'] as String?,
+            'phone': currentUser?.phone ?? meta['phone'] as String?,
+          })
+          .select()
+          .single();
+      return Profile.fromJson(inserted);
+    } catch (_) {
+      // Última tentativa: reler (o trigger pode ter criado entretanto).
+      try {
+        final retry = await _client
+            .from('profiles')
+            .select()
+            .eq('user_id', uid)
+            .limit(1);
+        if (retry.isNotEmpty) return Profile.fromJson(retry.first);
+      } catch (_) {}
+      return null;
+    }
   }
 
   Future<void> updateProfile({

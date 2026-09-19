@@ -25,10 +25,16 @@ class Consultation {
   final String? reason;
 
   factory Consultation.fromJson(Map<String, dynamic> json) => Consultation(
-        id: json['id'] as String,
-        doctorId: json['doctor_id'] as String,
-        patientId: json['patient_id'] as String,
-        scheduledAt: DateTime.parse(json['scheduled_at'] as String),
+        id: '${json['id'] ?? ''}',
+        doctorId: '${json['doctor_id'] ?? ''}',
+        patientId: '${json['patient_id'] ?? ''}',
+        // F32: toLocal() — PostgREST devolve timestamptz em UTC; sem
+        // conversão, a Home mostrava "Próxima consulta" 2 h adiantada.
+        // tryParse + fallback: uma linha com data inválida nunca mais
+        // mata o stream realtime inteiro.
+        scheduledAt:
+            DateTime.tryParse('${json['scheduled_at'] ?? ''}')?.toLocal() ??
+                DateTime.now(),
         durationMinutes: (json['duration_minutes'] as num?)?.toInt() ?? 30,
         consultationType: json['consultation_type'] as String? ?? 'chat',
         status: json['status'] as String? ?? 'scheduled',

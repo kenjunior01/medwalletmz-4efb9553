@@ -42,8 +42,9 @@ class AppNotification {
   /// Rota interna opcional enviada no metadata (ex.: '/bookings').
   String? get route => metadata['route'] as String?;
 
+  // F32: .toLocal() — banners e lista mostravam horas em UTC.
   static DateTime? _date(Object? v) =>
-      v == null ? null : DateTime.tryParse(v.toString());
+      v == null ? null : DateTime.tryParse(v.toString())?.toLocal();
 
   factory AppNotification.fromJson(Map<String, dynamic> j) => AppNotification(
         id: j['id'] as String,

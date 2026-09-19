@@ -318,7 +318,13 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
             : _destination.text.trim(),
         destinationName: _name.text.trim().isEmpty ? null : _name.text.trim(),
       );
-      if (mounted) setState(() => _done = true);
+      if (mounted) {
+        // F32 FIX: refresca levantamentos + transações — antes a lista
+        // de levantamentos ficava stale até reiniciar a app.
+        ref.invalidate(withdrawalsProvider);
+        ref.invalidate(transactionsProvider);
+        setState(() => _done = true);
+      }
     } catch (e) {
       if (mounted) {
         final msg = e.toString().toLowerCase();

@@ -1247,9 +1247,12 @@ class _AddressesSheetState extends State<_AddressesSheet> {
         addressLine: _line.text.trim(),
         city: _city.text.trim().isEmpty ? 'Maputo' : _city.text.trim(),
       );
-      _label.clear();
-      _line.clear();
-      await _load();
+      // F32 FIX: guards mounted — a folha pode fechar durante o await.
+      if (mounted) {
+        _label.clear();
+        _line.clear();
+        await _load();
+      }
     } catch (_) {
       if (mounted) setState(() => _error = 'Falha ao guardar morada.');
     } finally {

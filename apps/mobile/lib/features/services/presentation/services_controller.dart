@@ -21,3 +21,11 @@ final doctorsProvider = FutureProvider<List<Doctor>>((ref) async {
   final specialtyId = ref.watch(selectedSpecialtyProvider);
   return repo.fetchDoctors(specialtyId: specialtyId);
 });
+
+/// F32 FIX: especialistas em destaque da HOME — provider próprio, SEM
+/// ligação ao filtro da aba Serviços. Antes, escolher "Cardiologia" nos
+/// Serviços vazava para a Home: os destaques ficavam só de cardiologia
+/// (ou desapareciam) e o skeleton piscava a cada invalidate.
+final featuredDoctorsProvider = FutureProvider<List<Doctor>>((ref) async {
+  return ref.watch(servicesRepositoryProvider).fetchDoctors();
+});

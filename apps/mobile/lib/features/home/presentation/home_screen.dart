@@ -623,73 +623,73 @@ class _FeaturedDoctors extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final doctors = ref.watch(doctorsProvider);
-
-    return doctors.maybeWhen(
-      data: (list) {
-        final top = list.take(3).toList();
-        if (top.isEmpty) {
-          return const SizedBox.shrink();
-        }
-        return Column(
-          children: [
-            for (final d in top)
-              Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: AppColors.glassFill,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppColors.glassBorder),
-                ),
-                child: Row(
-                  children: [
-                    Text(d.specialtyIcon ?? '🩺',
-                        style: const TextStyle(fontSize: 24)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+    // F32 FIX: provider dedicado (sem leak do filtro de especialidade
+    // da aba Serviços) + valueOrNull: enquanto recarrega mantém a lista
+    // anterior em vez de piscar um skeleton.
+    final list = ref.watch(featuredDoctorsProvider).valueOrNull;
+    if (list == null) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: AppSkeleton(height: 72, radius: 18),
+      );
+    }
+    final top = list.take(3).toList();
+    if (top.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      children: [
+        for (final d in top)
+          Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.glassFill,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.glassBorder),
+            ),
+            child: Row(
+              children: [
+                Text(d.specialtyIcon ?? '🩺',
+                    style: const TextStyle(fontSize: 24)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        d.specialtyName ?? 'Consulta geral',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Row(
                         children: [
+                          const Icon(Icons.star_rounded,
+                              color: AppColors.warning, size: 14),
+                          const SizedBox(width: 3),
                           Text(
-                            d.specialtyName ?? 'Consulta geral',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            '${d.rating.toStringAsFixed(1)} · ${formatMZN(d.consultationFee)}',
                             style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              const Icon(Icons.star_rounded,
-                                  color: AppColors.warning, size: 14),
-                              const SizedBox(width: 3),
-                              Text(
-                                '${d.rating.toStringAsFixed(1)} · ${formatMZN(d.consultationFee)}',
-                                style: const TextStyle(
-                                    color: AppColors.textMuted,
-                                    fontSize: 12),
-                              ),
-                            ],
+                                color: AppColors.textMuted,
+                                fontSize: 12),
                           ),
                         ],
                       ),
-                    ),
-                    const Icon(Icons.chevron_right_rounded,
-                        color: AppColors.textMuted),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-          ],
-        ).animate(delay: 60.ms).fadeIn(duration: 320.ms);
-      },
-      orElse: () => const Padding(
-        padding: EdgeInsets.only(top: 8),
-        child: AppSkeleton(height: 72, radius: 18),
-      ),
-    );
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppColors.textMuted),
+              ],
+            ),
+          ),
+      ],
+    ).animate(delay: 60.ms).fadeIn(duration: 320.ms);
   }
 }
 
