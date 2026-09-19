@@ -217,7 +217,7 @@ class _BeatingLogo extends StatelessWidget {
     );
   }
 
-  Widget _pulseRing(int delay) => Container(
+  Widget _pulseRing({required int delay}) => Container(
         width: 96,
         height: 96,
         decoration: BoxDecoration(
@@ -278,10 +278,12 @@ class _EcgPainter extends CustomPainter {
     final tail = total * (progress - 0.42);
 
     final Path window = tail < 0
-        ? Path()
+        // Parênteses obrigatórios: cascades '..' em ternário sem
+        // parênteses quebram o parser do Dart (erro de CI F32.
+        ? (Path()
           ..addPath(metric.extractPath(0, head), Offset.zero)
-          // Prologues ainda não desenhados nesta volta (wrap).
-          ..addPath(metric.extractPath(total + tail, total), Offset.zero)
+          // Segmento ainda não desenhado nesta volta (wrap).
+          ..addPath(metric.extractPath(total + tail, total), Offset.zero))
         : metric.extractPath(tail, head);
 
     // Traçado com gradiente ciano→turquesa (paleta da web).
@@ -356,20 +358,21 @@ class _ShimmerWordmarkState extends State<_ShimmerWordmark>
         // (stops fixos — sem risco de stops fora de 0..1).
         final t = _sweep.value * 3 - 1.5;
         return ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
+          shaderCallback: (bounds) => LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: [
+            colors: const [
               Colors.white,
               AppColors.accent,
               Color(0xFFFBBF24), // âmbar da web (region-logo-accent)
               AppColors.accent,
               Colors.white,
             ],
-            stops: [0, 0.3, 0.5, 0.7, 1],
-          )
-              .transform(GradientTranslation(t))
-              .createShader(bounds),
+            stops: const [0, 0.3, 0.5, 0.7, 1],
+            // FIX CI F32: transform é PARÂMETRO do construtor — não há
+            // método Gradient.transform(); a translação varre o brilho.
+            transform: GradientTranslation(t),
+          ).createShader(bounds),
           child: child,
         );
       },
@@ -502,7 +505,7 @@ class _MedicalParticlesState extends State<_MedicalParticles>
   static const _specs = <(IconData, double, double, double)>[
     // ícone, esquerda (0..1), fase (0..1), tamanho
     (Icons.medication_rounded, 0.10, 0.00, 15),
-    (Icons.stethoscope_rounded, 0.26, 0.22, 13),
+    (Icons.stethoscope, 0.26, 0.22, 13),
     (Icons.monitor_heart_rounded, 0.48, 0.40, 17),
     (Icons.vaccines_rounded, 0.70, 0.10, 12),
     (Icons.favorite_rounded, 0.86, 0.55, 14),

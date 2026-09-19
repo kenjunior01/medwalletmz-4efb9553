@@ -326,7 +326,7 @@ function NewDeliveryDialog({
   const coldChain = PACKAGE_OPTIONS.find((p) => p.key === pkg)?.cold ?? false;
   const quote = computeDeliveryFee(distanceKm, pkg, vehicle as any);
 
-  const useMyLocation = async (which: 'pickup' | 'drop') => {
+  const captureMyLocation = async (which: 'pickup' | 'drop') => {
     if (!('geolocation' in navigator)) {
       toast.error('Geolocalização não disponível neste dispositivo');
       return;
@@ -453,7 +453,7 @@ function NewDeliveryDialog({
             <Input className="mt-3" placeholder="Ex.: Farmácia Moderna, Av. Nyerere" value={pickupName} onChange={(e) => setPickupName(e.target.value)} />
             <Input className="mt-2" placeholder="Referência / andar (opcional)" value={pickupAddress} onChange={(e) => setPickupAddress(e.target.value)} />
             <button
-              onClick={() => useMyLocation('pickup')}
+              onClick={() => captureMyLocation('pickup')}
               className={cn(
                 'mt-2 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition',
                 pickupPoint ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-white/15 text-slate-400 hover:text-slate-200',
@@ -471,7 +471,7 @@ function NewDeliveryDialog({
             <Input className="mt-2" placeholder="Telefone (+258…)" value={dropPhone} onChange={(e) => setDropPhone(e.target.value)} />
             <Input className="mt-2" placeholder="Bairro, rua, nº da porta" value={dropAddress} onChange={(e) => setDropAddress(e.target.value)} />
             <button
-              onClick={() => useMyLocation('drop')}
+              onClick={() => captureMyLocation('drop')}
               className={cn(
                 'mt-2 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition',
                 dropPoint ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-white/15 text-slate-400 hover:text-slate-200',

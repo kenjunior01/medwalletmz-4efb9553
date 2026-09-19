@@ -58,7 +58,7 @@ export default function Doctors() {
   useEffect(() => {
     setLoading(true);
     (supabase as any).rpc('list_public_doctors', { _specialty_id: selectedSpecialty }).then(({ data }: any) => {
-      let list = ((data as any[]) || []).map((d: any) => {
+      const list = ((data as any[]) || []).map((d: any) => {
           const profile = { full_name: d.full_name, avatar_url: d.profile_avatar_url, default_city: d.default_city };
           let distance = Infinity;
           if (coordinates && d.latitude && d.longitude) {
