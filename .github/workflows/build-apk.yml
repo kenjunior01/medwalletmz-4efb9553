@@ -38,15 +38,42 @@ jobs:
           }
           EOF
 
+      # F32 — assinatura de PRODUÇÃO: keystore decodificado dos secrets.
+      # Sem os secrets o build continua (fallback debug no build.gradle).
+      - name: Keystore de produção (dos secrets)
+        env:
+          MEDWALLET_KEYSTORE_B64: ${{ secrets.MEDWALLET_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$MEDWALLET_KEYSTORE_B64" ]; then
+            echo "$MEDWALLET_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/medwallet-release.jks"
+            echo "MEDWALLET_STORE_FILE=$RUNNER_TEMP/medwallet-release.jks" >> "$GITHUB_ENV"
+            echo "MEDWALLET_STORE_PASS=${{ secrets.MEDWALLET_STORE_PASS }}" >> "$GITHUB_ENV"
+            echo "MEDWALLET_KEY_ALIAS=${{ secrets.MEDWALLET_KEY_ALIAS }}" >> "$GITHUB_ENV"
+            echo "MEDWALLET_KEY_PASS=${{ secrets.MEDWALLET_KEY_PASS }}" >> "$GITHUB_ENV"
+            echo "→ Keystore de produção carregado (APK/AAB assinados)"
+          else
+            echo "→ Sem keystore nos secrets — build assinado com debug"
+          fi
+
       - name: Pub get
         run: flutter pub get
 
-      - name: Build APK release
+      - name: Build APK release (assinado)
         run: flutter build apk --release --dart-define-from-file=env.json
 
-      - name: Upload artefacto
+      - name: Build AAB (Play Store)
+        run: flutter build appbundle --release --dart-define-from-file=env.json
+
+      - name: Upload artefacto APK
         uses: actions/upload-artifact@v4
         with:
           name: medwallet-apk
           path: apps/mobile/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      - name: Upload artefacto AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: medwallet-aab
+          path: apps/mobile/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error

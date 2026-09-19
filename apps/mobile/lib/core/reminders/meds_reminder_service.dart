@@ -4,6 +4,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../native/native_bridge.dart';
+
 /// Lembretes de medicação — notificações locais (sem dependências de
 /// FCM/APNs, funciona offline). Agenda 1–3 lembretes diários por
 /// medicamento derivados da frequência da receita:
@@ -57,7 +59,11 @@ class MedsReminderService {
   /// Liga/desliga os lembretes (preferência local do utilizador).
   void setEnabled(bool value) {
     _enabled = value;
-    if (!value) cancelAll();
+    if (!value) {
+      cancelAll();
+      // Widget sem plano: estado vazio honesto.
+      NativeBridge.updateNextDoseWidget(hasDose: false);
+    }
   }
 
   bool get isEnabled => _enabled;
@@ -88,7 +94,16 @@ class MedsReminderService {
     if (!_enabled) return;
     if (!_ready) await ensureInitialized();
     await cancelAll();
-    if (meds.isEmpty) return;
+    if (meds.isEmpty) {
+      // Widget vazio: sem plano não há próxima toma.
+      NativeBridge.updateNextDoseWidget(hasDose: false);
+      return;
+    }
+
+    // F32 — Widget "Próxima Toma": calcula a toma mais próxima de
+    // TODO o plano (medicamento × horas da frequência) e envia ao
+    // Android nativo. Falha silenciosa fora do Android.
+    _updateNextDoseWidget(meds);
 
     final now = tz.TZDateTime.now(tz.local);
     for (var i = 0; i < meds.length && i < 12; i++) {
@@ -132,6 +147,45 @@ class MedsReminderService {
     }
   }
 
+  /// Calcula a próxima toma do plano e actualiza o widget nativo.
+  void _updateNextDoseWidget(
+      List<({String id, String name, String? dosage, String? frequency})>
+          meds) {
+    final now = DateTime.now();
+    DateTime? next;
+    String? nextTitle;
+    for (final med in meds) {
+      for (final hour in hoursForFrequency(med.frequency)) {
+        var t = DateTime(now.year, now.month, now.day, hour);
+        if (!t.isAfter(now)) t = t.add(const Duration(days: 1));
+        if (next == null || t.isBefore(next)) {
+          next = t;
+          final dose = (med.dosage != null && med.dosage!.isNotEmpty)
+              ? ' · ${med.dosage}'
+              : '';
+          nextTitle = '${med.name}$dose';
+        }
+      }
+    }
+    if (next == null || nextTitle == null) {
+      NativeBridge.updateNextDoseWidget(hasDose: false);
+      return;
+    }
+    final hh = next.hour.toString().padLeft(2, '0');
+    final mm = next.minute.toString().padLeft(2, '0');
+    final isTomorrow = next.day != now.day;
+    final when = isTomorrow ? 'amanhã' : 'hoje';
+    NativeBridge.updateNextDoseWidget(
+      hasDose: true,
+      title: nextTitle,
+      subtitle: 'Próxima toma · $when às $hh:$mm',
+    );
+  }
+
   /// Cancela todos os lembretes (fim do plano ou desligado).
-  Future<void> cancelAll() => _plugin.cancelAll();
+  Future<void> cancelAll() async {
+    await _plugin.cancelAll();
+    // O widget acompanha: sem lembretes, sem toma no ecrã inicial.
+    NativeBridge.updateNextDoseWidget(hasDose: false);
+  }
 }

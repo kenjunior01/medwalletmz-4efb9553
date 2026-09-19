@@ -5,8 +5,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'core/config.dart';
+import 'core/native/native_bridge.dart';
 import 'core/push/push_service.dart';
 import 'core/reminders/meds_reminder_service.dart';
+import 'core/router/app_router.dart';
 import 'core/security/app_lock.dart';
 
 Future<void> main() async {
@@ -53,4 +55,10 @@ Future<void> main() async {
   }
 
   runApp(const ProviderScope(child: MedWalletApp()));
+
+  // F32 — ponte nativa: App Shortcuts (long-press no ícone) navegam
+  // com GoRouter. Falha silenciosa fora do Android.
+  NativeBridge.init((route) {
+    router.go(route);
+  });
 }

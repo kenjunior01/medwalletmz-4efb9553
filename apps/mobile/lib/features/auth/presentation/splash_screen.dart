@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../emergency_card/data/emergency_card_repository.dart';
 
 /// Splash de marca: logo em vidro com pulso + barra de progresso fina,
 /// redireciona após 1.6 s (a sessão já vem do Supabase offline-first).
@@ -22,6 +23,9 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
       final logged = authRefresh.session != null;
+      // Sessão aberta: refresca o cache da Ficha de Emergência (o único
+      // ecrã acessível com a app bloqueada — precisa de dados frescos).
+      if (logged) EmergencyCardRepository.instance.refresh();
       context.go(logged ? '/home' : '/login');
     });
   }

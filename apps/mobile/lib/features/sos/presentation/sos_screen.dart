@@ -9,6 +9,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/gradient_button.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../../../core/config.dart';
+import '../../emergency_card/data/emergency_card_repository.dart';
 import '../data/sos_models.dart';
 import 'sos_controller.dart';
 
@@ -179,6 +180,8 @@ class _SosScreenState extends ConsumerState<SosScreen>
             isPrimary: primary,
           );
       ref.invalidate(sosContactsProvider);
+      // Contacto ICE novo → cache da Ficha de Emergência actualizado.
+      EmergencyCardRepository.instance.refresh();
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -417,6 +420,8 @@ class _SosScreenState extends ConsumerState<SosScreen>
                                         .read(sosRepositoryProvider)
                                         .deleteContact(c.id);
                                     ref.invalidate(sosContactsProvider);
+                                    EmergencyCardRepository.instance
+                                        .refresh();
                                   },
                                   icon: const Icon(
                                       Icons.delete_outline_rounded,

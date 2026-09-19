@@ -40,10 +40,31 @@ android {
     // O AGP faz o llvm-strip normal (NDK pré-instalado no CI / auto-download
     // licenciado localmente).
 
+    // F32: assinatura de PRODUÇÃO — o CI fornece o keystore via env
+    // (MEDWALLET_STORE_FILE etc., secrets do GitHub). Sem env → debug
+    // (builds locais continuam a funcionar sem o keystore).
+    signingConfigs {
+        release {
+            def ksPath = System.getenv("MEDWALLET_STORE_FILE")
+            if (ksPath != null && file(ksPath).exists()) {
+                storeFile = file(ksPath)
+                storePassword = System.getenv("MEDWALLET_STORE_PASS")
+                keyAlias = System.getenv("MEDWALLET_KEY_ALIAS") ?: "medwallet"
+                keyPassword = System.getenv("MEDWALLET_KEY_PASS")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // Assinado com a chave debug (instalavel para testes internos).
-            signingConfig = signingConfigs.getByName("debug")
+            // Com keystore no CI → assinado com a chave de produção
+            // (instalável e pronto para a Play Store); sem keystore →
+            // debug (testes internos).
+            def ksPath = System.getenv("MEDWALLET_STORE_FILE")
+            def hasReleaseKey = ksPath != null && file(ksPath).exists()
+            signingConfig = hasReleaseKey
+                ? signingConfigs.release
+                : signingConfigs.getByName("debug")
             // Sem extracao de simbolos nativos (so para Play Store).
             ndk { debugSymbolLevel = "NONE" }
         }

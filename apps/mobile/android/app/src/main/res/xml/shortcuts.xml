@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App Shortcuts — long-press no ícone da app (Android 7.1+).
+     Cada atalho lança a MainActivity com extra "route"; o Dart
+     (NativeBridge) navega com GoRouter para o ecrã destino. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="shortcut_scan"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_scan_label"
+        android:shortcutLongLabel="@string/shortcut_scan_long">
+        <intent
+            android:action="mz.medwallet.SHORTCUT"
+            android:targetPackage="mz.medwallet"
+            android:targetClass="mz.medwallet.MainActivity">
+            <extra android:name="route" android:value="/scan-qr" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_meds"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_meds_label"
+        android:shortcutLongLabel="@string/shortcut_meds_long">
+        <intent
+            android:action="mz.medwallet.SHORTCUT"
+            android:targetPackage="mz.medwallet"
+            android:targetClass="mz.medwallet.MainActivity">
+            <extra android:name="route" android:value="/meds" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_sos"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_sos_label"
+        android:shortcutLongLabel="@string/shortcut_sos_long">
+        <intent
+            android:action="mz.medwallet.SHORTCUT"
+            android:targetPackage="mz.medwallet"
+            android:targetClass="mz.medwallet.MainActivity">
+            <extra android:name="route" android:value="/sos" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_meddy"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_meddy_label"
+        android:shortcutLongLabel="@string/shortcut_meddy_long">
+        <intent
+            android:action="mz.medwallet.SHORTCUT"
+            android:targetPackage="mz.medwallet"
+            android:targetClass="mz.medwallet.MainActivity">
+            <extra android:name="route" android:value="/meddy" />
+        </intent>
+    </shortcut>
+</shortcuts>

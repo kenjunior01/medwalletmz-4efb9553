@@ -8,6 +8,8 @@ import 'package:local_auth/local_auth.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../features/emergency_card/data/emergency_card_repository.dart';
+import '../../features/emergency_card/presentation/emergency_card_screen.dart';
 import '../theme/app_colors.dart';
 
 /// ── Bloqueio biométrico da app (EXCLUSIVO MÓVEL) ─────────────────────
@@ -136,6 +138,8 @@ class AppLockGate extends StatefulWidget {
 class _AppLockGateState extends State<AppLockGate>
     with WidgetsBindingObserver {
   bool _challengeInFlight = false;
+  bool _showEmergencyCard = false;
+  EmergencyCardData? _emergencyData;
 
   @override
   void initState() {
@@ -183,10 +187,36 @@ class _AppLockGateState extends State<AppLockGate>
     }
   }
 
+  /// Abre a Ficha de Emergência POR CIMA do bloqueio — o único ecrã
+  /// acessível sem desbloquear. Lê apenas o cache local (sem Supabase,
+  /// sem dados da app): um socorrista vê o tipo de sangue, alergias e
+  /// contactos mesmo com o dono inconsciente.
+  Future<void> _openEmergencyCard() async {
+    HapticFeedback.heavyImpact();
+    final data = await EmergencyCardRepository.instance.fromCache();
+    if (!mounted) return;
+    setState(() {
+      _emergencyData = data;
+      _showEmergencyCard = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final locked = AppLock.instance.lockedNotifier.value;
     if (!locked) return widget.child;
+
+    // Ficha de emergência activa: renderiza POR CIMA de tudo — nem o
+    // blur nem o desafio biometrico são visíveis enquanto o socorrista lê.
+    if (_showEmergencyCard) {
+      return Directionality(
+        textDirection: TextDirection.ltr,
+        child: EmergencyCardScreen(
+          data: _emergencyData,
+          onClose: () => setState(() => _showEmergencyCard = false),
+        ),
+      );
+    }
 
     return Directionality(
       textDirection: TextDirection.ltr,
@@ -241,10 +271,51 @@ class _AppLockGateState extends State<AppLockGate>
                 ),
                 const SizedBox(height: 30),
                 _UnlockButton(onTap: _challenge),
+                const SizedBox(height: 18),
+                // ÚNICO atalho permitido com a app bloqueada: a ficha
+                // que salva vidas (dados médicos, cache offline).
+                _EmergencyLinkButton(onTap: _openEmergencyCard),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Botão discreto de emergência no ecrã de bloqueio.
+class _EmergencyLinkButton extends StatelessWidget {
+  const _EmergencyLinkButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.danger.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.danger.withOpacity(0.45)),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.emergency_rounded, color: AppColors.danger, size: 20),
+            SizedBox(width: 8),
+            Text(
+              'Ficha de Emergência',
+              style: TextStyle(
+                color: AppColors.danger,
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

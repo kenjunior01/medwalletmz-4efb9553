@@ -27,6 +27,7 @@ import '../../features/earn/presentation/submit_proposal_screen.dart';
 import '../../features/doctor/presentation/doctor_dashboard_screen.dart';
 import '../../features/deliveries/presentation/deliveries_screen.dart';
 import '../../features/deliveries/presentation/delivery_tracking_screen.dart';
+import '../../features/emergency_card/presentation/emergency_card_screen.dart';
 import '../../features/facilities/presentation/facilities_screen.dart';
 import '../../features/facilities/presentation/facility_detail_screen.dart';
 import '../../features/favorites/presentation/favorites_screen.dart';
@@ -222,6 +223,9 @@ final router = GoRouter(
 
     // F5 — SOS emergência, medicação e seguros.
     GoRoute(path: '/sos', builder: (_, __) => const SosScreen()),
+    GoRoute(
+        path: '/emergency-card',
+        builder: (_, __) => const EmergencyCardScreen()),
     GoRoute(path: '/meds', builder: (_, __) => const MedsScreen()),
     GoRoute(
         path: '/insurance',

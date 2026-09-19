@@ -559,6 +559,11 @@ class ProfileScreen extends ConsumerWidget {
                     onTap: () => context.push('/health-profile'),
                   ),
                   _MenuItem(
+                    icon: Icons.emergency_rounded,
+                    label: 'Ficha de Emergência (socorristas)',
+                    onTap: () => context.push('/emergency-card'),
+                  ),
+                  _MenuItem(
                     icon: Icons.event_note_rounded,
                     label: 'As minhas consultas',
                     onTap: () => context.push('/bookings'),

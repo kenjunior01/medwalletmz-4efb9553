@@ -57,6 +57,24 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- F32 — App Shortcuts (long-press no ícone): escanear, medicação,
+             SOS e Meddy IA. Rotas entregues à app via extra "route". -->
+        <meta-data
+            android:name="android.app.shortcuts"
+            android:resource="@xml/shortcuts" />
+
+        <!-- F32 — Widget "Próxima Toma" no ecrã inicial. -->
+        <receiver
+            android:name=".NextDoseWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/next_dose_widget_info" />
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

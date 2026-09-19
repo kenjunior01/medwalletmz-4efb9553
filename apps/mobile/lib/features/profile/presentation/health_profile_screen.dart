@@ -8,6 +8,7 @@ import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/gradient_button.dart';
 import '../../auth/presentation/auth_controller.dart';
+import '../../emergency_card/data/emergency_card_repository.dart';
 
 /// ── Modelo ───────────────────────────────────────────────────────────
 
@@ -550,6 +551,9 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
           .from('patient_profiles')
           .upsert(payload, onConflict: 'user_id');
       ref.invalidate(patientProfileProvider);
+      // A Ficha de Emergência (bypass do bloqueio) lê o cache local —
+      // actualiza-o logo que a ficha de saúde muda.
+      EmergencyCardRepository.instance.refresh();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Ficha de saúde guardada')),

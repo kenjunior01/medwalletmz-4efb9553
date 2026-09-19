@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Recursos de string — F32: App Shortcuts + Widget "Próxima Toma". -->
+<resources>
+    <!-- App Shortcuts (long-press no ícone) -->
+    <string name="shortcut_scan_label">Escanear receita</string>
+    <string name="shortcut_scan_long">Escanear receita por QR</string>
+    <string name="shortcut_meds_label">Medicação</string>
+    <string name="shortcut_meds_long">Plano e tomas de hoje</string>
+    <string name="shortcut_sos_label">SOS Emergência</string>
+    <string name="shortcut_sos_long">Alerta e ficha para socorristas</string>
+    <string name="shortcut_meddy_label">Meddy IA</string>
+    <string name="shortcut_meddy_long">Falar com o copiloto de saúde</string>
+
+    <!-- Widget Próxima Toma -->
+    <string name="wdg_name">Próxima Toma — MedWallet</string>
+    <string name="wdg_desc">Mostra a próxima toma de medicação do teu plano</string>
+    <string name="wdg_brand">MEDWALLET</string>
+    <string name="wdg_header">Próxima toma</string>
+    <string name="wdg_empty_title">Sem medicação planeada</string>
+    <string name="wdg_empty_sub">Abre a app para criar o teu plano</string>
+</resources>
