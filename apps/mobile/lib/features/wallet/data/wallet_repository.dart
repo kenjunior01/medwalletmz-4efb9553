@@ -169,7 +169,10 @@ class WalletRepository {
     String? notes,
   }) async {
     final uid = _client.auth.currentUser?.id;
-    if (uid == null) rethrow;
+    if (uid == null) {
+      // F33 — fora de catch: rethrow não é válido aqui.
+      throw PostgrestException(message: 'Sessão inexistente', code: '401');
+    }
     final tx = await _client
         .from('wallet_transactions')
         .insert({
