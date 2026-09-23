@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +11,6 @@ import 'core/native/native_bridge.dart';
 import 'core/push/push_service.dart';
 import 'core/reminders/meds_reminder_service.dart';
 import 'core/router/app_router.dart';
-import 'core/security/app_lock.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,18 +41,15 @@ Future<void> main() async {
     await MedsReminderService.instance.ensureInitialized();
   } catch (_) {}
 
-  // Bloqueio biométrico: carrega a preferência local ANTES do primeiro
-  // frame para a app já abrir bloqueada se o utilizador activou.
-  try {
-    await AppLock.instance.ensureInitialized();
-  } catch (_) {}
+  // Bloqueio biométrico: F33 — removida a inicialização duplicada do
+  // app_lock.dart (implementação morta em paralelo ao AppLockService
+  // que o AppLockGate realmente usa; só escrevia prefs a mais).
 
-  // Push real (FCM) — apenas se FCM_ENABLED=true e o Firebase nativo
-  // estiver configurado; caso contrário é no-op silencioso.
+  // Push real (FCM) — F33: fire-and-forget; Firebase init + prompt de
+  // permissões + getToken (rede) já NÃO atrasam o primeiro frame. O
+  // registo pós-login é feito pelo listener de auth no próprio serviço.
   if (AppConfig.isConfigured) {
-    try {
-      await PushService.instance.initialize();
-    } catch (_) {}
+    unawaited(PushService.instance.initialize().catchError((_) {}));
   }
 
   runApp(const ProviderScope(child: MedWalletApp()));

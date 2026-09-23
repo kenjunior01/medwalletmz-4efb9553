@@ -18,7 +18,9 @@ class ChangePasswordScreen extends ConsumerStatefulWidget {
 }
 
 class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
-  final _current = TextEditingController();
+  // F33 — removido controller `_current` morto: a UI nunca teve campo
+  // "palavra-passe actual" (o updateUser do Supabase usa a sessão
+  // activa e não verifica a anterior).
   final _next = TextEditingController();
   final _confirm = TextEditingController();
   bool _obscure = true;
@@ -27,7 +29,6 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
   @override
   void dispose() {
-    _current.dispose();
     _next.dispose();
     _confirm.dispose();
     super.dispose();

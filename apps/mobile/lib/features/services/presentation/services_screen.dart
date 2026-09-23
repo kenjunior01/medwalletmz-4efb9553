@@ -309,7 +309,10 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                       ? list
                       : list.where((d) {
                           final q = _query.toLowerCase();
-                          return (d.specialtyName ?? '').toLowerCase().contains(q) ||
+                          // F33 — a pesquisa ignorava o NOME do médico
+                          // ("Ana Chissano" devolvia vazio).
+                          return d.displayName.toLowerCase().contains(q) ||
+                              (d.specialtyName ?? '').toLowerCase().contains(q) ||
                               (d.bio ?? '').toLowerCase().contains(q);
                         }).toList();
                   if (filtered.isEmpty) {

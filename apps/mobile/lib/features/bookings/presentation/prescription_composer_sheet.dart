@@ -167,6 +167,9 @@ class _PrescriptionComposerSheetState
             _ItemCard(
               index: i + 1,
               form: _items[i],
+              // F33 — notifica o State ao digitar: sem isto o botão
+              // "Emitir receita" só acordava ao adicionar/remover item.
+              onChanged: () => setState(() {}),
               onRemove: _items.length > 1
                   ? () => setState(() {
                         _items[i].dispose();
@@ -287,11 +290,13 @@ class _ItemCard extends StatelessWidget {
   const _ItemCard({
     required this.index,
     required this.form,
+    this.onChanged,
     this.onRemove,
   });
 
   final int index;
   final _ItemForm form;
+  final VoidCallback? onChanged;
   final VoidCallback? onRemove;
 
   @override
@@ -330,6 +335,7 @@ class _ItemCard extends StatelessWidget {
             controller: form.nameCtrl,
             style: const TextStyle(color: AppColors.textPrimary),
             decoration: const InputDecoration(hintText: 'Nome (ex.: Paracetamol)'),
+            onChanged: (_) => onChanged?.call(),
           ),
           const SizedBox(height: 8),
           Row(

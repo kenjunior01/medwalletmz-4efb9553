@@ -44,20 +44,26 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
   }
 
   Future<void> _load() async {
-    final repo = await _repo();
-    final snap = await repo.load();
-    if (!mounted) return;
-    setState(() {
-      _snap = snap;
-      _loading = false;
-    });
+    try {
+      final repo = await _repo();
+      final snap = await repo.load();
+      if (!mounted) return;
+      setState(() {
+        _snap = snap;
+        _loading = false;
+      });
+    } catch (_) {
+      // F33 — sem rede no 1.º load não pode ficar skeleton eterno.
+      if (!mounted) return;
+      setState(() => _loading = false);
+    }
   }
 
   Future<void> _toggleMaster(bool value) async {
     final repo = await _repo();
+    // setMasterOn persiste + re-agenda (muted respeitado; desligado →
+    // cancela tudo e limpa o widget). Fonte única de verdade.
     await repo.setMasterOn(value);
-    // setEnabled devolve void — sem await (cancela tudo se desligado).
-    MedsReminderService.instance.setEnabled(value);
     await _load();
   }
 
@@ -111,6 +117,14 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
         if (allDone) {
           showConfetti(context, message: 'Plano do dia completo! 🎉');
         }
+      }
+    } catch (_) {
+      // F33 — falha de rede: feedback real em vez de erro silencioso.
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Não foi possível registar. Tenta de novo.'),
+          behavior: SnackBarBehavior.floating,
+        ));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -602,13 +616,16 @@ class _Timeline extends StatelessWidget {
     if (takenByItem[slot.med.prescriptionItemId]?.isTaken ?? false) {
       return false;
     }
-    final upcomingHours = [
+    // F33 — comparar INSTANTES (antes `s.hour >= now.hour` marcava o
+    // slot das 08:00 como "próxima" às 08:30, e à noite nenhum/não-
+    // passado ficava destacado de forma errada).
+    final upcoming = [
       for (final s in slots)
         if (takenByItem[s.med.prescriptionItemId]?.isTaken != true &&
-            s.hour >= now.hour)
-          s.hour,
-    ]..sort();
-    return upcomingHours.isNotEmpty && slot.hour == upcomingHours.first;
+            DateTime(now.year, now.month, now.day, s.hour).isAfter(now))
+          s,
+    ]..sort((a, b) => a.hour.compareTo(b.hour));
+    return upcoming.isNotEmpty && slot == upcoming.first;
   }
 }
 

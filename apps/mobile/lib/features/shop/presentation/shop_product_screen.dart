@@ -48,6 +48,8 @@ class _ShopProductScreenState extends ConsumerState<ShopProductScreen> {
 
   Future<void> _load() async {
     await ShopifyConfig.load();
+    // F33 — back rápido durante o load: setState lançava after-dispose.
+    if (!mounted) return;
     setState(() => _loading = true);
     try {
       final data = await ShopifyRepository.fetchProduct(widget.handle);

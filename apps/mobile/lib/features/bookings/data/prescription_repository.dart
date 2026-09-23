@@ -53,21 +53,33 @@ class PrescriptionRepository {
     }).select('id, verification_code').single();
 
     final prescriptionId = row['id'] as String;
-    await _client.from('prescription_items').insert([
-      for (final item in items)
-        {
-          'prescription_id': prescriptionId,
-          'medication_name': item.medicationName,
-          if (item.dosage != null && item.dosage!.isNotEmpty)
-            'dosage': item.dosage,
-          if (item.frequency != null && item.frequency!.isNotEmpty)
-            'frequency': item.frequency,
-          if (item.duration != null && item.duration!.isNotEmpty)
-            'duration': item.duration,
-          if (item.instructions != null && item.instructions!.isNotEmpty)
-            'instructions': item.instructions,
-        }
-    ]);
+    try {
+      await _client.from('prescription_items').insert([
+        for (final item in items)
+          {
+            'prescription_id': prescriptionId,
+            'medication_name': item.medicationName,
+            if (item.dosage != null && item.dosage!.isNotEmpty)
+              'dosage': item.dosage,
+            if (item.frequency != null && item.frequency!.isNotEmpty)
+              'frequency': item.frequency,
+            if (item.duration != null && item.duration!.isNotEmpty)
+              'duration': item.duration,
+            if (item.instructions != null && item.instructions!.isNotEmpty)
+              'instructions': item.instructions,
+          }
+      ]);
+    } catch (e) {
+      // F33 — compensação: sem itens, sobrava uma receita "vazia" com
+      // código de verificação solto e o retry criava duplicados.
+      try {
+        await _client
+            .from('prescriptions')
+            .delete()
+            .eq('id', prescriptionId);
+      } catch (_) {}
+      rethrow;
+    }
 
     // Notifica o paciente no chat da consulta.
     await sendMessage(

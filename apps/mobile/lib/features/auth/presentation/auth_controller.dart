@@ -27,8 +27,17 @@ final authRepositoryProvider = Provider<AuthRepository>(
 final currentUserIdProvider = Provider<String?>((ref) {
   if (!AppConfig.isConfigured) return null;
   final client = ref.watch(supabaseClientProvider);
-  final sub = client.auth.onAuthStateChange.listen((_) {
-    ref.invalidateSelf();
+  // F33 — só reage a eventos que mudam a IDENTIDADE: `tokenRefreshed`
+  // (~1×/hora) disparava invalidação em cascata de TODOS os providers
+  // dependentes (perfil, carteira, notificações) sem qualquer mudança.
+  const identityEvents = {
+    AuthChangeEvent.initialSession,
+    AuthChangeEvent.signedIn,
+    AuthChangeEvent.signedOut,
+    AuthChangeEvent.userUpdated,
+  };
+  final sub = client.auth.onAuthStateChange.listen((data) {
+    if (identityEvents.contains(data.event)) ref.invalidateSelf();
   });
   ref.onDispose(sub.cancel);
   return client.auth.currentUser?.id;

@@ -53,7 +53,7 @@ class PrescriptionCheck {
       );
 
   static DateTime? _date(Object? v) =>
-      v == null ? null : DateTime.tryParse(v.toString());
+      v == null ? null : DateTime.tryParse(v.toString())?.toLocal(); // F33: UTC → local
 
   String get statusLabel => switch (status) {
         'active' => 'Válida',
@@ -167,6 +167,10 @@ class _VerifyPrescriptionScreenState
                         labelText: 'Código de verificação',
                         prefixIcon: Icon(Icons.badge_rounded),
                       ),
+                      // F33 — sem onChanged o build nunca refazia o
+                      // rebuild e o botão "Verificar" nunca habilitava
+                      // ao digitar (só funcionava pela tecla "done").
+                      onChanged: (_) => setState(() {}),
                       onSubmitted: (_) => _verify(),
                     ),
                     const SizedBox(height: 14),

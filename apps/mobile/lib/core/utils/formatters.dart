@@ -6,7 +6,9 @@ library;
 /// Formata valor em Meticais: 12345.5 → "12 345,50 MT".
 String formatMZN(num value, {bool withSymbol = true}) {
   final negative = value < 0;
-  final abs = value.abs();
+  // F33 — arredonda ANTES de separar: 10.999 dava cents=100 e imprimia
+  // "10,100 MT". Agora 10.999 → "11,00 MT".
+  final abs = ((value.abs() * 100).round()) / 100;
   final cents = ((abs - abs.floorToDouble()) * 100).round();
   var intPart = abs.floor().toString();
   final buffer = StringBuffer();

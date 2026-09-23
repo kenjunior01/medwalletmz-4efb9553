@@ -229,7 +229,16 @@ class _OtpScreenState extends State<OtpScreen> {
         phone: _phone.text,
         token: _code.text,
       );
-      if (mounted && res.session != null) context.go('/home');
+      if (res.session != null) {
+        if (mounted) context.go('/home');
+      } else {
+        // F33 — sessão null sem AuthException: antes o spinner sumia sem
+        // erro nem navegação (estado preso).
+        if (mounted) {
+          setState(() =>
+              _error = 'Não foi possível confirmar o código. Tenta de novo.');
+        }
+      }
     } on AuthException catch (e) {
       if (mounted) {
         setState(() => _error = e.message.toLowerCase().contains('expired')

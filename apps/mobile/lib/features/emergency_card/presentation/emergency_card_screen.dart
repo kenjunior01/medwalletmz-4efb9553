@@ -80,7 +80,14 @@ class _CardLoaderState extends State<_CardLoader> {
     }
     // Refresco silencioso em background (não bloqueia a UI acima).
     final fresh = await EmergencyCardRepository.instance.refresh();
-    if (fresh != null && mounted && _data == null) {
+    // F33 — aplicar o refresco também quando o cache desta sessão está
+    // STALE: antes só aplicava se _data == null, logo a ficha recém-
+    // guardada não aparecia até reabrir o ecrã.
+    if (fresh != null &&
+        mounted &&
+        (_data == null ||
+            fresh.updatedAt.isAfter(_data!.updatedAt) ||
+            _data!.isEmpty)) {
       setState(() => _data = fresh);
     }
   }

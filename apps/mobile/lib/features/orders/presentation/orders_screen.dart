@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/formatters.dart';
 import '../data/orders_repository.dart';
 
 /// Encomendas de farmácia — espelho da página `/orders` da versão web:
@@ -405,7 +406,9 @@ class _OrderCard extends StatelessWidget {
                     ],
                     const SizedBox(width: 10),
                     Text(
-                      '${order.total.toStringAsFixed(0)} MZN',
+                      // F33 — formatMZN: "250 MZN" arredondava cêntimos
+                      // fora (249,90 MT → "250 MZN").
+                      formatMZN(order.total),
                       style: const TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,

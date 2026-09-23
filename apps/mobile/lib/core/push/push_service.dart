@@ -47,6 +47,7 @@ class PushService {
   String? _token;
   StreamSubscription<String>? _tokenSub;
   StreamSubscription<RemoteMessage>? _foregroundSub;
+  StreamSubscription<AuthState>? _authSub;
 
   bool get isReady => _ready;
   String? get token => _token;
@@ -93,6 +94,20 @@ class PushService {
       if (token != null) await _upsertToken(token);
       _tokenSub = FirebaseMessaging.instance.onTokenRefresh
           .listen((t) => _upsertToken(t));
+
+      // F33 — registo pós-login: no arranque o utilizador ainda não
+      // está autenticado e o token não chega à BD. Sem isto, o push só
+      // funcionava no SEGUNDO arranque da app.
+      _authSub = Supabase.instance.client.auth.onAuthStateChange.listen(
+        (data) {
+          final ev = data.event;
+          if (ev == AuthChangeEvent.signedIn ||
+              ev == AuthChangeEvent.tokenRefreshed) {
+            // fire-and-forget — não bloqueia o ciclo de auth
+            registerCurrentToken();
+          }
+        },
+      );
 
       _ready = true;
     } catch (_) {
@@ -177,14 +192,27 @@ class PushService {
     }
   }
 
+  /// Re-grava o token FCM do dispositivo para o utilizador actual.
+  /// Chamada no SIGNED_IN/tokenRefreshed — cobre login novo, logout→
+  /// login no mesmo processo e restauro de sessão do arranque.
+  Future<void> registerCurrentToken() async {
+    if (!_ready) return;
+    try {
+      final t = _token ?? await FirebaseMessaging.instance.getToken();
+      if (t != null) await _upsertToken(t);
+    } catch (_) {
+      // rede indisponível — a renovação automática volta a tentar
+    }
+  }
+
   /// Remove o token da BD no logout (o dispositivo deixa de receber
   /// push desta conta).
+  /// F33 — NÃO cancela mais as subscrições de foreground/token nem o
+  /// `_ready`: logout→login no mesmo processo continuava com o push
+  /// COMPLETAMENTE desligado (initialize() só corre uma vez no main).
   Future<void> signOut() async {
-    _tokenSub?.cancel();
-    _foregroundSub?.cancel();
     final token = _token;
     _token = null;
-    _ready = false;
     if (token == null) return;
     try {
       await Supabase.instance.client

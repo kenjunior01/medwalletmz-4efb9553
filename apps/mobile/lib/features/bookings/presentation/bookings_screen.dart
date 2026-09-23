@@ -9,6 +9,7 @@ import '../../../core/widgets/gradient_button.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../data/bookings_repository.dart';
 import '../domain/booking_models.dart';
+import '../../services/presentation/services_controller.dart';
 import 'bookings_controller.dart';
 
 /// Histórico de consultas do paciente (realtime) com cancelamento e
@@ -473,6 +474,10 @@ class _ReviewSheetState extends ConsumerState<_ReviewSheet> {
           const SnackBar(content: Text('Obrigado pela tua avaliação!')),
         );
       }
+      // F33 — refresca as médias nas listas de médicos (antes ficavam
+      // stale até reiniciar a app).
+      ref.invalidate(doctorsProvider);
+      ref.invalidate(featuredDoctorsProvider);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

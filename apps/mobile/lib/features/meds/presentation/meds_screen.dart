@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../core/reminders/meds_reminder_service.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/gradient_button.dart';
-import '../../../core/widgets/skeleton.dart';
-import '../../auth/presentation/auth_controller.dart';
+import '../../reminders/data/reminders_repository.dart';
 import '../data/meds_repository.dart';
 
 /// Medicação — checklist diária (receitas + ad-hoc), streak e
@@ -52,21 +52,18 @@ class _MedsScreenState extends ConsumerState<MedsScreen> {
     });
 
     // Lembretes locais (1–3 por dia, derivados da frequência da receita).
-    final planned = _planned ?? const <PlannedMedication>[];
-    if (planned.isNotEmpty) {
-      try {
-        await MedsReminderService.instance.scheduleForMedications([
-          for (final p in planned)
-            (
-              id: p.prescriptionItemId,
-              name: p.name,
-              dosage: p.dosage,
-              frequency: p.frequency,
-            ),
-        ]);
-      } catch (_) {
-        // Dispositivo sem permissões — silencioso (o plano continua funcional).
-      }
+    // F33 — re-agenda via RemindersRepository: respeita a preferência
+    // master e os medicamentos silenciados (antes re-agendava tudo,
+    // ressuscitando lembretes que o utilizador tinha desligado).
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final remindersRepo = RemindersRepository(
+        ref.read(supabaseClientProvider),
+        prefs,
+      );
+      await remindersRepo.reschedule();
+    } catch (_) {
+      // Dispositivo sem permissões — silencioso (o plano continua funcional).
     }
   }
 

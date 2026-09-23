@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -26,9 +28,14 @@ class FacilitiesScreen extends ConsumerStatefulWidget {
 
 class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
   final _searchCtrl = TextEditingController();
+  // F33 — debounce da pesquisa: antes cada tecla disparava 3 queries
+  // (stores+clinics+veterinary) sem esperar por o utilizador parar de
+  // escrever — custo de rede/DB e flicker de skeleton.
+  Timer? _searchDebounce;
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchCtrl.dispose();
     super.dispose();
   }
@@ -122,8 +129,20 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
               TextField(
                 controller: _searchCtrl,
                 onChanged: (v) {
-                  ref.read(facilitySearchProvider.notifier).state = v.trim();
-                  ref.invalidate(facilitiesProvider);
+                  // F33 — debounce: o provider watches o search state,
+                  // logo cada tecla refazia 3 queries (stores+clinics+
+                  // veterinary). Só actualiza 350 ms após parar de
+                  // escrever.
+                  _searchDebounce?.cancel();
+                  _searchDebounce = Timer(
+                    const Duration(milliseconds: 350),
+                    () {
+                      if (mounted) {
+                        ref.read(facilitySearchProvider.notifier).state =
+                            v.trim();
+                      }
+                    },
+                  );
                 },
                 style: const TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(

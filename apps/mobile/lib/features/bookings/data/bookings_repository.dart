@@ -150,8 +150,11 @@ class DoctorSlotOption {
   factory DoctorSlotOption.fromJson(Map<String, dynamic> j) =>
       DoctorSlotOption(
         id: j['id'] as String,
-        startsAt: DateTime.tryParse(j['starts_at']?.toString() ?? '') ??
-            DateTime.now(),
+        // F33 — starts_at vem UTC; sem .toLocal() o slot das 14:00 MZ
+        // aparecia "12:00" e caía no grupo de dia errado.
+        startsAt: (DateTime.tryParse(j['starts_at']?.toString() ?? '') ??
+                DateTime.now())
+            .toLocal(),
       );
 }
 

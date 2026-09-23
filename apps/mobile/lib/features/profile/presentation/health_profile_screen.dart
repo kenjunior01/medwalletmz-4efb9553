@@ -114,6 +114,11 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
   final _ecName = TextEditingController();
   final _ecPhone = TextEditingController();
   final _tagCtrl = TextEditingController();
+  // F33 — cada editor de tags precisa do SEU controller: sem isto o
+  // botão "+" de crónicas/medicação lia texto de um controller interno
+  // ilegível e nunca adicionava nada.
+  final _chronicTagCtrl = TextEditingController();
+  final _medsTagCtrl = TextEditingController();
 
   bool _loading = true;
   bool _saving = false;
@@ -132,6 +137,8 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
     _ecName.dispose();
     _ecPhone.dispose();
     _tagCtrl.dispose();
+    _chronicTagCtrl.dispose();
+    _medsTagCtrl.dispose();
     super.dispose();
   }
 
@@ -234,6 +241,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                               child: _tagEditor(
                                 controller: _chronic,
                                 hint: 'Ex.: diabetes, hipertensão…',
+                                tagCtrl: _chronicTagCtrl,
                                 color: const Color(0xFFC084FC),
                               ),
                             ),
@@ -243,6 +251,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                               child: _tagEditor(
                                 controller: _meds,
                                 hint: 'Ex.: metformina 500mg…',
+                                tagCtrl: _medsTagCtrl,
                                 color: AppColors.success,
                               ),
                             ),

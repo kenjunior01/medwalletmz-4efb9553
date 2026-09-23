@@ -110,8 +110,13 @@ class _VoiceJournalScreenState extends ConsumerState<VoiceJournalScreen> {
           );
         }
       } catch (e) {
+        // F33 — antes o estado ficava preso em "A gravar" para sempre.
+        _ticker?.cancel();
         if (!mounted) return;
-        setState(() => _busy = false);
+        setState(() {
+          _busy = false;
+          _recording = false; // estado coerente; mic é libertado no serviço
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Falha ao terminar: $e')),
         );
@@ -157,6 +162,13 @@ class _VoiceJournalScreenState extends ConsumerState<VoiceJournalScreen> {
   @override
   void dispose() {
     _ticker?.cancel();
+    // F33 — libertar o MICROFONE ao sair: antes a gravação continuava
+    // em background (mic aceso, ficheiro a crescer, app lock por cima).
+    if (_recording) {
+      unawaited(VoiceRecorderService.instance
+          .stop()
+          .catchError((_) => null));
+    }
     super.dispose();
   }
 

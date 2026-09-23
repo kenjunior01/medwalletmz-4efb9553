@@ -22,23 +22,6 @@ import '../../regional/data/regional_models.dart';
 import '../../wallet/presentation/wallet_controller.dart';
 import '../data/profile_controller.dart';
 
-/// Tipo de perfil actual (profiles.user_type — persona principal).
-final userTypeProvider = FutureProvider<String>((ref) async {
-  final client = Supabase.instance.client;
-  final uid = client.auth.currentUser?.id;
-  if (uid == null) return 'patient';
-  try {
-    final row = await client
-        .from('profiles')
-        .select('user_type')
-        .eq('user_id', uid)
-        .single();
-    return (row['user_type'] ?? 'patient') as String;
-  } catch (_) {
-    return 'patient';
-  }
-});
-
 const _userTypeCatalog = <(String, String, String, IconData)>[
   ('patient', 'Doente', 'Consultas, exames, medicação e círculos.',
       Icons.person_rounded),
@@ -269,6 +252,9 @@ Future<void> _showUserTypePicker(
   } catch (_) {}
 
   var saving = false;
+  // F33 — spinner deve aparecer no item A gravar, não no tipo actual
+  // (o `current` não muda dentro da folha até reabrir).
+  var pending = '';
   await showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
@@ -308,14 +294,16 @@ Future<void> _showUserTypePicker(
                   onTap: saving || key == current
                       ? null
                       : () async {
-                          setSheet(() => saving = true);
+                          setSheet(() {
+                            saving = true;
+                            pending = key;
+                          });
                           try {
                             await client.rpc('set_user_primary_type',
                                 params: {
                                   'p_user_id': uid,
                                   'p_type': key,
                                 });
-                            ref.invalidate(userTypeProvider);
                             ref.invalidate(profileProvider);
                             if (ctx.mounted) Navigator.of(ctx).pop();
                             if (context.mounted) {
@@ -329,7 +317,10 @@ Future<void> _showUserTypePicker(
                               );
                             }
                           } catch (_) {
-                            setSheet(() => saving = false);
+                            setSheet(() {
+                              saving = false;
+                              pending = '';
+                            });
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -382,7 +373,7 @@ Future<void> _showUserTypePicker(
                             ],
                           ),
                         ),
-                        if (saving && key == current)
+                        if (saving && key == pending)
                           const SizedBox(
                             width: 15,
                             height: 15,
@@ -989,16 +980,21 @@ class ProfileScreen extends ConsumerWidget {
     );
     if (confirmed != true) return;
 
+    // F33 — invalidar ANTES do signOut: o evento de auth redireciona
+    // para /login e desmonta este ecrã; invalidar depois do await
+    // corria sobre um `ref` já disposto (StateError) e saltava as
+    // invalidações.
+    ref.invalidate(profileProvider);
+    ref.invalidate(walletStreamProvider);
+    ref.invalidate(transactionsProvider);
+    ref.invalidate(myConsultationsProvider);
+
     // Remove o token de push deste dispositivo antes de sair.
     try {
       await PushService.instance.signOut();
     } catch (_) {}
 
     await Supabase.instance.client.auth.signOut();
-    ref.invalidate(profileProvider);
-    ref.invalidate(walletStreamProvider);
-    ref.invalidate(transactionsProvider);
-    ref.invalidate(myConsultationsProvider);
     if (context.mounted) context.go('/login');
   }
 }

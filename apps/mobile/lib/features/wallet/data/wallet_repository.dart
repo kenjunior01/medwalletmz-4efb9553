@@ -85,6 +85,24 @@ class WalletRepository {
     return ref;
   }
 
+  /// F33 — associa o comprovativo (upload posterior à criação do
+  /// pedido) à linha `mpesa_manual_payments`. Antes o path ficava só
+  /// em memória e o comprovativo ficava ÓRFÃO: o painel de confirmação
+  /// nunca o via e a confirmação manual atrasava.
+  Future<void> attachProof(String reference, String path) async {
+    final rows = await _client
+        .from('mpesa_manual_payments')
+        .select('metadata')
+        .eq('reference', reference)
+        .limit(1);
+    final existing = (rows is List && rows.isNotEmpty)
+        ? ((rows.first as Map)['metadata'] as Map?)?.cast<String, dynamic>()
+        : null;
+    await _client.from('mpesa_manual_payments').update({
+      'metadata': {...?existing, 'proof_path': path},
+    }).eq('reference', reference);
+  }
+
   /// Envia o comprovativo (foto do SMS/recibo) para o bucket privado
   /// `mpesa-proofs` e devolve o caminho.
   Future<String> uploadProof(String reference, List<int> bytes,
@@ -124,39 +142,62 @@ class WalletRepository {
       });
       if (res is Map) return Map<String, dynamic>.from(res);
       return {'ok': true};
-    } catch (_) {
-      // fallback directo (RLS do cliente valida user_id = auth.uid())
-      final uid = _client.auth.currentUser?.id;
-      if (uid == null) rethrow;
-      final tx = await _client
-          .from('wallet_transactions')
-          .insert({
-            'user_id': uid,
-            'type': 'withdrawal_hold',
-            'amount': amount,
-            'reference_type': 'withdrawal',
-            'description': 'Pedido de levantamento via $method',
-            'status': 'pending',
-            'payment_method': method,
-            'metadata': {'destination': destination},
-          })
-          .select('id')
-          .single();
-      final inserted = await _client
-          .from('withdrawal_requests')
-          .insert({
-            'user_id': uid,
-            'amount': amount,
-            'method': method,
-            'destination': destination,
-            if (destinationName != null) 'destination_name': destinationName,
-            if (notes != null) 'user_notes': notes,
-            'wallet_tx_id': tx['id'],
-          })
-          .select('id')
-          .single();
-      return {'ok': true, 'id': inserted['id']};
+    } on PostgrestException catch (e) {
+      // F33 — fallback directo SÓ quando o RPC não existe (PGRST202 /
+      // 42883). Antes QUALQUER rejeição (saldo, validação, permissão)
+      // caía no INSERT que contorna as validações do RPC — e a folha
+      // chegava a dizer "foi debitado" sem nada ter sido debitado.
+      final missingRpc =
+          e.code == 'PGRST202' || e.code == '42883';
+      if (!missingRpc) rethrow;
+      return _fallbackWithdrawal(
+          amount: amount,
+          method: method,
+          destination: destination,
+          destinationName: destinationName,
+          notes: notes);
     }
+  }
+
+  /// Fallback legado (RPC ausente no projecto): INSERT directo — o RLS
+  /// valida user_id = auth.uid().
+  Future<Map<String, dynamic>> _fallbackWithdrawal({
+    required double amount,
+    required String method,
+    required String destination,
+    String? destinationName,
+    String? notes,
+  }) async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) rethrow;
+    final tx = await _client
+        .from('wallet_transactions')
+        .insert({
+          'user_id': uid,
+          'type': 'withdrawal_hold',
+          'amount': amount,
+          'reference_type': 'withdrawal',
+          'description': 'Pedido de levantamento via $method',
+          'status': 'pending',
+          'payment_method': method,
+          'metadata': {'destination': destination},
+        })
+        .select('id')
+        .single();
+    final inserted = await _client
+        .from('withdrawal_requests')
+        .insert({
+          'user_id': uid,
+          'amount': amount,
+          'method': method,
+          'destination': destination,
+          if (destinationName != null) 'destination_name': destinationName,
+          if (notes != null) 'user_notes': notes,
+          'wallet_tx_id': tx['id'],
+        })
+        .select('id')
+        .single();
+    return {'ok': true, 'id': inserted['id']};
   }
 
   /// Últimos pedidos de levantamento do utilizador.
@@ -278,11 +319,12 @@ class WithdrawalRow {
         method: (j['method'] ?? '') as String,
         destination: (j['destination'] ?? '') as String,
         status: (j['status'] ?? 'pending') as String,
-        createdAt: DateTime.tryParse(j['created_at']?.toString() ?? '') ??
-            DateTime.now(),
+        createdAt: (DateTime.tryParse(j['created_at']?.toString() ?? '') ??
+                DateTime.now())
+            .toLocal(), // F33: UTC → local ("Hoje/Ontem" da carteira)
         processedAt: j['processed_at'] == null
             ? null
-            : DateTime.tryParse(j['processed_at'].toString()),
+            : DateTime.tryParse(j['processed_at'].toString())?.toLocal(),
         adminNotes: j['admin_notes'] as String?,
       );
 }

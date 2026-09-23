@@ -112,18 +112,21 @@ class LabOrder {
       total: double.tryParse(j['total_mzn']?.toString() ?? '') ?? 0,
       status: (j['status'] ?? 'pending') as String,
       createdAt:
-          DateTime.tryParse(j['created_at']?.toString() ?? '') ??
-              DateTime.now(),
+          (DateTime.tryParse(j['created_at']?.toString() ?? '') ??
+                  DateTime.now())
+              .toLocal(), // F33: timestamptz UTC → hora local MZ
       patientName: j['patient_name'] as String?,
       patientPhone: j['patient_phone'] as String?,
-      scheduledAt: DateTime.tryParse(j['scheduled_at']?.toString() ?? ''),
+      scheduledAt: DateTime.tryParse(j['scheduled_at']?.toString() ?? '')
+          ?.toLocal(),
       homeCollection: j['home_collection'] as bool? ?? false,
       collectionAddress: j['collection_address'] as String?,
       collectionCity: j['collection_city'] as String?,
       notes: j['notes'] as String?,
       resultUrl: j['result_url'] as String?,
-      resultUploadedAt:
-          DateTime.tryParse(j['result_uploaded_at']?.toString() ?? ''),
+      resultUploadedAt: DateTime.tryParse(
+              j['result_uploaded_at']?.toString() ?? '')
+          ?.toLocal(),
     );
   }
 }
@@ -267,13 +270,27 @@ class LabsRepository {
       final orderId = (created as Map)['id'] as String;
 
       // Débito na carteira via RPC oficial do backend (sem alterações).
-      await _client.rpc('wallet_debit', params: {
-        '_user_id': uid,
-        '_amount': total,
-        '_service_type': 'lab_exam',
-        '_ref_id': orderId,
-        '_description': 'Exames laboratoriais',
-      });
+      try {
+        await _client.rpc('wallet_debit', params: {
+          '_user_id': uid,
+          '_amount': total,
+          '_service_type': 'lab_exam',
+          '_ref_id': orderId,
+          '_description': 'Exames laboratoriais',
+        });
+      } catch (e) {
+        // F33 — COMPENSAÇÃO: o pedido não pode existir sem pagamento.
+        // Antes ficava 'pending' sem débito (aparecia como "Pendente" no
+        // histórico) e cada retry criava duplicados.
+        try {
+          await _client.from('lab_exam_orders').delete().eq('id', orderId);
+        } catch (_) {}
+        final msg = e.toString();
+        if (msg.contains('Saldo insuficiente')) {
+          return 'Saldo insuficiente na carteira. Carrega primeiro.';
+        }
+        return 'Não foi possível concluir o pedido. Tenta novamente.';
+      }
       return null;
     } catch (e) {
       final msg = e.toString();
@@ -284,11 +301,37 @@ class LabsRepository {
     }
   }
 
-  /// Cancela um pedido ainda pendente (RLS: só o dono).
+  /// Cancela um pedido ainda pendente (RLS: só o dono) e REEMBOLSA o
+  /// valor debitado na criação via RPC `wallet_credit` (mesma
+  /// assinatura usada pela web). Idempotente: o update só afecta a
+  /// linha enquanto estiver 'pending', logo um 2.º cancelamento não
+  /// reembolsa duas vezes.
   Future<void> cancelOrder(String orderId) async {
-    await _client
+    final uid = _client.auth.currentUser?.id;
+    final updated = await _client
         .from('lab_exam_orders')
-        .update({'status': 'cancelled'}).eq('id', orderId);
+        .update({'status': 'cancelled'})
+        .eq('id', orderId)
+        .eq('status', 'pending')
+        .select('id, total_mzn');
+    if (updated is List && updated.isNotEmpty && uid != null) {
+      final row = updated.first as Map;
+      final total = double.tryParse('${row['total_mzn']}') ?? 0;
+      if (total > 0) {
+        try {
+          await _client.rpc('wallet_credit', params: {
+            '_user_id': uid,
+            '_amount': total,
+            '_type': 'credit',
+            '_ref_id': orderId,
+            '_description': 'Reembolso · Exames laboratoriais',
+          });
+        } catch (_) {
+          // Reembolso falhou (rede) — o cancelamento fica, o histórico
+          // permite reabrir caso ao suporte.
+        }
+      }
+    }
   }
 
   /// Histórico de pedidos do utilizador (realtime).
@@ -305,11 +348,22 @@ class LabsRepository {
           for (final r in rows) {
             orders.add(LabOrder.fromJson((r as Map).cast<String, dynamic>()));
           }
-          // Resolver nomes dos laboratórios em lote.
+          // Resolver nomes dos laboratórios em lote (F33: era 1 query
+          // por laboratório, em cada emissão do stream).
           final labIds = orders.map((o) => o.labId).toSet().toList();
           final names = <String, String>{};
-          for (final id in labIds) {
-            names[id] = await fetchLabName(id);
+          if (labIds.isNotEmpty) {
+            try {
+              final labRows = await _client
+                  .from('clinics')
+                  .select('id, name')
+                  .inFilter('id', labIds);
+              for (final r in (labRows as List)) {
+                final m = (r as Map).cast<String, dynamic>();
+                final id = m['id'] as String?;
+                if (id != null) names[id] = (m['name'] ?? 'Laboratório') as String;
+              }
+            } catch (_) {}
           }
           return [
             for (final o in orders)

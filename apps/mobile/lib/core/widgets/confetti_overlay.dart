@@ -15,11 +15,18 @@ import '../theme/app_colors.dart';
 void showConfetti(BuildContext context, {String? message}) {
   final overlay = Overlay.maybeOf(context);
   if (overlay == null) return;
+  // F33 — guard contra double-remove (dois onDone em corrida lançavam
+  // "an OverlayEntry was already removed").
+  var removed = false;
   late OverlayEntry entry;
   entry = OverlayEntry(
     builder: (_) => _ConfettiOverlay(
       message: message,
-      onDone: () => entry.remove(),
+      onDone: () {
+        if (removed) return;
+        removed = true;
+        entry.remove();
+      },
     ),
   );
   overlay.insert(entry);

@@ -90,12 +90,32 @@ Future<String> _call(
             headers: const {'Content-Type': 'application/json'},
             body: jsonEncode(body),
           )
-          .timeout(const Duration(seconds: 45));
+          // F33 — 45 s × 3 modelos = até 135 s de chat "a escrever…".
+          // 20 s por tentativa é folga suficiente para o Gemini.
+          .timeout(const Duration(seconds: 20));
+      if (res.statusCode == 401 || res.statusCode == 403) {
+        // F33 — chave/autorização inválida: os outros modelos falhariam
+        // igual — falhar de imediato em vez de somar timeouts.
+        throw const GeminiUnavailable('API_KEY');
+      }
       if (res.statusCode != 200) {
-        final err = jsonDecode(res.body);
-        final msg = (err?['error']?['message'] ?? 'HTTP ${res.statusCode}')
-            .toString();
-        throw GeminiUnavailable(_isQuota(msg.toLowerCase()) ? 'QUOTA' : msg);
+        // F33 — parsing defensivo: resposta não-JSON (gateway 502) ou
+        // erro em lista lançavam FormatException/TypeError mascarados.
+        String msg;
+        try {
+          final err = jsonDecode(res.body);
+          msg = (err is Map
+                      ? err['error'] is Map
+                          ? err['error']['message']
+                          : null
+                      : null)
+                  ?.toString() ??
+              'HTTP ${res.statusCode}';
+        } catch (_) {
+          msg = 'HTTP ${res.statusCode}';
+        }
+        throw GeminiUnavailable(
+            _isQuota(msg.toLowerCase()) ? 'QUOTA' : msg);
       }
       final text = _extractText(jsonDecode(res.body) as Map<String, dynamic>);
       if (text == null || text.isEmpty) {
@@ -104,6 +124,7 @@ Future<String> _call(
       return text;
     } on GeminiUnavailable catch (e) {
       lastError = e;
+      if (e.reason == 'API_KEY') rethrow; // fatal — não tenta próximo
       continue;
     } on TimeoutException {
       lastError = const GeminiUnavailable('TIMEOUT');

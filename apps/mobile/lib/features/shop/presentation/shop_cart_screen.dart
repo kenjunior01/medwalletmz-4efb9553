@@ -347,7 +347,9 @@ class _Summary extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Total',
+              // F33 — "Total" era enganador: é o subtotal (envio/impostos
+              // ficam para o checkout, como a linha acima já avisa).
+              const Text('Subtotal',
                   style: TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w800,

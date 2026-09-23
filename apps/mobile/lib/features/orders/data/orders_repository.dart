@@ -88,9 +88,11 @@ class PharmacyOrder {
       deliveryFee:
           double.tryParse(j['delivery_fee']?.toString() ?? '') ?? 0,
       createdAt:
-          DateTime.tryParse(j['created_at']?.toString() ?? '') ??
-              DateTime.now(),
-      updatedAt: DateTime.tryParse(j['updated_at']?.toString() ?? ''),
+          (DateTime.tryParse(j['created_at']?.toString() ?? '') ??
+                  DateTime.now())
+              .toLocal(), // F33: UTC → local ("Hoje/Ontem" ficavam trocados)
+      updatedAt: DateTime.tryParse(j['updated_at']?.toString() ?? '')
+          ?.toLocal(),
       deliveryAddress: j['delivery_address'] as String?,
       notes: j['notes'] as String?,
       isPriority: j['is_priority'] as bool? ?? false,

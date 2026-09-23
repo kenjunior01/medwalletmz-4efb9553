@@ -113,7 +113,13 @@ class _AppLockGateState extends State<AppLockGate> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    if (_checking || !_enabled || !_locked) return widget.child;
+    // F33 — durante a verificação das preferências, véu OPACO em vez da
+    // app: antes o conteúdo (saldo incluído) aparecia num flash antes do
+    // bloqueio — fuga de privacidade numa app de saúde.
+    if (_checking) {
+      return const Material(color: Color(0xFF05080F), child: SizedBox.expand());
+    }
+    if (!_enabled || !_locked) return widget.child;
     return _LockOverlay(
       onRetry: _requestUnlock,
       onDisable: () async {

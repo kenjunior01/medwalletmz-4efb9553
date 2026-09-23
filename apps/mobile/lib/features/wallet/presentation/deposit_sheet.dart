@@ -215,6 +215,9 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
                   fontWeight: FontWeight.w600),
               prefixIcon: Icon(Icons.phone_iphone_rounded),
             ),
+            // F33 — sem onChanged o botão continuava desativado quando
+            // o perfil não tinha telefone e o utilizador digitava.
+            onChanged: (_) => setState(() {}),
           ),
           if (_error != null) ...[
             const SizedBox(height: 12),
@@ -491,6 +494,10 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
       final path = await ref
           .read(walletRepositoryProvider)
           .uploadProof(_reference!, bytes, ext: ext);
+      // F33 — liga o comprovativo ao pedido na BD (antes ficava órfão).
+      await ref
+          .read(walletRepositoryProvider)
+          .attachProof(_reference!, path);
       if (mounted) {
         setState(() {
           _proofPath = path;

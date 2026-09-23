@@ -38,11 +38,12 @@ class Prescription {
         doctorId: (j['doctor_id'] ?? '') as String,
         patientId: (j['patient_id'] ?? '') as String,
         status: j['status'] as String? ?? 'active',
-        createdAt: DateTime.tryParse(j['created_at']?.toString() ?? '') ??
-            DateTime.now(),
+        createdAt: (DateTime.tryParse(j['created_at']?.toString() ?? '') ??
+                DateTime.now())
+            .toLocal(), // F33: UTC → local
         expiresAt: j['expires_at'] == null
             ? null
-            : DateTime.tryParse(j['expires_at'].toString()),
+            : DateTime.tryParse(j['expires_at'].toString())?.toLocal(),
         consultationId: j['consultation_id'] as String?,
         notes: j['notes'] as String?,
         verificationCode: j['verification_code'] as String?,

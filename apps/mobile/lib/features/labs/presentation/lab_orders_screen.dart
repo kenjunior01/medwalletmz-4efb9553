@@ -24,7 +24,9 @@ class LabOrdersScreen extends ConsumerStatefulWidget {
 
 class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
   late final Stream<List<LabOrder>> _stream;
-  bool _cancelling = false;
+  // F33 — por pedido (era um bool global: cancelar 1 desabilitava o
+  // botão "Cancelar" de TODOS os cartões da lista).
+  String? _cancellingId;
 
   @override
   void initState() {
@@ -66,7 +68,7 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
 
   Future<void> _cancel(LabOrder order) async {
     final client = ref.read(labsRepositoryProvider);
-    setState(() => _cancelling = true);
+    setState(() => _cancellingId = order.id);
     // Cancelamento directo (RLS garante que só o dono edita).
     try {
       await client.cancelOrder(order.id);
@@ -85,7 +87,7 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
         ));
       }
     }
-    if (mounted) setState(() => _cancelling = false);
+    if (mounted) setState(() => _cancellingId = null);
   }
 
   @override
@@ -197,7 +199,7 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
                           order: o,
                           statusColor: _statusColor(o.status),
                           statusIcon: _statusIcon(o.status),
-                          cancelling: _cancelling,
+                          cancelling: _cancellingId == o.id,
                           onCancel: o.isCancellable
                               ? () => _cancel(o)
                               : null,

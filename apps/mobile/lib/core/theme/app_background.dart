@@ -36,6 +36,20 @@ class _AppBackgroundState extends State<AppBackground>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // F33 — com "reduzir animações" activo o ticker continuava a
+    // correr sem consumidor (desperdício de bateria). Para/retoma
+    // conforme a preferência do sistema.
+    final reduce = MediaQuery.of(context).disableAnimations;
+    if (reduce) {
+      if (_drift.isAnimating) _drift.stop();
+    } else if (!_drift.isAnimating) {
+      _drift.repeat();
+    }
+  }
+
+  @override
   void dispose() {
     _drift.dispose();
     super.dispose();

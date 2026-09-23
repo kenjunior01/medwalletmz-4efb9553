@@ -30,10 +30,16 @@ class VoiceRecorderService {
   }
 
   /// Devolve o caminho do ficheiro gravado (null se não gravou).
+  /// F33 — `_started` só baixa DEPOIS do stop: antes, se stop()
+  /// falhasse a meio, o serviço ficava inconsistente e o próximo
+  /// start/stop podia deixar o mic preso.
   Future<String?> stop() async {
     if (!_started) return null;
-    _started = false;
-    return _rec.stop();
+    try {
+      return await _rec.stop();
+    } finally {
+      _started = false;
+    }
   }
 
   Future<void> dispose() => _rec.dispose();

@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/formatters.dart';
 import '../data/orders_repository.dart';
 
 /// Tracking de encomenda — espelho da página `/order/:id` da web:
@@ -542,7 +544,20 @@ class _DriverCard extends StatelessWidget {
           if ((driver.phone ?? '').isNotEmpty)
             IconButton(
               tooltip: 'Ligar ao entregador',
-              onPressed: () {},
+              // F33 — antes era onPressed vazio: o botão de telefone não
+              // fazia nada. Agora liga de verdade via url_launcher.
+              onPressed: () async {
+                final phone = driver.phone?.trim() ?? '';
+                if (phone.isEmpty) return;
+                try {
+                  await launchUrl(
+                    Uri(scheme: 'tel', path: phone),
+                    mode: LaunchMode.externalApplication,
+                  );
+                } catch (_) {
+                  // dispositivo sem capacidade de chamada — ignora
+                }
+              },
               icon: const Icon(Icons.phone_rounded,
                   color: Color(0xFF22C55E)),
             ),
@@ -627,7 +642,8 @@ class _ItemsCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${item.lineTotal.toStringAsFixed(0)} MZN',
+                      // F33 — formatMZN com cêntimos (era arredondado).
+                      formatMZN(item.lineTotal),
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w700,
@@ -688,7 +704,7 @@ class _TotalsCard extends StatelessWidget {
                         color: AppColors.textSecondary, fontSize: 13)),
               ),
               Text(
-                '${order.subtotal.toStringAsFixed(0)} MZN',
+                formatMZN(order.subtotal),
                 style: const TextStyle(
                     color: AppColors.textPrimary, fontSize: 13),
               ),
@@ -703,7 +719,7 @@ class _TotalsCard extends StatelessWidget {
                         color: AppColors.textSecondary, fontSize: 13)),
               ),
               Text(
-                '${order.deliveryFee.toStringAsFixed(0)} MZN',
+                formatMZN(order.deliveryFee),
                 style: const TextStyle(
                     color: AppColors.textPrimary, fontSize: 13),
               ),
@@ -721,7 +737,7 @@ class _TotalsCard extends StatelessWidget {
                     )),
               ),
               Text(
-                '${order.total.toStringAsFixed(0)} MZN',
+                formatMZN(order.total),
                 style: const TextStyle(
                   color: AppColors.accent,
                   fontWeight: FontWeight.w800,

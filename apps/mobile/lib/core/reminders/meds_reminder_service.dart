@@ -1,6 +1,7 @@
 import 'dart:ui' show Color;
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -36,6 +37,7 @@ class MedsReminderService {
   Future<void> ensureInitialized() async {
     if (_ready) return;
     tzdata.initializeTimeZones();
+    _configureLocalZone();
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -46,6 +48,72 @@ class MedsReminderService {
       const InitializationSettings(android: androidInit, iOS: iosInit),
     );
     _ready = true;
+
+    // F33 — a preferência master sobrevive a restarts: sem isto, o flag
+    // em memória voltava a `true` e os lembretes desligados ressuscitavam
+    // sozinhos no próximo agendamento.
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _enabled = prefs.getBool('reminders.master') ?? true;
+    } catch (_) {}
+  }
+
+  /// F33 — `tz.local` por omissão é UTC no package `timezone`: sem
+  /// `setLocalLocation`, as tomas diárias ancoravam no relógio UTC e
+  /// disparavam 2 h tarde em Moçambique (UTC+2). Escolhe a zona IANA
+  /// cujo offset ACTUAL iguala o do dispositivo — sem dependências
+  /// nativas novas. Moçambique (público-alvo) resolve em 1.º lugar.
+  static const _zoneCandidates = [
+    'Africa/Maputo', // UTC+2 — o offset do público-alvo
+    'Africa/Harare',
+    'Africa/Cairo',
+    'Africa/Lagos',
+    'Africa/Nairobi',
+    'Europe/Lisbon',
+    'Europe/London',
+    'Europe/Paris',
+    'Europe/Moscow',
+    'Asia/Dubai',
+    'Asia/Karachi',
+    'Asia/Kolkata',
+    'Asia/Dhaka',
+    'Asia/Bangkok',
+    'Asia/Shanghai',
+    'Asia/Singapore',
+    'Asia/Tokyo',
+    'Australia/Sydney',
+    'Pacific/Auckland',
+    'UTC',
+    'Atlantic/Azores',
+    'America/Sao_Paulo',
+    'America/New_York',
+    'America/Chicago',
+    'America/Denver',
+    'America/Los_Angeles',
+  ];
+
+  void _configureLocalZone() {
+    const fallback = 'Africa/Maputo';
+    try {
+      final deviceOffset = DateTime.now().timeZoneOffset;
+      String best = fallback;
+      for (final name in _zoneCandidates) {
+        try {
+          final loc = tz.getLocation(name);
+          if (tz.TZDateTime.now(loc).timeZoneOffset == deviceOffset) {
+            best = name;
+            break;
+          }
+        } catch (_) {
+          continue; // nome inexistente nesta versão da base
+        }
+      }
+      tz.setLocalLocation(tz.getLocation(best));
+    } catch (_) {
+      try {
+        tz.setLocalLocation(tz.getLocation(fallback));
+      } catch (_) {}
+    }
   }
 
   Future<void> requestPermissions() async {
@@ -57,10 +125,16 @@ class MedsReminderService {
   }
 
   /// Liga/desliga os lembretes (preferência local do utilizador).
-  void setEnabled(bool value) {
+  /// F33 — persiste em `reminders.master` (a mesma chave que
+  /// RemindersRepository lê), senão o desligar morria com o processo.
+  Future<void> setEnabled(bool value) async {
     _enabled = value;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('reminders.master', value);
+    } catch (_) {}
     if (!value) {
-      cancelAll();
+      await cancelAll();
       // Widget sem plano: estado vazio honesto.
       NativeBridge.updateNextDoseWidget(hasDose: false);
     }
@@ -77,7 +151,7 @@ class MedsReminderService {
     if (f.contains('2x') || f.contains('2 vezes') || f.contains('duas')) {
       return const [8, 20];
     }
-    if (f.contains('8 horas')) return const [8, 16];
+    if (f.contains('8 horas')) return const [0, 8, 16]; // F33: faltava a dose das 00:00
     if (f.contains('6 horas')) return const [8, 14, 20, 2];
     if (f.contains('12 horas')) return const [8, 20];
     if (f.contains('noite') || f.contains('dormir')) return const [21];
@@ -91,6 +165,13 @@ class MedsReminderService {
   Future<void> scheduleForMedications(
       List<({String id, String name, String? dosage, String? frequency})>
           meds) async {
+    // F33 — lê a preferência master em cada agendamento: uma chamada
+    // directa (ex.: ecrã Medicação) nunca ressuscita lembretes que o
+    // utilizador desligou.
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _enabled = prefs.getBool('reminders.master') ?? true;
+    } catch (_) {}
     if (!_enabled) return;
     if (!_ready) await ensureInitialized();
     await cancelAll();

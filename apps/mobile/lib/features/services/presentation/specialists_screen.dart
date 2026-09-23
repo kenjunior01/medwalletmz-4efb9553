@@ -46,15 +46,17 @@ class _SpecialistsScreenState extends ConsumerState<SpecialistsScreen> {
     final title = _specialty?.name ?? 'Todos os especialistas';
 
     final filtered = doctors.maybeWhen(
-      data: (list) => _search.trim().isEmpty
-          ? list
-          : list
-              .where((d) =>
-                  d.displayName.toLowerCase().contains(_search.trim()) ||
-                  (d.specialtyName ?? '')
-                      .toLowerCase()
-                      .contains(_search.trim()))
-              .toList(),
+      data: (list) {
+        // F33 — o termo não era lowercased: "ana" não encontrava
+        // "Ana Maria" (comparação case-sensitive no nome).
+        final t = _search.trim().toLowerCase();
+        if (t.isEmpty) return list;
+        return list
+            .where((d) =>
+                d.displayName.toLowerCase().contains(t) ||
+                (d.specialtyName ?? '').toLowerCase().contains(t))
+            .toList();
+      },
       orElse: () => <Doctor>[],
     );
 

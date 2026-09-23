@@ -107,7 +107,23 @@ class _MeddyChatScreenState extends ConsumerState<MeddyChatScreen> {
       );
       if (!mounted) return;
       setState(() {
-        _messages = [..._messages, reply];
+        // F33 — PROMOVE a bolha optimista em vez de a deixar 'tmp-':
+        // o filtro de histórico exclui tudo o que começa por 'tmp', logo
+        // TODAS as mensagens do utilizador desta sessão desapareciam do
+        // contexto enviado ao Gemini (a IA perdia a conversa toda).
+        _messages = [
+          for (final m in _messages)
+            if (m.id == optimistic.id)
+              MeddyMessage(
+                id: 'sent-${m.id}',
+                role: m.role,
+                content: m.content,
+                createdAt: m.createdAt,
+              )
+            else
+              m,
+          reply,
+        ];
         if (reply.isCrisisFlagged) _crisis = CrisisResource.forCountry(null);
         _sending = false;
       });
@@ -430,7 +446,11 @@ class _CrisisCard extends StatelessWidget {
             ),
             onPressed: () async {
               final uri = Uri(scheme: 'tel', path: resource.phone);
-              await launchUrl(uri, mode: LaunchMode.externalApplication);
+              try {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              } catch (_) {
+                // F33 — tablets/dispositivos sem chamada não podem crashar.
+              }
             },
             icon: const Icon(Icons.call_rounded, size: 16),
             label: const Text('Ligar'),

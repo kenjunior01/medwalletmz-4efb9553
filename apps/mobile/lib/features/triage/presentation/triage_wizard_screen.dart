@@ -119,8 +119,12 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                       onPressed: () {
                         if (_step > 0) {
                           setState(() => _step -= 1);
-                        } else {
+                        } else if (context.canPop()) {
+                          // F33 — deep-link/shortcut em /triage não tem
+                          // stack: pop lançava GoError.
                           context.pop();
+                        } else {
+                          context.go('/home');
                         }
                       },
                       icon: const Icon(Icons.arrow_back_rounded,
@@ -247,7 +251,14 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
         _NavButtons(
           canAdvance: _canAdvance,
           isLast: false,
-          onBack: () => context.pop(),
+          // F33 — mesmo guard do botão de back (deep-link sem stack).
+          onBack: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
           onNext: () => setState(() => _step = 1),
         ),
       ],

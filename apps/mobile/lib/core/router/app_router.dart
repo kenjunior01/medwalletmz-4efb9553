@@ -129,7 +129,10 @@ final router = GoRouter(
     final onSplash = loc == '/splash';
 
     if (session == null && !isPublic && !onSplash) return '/login';
-    if (session != null && (loc == '/login' || loc == '/register')) {
+    if (session != null &&
+        (loc == '/login' || loc == '/register' || loc == '/otp')) {
+      // F33 — sessão activa: /otp também devolve à home (antes ficava
+      // acessível com sessão aberta).
       return '/home';
     }
     return null;
@@ -447,6 +450,10 @@ class AppShell extends ConsumerStatefulWidget {
 
 class _AppShellState extends ConsumerState<AppShell> {
   String? _lastBannerId;
+  // F33 — a 1.ª emissão do stream carrega o HISTÓRICO (estado inicial):
+  // sem esta âncora, a última notificação antiga não lida aparecia como
+  // banner "novo" em cada arranque. Só banners de chegadas posteriores.
+  final DateTime _bootTime = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -461,6 +468,8 @@ class _AppShellState extends ConsumerState<AppShell> {
           orElse: () => list.first,
         );
         if (!newest.isUnread || newest.id == _lastBannerId) return;
+        final created = newest.createdAt;
+        if (created.isBefore(_bootTime)) return; // histórico, não é novo
         _lastBannerId = newest.id;
         NotificationBanner.show(context, newest);
       },

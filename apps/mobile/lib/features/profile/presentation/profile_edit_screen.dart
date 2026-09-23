@@ -244,6 +244,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       return;
     }
     if (file == null) return;
+    // F33 — o utilizador pode ficar minutos na galeria; se o ecrã for
+    // desmontado entretanto (logout remoto, redirect de auth), o
+    // setState lançava "setState after dispose".
+    if (!mounted) return;
 
     setState(() => _uploading = true);
     try {
