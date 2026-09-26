@@ -541,7 +541,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
 // ── Peças reutilizadas pelo wizard ──────────────────────────────────────
 
 class _StepTitle extends StatelessWidget {
-         _StepTitle({
+   const _StepTitle({
     required this.emoji,
     required this.title,
     required this.subtitle,
@@ -585,7 +585,7 @@ class _StepTitle extends StatelessWidget {
 }
 
 class _SelectChip extends StatelessWidget {
-         _SelectChip({
+   const _SelectChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -627,7 +627,7 @@ class _SelectChip extends StatelessWidget {
 }
 
 class _OptionRow extends StatelessWidget {
-         _OptionRow({
+   const _OptionRow({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -684,7 +684,7 @@ class _OptionRow extends StatelessWidget {
 }
 
 class _ReviewRow extends StatelessWidget {
-         _ReviewRow({required this.label, required this.value});
+   const _ReviewRow({required this.label, required this.value});
 
   final String label;
   final String value;

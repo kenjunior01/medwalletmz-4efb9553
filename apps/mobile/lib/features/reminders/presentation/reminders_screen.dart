@@ -205,7 +205,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
 // ════════════════════════════════════════════════════════════════════
 
 class _MasterToggle extends StatelessWidget {
-         _MasterToggle({
+   const _MasterToggle({
     required this.on,
     required this.onChanged,
     required this.permsAsked,
@@ -277,7 +277,7 @@ class _MasterToggle extends StatelessWidget {
 }
 
 class _NextDoseHero extends StatelessWidget {
-         _NextDoseHero({required this.snap});
+   const _NextDoseHero({required this.snap});
 
   final RemindersSnapshot? snap;
 
@@ -400,7 +400,7 @@ class _NextDoseHero extends StatelessWidget {
 }
 
 class _AdherenceCard extends StatelessWidget {
-         _AdherenceCard({required this.snap});
+   const _AdherenceCard({required this.snap});
 
   final RemindersSnapshot snap;
 
@@ -499,7 +499,7 @@ class _AdherenceCard extends StatelessWidget {
 }
 
 class _AdherencePainter extends CustomPainter {
-         _AdherencePainter({required this.history});
+   const _AdherencePainter({required this.history});
 
   final List<({String day, int percent})> history;
 
@@ -554,7 +554,7 @@ class _AdherencePainter extends CustomPainter {
 }
 
 class _Timeline extends StatelessWidget {
-         _Timeline({
+   const _Timeline({
     required this.snap,
     required this.busy,
     required this.onToggle,
@@ -630,7 +630,7 @@ class _Timeline extends StatelessWidget {
 }
 
 class _SlotRow extends StatelessWidget {
-         _SlotRow({
+   const _SlotRow({
     required this.med,
     required this.hour,
     required this.log,
@@ -803,7 +803,7 @@ class _SlotRow extends StatelessWidget {
 }
 
 class _MutedList extends StatelessWidget {
-         _MutedList({required this.snap, required this.onUnmute});
+   const _MutedList({required this.snap, required this.onUnmute});
 
   final RemindersSnapshot snap;
   final void Function(String itemId, bool mute) onUnmute;

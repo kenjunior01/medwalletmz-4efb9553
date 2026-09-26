@@ -438,7 +438,7 @@ class HomeScreen extends ConsumerWidget {
 // ══════════════════════════════════════════════════════════════════
 
 class _QuickAction extends StatelessWidget {
-         _QuickAction({
+   const _QuickAction({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -483,7 +483,7 @@ class _QuickAction extends StatelessWidget {
 }
 
 class _NextConsultationCard extends StatelessWidget {
-         _NextConsultationCard({required this.consultation});
+   const _NextConsultationCard({required this.consultation});
 
   final Consultation consultation;
 
@@ -556,7 +556,7 @@ class _NextConsultationCard extends StatelessWidget {
 }
 
 class _PromoBanner extends StatelessWidget {
-         _PromoBanner({required this.onTap});
+   const _PromoBanner({required this.onTap});
 
   final VoidCallback onTap;
 

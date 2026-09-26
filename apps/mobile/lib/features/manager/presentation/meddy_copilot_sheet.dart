@@ -10,7 +10,7 @@ import '../data/manager_models.dart';
 /// `meddy-copilot`). Recebe um snapshot de contexto (países, KPIs,
 /// propostas…) e responde em Markdown com análise e recomendações.
 class MeddyCopilotSheet extends StatefulWidget {
-         MeddyCopilotSheet({
+   const MeddyCopilotSheet({
     super.key,
     required this.buildContext,
     this.suggestions = const [
@@ -301,7 +301,7 @@ class EmptyHint extends StatelessWidget {
 }
 
 class _SuggestionChip extends StatelessWidget {
-         _SuggestionChip({required this.label, required this.onTap});
+   const _SuggestionChip({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
@@ -359,7 +359,7 @@ class _TypingBubble extends StatelessWidget {
 }
 
 class _Bubble extends StatelessWidget {
-         _Bubble({required this.msg});
+   const _Bubble({required this.msg});
 
   final _Msg msg;
 

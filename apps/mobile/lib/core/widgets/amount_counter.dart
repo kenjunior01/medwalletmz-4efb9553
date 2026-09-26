@@ -6,7 +6,7 @@ import '../utils/formatters.dart';
 /// Contador animado de saldo: os dígitos deslizam para cima quando o
 /// valor muda (efeito "odometer" das fintechs premium).
 class AmountCounter extends StatelessWidget {
-         AmountCounter({
+   const AmountCounter({
     super.key,
     required this.value,
     this.style,

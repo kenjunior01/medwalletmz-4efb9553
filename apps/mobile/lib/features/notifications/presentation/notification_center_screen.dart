@@ -208,7 +208,7 @@ class _NotificationCenterScreenState
 // ── Cartão de notificação ───────────────────────────────────────────────
 
 class _NotificationCard extends ConsumerWidget {
-         _NotificationCard({required this.notification, required this.onTap});
+   const _NotificationCard({required this.notification, required this.onTap});
 
   final AppNotification notification;
   final VoidCallback onTap;
@@ -335,7 +335,7 @@ class _NotificationCard extends ConsumerWidget {
 // ── Filtro ──────────────────────────────────────────────────────────────
 
 class _FilterChip extends StatelessWidget {
-         _FilterChip({
+   const _FilterChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -380,7 +380,7 @@ class _FilterChip extends StatelessWidget {
 // ── Faixa de comunicados globais ────────────────────────────────────────
 
 class _BroadcastStrip extends StatelessWidget {
-         _BroadcastStrip({required this.tips});
+   const _BroadcastStrip({required this.tips});
 
   final List<AppNotification> tips;
 

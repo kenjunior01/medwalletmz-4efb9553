@@ -91,7 +91,7 @@ class _MedsScreenState extends ConsumerState<MedsScreen> {
 }
 
 class _Body extends StatelessWidget {
-         _Body({
+   const _Body({
     required this.repo,
     required this.planned,
     required this.today,
@@ -320,7 +320,7 @@ class _Body extends StatelessWidget {
 enum _CardState { pending, taken, skipped }
 
 class _TodayCard extends StatelessWidget {
-         _TodayCard({
+   const _TodayCard({
     required this.name,
     required this.state,
     required this.onToggle,
@@ -441,7 +441,7 @@ class _TodayCard extends StatelessWidget {
 }
 
 class _StreakCard extends StatelessWidget {
-         _StreakCard({required this.recent});
+   const _StreakCard({required this.recent});
 
   final List<MedicationLog> recent;
 
@@ -505,7 +505,7 @@ class _StreakCard extends StatelessWidget {
 }
 
 class _WeekDots extends StatelessWidget {
-         _WeekDots({required this.recent});
+   const _WeekDots({required this.recent});
 
   final List<MedicationLog> recent;
 
@@ -578,7 +578,7 @@ class _WeekDots extends StatelessWidget {
 /// tomas registadas houve no dia, relativo ao dia mais forte da janela.
 /// Dias sem registos ficam neutros — o plano histórico pode ter sido outro.
 class _AdherenceHeatmap extends StatelessWidget {
-         _AdherenceHeatmap({required this.recent});
+   const _AdherenceHeatmap({required this.recent});
 
   final List<MedicationLog> recent;
 
@@ -828,7 +828,7 @@ class _AdherenceHeatmap extends StatelessWidget {
 /// dias em pontos. Métrica honesta — só registos reais; o plano histórico
 /// pode ter sido diferente, por isso não acusamos falhas.
 class _MedTrends extends StatelessWidget {
-         _MedTrends({required this.planned, required this.recent});
+   const _MedTrends({required this.planned, required this.recent});
 
   final List<PlannedMedication> planned;
   final List<MedicationLog> recent;

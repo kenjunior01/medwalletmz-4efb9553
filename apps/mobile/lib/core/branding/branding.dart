@@ -20,7 +20,7 @@ import '../theme/app_colors.dart';
 /// }
 /// ```
 class BrandingConfig {
-         BrandingConfig({
+   const BrandingConfig({
     this.primary,
     this.secondary,
     this.accent,
@@ -60,7 +60,7 @@ class BrandingConfig {
 
 /// Paleta efectiva da app — resolve defaults quando o país não define.
 class EffectivePalette {
-         EffectivePalette({
+   const EffectivePalette({
     required this.primary,
     required this.primarySoft,
     required this.primaryDark,

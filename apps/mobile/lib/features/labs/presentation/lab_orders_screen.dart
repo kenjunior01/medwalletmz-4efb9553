@@ -231,7 +231,7 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
 }
 
 class _OrderCard extends StatelessWidget {
-         _OrderCard({
+   const _OrderCard({
     required this.order,
     required this.statusColor,
     required this.statusIcon,

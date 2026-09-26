@@ -269,7 +269,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
 ///  - permissão negada / GPS off → aviso com acção;
 ///  - posição OK → confirmação discreta com a precisão aproximada.
 class _GpsBanner extends ConsumerWidget {
-         _GpsBanner({required this.onRefresh});
+   const _GpsBanner({required this.onRefresh});
 
   final VoidCallback onRefresh;
 
@@ -359,7 +359,7 @@ class _GpsBanner extends ConsumerWidget {
 // ── Chips ───────────────────────────────────────────────────────────────
 
 class _FilterChip extends StatelessWidget {
-         _FilterChip({
+   const _FilterChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -398,7 +398,7 @@ class _FilterChip extends StatelessWidget {
 }
 
 class _SortChip extends StatelessWidget {
-         _SortChip({
+   const _SortChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -452,7 +452,7 @@ class _SortChip extends StatelessWidget {
 // ── Cartão de instituição ───────────────────────────────────────────────
 
 class _FacilityCard extends StatelessWidget {
-         _FacilityCard({required this.facility, required this.distance});
+   const _FacilityCard({required this.facility, required this.distance});
 
   final HealthFacility facility;
   final double distance;

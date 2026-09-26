@@ -10,7 +10,7 @@ import '../data/labs_repository.dart';
 
 /// Estado simples de carregamento dos laboratórios.
 class _LabsState {
-         _LabsState({this.loading = true, this.labs = const [], this.error});
+   const _LabsState({this.loading = true, this.labs = const [], this.error});
   final bool loading;
   final List<LabFacility> labs;
   final String? error;
@@ -135,7 +135,7 @@ class LabsScreen extends ConsumerWidget {
 }
 
 class _LabCard extends StatelessWidget {
-         _LabCard({required this.lab});
+   const _LabCard({required this.lab});
 
   final LabFacility lab;
 
@@ -242,7 +242,7 @@ class _LabsSkeleton extends StatelessWidget {
 }
 
 class _EmptyPane extends StatelessWidget {
-         _EmptyPane({
+   const _EmptyPane({
     required this.icon,
     required this.title,
     required this.subtitle,

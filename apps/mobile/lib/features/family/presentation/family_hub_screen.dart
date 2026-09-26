@@ -166,7 +166,7 @@ class _FamilyHubScreenState extends ConsumerState<FamilyHubScreen> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-         _IconBtn({required this.icon, required this.onTap});
+   const _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -244,7 +244,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _MemberCard extends ConsumerWidget {
-         _MemberCard({
+   const _MemberCard({
     required this.member,
     required this.onEdit,
     required this.onRemove,
@@ -382,7 +382,7 @@ class _MemberCard extends ConsumerWidget {
 
 /// Linha de medicação: cria/ver lembretes e marca "tomou".
 class _MedRow extends ConsumerStatefulWidget {
-         _MedRow({required this.memberId, required this.medName});
+   const _MedRow({required this.memberId, required this.medName});
   final String memberId;
   final String medName;
 
@@ -544,7 +544,7 @@ class _MedRowState extends ConsumerState<_MedRow> {
 // ── Folha: adicionar/editar familiar ───────────────────────────────────────
 
 class _MemberSheet extends ConsumerStatefulWidget {
-         _MemberSheet({required this.member});
+   const _MemberSheet({required this.member});
   final FamilyMember? member;
 
   @override
@@ -845,7 +845,7 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
 }
 
 class _Field extends StatelessWidget {
-         _Field({
+   const _Field({
     required this.controller,
     required this.hint,
     this.keyboard,

@@ -143,7 +143,7 @@ class _MonetizationHubScreenState extends ConsumerState<MonetizationHubScreen> {
 }
 
 class _SubscriptionCard extends StatelessWidget {
-         _SubscriptionCard({required this.status});
+   const _SubscriptionCard({required this.status});
   final String? status;
 
   @override
@@ -215,7 +215,7 @@ class _SubscriptionCard extends StatelessWidget {
 }
 
 class _ReferralCard extends StatelessWidget {
-         _ReferralCard({
+   const _ReferralCard({
     required this.referral,
     required this.bonusMzn,
     required this.bonusCoins,
@@ -326,7 +326,7 @@ class _ReferralCard extends StatelessWidget {
 }
 
 class _RefStat extends StatelessWidget {
-         _RefStat({required this.value, required this.label});
+   const _RefStat({required this.value, required this.label});
   final String value;
   final String label;
 
@@ -462,7 +462,7 @@ class _QuickLinks extends StatelessWidget {
 }
 
 class _RecentTxs extends StatelessWidget {
-         _RecentTxs({required this.txs});
+   const _RecentTxs({required this.txs});
   final List<HubWalletTx> txs;
 
   @override

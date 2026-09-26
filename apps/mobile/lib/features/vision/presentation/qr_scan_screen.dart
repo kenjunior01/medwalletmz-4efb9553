@@ -165,7 +165,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
 }
 
 class _ScanError extends StatelessWidget {
-         _ScanError({required this.message, required this.onRetry});
+   const _ScanError({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;

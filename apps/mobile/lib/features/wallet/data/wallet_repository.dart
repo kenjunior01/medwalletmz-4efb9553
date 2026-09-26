@@ -224,7 +224,7 @@ class WalletRepository {
 
 /// Conta de recebimento da plataforma (leitura pública).
 class PlatformAccount {
-         PlatformAccount({
+   const PlatformAccount({
     required this.method,
     required this.accountName,
     required this.accountNumber,
@@ -280,7 +280,7 @@ class PlatformAccount {
 
 /// Linha da tabela `withdrawal_requests`.
 class WithdrawalRow {
-         WithdrawalRow({
+   const WithdrawalRow({
     required this.id,
     required this.amount,
     required this.method,

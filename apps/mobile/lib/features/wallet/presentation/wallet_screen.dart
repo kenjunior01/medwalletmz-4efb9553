@@ -197,7 +197,7 @@ class WalletScreen extends ConsumerWidget {
 }
 
 class _StatsRow extends StatelessWidget {
-         _StatsRow({
+   const _StatsRow({
     required this.deposited,
     required this.spent,
     required this.hidden,
@@ -234,7 +234,7 @@ class _StatsRow extends StatelessWidget {
 }
 
 class _StatCard extends StatelessWidget {
-         _StatCard({
+   const _StatCard({
     required this.icon,
     required this.color,
     required this.label,
@@ -399,7 +399,7 @@ class _WithdrawalsSection extends ConsumerWidget {
 }
 
 class _TxTile extends StatelessWidget {
-         _TxTile({required this.tx});
+   const _TxTile({required this.tx});
 
   final WalletTransaction tx;
 

@@ -466,7 +466,7 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
 // ── Cabeçalho ───────────────────────────────────────────────────────────
 
 class _HeroImage extends StatelessWidget {
-         _HeroImage({required this.facility});
+   const _HeroImage({required this.facility});
 
   final HealthFacility facility;
 
@@ -512,7 +512,7 @@ class _HeroImage extends StatelessWidget {
 // ── Blocos auxiliares ───────────────────────────────────────────────────
 
 class _GlassCard extends StatelessWidget {
-         _GlassCard({required this.child});
+   const _GlassCard({required this.child});
 
   final Widget child;
 
@@ -531,7 +531,7 @@ class _GlassCard extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-         _InfoRow({
+   const _InfoRow({
     required this.icon,
     required this.label,
     required this.value,
@@ -583,7 +583,7 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _TextAction extends StatelessWidget {
-         _TextAction({required this.label, required this.onTap});
+   const _TextAction({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;

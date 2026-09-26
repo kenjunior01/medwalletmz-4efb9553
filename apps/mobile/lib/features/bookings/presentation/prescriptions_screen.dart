@@ -109,7 +109,7 @@ class PrescriptionsScreen extends ConsumerWidget {
 // ── Cartão de receita ───────────────────────────────────────────────────
 
 class _PrescriptionCard extends ConsumerStatefulWidget {
-         _PrescriptionCard({required this.p});
+   const _PrescriptionCard({required this.p});
 
   final Prescription p;
 
@@ -324,7 +324,7 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
 }
 
 class _ItemRow extends StatelessWidget {
-         _ItemRow({required this.item});
+   const _ItemRow({required this.item});
 
   final PrescriptionItem item;
 

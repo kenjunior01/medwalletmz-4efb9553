@@ -33,7 +33,7 @@ void showConfetti(BuildContext context, {String? message}) {
 }
 
 class _ConfettiOverlay extends StatefulWidget {
-         _ConfettiOverlay({required this.onDone, this.message});
+   const _ConfettiOverlay({required this.onDone, this.message});
 
   final VoidCallback onDone;
   final String? message;

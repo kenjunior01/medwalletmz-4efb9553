@@ -305,7 +305,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-         _IconBtn({required this.icon, required this.onTap});
+   const _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -332,7 +332,7 @@ class _IconBtn extends StatelessWidget {
 }
 
 class _PlanCard extends StatelessWidget {
-         _PlanCard({required this.plan, required this.onSubscribe});
+   const _PlanCard({required this.plan, required this.onSubscribe});
   final SubPlan plan;
   final VoidCallback onSubscribe;
 
@@ -476,7 +476,7 @@ class _PlanCard extends StatelessWidget {
 }
 
 class _SubTile extends StatelessWidget {
-         _SubTile({required this.sub});
+   const _SubTile({required this.sub});
   final MySubscription sub;
 
   Color get _color {

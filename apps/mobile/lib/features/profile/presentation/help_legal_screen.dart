@@ -217,7 +217,7 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _FaqCard extends StatelessWidget {
-         _FaqCard({
+   const _FaqCard({
     required this.question,
     required this.answer,
     required this.index,
@@ -273,7 +273,7 @@ class _FaqCard extends StatelessWidget {
 }
 
 class _LegalTile extends StatelessWidget {
-         _LegalTile({
+   const _LegalTile({
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -332,7 +332,7 @@ class _LegalTile extends StatelessWidget {
 }
 
 class _ContactChip extends StatelessWidget {
-         _ContactChip({
+   const _ContactChip({
     required this.icon,
     required this.label,
     required this.onTap,

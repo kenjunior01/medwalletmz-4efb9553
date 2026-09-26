@@ -506,7 +506,7 @@ class _AppShellState extends ConsumerState<AppShell> {
 /// do ícone ativo (cápsula deslizante com glow). Rótulos localizados
 /// com o idioma escolhido (14 línguas).
 class _GlassNavBar extends ConsumerWidget {
-         _GlassNavBar({required this.currentIndex, required this.onTap});
+   const _GlassNavBar({required this.currentIndex, required this.onTap});
 
   final int currentIndex;
   final ValueChanged<int> onTap;

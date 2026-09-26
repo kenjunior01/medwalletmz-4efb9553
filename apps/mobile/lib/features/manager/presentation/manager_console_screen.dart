@@ -242,7 +242,7 @@ class _ManagerConsoleScreenState extends ConsumerState<ManagerConsoleScreen> {
 // ═══════════════════════════════════════════════════════════════════
 
 class _OverviewPanel extends ConsumerWidget {
-         _OverviewPanel({required this.countryId});
+   const _OverviewPanel({required this.countryId});
 
   final String countryId;
 
@@ -405,7 +405,7 @@ class _OverviewPanel extends ConsumerWidget {
 
 /// Barras comparativas simples (widgets puros, sem dependências).
 class _StatsBars extends StatelessWidget {
-         _StatsBars({required this.data});
+   const _StatsBars({required this.data});
 
   final List<(String, int, Color)> data;
 
@@ -469,7 +469,7 @@ class _StatsBars extends StatelessWidget {
 }
 
 class _ActionTile extends StatelessWidget {
-         _ActionTile({
+   const _ActionTile({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -625,7 +625,7 @@ class _SubmissionsPanelState extends ConsumerState<_SubmissionsPanel> {
 
 /// Cartão de revisão de submissão — reutilizado pela consola.
 class ProposalReviewCard extends ConsumerWidget {
-         ProposalReviewCard({
+   const ProposalReviewCard({
     super.key,
     required this.p,
     required this.canReview,

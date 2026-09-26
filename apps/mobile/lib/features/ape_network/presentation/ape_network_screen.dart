@@ -320,7 +320,7 @@ class ApeNetworkScreen extends StatelessWidget {
 }
 
 class _HeroStat extends StatelessWidget {
-         _HeroStat({required this.value, required this.label});
+   const _HeroStat({required this.value, required this.label});
   final String value;
   final String label;
 
@@ -343,7 +343,7 @@ class _HeroStat extends StatelessWidget {
 }
 
 class _SectionCard extends StatelessWidget {
-         _SectionCard({required this.title, required this.child});
+   const _SectionCard({required this.title, required this.child});
   final String title;
   final Widget child;
 

@@ -202,7 +202,7 @@ class _LoadingView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-         _ErrorView({required this.error});
+   const _ErrorView({required this.error});
 
   final String error;
 
@@ -248,7 +248,7 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _ContentView extends ConsumerWidget {
-         _ContentView({
+   const _ContentView({
     required this.data,
     required this.gallery,
     required this.imgIndex,

@@ -151,7 +151,7 @@ class _DeliveriesScreenState extends ConsumerState<DeliveriesScreen> {
 // ── Hero ──────────────────────────────────────────────────────────────
 
 class _HeroCard extends StatelessWidget {
-         _HeroCard({required this.balance});
+   const _HeroCard({required this.balance});
 
   final double balance;
 
@@ -218,7 +218,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-         _EmptyState({required this.onRequest});
+   const _EmptyState({required this.onRequest});
 
   final VoidCallback onRequest;
 
@@ -263,7 +263,7 @@ class _EmptyState extends StatelessWidget {
 // ── Cartão de entrega ─────────────────────────────────────────────────
 
 class _DeliveryCard extends StatelessWidget {
-         _DeliveryCard({
+   const _DeliveryCard({
     required this.delivery,
     required this.statusColor,
     required this.onTap,
@@ -386,7 +386,7 @@ class _DeliveryCard extends StatelessWidget {
 }
 
 class _MiniStat extends StatelessWidget {
-         _MiniStat({required this.icon, required this.label});
+   const _MiniStat({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -946,7 +946,7 @@ class _FieldLabel extends StatelessWidget {
 }
 
 class _Field extends StatelessWidget {
-         _Field({
+   const _Field({
     required this.controller,
     required this.hint,
     this.keyboard,
@@ -986,7 +986,7 @@ class _Field extends StatelessWidget {
 }
 
 class _MapPickTile extends StatelessWidget {
-         _MapPickTile({
+   const _MapPickTile({
     required this.label,
     required this.hasPoint,
     required this.onTap,
@@ -1041,7 +1041,7 @@ class _MapPickTile extends StatelessWidget {
 }
 
 class _RouteSummary extends StatelessWidget {
-         _RouteSummary({
+   const _RouteSummary({
     required this.pickupKind,
     required this.pickupName,
     required this.dropName,
@@ -1122,7 +1122,7 @@ class _RouteSummary extends StatelessWidget {
 }
 
 class _QuoteRow extends StatelessWidget {
-         _QuoteRow(this.label, this.value, {this.bold = false});
+   const _QuoteRow(this.label, this.value, {this.bold = false});
 
   final String label;
   final String value;

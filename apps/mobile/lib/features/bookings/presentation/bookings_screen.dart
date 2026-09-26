@@ -93,7 +93,7 @@ class BookingsScreen extends ConsumerWidget {
 }
 
 class _ConsultTile extends ConsumerWidget {
-         _ConsultTile({required this.consultation});
+   const _ConsultTile({required this.consultation});
 
   final Consultation consultation;
 
@@ -286,7 +286,7 @@ class _ConsultTile extends ConsumerWidget {
 }
 
 class _ActionChip extends StatelessWidget {
-         _ActionChip({
+   const _ActionChip({
     required this.icon,
     required this.label,
     required this.color,
@@ -332,7 +332,7 @@ class _ActionChip extends StatelessWidget {
 /// Folha de avaliação — grava em `doctor_reviews` (UNIQUE por consulta,
 /// por isso um segundo toque actualiza a nota em vez de duplicar).
 class _ReviewSheet extends ConsumerStatefulWidget {
-         _ReviewSheet({required this.consultation, required this.alreadyRated});
+   const _ReviewSheet({required this.consultation, required this.alreadyRated});
 
   final Consultation consultation;
   final bool alreadyRated;

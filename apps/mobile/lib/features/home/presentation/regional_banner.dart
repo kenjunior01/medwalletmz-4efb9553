@@ -11,7 +11,7 @@ import '../../auth/presentation/auth_controller.dart';
 /// Conteúdo regional publicado pela gestão (tabela `regional_content`):
 /// campanhas de saúde, avisos de emergência, dicas locais, etc.
 class HomeRegionalContent {
-         HomeRegionalContent({
+   const HomeRegionalContent({
     required this.id,
     required this.title,
     required this.contentType,

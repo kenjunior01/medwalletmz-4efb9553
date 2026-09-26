@@ -286,7 +286,7 @@ class _AppLockGateState extends State<AppLockGate>
 
 /// Botão discreto de emergência no ecrã de bloqueio.
 class _EmergencyLinkButton extends StatelessWidget {
-         _EmergencyLinkButton({required this.onTap});
+   const _EmergencyLinkButton({required this.onTap});
 
   final VoidCallback onTap;
 
@@ -322,7 +322,7 @@ class _EmergencyLinkButton extends StatelessWidget {
 }
 
 class _UnlockButton extends StatelessWidget {
-         _UnlockButton({required this.onTap});
+   const _UnlockButton({required this.onTap});
 
   final VoidCallback onTap;
 

@@ -199,7 +199,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 // ═══════════════════════════════════════════════════════════════════════
 
 class _Header extends ConsumerWidget {
-         _Header({this.shopName});
+   const _Header({this.shopName});
 
   final String? shopName;
 
@@ -265,7 +265,7 @@ class _Header extends ConsumerWidget {
 }
 
 class _CartButton extends StatelessWidget {
-         _CartButton({required this.count});
+   const _CartButton({required this.count});
 
   final int count;
 
@@ -347,7 +347,7 @@ class _TrustBar extends StatelessWidget {
 }
 
 class _SearchSortBar extends StatelessWidget {
-         _SearchSortBar({
+   const _SearchSortBar({
     required this.searchCtrl,
     required this.sort,
     required this.onSubmit,
@@ -424,7 +424,7 @@ class _SearchSortBar extends StatelessWidget {
 }
 
 class _CollectionsBar extends StatelessWidget {
-         _CollectionsBar({
+   const _CollectionsBar({
     required this.collections,
     required this.selected,
     required this.onSelect,
@@ -480,7 +480,7 @@ class _CollectionsBar extends StatelessWidget {
 }
 
 class _ProductGrid extends StatelessWidget {
-         _ProductGrid({required this.products});
+   const _ProductGrid({required this.products});
 
   final List<ShopifyProduct> products;
 
@@ -505,7 +505,7 @@ class _ProductGrid extends StatelessWidget {
 }
 
 class _ProductCard extends StatelessWidget {
-         _ProductCard({required this.product});
+   const _ProductCard({required this.product});
 
   final ShopifyProduct product;
 
@@ -686,7 +686,7 @@ class _GridSkeleton extends StatelessWidget {
 }
 
 class _EmptyGrid extends StatelessWidget {
-         _EmptyGrid({required this.hasFilters});
+   const _EmptyGrid({required this.hasFilters});
 
   final bool hasFilters;
 
@@ -720,7 +720,7 @@ class _EmptyGrid extends StatelessWidget {
 }
 
 class _ErrorBox extends StatelessWidget {
-         _ErrorBox({required this.error, required this.onRetry});
+   const _ErrorBox({required this.error, required this.onRetry});
 
   final String error;
   final VoidCallback onRetry;
@@ -787,7 +787,7 @@ class _FooterNote extends StatelessWidget {
 
 /// Ecrã mostrado quando nenhuma loja está ligada.
 class _NotConfigured extends StatelessWidget {
-         _NotConfigured({required this.onConfig});
+   const _NotConfigured({required this.onConfig});
 
   final VoidCallback onConfig;
 

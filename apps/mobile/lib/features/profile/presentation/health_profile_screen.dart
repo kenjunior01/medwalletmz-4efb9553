@@ -15,7 +15,7 @@ import '../../emergency_card/data/emergency_card_repository.dart';
 /// Perfil de saúde do paciente (tabela `patient_profiles` — dados que
 /// alimentam o SOS, a triagem e a ficha de emergência).
 class PatientProfile {
-         PatientProfile({
+   const PatientProfile({
     this.dateOfBirth,
     this.gender,
     this.bloodType,

@@ -14,7 +14,7 @@ import 'wallet_controller.dart';
 /// manual com referência e mostra as instruções + comprovativo
 /// opcional. O saldo entra quando a gestão confirma (realtime).
 class DepositSheet extends ConsumerStatefulWidget {
-         DepositSheet({
+   const DepositSheet({
     super.key,
     required this.userId,
     required this.payerName,

@@ -8,7 +8,7 @@ import '../../../core/theme/app_colors.dart';
 /// dados mock no cliente — mantemos a mesma abordagem até existir uma
 /// tabela dedicada (zero alterações de backend).
 class _Vet {
-         _Vet({
+   const _Vet({
     required this.name,
     required this.specialty,
     required this.address,

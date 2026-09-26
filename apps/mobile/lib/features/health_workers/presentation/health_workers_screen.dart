@@ -174,7 +174,7 @@ class _Tab extends StatelessWidget {
 }
 
 class _BrowseView extends StatelessWidget {
-         _BrowseView({
+   const _BrowseView({
     required this.workers,
     required this.profession,
     required this.onFilter,
@@ -280,7 +280,7 @@ class _ProfChip extends StatelessWidget {
 }
 
 class _WorkerCard extends StatelessWidget {
-         _WorkerCard({required this.worker, required this.onTap});
+   const _WorkerCard({required this.worker, required this.onTap});
   final HealthWorker worker;
   final VoidCallback onTap;
 
@@ -376,7 +376,7 @@ class _WorkerCard extends StatelessWidget {
 }
 
 class _Avatar extends StatelessWidget {
-         _Avatar({required this.worker, this.size = 48});
+   const _Avatar({required this.worker, this.size = 48});
   final HealthWorker worker;
   final double size;
 
@@ -415,7 +415,7 @@ class _Avatar extends StatelessWidget {
 }
 
 class _WorkerSheet extends ConsumerStatefulWidget {
-         _WorkerSheet({required this.worker});
+   const _WorkerSheet({required this.worker});
   final HealthWorker worker;
 
   @override
@@ -800,7 +800,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
 }
 
 class _BookingsView extends StatelessWidget {
-         _BookingsView({required this.bookings, required this.onReload});
+   const _BookingsView({required this.bookings, required this.onReload});
   final List<WorkerBooking>? bookings;
   final VoidCallback onReload;
 

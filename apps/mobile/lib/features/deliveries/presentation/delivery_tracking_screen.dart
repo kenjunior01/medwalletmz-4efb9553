@@ -181,7 +181,7 @@ class _DeliveryTrackingScreenState
 // ── Mapa ao vivo ──────────────────────────────────────────────────────
 
 class _LiveMapCard extends StatelessWidget {
-         _LiveMapCard({
+   const _LiveMapCard({
     required this.delivery,
     required this.riderPosition,
     required this.onMapCreated,
@@ -306,7 +306,7 @@ class _LiveMapCard extends StatelessWidget {
 }
 
 class _MapFallback extends StatelessWidget {
-         _MapFallback({required this.delivery, required this.onOpenMaps});
+   const _MapFallback({required this.delivery, required this.onOpenMaps});
 
   final PatientDelivery delivery;
   final void Function(LatLngPoint, String) onOpenMaps;
@@ -361,7 +361,7 @@ class _MapFallback extends StatelessWidget {
 }
 
 class _MapLinkRow extends StatelessWidget {
-         _MapLinkRow({
+   const _MapLinkRow({
     required this.emoji,
     required this.title,
     required this.point,
@@ -408,7 +408,7 @@ class _MapLinkRow extends StatelessWidget {
 // ── Timeline de estados ───────────────────────────────────────────────
 
 class _StatusTimeline extends StatelessWidget {
-         _StatusTimeline({required this.delivery});
+   const _StatusTimeline({required this.delivery});
 
   final PatientDelivery delivery;
 
@@ -552,7 +552,7 @@ class _StatusTimeline extends StatelessWidget {
 // ── Detalhes ──────────────────────────────────────────────────────────
 
 class _DetailsCard extends StatelessWidget {
-         _DetailsCard({required this.delivery});
+   const _DetailsCard({required this.delivery});
 
   final PatientDelivery delivery;
 

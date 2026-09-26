@@ -704,7 +704,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
 
 // ── Campo de formulário da folha ─────────────────────────────────────
 class _Field extends StatelessWidget {
-         _Field({
+   const _Field({
     required this.label,
     required this.controller,
     required this.hint,

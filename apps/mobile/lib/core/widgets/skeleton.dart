@@ -86,7 +86,7 @@ class ListSkeleton extends StatelessWidget {
 
 /// Estado vazio ilustrado com ícone em círculo de vidro.
 class EmptyState extends StatelessWidget {
-         EmptyState({
+   const EmptyState({
     super.key,
     required this.icon,
     required this.title,

@@ -15,7 +15,7 @@ import '../data/video_call_repository.dart';
 /// Estado local do ecrã de chamada (micro/câmara são locais — a sala em
 /// si vive no Jitsi Meet; o estado da sessão vive em video_sessions).
 class _CallUiState {
-         _CallUiState({
+   const _CallUiState({
     this.micOn = true,
     this.camOn = true,
     this.speakerOn = true,
@@ -281,7 +281,7 @@ class _VideoCallScreenState extends ConsumerState<VideoCallScreen> {
 
 // ── Cabeçalho minimalista ─────────────────────────────────────────────
 class _Header extends StatelessWidget {
-         _Header({required this.onBack});
+   const _Header({required this.onBack});
 
   final VoidCallback onBack;
 
@@ -324,7 +324,7 @@ class _Header extends StatelessWidget {
 }
 
 class _BigAvatar extends StatelessWidget {
-         _BigAvatar({
+   const _BigAvatar({
     required this.name,
     required this.avatarUrl,
     required this.pulsing,
@@ -379,7 +379,7 @@ class _BigAvatar extends StatelessWidget {
 }
 
 class _RoomChip extends StatelessWidget {
-         _RoomChip({required this.roomUrl});
+   const _RoomChip({required this.roomUrl});
 
   final String roomUrl;
 
@@ -428,7 +428,7 @@ class _RoomChip extends StatelessWidget {
 }
 
 class _CallControls extends StatelessWidget {
-         _CallControls({
+   const _CallControls({
     required this.ui,
     required this.onToggleMic,
     required this.onToggleCam,
@@ -498,7 +498,7 @@ class _CallControls extends StatelessWidget {
 }
 
 class _RoundToggle extends StatelessWidget {
-         _RoundToggle({
+   const _RoundToggle({
     required this.icon,
     required this.active,
     required this.onTap,
@@ -535,7 +535,7 @@ class _RoundToggle extends StatelessWidget {
 }
 
 class _GlassAction extends StatelessWidget {
-         _GlassAction({
+   const _GlassAction({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -576,7 +576,7 @@ class _GlassAction extends StatelessWidget {
 }
 
 class _EndButton extends StatelessWidget {
-         _EndButton({required this.onTap});
+   const _EndButton({required this.onTap});
 
   final VoidCallback onTap;
 
@@ -619,7 +619,7 @@ class _EndButton extends StatelessWidget {
 }
 
 class _ErrorPane extends StatelessWidget {
-         _ErrorPane({required this.message, required this.onRetry});
+   const _ErrorPane({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;

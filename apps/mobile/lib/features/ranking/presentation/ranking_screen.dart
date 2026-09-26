@@ -213,7 +213,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen>
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-         _IconBtn({required this.icon, required this.onTap});
+   const _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -240,7 +240,7 @@ class _IconBtn extends StatelessWidget {
 }
 
 class _RankTile extends StatelessWidget {
-         _RankTile({
+   const _RankTile({
     required this.position,
     required this.title,
     required this.subtitle,

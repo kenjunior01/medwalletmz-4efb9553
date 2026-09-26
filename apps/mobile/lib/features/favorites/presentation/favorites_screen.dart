@@ -192,7 +192,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
 // ── Cabeçalho de secção ────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
-         _SectionHeader({required this.icon, required this.label});
+   const _SectionHeader({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -223,7 +223,7 @@ class _SectionHeader extends StatelessWidget {
 // ── Cartão de farmácia ─────────────────────────────────────────────
 
 class _StoreCard extends StatelessWidget {
-         _StoreCard({required this.fav, required this.onRemove});
+   const _StoreCard({required this.fav, required this.onRemove});
 
   final FavoriteStore fav;
   final VoidCallback onRemove;
@@ -306,7 +306,7 @@ class _StoreCard extends StatelessWidget {
 // ── Cartão de produto ──────────────────────────────────────────────
 
 class _ProductCard extends StatelessWidget {
-         _ProductCard({required this.fav});
+   const _ProductCard({required this.fav});
 
   final FavoriteProduct fav;
 

@@ -5,7 +5,7 @@ import '../../../core/theme/app_colors.dart';
 
 /// Cartão de estatística grande (visão geral das consolas).
 class StatCard extends StatelessWidget {
-         StatCard({
+   const StatCard({
     super.key,
     required this.label,
     required this.value,
@@ -167,7 +167,7 @@ class SectionTitle extends StatelessWidget {
 
 /// Chip de filtro simples.
 class FilterChip2 extends StatelessWidget {
-         FilterChip2({
+   const FilterChip2({
     super.key,
     required this.label,
     required this.selected,

@@ -225,7 +225,7 @@ class ConversationsScreen extends ConsumerWidget {
 // ── Badge pequeno ───────────────────────────────────────────────────────
 
 class _MiniBadge extends StatelessWidget {
-         _MiniBadge({required this.count});
+   const _MiniBadge({required this.count});
 
   final int count;
 
@@ -252,7 +252,7 @@ class _MiniBadge extends StatelessWidget {
 // ── Tile de conversa com instituição ────────────────────────────────────
 
 class _ConversationTile extends StatelessWidget {
-         _ConversationTile({required this.conversation});
+   const _ConversationTile({required this.conversation});
 
   final FacilityConversation conversation;
 
@@ -388,7 +388,7 @@ class _ConversationTile extends StatelessWidget {
 // ── Tile de conversa de consulta ────────────────────────────────────────
 
 class _ThreadTile extends StatelessWidget {
-         _ThreadTile({required this.thread});
+   const _ThreadTile({required this.thread});
 
   final ConsultationThread thread;
 

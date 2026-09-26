@@ -10,7 +10,7 @@ import '../../wallet/presentation/wallet_controller.dart';
 /// Levantamento de fundos via RPC `request_withdrawal`
 /// (débito atómico + fundos retidos para aprovação financeira).
 class WithdrawSheet extends ConsumerStatefulWidget {
-         WithdrawSheet({
+   const WithdrawSheet({
     super.key,
     required this.availableBalance,
   });

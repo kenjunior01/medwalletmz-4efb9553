@@ -475,7 +475,7 @@ String _typeLabel(String t) {
 }
 
 class _RecordCard extends StatelessWidget {
-         _RecordCard({
+   const _RecordCard({
     required this.record,
     this.onOpenFile,
     required this.onShare,
@@ -633,7 +633,7 @@ class _RecordCard extends StatelessWidget {
 /// Folha de partilha com médico: lista dos médicos com quem já tens
 /// consulta + estado das partilhas do registo (revogável).
 class _ShareSheet extends ConsumerStatefulWidget {
-         _ShareSheet({required this.record, required this.onDone});
+   const _ShareSheet({required this.record, required this.onDone});
 
   final MedicalRecord record;
   final VoidCallback onDone;
@@ -859,7 +859,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
 
 // ── Campo simples da folha ───────────────────────────────────────────
 class _SheetField extends StatelessWidget {
-         _SheetField({
+   const _SheetField({
     required this.label,
     required this.controller,
     required this.hint,

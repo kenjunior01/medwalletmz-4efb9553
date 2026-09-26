@@ -1041,7 +1041,7 @@ class EmptyProfile extends StatelessWidget {
 }
 
 class _MenuGroup extends StatelessWidget {
-         _MenuGroup({required this.items});
+   const _MenuGroup({required this.items});
 
   final List<_MenuItem> items;
 
@@ -1070,7 +1070,7 @@ class _MenuGroup extends StatelessWidget {
 }
 
 class _MenuItem extends StatelessWidget {
-         _MenuItem({
+   const _MenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -1191,7 +1191,7 @@ Future<void> _showAddresses(BuildContext context, WidgetRef ref) async {
 }
 
 class _AddressesSheet extends StatefulWidget {
-         _AddressesSheet({required this.repo, required this.userId});
+   const _AddressesSheet({required this.repo, required this.userId});
 
   final AddressRepository repo;
   final String userId;

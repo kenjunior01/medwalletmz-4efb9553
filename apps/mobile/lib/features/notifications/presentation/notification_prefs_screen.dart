@@ -251,7 +251,7 @@ class _NotificationPrefsScreenState
 // ── Cartão de toggle ────────────────────────────────────────────────────
 
 class _ToggleCard extends StatelessWidget {
-         _ToggleCard({
+   const _ToggleCard({
     required this.emoji,
     required this.title,
     required this.subtitle,
@@ -326,7 +326,7 @@ class _ToggleCard extends StatelessWidget {
 // ── Horas de silêncio ───────────────────────────────────────────────────
 
 class _QuietHoursCard extends StatelessWidget {
-         _QuietHoursCard({required this.prefs, required this.onChanged});
+   const _QuietHoursCard({required this.prefs, required this.onChanged});
 
   final NotificationPrefs prefs;
   final void Function(int start, int end) onChanged;
@@ -403,7 +403,7 @@ class _QuietHoursCard extends StatelessWidget {
 }
 
 class _HourDropdown extends StatelessWidget {
-         _HourDropdown({
+   const _HourDropdown({
     required this.value,
     required this.label,
     required this.onChanged,

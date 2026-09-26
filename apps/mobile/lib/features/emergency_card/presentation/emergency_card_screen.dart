@@ -20,7 +20,7 @@ import '../data/emergency_card_repository.dart';
 ///   • Rota `/emergency-card` (SOS, Perfil, balcões rápidos)
 ///   • Long-press no ícone (App Shortcut nativo)
 class EmergencyCardScreen extends StatelessWidget {
-         EmergencyCardScreen({
+   const EmergencyCardScreen({
     super.key,
     this.data,
     this.onClose,
@@ -43,7 +43,7 @@ class EmergencyCardScreen extends StatelessWidget {
 }
 
 class _CardLoader extends StatefulWidget {
-         _CardLoader({
+   const _CardLoader({
     this.prefetched,
     this.onClose,
     required this.showClose,
@@ -172,7 +172,7 @@ class _CardLoaderState extends State<_CardLoader> {
 
 /// Conteúdo completo — só aparece se houver dados.
 class _CardContent extends StatelessWidget {
-         _CardContent({required this.data});
+   const _CardContent({required this.data});
 
   final EmergencyCardData data;
 
@@ -375,7 +375,7 @@ class _CardContent extends StatelessWidget {
 
 /// Secção genérica (alergias / condições / medicação).
 class _SectionCard extends StatelessWidget {
-         _SectionCard({
+   const _SectionCard({
     required this.icon,
     required this.title,
     required this.accent,
@@ -461,7 +461,7 @@ class _SectionCard extends StatelessWidget {
 
 /// Cartão de chamada de 1 toque para o contacto de emergência.
 class _CallCard extends StatelessWidget {
-         _CallCard({
+   const _CallCard({
     required this.name,
     required this.phone,
     this.relationship,
@@ -561,7 +561,7 @@ class _CallCard extends StatelessWidget {
 
 /// Estado vazio honesto — sem dados na ficha.
 class _EmptyCard extends StatelessWidget {
-         _EmptyCard({this.onClose});
+   const _EmptyCard({this.onClose});
 
   final VoidCallback? onClose;
 

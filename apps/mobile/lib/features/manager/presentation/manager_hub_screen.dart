@@ -58,7 +58,7 @@ class _ManagerHubScreenState extends ConsumerState<ManagerHubScreen> {
 }
 
 class _Hub extends ConsumerWidget {
-         _Hub({required this.managed, required this.countries});
+   const _Hub({required this.managed, required this.countries});
 
   /// null = admin global.
   final Set<String>? managed;
@@ -263,7 +263,7 @@ class _GlobalCard extends ConsumerWidget {
 }
 
 class _CountryCard extends ConsumerWidget {
-         _CountryCard({required this.c, required this.isGlobal});
+   const _CountryCard({required this.c, required this.isGlobal});
 
   final CountryFull c;
   final bool isGlobal;
@@ -345,7 +345,7 @@ class _CountryCard extends ConsumerWidget {
 }
 
 class _MeddyCard extends ConsumerWidget {
-         _MeddyCard({required this.countries});
+   const _MeddyCard({required this.countries});
 
   final List<CountryFull> countries;
 

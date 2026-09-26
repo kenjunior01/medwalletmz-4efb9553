@@ -8,7 +8,7 @@ import '../theme/app_colors.dart';
 /// de luz periódico (paridade `ShimmerButton` da web — um brilho branco
 /// atravessa o botão a cada ~2.8 s) e micro-interação de pressão.
 class GradientButton extends StatefulWidget {
-         GradientButton({
+   const GradientButton({
     super.key,
     required this.label,
     required this.onPressed,
@@ -191,7 +191,7 @@ class _GradientButtonState extends State<GradientButton>
 
 /// Botão secundário "ghost" em vidro — para ações de apoio.
 class GlassGhostButton extends StatelessWidget {
-         GlassGhostButton({
+   const GlassGhostButton({
     super.key,
     required this.label,
     required this.onPressed,

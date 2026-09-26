@@ -261,7 +261,7 @@ class _MeddyChatScreenState extends ConsumerState<MeddyChatScreen> {
 // ── Componentes ─────────────────────────────────────────────────────────
 
 class _MeddyAvatar extends StatelessWidget {
-         _MeddyAvatar({this.size = 44});
+   const _MeddyAvatar({this.size = 44});
   final double size;
 
   @override
@@ -285,7 +285,7 @@ class _MeddyAvatar extends StatelessWidget {
 }
 
 class _Bubble extends StatelessWidget {
-         _Bubble({required this.message, required this.onAction});
+   const _Bubble({required this.message, required this.onAction});
   final MeddyMessage message;
   final void Function(MeddyAction) onAction;
 
@@ -406,7 +406,7 @@ class _TypingBubble extends StatelessWidget {
 }
 
 class _CrisisCard extends StatelessWidget {
-         _CrisisCard({required this.resource});
+   const _CrisisCard({required this.resource});
   final CrisisResource resource;
 
   @override
@@ -462,7 +462,7 @@ class _CrisisCard extends StatelessWidget {
 }
 
 class _Composer extends StatelessWidget {
-         _Composer({
+   const _Composer({
     required this.controller,
     required this.sending,
     required this.onSend,
@@ -531,7 +531,7 @@ class _Composer extends StatelessWidget {
 }
 
 class _Welcome extends StatelessWidget {
-         _Welcome({required this.onPick});
+   const _Welcome({required this.onPick});
   final void Function(String) onPick;
 
   static const _suggestions = [
@@ -586,7 +586,7 @@ class _Welcome extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-         _ErrorView({required this.message});
+   const _ErrorView({required this.message});
   final String message;
 
   @override

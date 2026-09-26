@@ -104,7 +104,7 @@ class _MaternalScreenState extends ConsumerState<MaternalScreen> {
 // ── Componentes ─────────────────────────────────────────────────────────
 
 class _ProgressCard extends StatelessWidget {
-         _ProgressCard({required this.profile});
+   const _ProgressCard({required this.profile});
   final MaternalProfile profile;
 
   @override
@@ -214,7 +214,7 @@ class _Stat extends StatelessWidget {
 }
 
 class _AncCard extends ConsumerWidget {
-         _AncCard({required this.profile});
+   const _AncCard({required this.profile});
   final MaternalProfile profile;
 
   @override
@@ -304,7 +304,7 @@ class _AncCard extends ConsumerWidget {
 }
 
 class _VitalsCard extends ConsumerStatefulWidget {
-         _VitalsCard({required this.profile});
+   const _VitalsCard({required this.profile});
   final MaternalProfile profile;
 
   @override
@@ -434,7 +434,7 @@ class _VitalsCardState extends ConsumerState<_VitalsCard> {
 }
 
 class _VitalField extends StatelessWidget {
-         _VitalField(
+   const _VitalField(
       {required this.controller, required this.label, required this.hint});
   final TextEditingController controller;
   final String label;
@@ -502,7 +502,7 @@ class _EmergencyNote extends StatelessWidget {
 }
 
 class _OnboardingForm extends ConsumerStatefulWidget {
-         _OnboardingForm({required this.onSaved});
+   const _OnboardingForm({required this.onSaved});
   final VoidCallback onSaved;
 
   @override
@@ -665,7 +665,7 @@ class _OnboardingFormState extends ConsumerState<_OnboardingForm> {
 }
 
 class _Stepper extends StatelessWidget {
-         _Stepper(
+   const _Stepper(
       {required this.label, required this.value, required this.onChanged});
   final String label;
   final int value;

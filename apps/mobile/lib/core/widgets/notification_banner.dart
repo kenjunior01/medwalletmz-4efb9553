@@ -42,7 +42,7 @@ class NotificationBanner {
 }
 
 class _BannerView extends StatelessWidget {
-         _BannerView({
+   const _BannerView({
     required this.notification,
     required this.onDismiss,
     required this.onTap,

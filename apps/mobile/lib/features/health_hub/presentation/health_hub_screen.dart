@@ -15,7 +15,7 @@ import '../data/offline_articles.dart';
 /// Artigo de educação em saúde (`health_articles` — leitura pública
 /// das linhas publicadas).
 class HealthArticle {
-         HealthArticle({
+   const HealthArticle({
     required this.id,
     required this.title,
     required this.excerpt,
@@ -561,7 +561,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
 }
 
 class _CatChip extends StatelessWidget {
-         _CatChip({
+   const _CatChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -602,7 +602,7 @@ class _CatChip extends StatelessWidget {
 }
 
 class _ArticleCard extends StatelessWidget {
-         _ArticleCard({required this.article, required this.onTap});
+   const _ArticleCard({required this.article, required this.onTap});
 
   final HealthArticle article;
   final VoidCallback onTap;

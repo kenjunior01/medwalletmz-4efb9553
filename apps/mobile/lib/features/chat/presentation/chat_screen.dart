@@ -402,7 +402,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 // ── Bolha de mensagem ───────────────────────────────────────────────────
 
 class _MessageBubble extends ConsumerWidget {
-         _MessageBubble({required this.message, required this.facilityColor, required this.target});
+   const _MessageBubble({required this.message, required this.facilityColor, required this.target});
 
   final FacilityMessage message;
   final Color facilityColor;
@@ -481,7 +481,7 @@ class _MessageBubble extends ConsumerWidget {
 /// Anexo (foto da receita) — URL assinado gerado a pedido porque o
 /// bucket é privado.
 class _Attachment extends ConsumerStatefulWidget {
-         _Attachment({required this.path});
+   const _Attachment({required this.path});
 
   final String path;
 
@@ -574,7 +574,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
 // ── Perguntas rápidas ───────────────────────────────────────────────────
 
 class _QuickChip extends StatelessWidget {
-         _QuickChip({required this.label, required this.onTap});
+   const _QuickChip({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
@@ -606,7 +606,7 @@ class _QuickChip extends StatelessWidget {
 // ── Barra de escrita ────────────────────────────────────────────────────
 
 class _Composer extends StatelessWidget {
-         _Composer({
+   const _Composer({
     required this.controller,
     required this.sending,
     required this.uploading,

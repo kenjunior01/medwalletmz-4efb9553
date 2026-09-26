@@ -232,7 +232,7 @@ class _CirclesScreenState extends ConsumerState<CirclesScreen> {
 }
 
 class _CircleCard extends StatelessWidget {
-         _CircleCard({
+   const _CircleCard({
     required this.circle,
     required this.onToggleJoin,
     this.onOpen,
@@ -480,7 +480,7 @@ class _EmptyPane extends StatelessWidget {
 }
 
 class _ErrorPane extends StatelessWidget {
-         _ErrorPane({required this.message, required this.onRetry});
+   const _ErrorPane({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;

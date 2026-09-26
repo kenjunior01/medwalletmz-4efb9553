@@ -6,6 +6,7 @@ import 'core/branding/branding.dart';
 import 'core/config.dart';
 import 'core/router/app_router.dart';
 import 'core/security/app_lock_service.dart';
+import 'core/theme/app_colors.dart';
 import 'core/theme/app_palette.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';

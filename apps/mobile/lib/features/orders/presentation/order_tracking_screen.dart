@@ -219,7 +219,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
 // ── Loja ───────────────────────────────────────────────────────────
 
 class _StoreCard extends StatelessWidget {
-         _StoreCard({required this.order});
+   const _StoreCard({required this.order});
 
   final PharmacyOrder order;
 
@@ -305,7 +305,7 @@ class _StoreCard extends StatelessWidget {
 // ── Timeline ───────────────────────────────────────────────────────
 
 class _TimelineCard extends StatelessWidget {
-         _TimelineCard({
+   const _TimelineCard({
     required this.order,
     required this.steps,
     required this.current,
@@ -381,7 +381,7 @@ class _TimelineCard extends StatelessWidget {
 enum _StepState { done, current, todo }
 
 class _StepRow extends StatelessWidget {
-         _StepRow({
+   const _StepRow({
     required this.step,
     required this.state,
     required this.isLast,
@@ -478,7 +478,7 @@ class _StepRow extends StatelessWidget {
 // ── Entregador ─────────────────────────────────────────────────────
 
 class DriverInfo {
-         DriverInfo({
+   const DriverInfo({
     required this.name,
     this.phone,
     this.vehicle,
@@ -492,7 +492,7 @@ class DriverInfo {
 }
 
 class _DriverCard extends StatelessWidget {
-         _DriverCard({required this.driver});
+   const _DriverCard({required this.driver});
 
   final DriverInfo driver;
 
@@ -581,7 +581,7 @@ class _DriverCard extends StatelessWidget {
 // ── Items ──────────────────────────────────────────────────────────
 
 class _ItemsCard extends StatelessWidget {
-         _ItemsCard({required this.order});
+   const _ItemsCard({required this.order});
 
   final PharmacyOrder order;
 
@@ -681,7 +681,7 @@ class _ItemsCard extends StatelessWidget {
 // ── Totais ─────────────────────────────────────────────────────────
 
 class _TotalsCard extends StatelessWidget {
-         _TotalsCard({required this.order});
+   const _TotalsCard({required this.order});
 
   final PharmacyOrder order;
 

@@ -169,7 +169,7 @@ class _AdsScreenState extends ConsumerState<AdsScreen>
 /* ------------------------------ EXPLORAR ------------------------------ */
 
 class _BrowseTab extends StatefulWidget {
-         _BrowseTab({
+   const _BrowseTab({
     required this.loading,
     required this.ads,
     required this.city,
@@ -330,7 +330,7 @@ class _BrowseTabState extends State<_BrowseTab> {
 }
 
 class _CityChip extends StatelessWidget {
-         _CityChip({
+   const _CityChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -372,7 +372,7 @@ class _CityChip extends StatelessWidget {
 }
 
 class _AdCard extends StatelessWidget {
-         _AdCard({required this.ad});
+   const _AdCard({required this.ad});
   final ClassifiedAd ad;
 
   @override
@@ -488,7 +488,7 @@ class _AdCard extends StatelessWidget {
 }
 
 class _AdDetailSheet extends StatelessWidget {
-         _AdDetailSheet({required this.ad});
+   const _AdDetailSheet({required this.ad});
   final ClassifiedAd ad;
 
   Future<void> _launch(BuildContext context, String? raw, String label) async {
@@ -607,7 +607,7 @@ class _AdDetailSheet extends StatelessWidget {
 /* ------------------------------- OS MEUS ------------------------------ */
 
 class _MineTab extends ConsumerWidget {
-         _MineTab({
+   const _MineTab({
     required this.ads,
     required this.onRemove,
     required this.onReload,
@@ -721,7 +721,7 @@ class _MineTab extends ConsumerWidget {
 /* ------------------------------- CRIAR -------------------------------- */
 
 class _CreateAdSheet extends ConsumerStatefulWidget {
-         _CreateAdSheet({required this.onCreated});
+   const _CreateAdSheet({required this.onCreated});
   final VoidCallback onCreated;
 
   @override
@@ -939,7 +939,7 @@ class _CreateAdSheetState extends ConsumerState<_CreateAdSheet> {
 }
 
 class _SheetField extends StatelessWidget {
-         _SheetField({
+   const _SheetField({
     required this.controller,
     required this.label,
     this.maxLines = 1,

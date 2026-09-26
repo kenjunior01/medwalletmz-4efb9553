@@ -260,7 +260,7 @@ class EarnHomeScreen extends ConsumerWidget {
 // ── Peças ───────────────────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
-         _StatCard({
+   const _StatCard({
     required this.label,
     required this.value,
     required this.color,
@@ -309,7 +309,7 @@ class _StatCard extends StatelessWidget {
 }
 
 class _HowStep extends StatelessWidget {
-         _HowStep({required this.n, required this.text});
+   const _HowStep({required this.n, required this.text});
 
   final int n;
   final String text;
@@ -356,7 +356,7 @@ class _HowStep extends StatelessWidget {
 }
 
 class _ProposalCard extends StatelessWidget {
-         _ProposalCard({required this.p});
+   const _ProposalCard({required this.p});
 
   final PlaceProposal p;
 

@@ -148,7 +148,7 @@ class _ImpactScreenState extends ConsumerState<ImpactScreen> {
 }
 
 class _HeroCard extends StatelessWidget {
-         _HeroCard({required this.stats});
+   const _HeroCard({required this.stats});
   final PublicImpactStats stats;
 
   @override
@@ -214,7 +214,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _KpiCard extends StatelessWidget {
-         _KpiCard({
+   const _KpiCard({
     required this.icon,
     required this.colors,
     required this.label,

@@ -8,7 +8,7 @@ import '../../../core/theme/app_colors.dart';
 /// DINHEIRO REAL na carteira (reward_amount/reward_currency — moeda do
 /// país da instituição). Não existem pontos/coins.
 class PlaceProposal {
-         PlaceProposal({
+   const PlaceProposal({
     required this.id,
     required this.entityType,
     required this.name,

@@ -290,7 +290,7 @@ class TriageResultScreen extends ConsumerWidget {
 // ── Cartão da especialidade recomendada ─────────────────────────────────
 
 class _SpecialtyCard extends StatelessWidget {
-         _SpecialtyCard({required this.specialty});
+   const _SpecialtyCard({required this.specialty});
 
   final Specialty specialty;
 
@@ -378,7 +378,7 @@ class _SpecialtyCard extends StatelessWidget {
 }
 
 class _SectionHeading extends StatelessWidget {
-         _SectionHeading({required this.title, required this.color});
+   const _SectionHeading({required this.title, required this.color});
 
   final String title;
   final Color color;
@@ -397,7 +397,7 @@ class _SectionHeading extends StatelessWidget {
 }
 
 class _Bullet extends StatelessWidget {
-         _Bullet({required this.text, required this.color});
+   const _Bullet({required this.text, required this.color});
 
   final String text;
   final Color color;
@@ -426,7 +426,7 @@ class _Bullet extends StatelessWidget {
 }
 
 class _HistoryCard extends StatelessWidget {
-         _HistoryCard({required this.log});
+   const _HistoryCard({required this.log});
 
   final TriageLog log;
 

@@ -195,7 +195,7 @@ class _VisionScannerScreenState extends ConsumerState<VisionScannerScreen> {
 // ── Componentes ─────────────────────────────────────────────────────────
 
 class _TypeSelector extends StatelessWidget {
-         _TypeSelector({required this.selected, required this.onSelect});
+   const _TypeSelector({required this.selected, required this.onSelect});
   final String selected;
   final void Function(String) onSelect;
 
@@ -255,7 +255,7 @@ class _TypeSelector extends StatelessWidget {
 }
 
 class _CaptureButton extends StatelessWidget {
-         _CaptureButton(
+   const _CaptureButton(
       {required this.icon, required this.label, required this.onTap});
   final IconData icon;
   final String label;
@@ -323,7 +323,7 @@ class _NoKeyHint extends StatelessWidget {
 }
 
 class _HistoryList extends StatelessWidget {
-         _HistoryList({
+   const _HistoryList({
     required this.loading,
     required this.scans,
     required this.onTap,
@@ -373,7 +373,7 @@ class _HistoryList extends StatelessWidget {
 }
 
 class _HistoryTile extends StatelessWidget {
-         _HistoryTile({required this.scan, required this.onTap});
+   const _HistoryTile({required this.scan, required this.onTap});
   final VisionScan scan;
   final VoidCallback onTap;
 
@@ -440,7 +440,7 @@ class _HistoryTile extends StatelessWidget {
 }
 
 class _ResultSheet extends ConsumerStatefulWidget {
-         _ResultSheet({required this.scan});
+   const _ResultSheet({required this.scan});
   final VisionScan scan;
 
   @override

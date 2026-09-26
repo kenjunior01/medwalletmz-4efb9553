@@ -272,7 +272,7 @@ class _PermissionsPanelState extends ConsumerState<PermissionsPanel> {
 
 /// Cartão de limite (valor actual vs máximo, com barra de progresso).
 class _LimitCard extends StatelessWidget {
-         _LimitCard({
+   const _LimitCard({
     required this.icon,
     required this.title,
     required this.value,
@@ -358,7 +358,7 @@ class _LimitCard extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════════
 
 class ManagerPermissionsEditorSheet extends ConsumerStatefulWidget {
-         ManagerPermissionsEditorSheet({
+   const ManagerPermissionsEditorSheet({
     super.key,
     required this.userId,
     required this.countryId,

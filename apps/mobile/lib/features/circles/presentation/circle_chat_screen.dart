@@ -647,7 +647,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
 }
 
 class _ActionTile extends StatelessWidget {
-         _ActionTile({
+   const _ActionTile({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -690,7 +690,7 @@ class _ActionTile extends StatelessWidget {
 }
 
 class _MessageBubble extends StatelessWidget {
-         _MessageBubble({
+   const _MessageBubble({
     required this.message,
     this.authorName,
     this.replySource,

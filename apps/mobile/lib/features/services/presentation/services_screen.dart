@@ -475,7 +475,7 @@ class _LabsBanner extends StatelessWidget {
 }
 
 class _DoctorCard extends StatelessWidget {
-         _DoctorCard({required this.doctor});
+   const _DoctorCard({required this.doctor});
 
   final Doctor doctor;
 

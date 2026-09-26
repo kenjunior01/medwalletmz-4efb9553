@@ -426,7 +426,7 @@ class _ConsultationChatScreenState
 // ── Bolha ───────────────────────────────────────────────────────────────
 
 class _MessageBubble extends ConsumerWidget {
-         _MessageBubble({required this.message, required this.mine});
+   const _MessageBubble({required this.message, required this.mine});
 
   final ConsultationMessage message;
   final bool mine;
@@ -489,7 +489,7 @@ class _MessageBubble extends ConsumerWidget {
 }
 
 class _Attachment extends ConsumerStatefulWidget {
-         _Attachment({required this.path});
+   const _Attachment({required this.path});
 
   final String path;
 
@@ -579,7 +579,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
 }
 
 class _QuickChip extends StatelessWidget {
-         _QuickChip({required this.label, required this.onTap});
+   const _QuickChip({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
@@ -609,7 +609,7 @@ class _QuickChip extends StatelessWidget {
 }
 
 class _Composer extends StatelessWidget {
-         _Composer({
+   const _Composer({
     required this.controller,
     required this.sending,
     required this.uploading,

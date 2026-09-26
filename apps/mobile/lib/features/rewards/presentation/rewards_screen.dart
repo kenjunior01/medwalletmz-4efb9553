@@ -369,7 +369,7 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen>
 }
 
 class _ChallengeCard extends StatelessWidget {
-         _ChallengeCard({
+   const _ChallengeCard({
     required this.c,
     required this.joining,
     required this.onJoin,
@@ -512,7 +512,7 @@ class _ChallengeCard extends StatelessWidget {
 }
 
 class _LeaderTile extends StatelessWidget {
-         _LeaderTile({
+   const _LeaderTile({
     required this.position,
     required this.name,
     required this.avatarUrl,
@@ -658,7 +658,7 @@ class _LeaderTile extends StatelessWidget {
 }
 
 class _LevelCard extends StatelessWidget {
-         _LevelCard({required this.g});
+   const _LevelCard({required this.g});
   final UserGamification g;
 
   @override
@@ -742,7 +742,7 @@ class _LevelCard extends StatelessWidget {
 }
 
 class _MiniStat extends StatelessWidget {
-         _MiniStat({
+   const _MiniStat({
     required this.icon,
     required this.color,
     required this.value,
@@ -783,7 +783,7 @@ class _MiniStat extends StatelessWidget {
 }
 
 class _AchievementCard extends StatelessWidget {
-         _AchievementCard({required this.a});
+   const _AchievementCard({required this.a});
   final Achievement a;
 
   @override
@@ -941,7 +941,7 @@ class _TransactionTile extends StatelessWidget {
 }
 
 class _EmptyCard extends StatelessWidget {
-         _EmptyCard({required this.icon, required this.text});
+   const _EmptyCard({required this.icon, required this.text});
   final IconData icon;
   final String text;
 

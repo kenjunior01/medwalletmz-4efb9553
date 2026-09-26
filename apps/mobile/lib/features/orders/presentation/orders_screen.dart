@@ -169,7 +169,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 // ── Aba ────────────────────────────────────────────────────────────
 
 class _Tab extends StatelessWidget {
-         _Tab({
+   const _Tab({
     required this.label,
     required this.selected,
     required this.count,
@@ -233,7 +233,7 @@ class _Tab extends StatelessWidget {
 // ── Cartão de encomenda ────────────────────────────────────────────
 
 class _OrderCard extends StatelessWidget {
-         _OrderCard({required this.order});
+   const _OrderCard({required this.order});
 
   final PharmacyOrder order;
 
@@ -444,7 +444,7 @@ class _OrderCard extends StatelessWidget {
 // ── Estado vazio ───────────────────────────────────────────────────
 
 class _EmptyOrders extends StatelessWidget {
-         _EmptyOrders({required this.active});
+   const _EmptyOrders({required this.active});
 
   final bool active;
 

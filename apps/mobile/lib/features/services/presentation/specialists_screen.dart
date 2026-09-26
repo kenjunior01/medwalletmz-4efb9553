@@ -215,7 +215,7 @@ class _SpecialistsScreenState extends ConsumerState<SpecialistsScreen> {
 // ── Cartão de especialista ──────────────────────────────────────────────
 
 class _SpecialistCard extends StatelessWidget {
-         _SpecialistCard({required this.doctor, this.highlighted = false});
+   const _SpecialistCard({required this.doctor, this.highlighted = false});
 
   final Doctor doctor;
   final bool highlighted;

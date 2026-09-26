@@ -387,7 +387,7 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
 }
 
 class _Stat extends StatelessWidget {
-         _Stat({required this.value, required this.label});
+   const _Stat({required this.value, required this.label});
 
   final String value;
   final String label;
@@ -410,7 +410,7 @@ class _Stat extends StatelessWidget {
 }
 
 class _InviteRow extends StatelessWidget {
-         _InviteRow({required this.invite, required this.index});
+   const _InviteRow({required this.invite, required this.index});
 
   final Referral invite;
   final int index;

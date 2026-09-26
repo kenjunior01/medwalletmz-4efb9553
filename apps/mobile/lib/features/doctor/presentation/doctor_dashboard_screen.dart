@@ -157,7 +157,7 @@ class _DoctorDashboardScreenState extends ConsumerState<DoctorDashboardScreen>
 /// ── Interruptor de disponibilidade ───────────────────────────────────
 
 class _AvailabilitySwitch extends ConsumerWidget {
-         _AvailabilitySwitch({required this.profile});
+   const _AvailabilitySwitch({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -225,7 +225,7 @@ class _AvailabilitySwitch extends ConsumerWidget {
 /// ── KPIs ─────────────────────────────────────────────────────────────
 
 class _KpiRow extends ConsumerWidget {
-         _KpiRow({required this.profile});
+   const _KpiRow({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -307,7 +307,7 @@ class _Kpi extends StatelessWidget {
 /// ── Tab 1: Agenda ────────────────────────────────────────────────────
 
 class _AgendaTab extends ConsumerStatefulWidget {
-         _AgendaTab({required this.profile});
+   const _AgendaTab({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -417,7 +417,7 @@ class _SectionLabel extends StatelessWidget {
 }
 
 class _AgendaTile extends StatelessWidget {
-         _AgendaTile({
+   const _AgendaTile({
     required this.consultation,
     required this.busy,
     required this.onAction,
@@ -560,7 +560,7 @@ class _AgendaTile extends StatelessWidget {
 }
 
 class _MiniButton extends StatelessWidget {
-         _MiniButton({
+   const _MiniButton({
     required this.label,
     required this.color,
     required this.onTap,
@@ -599,7 +599,7 @@ class _MiniButton extends StatelessWidget {
 /// ── Tab 2: Horários (slots) ──────────────────────────────────────────
 
 class _SlotsTab extends ConsumerStatefulWidget {
-         _SlotsTab({required this.profile});
+   const _SlotsTab({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -742,7 +742,7 @@ class _SlotsTabState extends ConsumerState<_SlotsTab> {
 }
 
 class _SeriesCard extends StatelessWidget {
-         _SeriesCard({
+   const _SeriesCard({
     required this.days,
     required this.startHour,
     required this.endHour,
@@ -846,7 +846,7 @@ class _SeriesCard extends StatelessWidget {
 }
 
 class _HourPicker extends StatelessWidget {
-         _HourPicker({
+   const _HourPicker({
     required this.label,
     required this.value,
     required this.min,
@@ -905,7 +905,7 @@ class _HourPicker extends StatelessWidget {
 }
 
 class _RoundStep extends StatelessWidget {
-         _RoundStep({required this.icon, required this.onTap});
+   const _RoundStep({required this.icon, required this.onTap});
 
   final IconData icon;
   final VoidCallback? onTap;
@@ -932,7 +932,7 @@ class _RoundStep extends StatelessWidget {
 }
 
 class _SlotTile extends StatelessWidget {
-         _SlotTile({required this.slot, required this.busy, required this.onDelete});
+   const _SlotTile({required this.slot, required this.busy, required this.onDelete});
 
   final DoctorSlot slot;
   final bool busy;
@@ -994,7 +994,7 @@ class _SlotTile extends StatelessWidget {
 /// ── Tab 3: Pacientes ─────────────────────────────────────────────────
 
 class _PatientsTab extends ConsumerStatefulWidget {
-         _PatientsTab({required this.profile});
+   const _PatientsTab({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -1128,7 +1128,7 @@ class _PatientsTabState extends ConsumerState<_PatientsTab> {
 /// ── Tab 4: Perfil profissional ───────────────────────────────────────
 
 class _DoctorProfileTab extends ConsumerStatefulWidget {
-         _DoctorProfileTab({required this.profile});
+   const _DoctorProfileTab({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -1326,7 +1326,7 @@ class _DoctorProfileTabState extends ConsumerState<_DoctorProfileTab> {
 /// Cartão de avatar do médico — upload para o bucket `avatars` com
 /// upsert em `{uid}/avatar.jpg` (mesmo caminho usado pela web).
 class _AvatarCard extends ConsumerStatefulWidget {
-         _AvatarCard({required this.avatarUrl});
+   const _AvatarCard({required this.avatarUrl});
 
   final String? avatarUrl;
 

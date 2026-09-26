@@ -385,7 +385,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
                                               maxLines: 1,
                                               overflow:
                                                   TextOverflow.ellipsis,
-                                              style: const TextStyle(
+                                              style:        TextStyle(
                                                 color: AppColors
                                                     .textPrimary,
                                                 fontWeight: FontWeight.w700,
@@ -496,7 +496,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
 // ── Botão de pânico com pressão contínua ────────────────────────────
 
 class _HoldButton extends StatelessWidget {
-         _HoldButton({
+   const _HoldButton({
     required this.progress,
     required this.onHoldStart,
     required this.onHoldEnd,
@@ -597,7 +597,7 @@ class _HoldButton extends StatelessWidget {
 }
 
 class _ActiveAlertCard extends StatelessWidget {
-         _ActiveAlertCard({required this.alert, required this.onCancel});
+   const _ActiveAlertCard({required this.alert, required this.onCancel});
 
   final SosAlert alert;
   final VoidCallback onCancel;
@@ -656,7 +656,7 @@ class _ActiveAlertCard extends StatelessWidget {
 // ── Cartão de secção genérico ───────────────────────────────────────
 
 class _SectionCard extends StatelessWidget {
-         _SectionCard({
+   const _SectionCard({
     required this.title,
     required this.child,
     this.trailing,

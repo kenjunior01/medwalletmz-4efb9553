@@ -13,7 +13,7 @@ import 'prescriptions_controller.dart';
 /// instruções. Grava em `prescriptions` + `prescription_items` e
 /// notifica o paciente no chat com o código de verificação.
 class PrescriptionComposerSheet extends ConsumerStatefulWidget {
-         PrescriptionComposerSheet({
+   const PrescriptionComposerSheet({
     super.key,
     required this.patientId,
     required this.consultationId,
@@ -287,7 +287,7 @@ class _ItemForm {
 }
 
 class _ItemCard extends StatelessWidget {
-         _ItemCard({
+   const _ItemCard({
     required this.index,
     required this.form,
     this.onChanged,

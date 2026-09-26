@@ -166,7 +166,7 @@ class _SolidarityScreenState extends ConsumerState<SolidarityScreen> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-         _IconBtn({required this.icon, required this.onTap});
+   const _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -253,7 +253,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _AidCard extends StatelessWidget {
-         _AidCard({required this.request, required this.onDonate});
+   const _AidCard({required this.request, required this.onDonate});
   final AidRequest request;
   final VoidCallback onDonate;
 
@@ -406,7 +406,7 @@ class _AidCard extends StatelessWidget {
 }
 
 class _MyRequestCard extends StatelessWidget {
-         _MyRequestCard({required this.request});
+   const _MyRequestCard({required this.request});
   final AidRequest request;
 
   @override
@@ -482,7 +482,7 @@ class _MyRequestCard extends StatelessWidget {
 // ── Folha de doação ────────────────────────────────────────────────────────
 
 class _DonateSheet extends ConsumerStatefulWidget {
-         _DonateSheet({required this.request});
+   const _DonateSheet({required this.request});
   final AidRequest request;
 
   @override
@@ -930,7 +930,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
 }
 
 class _SheetField extends StatelessWidget {
-         _SheetField({
+   const _SheetField({
     required this.controller,
     required this.hint,
     this.maxLines = 1,

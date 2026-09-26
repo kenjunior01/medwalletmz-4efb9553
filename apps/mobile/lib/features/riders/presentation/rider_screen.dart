@@ -255,7 +255,7 @@ class HealthRiderOnlineAdapter {
 /* ----------------------------- ONBOARDING ----------------------------- */
 
 class _OnboardingWizard extends ConsumerStatefulWidget {
-         _OnboardingWizard({required this.onDone});
+   const _OnboardingWizard({required this.onDone});
 
   final Future<void> Function() onDone;
 
@@ -620,7 +620,7 @@ class _OnboardingWizardState extends ConsumerState<_OnboardingWizard> {
 }
 
 class _HeroChip extends StatelessWidget {
-         _HeroChip({required this.text});
+   const _HeroChip({required this.text});
   final String text;
 
   @override
@@ -639,7 +639,7 @@ class _HeroChip extends StatelessWidget {
 }
 
 class _StepCard extends StatelessWidget {
-         _StepCard({required this.title, required this.child});
+   const _StepCard({required this.title, required this.child});
   final String title;
   final Widget child;
 
@@ -669,7 +669,7 @@ class _StepCard extends StatelessWidget {
 }
 
 class _Field extends StatelessWidget {
-         _Field({
+   const _Field({
     required this.controller,
     required this.label,
     required this.icon,
@@ -711,7 +711,7 @@ class _Field extends StatelessWidget {
 }
 
 class _DocRow extends StatelessWidget {
-         _DocRow({required this.label, required this.path, required this.onPick});
+   const _DocRow({required this.label, required this.path, required this.onPick});
   final String label;
   final String? path;
   final VoidCallback onPick;
@@ -751,7 +751,7 @@ class _DocRow extends StatelessWidget {
 /* ---------------------- VERIFICAÇÃO PENDENTE ---------------------- */
 
 class _PendingVerification extends StatelessWidget {
-         _PendingVerification({required this.rider});
+   const _PendingVerification({required this.rider});
   final HealthRider rider;
 
   @override
@@ -813,7 +813,7 @@ class _PendingVerification extends StatelessWidget {
 /* --------------------------- DASHBOARD --------------------------- */
 
 class _Dashboard extends StatelessWidget {
-         _Dashboard({
+   const _Dashboard({
     required this.rider,
     required this.tabs,
     required this.available,
@@ -904,7 +904,7 @@ class _Dashboard extends StatelessWidget {
 }
 
 class _RiderHeader extends StatelessWidget {
-         _RiderHeader({
+   const _RiderHeader({
     required this.rider,
     required this.isOnline,
     required this.onToggleOnline,
@@ -991,7 +991,7 @@ class _RiderHeader extends StatelessWidget {
 }
 
 class _EarningsCard extends StatelessWidget {
-         _EarningsCard({required this.earnings, required this.rider});
+   const _EarningsCard({required this.earnings, required this.rider});
   final EarningsSummary? earnings;
   final HealthRider rider;
 
@@ -1076,7 +1076,7 @@ class _EarnStat extends StatelessWidget {
 }
 
 class _DeliveryCard extends StatelessWidget {
-         _DeliveryCard({
+   const _DeliveryCard({
     required this.delivery,
     this.onAccept,
     this.onNext,
@@ -1247,7 +1247,7 @@ class _DeliveryCard extends StatelessWidget {
 }
 
 class _RouteRow extends StatelessWidget {
-         _RouteRow({
+   const _RouteRow({
     required this.icon,
     required this.color,
     required this.title,
@@ -1299,7 +1299,7 @@ class _RouteRow extends StatelessWidget {
 }
 
 class _MetaChip extends StatelessWidget {
-         _MetaChip({required this.icon, required this.text});
+   const _MetaChip({required this.icon, required this.text});
   final IconData icon;
   final String text;
 
@@ -1318,7 +1318,7 @@ class _MetaChip extends StatelessWidget {
 }
 
 class _AvailableList extends StatelessWidget {
-         _AvailableList({
+   const _AvailableList({
     required this.deliveries,
     required this.onAccept,
     required this.working,
@@ -1348,7 +1348,7 @@ class _AvailableList extends StatelessWidget {
 }
 
 class _ActiveList extends StatelessWidget {
-         _ActiveList({required this.deliveries, required this.onAdvance});
+   const _ActiveList({required this.deliveries, required this.onAdvance});
   final List<HealthDelivery> deliveries;
   final Future<void> Function(HealthDelivery, DeliveryStatus) onAdvance;
 
@@ -1395,7 +1395,7 @@ class _ActiveList extends StatelessWidget {
 }
 
 class _HistoryList extends StatelessWidget {
-         _HistoryList({required this.deliveries});
+   const _HistoryList({required this.deliveries});
   final List<HealthDelivery> deliveries;
 
   @override
@@ -1421,7 +1421,7 @@ class _HistoryList extends StatelessWidget {
 }
 
 class _EmptyTab extends StatelessWidget {
-         _EmptyTab({required this.icon, required this.text});
+   const _EmptyTab({required this.icon, required this.text});
   final IconData icon;
   final String text;
 

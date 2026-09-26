@@ -302,7 +302,7 @@ class _BloodHubScreenState extends ConsumerState<BloodHubScreen>
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-         _IconBtn({required this.icon, required this.onTap});
+   const _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -329,7 +329,7 @@ class _IconBtn extends StatelessWidget {
 }
 
 class _RequestCard extends StatelessWidget {
-         _RequestCard({
+   const _RequestCard({
     required this.request,
     required this.onVolunteer,
     this.iAmDonor = false,
@@ -519,7 +519,7 @@ class _RequestCard extends StatelessWidget {
 }
 
 class _MatchChip extends StatelessWidget {
-         _MatchChip({required this.match});
+   const _MatchChip({required this.match});
   final BloodMatch match;
 
   @override
@@ -570,7 +570,7 @@ class _MatchChip extends StatelessWidget {
 }
 
 class _DonorSummaryCard extends StatelessWidget {
-         _DonorSummaryCard({required this.donor});
+   const _DonorSummaryCard({required this.donor});
   final BloodDonor donor;
 
   @override
@@ -632,7 +632,7 @@ class _DonorSummaryCard extends StatelessWidget {
 }
 
 class _DonorFormCard extends ConsumerStatefulWidget {
-         _DonorFormCard({
+   const _DonorFormCard({
     required this.donor,
     required this.bloodTypes,
     required this.onSaved,
@@ -783,7 +783,7 @@ class _DonorFormCardState extends ConsumerState<_DonorFormCard> {
 }
 
 class _Field extends StatelessWidget {
-         _Field({
+   const _Field({
     required this.controller,
     required this.hint,
     this.maxLines = 1,
@@ -823,7 +823,7 @@ class _Field extends StatelessWidget {
 }
 
 class _CampaignCard extends StatelessWidget {
-         _CampaignCard({required this.campaign});
+   const _CampaignCard({required this.campaign});
   final BloodCampaign campaign;
 
   @override
@@ -945,7 +945,7 @@ class _CampaignCard extends StatelessWidget {
 }
 
 class _CreateRequestSheet extends ConsumerStatefulWidget {
-         _CreateRequestSheet({required this.bloodTypes});
+   const _CreateRequestSheet({required this.bloodTypes});
   final List<String> bloodTypes;
 
   @override

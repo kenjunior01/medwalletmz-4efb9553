@@ -122,7 +122,7 @@ class _NoAccess extends StatelessWidget {
 // ── Dashboard ───────────────────────────────────────────────────────────
 
 class _Dashboard extends ConsumerWidget {
-         _Dashboard({
+   const _Dashboard({
     required this.countries,
     required this.countryId,
     required this.onCountry,
@@ -246,7 +246,7 @@ class _Dashboard extends ConsumerWidget {
 // ── Lista pendente ──────────────────────────────────────────────────────
 
 class _PendingList extends ConsumerWidget {
-         _PendingList({required this.countryId});
+   const _PendingList({required this.countryId});
 
   final String countryId;
 
@@ -282,7 +282,7 @@ class _PendingList extends ConsumerWidget {
 }
 
 class _ReviewCard extends ConsumerWidget {
-         _ReviewCard({required this.p});
+   const _ReviewCard({required this.p});
 
   final PlaceProposal p;
 
@@ -557,7 +557,7 @@ extension NonNullJoin on List<String?> {
 // ── Detalhe ─────────────────────────────────────────────────────────────
 
 class _DetailRow extends StatelessWidget {
-         _DetailRow({required this.icon, required this.text});
+   const _DetailRow({required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -588,7 +588,7 @@ class _DetailRow extends StatelessWidget {
 // ── KPIs ────────────────────────────────────────────────────────────────
 
 class _KpiPanel extends ConsumerStatefulWidget {
-         _KpiPanel({required this.countryId});
+   const _KpiPanel({required this.countryId});
 
   final String countryId;
 
@@ -711,7 +711,7 @@ String _kpiLabel(String key) => switch (key) {
 // ── Metas ───────────────────────────────────────────────────────────────
 
 class _GoalsPanel extends ConsumerStatefulWidget {
-         _GoalsPanel({required this.countryId});
+   const _GoalsPanel({required this.countryId});
 
   final String countryId;
 
@@ -832,7 +832,7 @@ String _goalLabel(String key) => switch (key) {
     };
 
 class _GoalStatusChip extends StatelessWidget {
-         _GoalStatusChip({required this.status});
+   const _GoalStatusChip({required this.status});
 
   final String status;
 
@@ -867,7 +867,7 @@ class _GoalStatusChip extends StatelessWidget {
 // ── Chips de país/tabs ──────────────────────────────────────────────────
 
 class _CountryChip extends StatelessWidget {
-         _CountryChip({
+   const _CountryChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -910,7 +910,7 @@ class _CountryChip extends StatelessWidget {
 }
 
 class _TabChip extends StatelessWidget {
-         _TabChip({
+   const _TabChip({
     required this.label,
     required this.icon,
     required this.selected,

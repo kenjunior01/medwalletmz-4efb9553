@@ -165,7 +165,7 @@ class _Empty extends StatelessWidget {
 }
 
 class _Line extends ConsumerWidget {
-         _Line({required this.line});
+   const _Line({required this.line});
 
   final ShopifyCartLine line;
 
@@ -299,7 +299,7 @@ class _Line extends ConsumerWidget {
 }
 
 class _Summary extends ConsumerWidget {
-         _Summary({required this.cart});
+   const _Summary({required this.cart});
 
   final ShopCartController cart;
 

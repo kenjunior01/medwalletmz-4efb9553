@@ -176,7 +176,7 @@ class _InstitutionsPanelState extends ConsumerState<InstitutionsPanel> {
 }
 
 class _InstitutionCard extends StatelessWidget {
-         _InstitutionCard({
+   const _InstitutionCard({
     required this.r,
     required this.busy,
     required this.onToggle,
@@ -463,7 +463,7 @@ class _PaymentsPanelState extends ConsumerState<PaymentsPanel> {
 }
 
 class _PaymentCard extends StatelessWidget {
-         _PaymentCard({
+   const _PaymentCard({
     required this.p,
     required this.onConfirm,
     required this.onReject,
@@ -814,7 +814,7 @@ class _SosMonitorPanelState extends ConsumerState<SosMonitorPanel> {
 }
 
 class _SosCard extends StatelessWidget {
-         _SosCard({
+   const _SosCard({
     required this.a,
     required this.onAck,
     required this.onResolve,

@@ -374,7 +374,7 @@ class _VoiceJournalScreenState extends ConsumerState<VoiceJournalScreen> {
 }
 
 class _DetailSheet extends ConsumerStatefulWidget {
-         _DetailSheet({required this.entry});
+   const _DetailSheet({required this.entry});
   final VoiceEntry entry;
 
   @override
@@ -587,7 +587,7 @@ class _DetailSheetState extends ConsumerState<_DetailSheet> {
 }
 
 class _ChipSection extends StatelessWidget {
-         _ChipSection({required this.title, required this.items});
+   const _ChipSection({required this.title, required this.items});
   final String title;
   final List<String> items;
 

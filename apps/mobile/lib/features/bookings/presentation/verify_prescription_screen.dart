@@ -14,7 +14,7 @@ import '../../../core/widgets/gradient_button.dart';
 
 /// Resultado do RPC `verify_prescription(_code)` (público na BD).
 class PrescriptionCheck {
-         PrescriptionCheck({
+   const PrescriptionCheck({
     required this.code,
     required this.status,
     required this.isValid,
@@ -362,7 +362,7 @@ class _VerifyPrescriptionScreenState
 
 /// Cartão de estado (erro) com o mesmo estilo do resultado.
 class _StatusCard extends StatelessWidget {
-         _StatusCard({
+   const _StatusCard({
     required this.icon,
     required this.color,
     required this.title,

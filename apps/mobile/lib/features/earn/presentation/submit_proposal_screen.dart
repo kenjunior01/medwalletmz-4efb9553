@@ -244,7 +244,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
               const SizedBox(height: 14),
 
               // ── Tipo ─────────────────────────────────────────────
-              const Text(
+                     Text(
                 'TIPO DE INSTITUIÇÃO',
                 style: _sectionLabel,
               ),
@@ -412,7 +412,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
               const SizedBox(height: 14),
 
               // ── Localização ──────────────────────────────────────
-              const Text('LOCALIZAÇÃO (GPS ou mapa)', style: _sectionLabel),
+                     Text('LOCALIZAÇÃO (GPS ou mapa)', style: _sectionLabel),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -632,7 +632,7 @@ final _sectionLabel = TextStyle(
 );
 
 class _TypeChip extends StatelessWidget {
-         _TypeChip({
+   const _TypeChip({
     required this.label,
     required this.icon,
     required this.color,

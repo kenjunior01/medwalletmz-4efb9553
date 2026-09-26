@@ -246,7 +246,7 @@ class _GlobalDashboardScreenState
 }
 
 class _Header extends StatelessWidget {
-         _Header({required this.onBack});
+   const _Header({required this.onBack});
 
   final VoidCallback onBack;
 
@@ -305,7 +305,7 @@ class _Header extends StatelessWidget {
 }
 
 class _UrgencyTile extends StatelessWidget {
-         _UrgencyTile({
+   const _UrgencyTile({
     required this.icon,
     required this.label,
     required this.value,
@@ -370,7 +370,7 @@ class _UrgencyTile extends StatelessWidget {
 }
 
 class _CountriesTable extends ConsumerWidget {
-         _CountriesTable({
+   const _CountriesTable({
     required this.countries,
     required this.stats,
     required this.isLoading,

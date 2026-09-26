@@ -145,7 +145,7 @@ class InsuranceScreen extends ConsumerWidget {
 }
 
 class _PlanCard extends ConsumerWidget {
-         _PlanCard({required this.plan});
+   const _PlanCard({required this.plan});
 
   final InsurancePlan plan;
 
@@ -342,7 +342,7 @@ class _PlanCard extends ConsumerWidget {
 }
 
 class _CoveragePill extends StatelessWidget {
-         _CoveragePill({required this.label});
+   const _CoveragePill({required this.label});
 
   final String label;
 
@@ -367,7 +367,7 @@ class _CoveragePill extends StatelessWidget {
 }
 
 class _PolicyCard extends ConsumerWidget {
-         _PolicyCard({required this.p});
+   const _PolicyCard({required this.p});
 
   final MyInsurancePolicy p;
 

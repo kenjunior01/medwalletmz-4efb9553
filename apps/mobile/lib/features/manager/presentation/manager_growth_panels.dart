@@ -218,7 +218,7 @@ class _KpisPanelState extends ConsumerState<KpisPanel> {
 }
 
 class _KpiCard extends StatelessWidget {
-         _KpiCard({required this.k});
+   const _KpiCard({required this.k});
 
   final RegionalKpi k;
 
@@ -499,7 +499,7 @@ class _GoalsPanelState extends ConsumerState<GoalsPanel> {
 }
 
 class _GoalCard extends StatelessWidget {
-         _GoalCard({required this.g});
+   const _GoalCard({required this.g});
 
   final RegionalGoal g;
 
@@ -1111,7 +1111,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
 }
 
 class _ContentCard extends StatelessWidget {
-         _ContentCard({required this.c, required this.onToggle});
+   const _ContentCard({required this.c, required this.onToggle});
 
   final RegionalContentItem c;
   final VoidCallback onToggle;
@@ -1680,7 +1680,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
 }
 
 class _ColorSwatch extends StatelessWidget {
-         _ColorSwatch(
+   const _ColorSwatch(
       {required this.ctrl, required this.label, this.onChanged});
 
   final TextEditingController ctrl;
@@ -1729,7 +1729,7 @@ class _ColorSwatch extends StatelessWidget {
 
 /// Faixa de pré-visualização ao vivo do branding do país.
 class _BrandingPreview extends StatelessWidget {
-         _BrandingPreview({
+   const _BrandingPreview({
     required this.name,
     required this.primaryHex,
     required this.secondaryHex,
