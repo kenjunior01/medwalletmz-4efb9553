@@ -15,6 +15,8 @@ export default function DoctorDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
+  const [fullName, setFullName] = useState<string>('');
+  const [loading, setLoading] = useState(true);
   const [today, setToday] = useState<any[]>([]);
   const [upcoming, setUpcoming] = useState<any[]>([]);
   const [stats, setStats] = useState({ patients: 0, monthRevenue: 0 });
@@ -22,42 +24,51 @@ export default function DoctorDashboard() {
 
   const load = async () => {
     if (!user) return;
-    const { data: p } = await supabase.from('doctor_profiles').select('*').eq('user_id', user.id).maybeSingle();
-    setProfile(p);
+    setLoading(true);
+    try {
+      const [{ data: p }, { data: prof }] = await Promise.all([
+        supabase.from('doctor_profiles').select('*').eq('user_id', user.id).maybeSingle(),
+        supabase.from('profiles').select('full_name').eq('user_id', user.id).maybeSingle(),
+      ]);
+      setFullName(prof?.full_name || '');
+      setProfile(p);
 
-    const startToday = new Date(); startToday.setHours(0,0,0,0);
-    const endToday = new Date(); endToday.setHours(23,59,59,999);
-    const startMonth = new Date(); startMonth.setDate(1); startMonth.setHours(0,0,0,0);
+      const startToday = new Date(); startToday.setHours(0,0,0,0);
+      const endToday = new Date(); endToday.setHours(23,59,59,999);
+      const startMonth = new Date(); startMonth.setDate(1); startMonth.setHours(0,0,0,0);
 
-    const { data: tdy } = await supabase.from('consultations').select('*')
-      .eq('doctor_id', user.id)
-      .gte('scheduled_at', startToday.toISOString())
-      .lte('scheduled_at', endToday.toISOString())
-      .order('scheduled_at');
-    setToday(tdy || []);
+      const { data: tdy } = await supabase.from('consultations').select('*')
+        .eq('doctor_id', user.id)
+        .gte('scheduled_at', startToday.toISOString())
+        .lte('scheduled_at', endToday.toISOString())
+        .order('scheduled_at');
+      setToday(tdy || []);
 
-    const { data: up } = await supabase.from('consultations').select('*')
-      .eq('doctor_id', user.id)
-      .gt('scheduled_at', endToday.toISOString())
-      .order('scheduled_at')
-      .limit(5);
-    setUpcoming(up || []);
+      const { data: up } = await supabase.from('consultations').select('*')
+        .eq('doctor_id', user.id)
+        .gt('scheduled_at', endToday.toISOString())
+        .order('scheduled_at')
+        .limit(5);
+      setUpcoming(up || []);
 
-    const { data: month } = await supabase.from('consultations').select('fee, patient_id')
-      .eq('doctor_id', user.id)
-      .eq('status', 'completed')
-      .gte('scheduled_at', startMonth.toISOString());
-    const monthRevenue = (month || []).reduce((s, c: any) => s + (c.fee || 0), 0);
-    const patients = new Set((month || []).map((c: any) => c.patient_id)).size;
-    setStats({ patients, monthRevenue });
+      const { data: month } = await supabase.from('consultations').select('fee, patient_id')
+        .eq('doctor_id', user.id)
+        .eq('status', 'completed')
+        .gte('scheduled_at', startMonth.toISOString());
+      const monthRevenue = (month || []).reduce((s, c: any) => s + (c.fee || 0), 0);
+      const patients = new Set((month || []).map((c: any) => c.patient_id)).size;
+      setStats({ patients, monthRevenue });
 
-    const { data: sub } = await supabase
-      .from('subscriptions')
-      .select('id, plan:subscription_plans(target_audience)')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .maybeSingle();
-    setHasSub(!!sub && (sub as any).plan?.target_audience === 'doctor');
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('id, plan:subscription_plans(target_audience)')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .maybeSingle();
+      setHasSub(!!sub && (sub as any).plan?.target_audience === 'doctor');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, [user]);
@@ -67,6 +78,28 @@ export default function DoctorDashboard() {
     await supabase.from('doctor_profiles').update({ is_available: v }).eq('user_id', user.id);
     setProfile({ ...profile, is_available: v });
   };
+
+  if (loading && !profile) {
+    return (
+      <div className="min-h-screen bg-background p-4 space-y-5">
+        <div className="p-6 rounded-2xl border border-border/60 space-y-3">
+          <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+          <div className="h-7 w-48 bg-muted rounded animate-pulse" />
+          <div className="h-11 w-full bg-muted rounded-xl animate-pulse" />
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="p-4 rounded-2xl border border-border/60 text-center space-y-2">
+              <div className="h-7 w-10 mx-auto bg-muted rounded animate-pulse" />
+              <div className="h-3 w-12 mx-auto bg-muted rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+        <div className="h-6 w-20 bg-muted rounded animate-pulse" />
+        <div className="h-16 w-full bg-muted rounded-xl animate-pulse" />
+      </div>
+    );
+  }
 
   if (!profile) {
     return (
@@ -87,7 +120,9 @@ export default function DoctorDashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wide">Bem-vindo(a)</p>
-              <h1 className="text-2xl font-black text-gradient-premium">Dr(a). Consulta</h1>
+              <h1 className="text-2xl font-black text-gradient-premium">
+                Dr(a). {fullName || 'Profissional'}
+              </h1>
             </div>
             {!profile.is_verified && <StatusBadge status="pending">A verificar</StatusBadge>}
           </div>

@@ -20,14 +20,6 @@ const TIERS = [
   { goal: 25, label: 'Cartão VIP', icon: Trophy, color: 'from-amber-500 to-orange-500' },
 ];
 
-const LEADERS = [
-  { name: 'Ana M.', refs: 47 },
-  { name: 'Carlos T.', refs: 34 },
-  { name: 'Beatriz L.', refs: 28 },
-  { name: 'João N.', refs: 21 },
-  { name: 'Maria S.', refs: 15 },
-];
-
 const fadeUp = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 } };
 
 export default function Referrals() {
@@ -36,6 +28,7 @@ export default function Referrals() {
   const { country } = useCountry();
   const [code, setCode] = useState('');
   const [referrals, setReferrals] = useState<any[]>([]);
+  const [leaders, setLeaders] = useState<{ name: string; refs: number }[]>([]);
   const [bonusMzn, setBonusMzn] = useState(100);
   const [bonusCoins, setBonusCoins] = useState(100);
 
@@ -60,6 +53,21 @@ export default function Referrals() {
         if (s.key === 'referral_bonus_mzn') setBonusMzn(Number(s.value));
         if (s.key === 'referral_bonus_coins') setBonusCoins(Number(s.value));
       });
+      // Ranking REAL da comunidade (view weekly_leaderboard — mesma fonte do /rewards).
+      // Se indisponível (RLS/vista vazia), a secção é ocultada — nunca mostramos dados falsos.
+      try {
+        const { data: lb, error: lbErr } = await supabase
+          .from('weekly_leaderboard')
+          .select('user_id, full_name, weekly_orders')
+          .order('weekly_orders', { ascending: false })
+          .limit(5);
+        if (!lbErr && lb?.length) {
+          setLeaders(lb.map((r: any) => ({
+            name: r.full_name || 'Membro',
+            refs: Number(r.weekly_orders) || 0,
+          })));
+        }
+      } catch { /* ranking opcional */ }
     })();
   }, [user]);
 
@@ -160,23 +168,26 @@ export default function Referrals() {
           </div>
         </motion.div>
 
-        {/* Leaderboard */}
-        <motion.div {...fadeUp} transition={{ duration: 0.4, delay: 0.25 }}>
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-indigo-500" />
-            <p className="text-sm font-semibold">Top Referenciadores</p>
-          </div>
-          <Card className="divide-y">
-            {LEADERS.map((l, i) => (
-              <div key={i} className="flex items-center gap-3 p-3">
-                <span className={`text-sm font-bold w-5 ${i === 0 ? 'text-amber-500' : i === 1 ? 'text-gray-400' : i === 2 ? 'text-orange-400' : 'text-muted-foreground'}`}>{i + 1}</span>
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="flex-1 text-sm font-medium">{l.name}</span>
-                <span className="text-sm font-bold text-teal-600">{l.refs}</span>
-              </div>
-            ))}
-          </Card>
-        </motion.div>
+        {/* Leaderboard — só aparece com dados REAIS da comunidade */}
+        {leaders.length > 0 && (
+          <motion.div {...fadeUp} transition={{ duration: 0.4, delay: 0.25 }}>
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp className="h-4 w-4 text-indigo-500" />
+              <p className="text-sm font-semibold">Top da Comunidade esta semana</p>
+            </div>
+            <Card className="divide-y">
+              {leaders.map((l, i) => (
+                <div key={i} className="flex items-center gap-3 p-3">
+                  <span className={`text-sm font-bold w-5 ${i === 0 ? 'text-amber-500' : i === 1 ? 'text-gray-400' : i === 2 ? 'text-orange-400' : 'text-muted-foreground'}`}>{i + 1}</span>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span className="flex-1 text-sm font-medium truncate">{l.name}</span>
+                  <span className="text-sm font-bold text-teal-600">{l.refs}</span>
+                </div>
+              ))}
+            </Card>
+            <p className="text-[10px] text-muted-foreground mt-1 text-center">Baseado em encomendas reais da semana · /rewards</p>
+          </motion.div>
+        )}
 
         {/* Stats */}
         <motion.div {...fadeUp} transition={{ duration: 0.4, delay: 0.3 }} className="grid grid-cols-3 gap-2 pb-8">

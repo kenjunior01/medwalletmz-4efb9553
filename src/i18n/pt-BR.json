@@ -394,7 +394,17 @@
     "delete_account_confirm_action": "Contactar Suporte",
     "delete_account_toast": "Por favor, contacte o suporte para apagar a conta.",
     "version_label": "MedWallet v1.0.0",
-    "guest_stats_aria": "Estatísticas de visitante — valor zero"
+    "guest_stats_aria": "Estatísticas de visitante — valor zero",
+    "role_insurance": "Seguradora",
+    "role_insurance_desc": "Planos de saúde e apólices",
+    "role_country_manager": "Gestor de País",
+    "role_country_manager_desc": "Operação nacional no /manager",
+    "role_regional_manager": "Gestor Regional",
+    "role_regional_manager_desc": "Operação da região em /regional",
+    "role_regional_ceo": "Diretor Regional",
+    "role_regional_ceo_desc": "Visão executiva multi-região",
+    "role_admin": "Administrador",
+    "role_admin_desc": "Gestão global da plataforma"
   },
   "settings": {
     "title": "Definições",
@@ -725,7 +735,8 @@
     "clinic": "Clínica",
     "lab": "Lab",
     "driver": "Condutor",
-    "global_shop": "Loja Global"
+    "global_shop": "Loja Global",
+    "provincial_ops": "Operações Provinciais"
   },
   "greeting": {
     "good_morning": "Bom dia, {{name}}!",

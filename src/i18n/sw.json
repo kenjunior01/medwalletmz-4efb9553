@@ -394,7 +394,17 @@
     "delete_account_confirm_action": "Contactar Suporte",
     "delete_account_toast": "Por favor, contacte o suporte para apagar a conta.",
     "version_label": "MedWallet v1.0.0",
-    "guest_stats_aria": "Estatísticas de visitante — valor zero"
+    "guest_stats_aria": "Estatísticas de visitante — valor zero",
+    "role_insurance": "Bima",
+    "role_insurance_desc": "Mipango ya afya na bima",
+    "role_country_manager": "Meneja wa Nchi",
+    "role_country_manager_desc": "Shughuli za kitaifa katika /manager",
+    "role_regional_manager": "Meneja wa Mkoa",
+    "role_regional_manager_desc": "Shughuli za mkoa katika /regional",
+    "role_regional_ceo": "Mkurugenzi wa Mkoa",
+    "role_regional_ceo_desc": "Mwonekano wa utendaji wa mikoa mingi",
+    "role_admin": "Msimamizi",
+    "role_admin_desc": "Usimamizi wa jukwaa lote"
   },
   "settings": {
     "title": "Definições",
@@ -725,7 +735,8 @@
     "clinic": "Clinic",
     "lab": "Lab",
     "driver": "Driver",
-    "global_shop": "Duka la Kimataifa"
+    "global_shop": "Duka la Kimataifa",
+    "provincial_ops": "Shughuli za Mkoa"
   },
   "greeting": {
     "good_morning": "Bom dia, {{name}}!",

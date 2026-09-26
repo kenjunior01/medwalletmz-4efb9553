@@ -1118,6 +1118,15 @@ class _MenuItem extends StatelessWidget {
 
 // ── Papéis ─────────────────────────────────────────────────────────
 
+/// Rota do painel de cada papel com dashboard próprio (paridade com a
+/// web RolesTab). Papéis sem painel dedicado ficam como chip informativo.
+String? _rolePanelRoute(String r) => switch (r) {
+      'doctor' => '/doctor-hub',
+      'driver' => '/riders',
+      'country_manager' || 'provincial_manager' || 'regional_manager' || 'regional_ceo' || 'admin' => '/manager-hub',
+      _ => null,
+    };
+
 class _RolesStrip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1130,35 +1139,65 @@ class _RolesStrip extends ConsumerWidget {
               runSpacing: 8,
               children: [
                 for (final r in list)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                          color: AppColors.primary.withOpacity(0.45)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                               Icon(Icons.shield_outlined,
-                            size: 13, color: AppColors.accent),
-                        const SizedBox(width: 6),
-                        Text(
-                          _roleLabel(r),
-                          style:        TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
+                  _RoleChip(
+                    role: r,
+                    onTap: _rolePanelRoute(r) == null
+                        ? null
+                        : () => context.push(_rolePanelRoute(r)!),
                   ),
               ],
             ),
       orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _RoleChip extends StatelessWidget {
+  final String role;
+  final VoidCallback? onTap;
+  const _RoleChip({required this.role, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPanel = onTap != null;
+    final chip = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: hasPanel
+            ? AppColors.primary.withOpacity(0.2)
+            : AppColors.primary.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: AppColors.primary
+                .withOpacity(hasPanel ? 0.45 : 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.shield_outlined, size: 13, color: AppColors.accent),
+          const SizedBox(width: 6),
+          Text(
+            _roleLabel(role),
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          if (hasPanel) ...[
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right,
+                size: 14,
+                color: AppColors.textMuted),
+          ],
+        ],
+      ),
+    );
+    if (onTap == null) return chip;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: chip,
     );
   }
 
@@ -1167,9 +1206,16 @@ class _RolesStrip extends ConsumerWidget {
         'store_owner' => 'Lojista',
         'driver' => 'Estafeta',
         'doctor' => 'Médico',
+        'clinic' => 'Clínica',
+        'hospital' => 'Hospital',
+        'lab' => 'Laboratório',
+        'insurance' => 'Seguradora',
         'admin' => 'Administrador',
         'country_manager' => 'Gestor de País',
-        _ => r,
+        'provincial_manager' => 'Gestor Provincial',
+        'regional_manager' => 'Gestor Regional',
+        'regional_ceo' => 'CEO Regional',
+        _ => managerRoleLabel(r),
       };
 }
 

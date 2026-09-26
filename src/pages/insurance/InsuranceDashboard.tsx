@@ -25,7 +25,7 @@ export default function InsuranceDashboard() {
     benefits_text: ""
   });
 
-  const { data: company } = useQuery({
+  const { data: company, isLoading: loadingCompany } = useQuery({
     queryKey: ["my-insurance", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("insurance_companies").select("*").eq("owner_id", user!.id).maybeSingle();
@@ -63,6 +63,20 @@ export default function InsuranceDashboard() {
     await supabase.from("insurance_plans").delete().eq("id", id);
     qc.invalidateQueries({ queryKey: ["my-insurance-plans"] });
   };
+
+  if (loadingCompany) return (
+    <div className="p-4 space-y-4">
+      <div className="bento-card p-5 flex items-center gap-4">
+        <div className="h-11 w-11 rounded-full bg-muted animate-pulse" />
+        <div className="flex-1 space-y-2">
+          <div className="h-5 w-40 bg-muted rounded animate-pulse" />
+          <div className="h-3 w-56 bg-muted rounded animate-pulse" />
+        </div>
+      </div>
+      <div className="h-24 w-full bg-muted rounded-xl animate-pulse" />
+      <div className="h-32 w-full bg-muted rounded-xl animate-pulse" />
+    </div>
+  );
 
   if (!company) return (
     <div className="p-8 text-center">

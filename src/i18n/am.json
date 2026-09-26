@@ -394,7 +394,17 @@
     "delete_account_confirm_action": "Contactar Suporte",
     "delete_account_toast": "Por favor, contacte o suporte para apagar a conta.",
     "version_label": "MedWallet v1.0.0",
-    "guest_stats_aria": "Estatísticas de visitante — valor zero"
+    "guest_stats_aria": "Estatísticas de visitante — valor zero",
+    "role_insurance": "ኢንሹራንስ",
+    "role_insurance_desc": "የጤና እቅዶች እና ፖሊሶች",
+    "role_country_manager": "የሀገር አስተዳዳሪ",
+    "role_country_manager_desc": "በ/manager ውስጥ ብሔራዊ ኦፕሬሽኖች",
+    "role_regional_manager": "የክልል አስተዳዳሪ",
+    "role_regional_manager_desc": "በ/regional ውስጥ የክልል ኦፕሬሽኖች",
+    "role_regional_ceo": "የክልል ዳይሬክተር",
+    "role_regional_ceo_desc": "ባለብዙ ክልል አስፈጻሚ እይታ",
+    "role_admin": "አስተዳዳሪ",
+    "role_admin_desc": "አለም አቀፍ የመድረክ አስተዳደር"
   },
   "settings": {
     "title": "Definições",
@@ -725,7 +735,8 @@
     "clinic": "Clinic",
     "lab": "Lab",
     "driver": "Driver",
-    "global_shop": "Loja Global"
+    "global_shop": "Loja Global",
+    "provincial_ops": "የክልል ክንውኖች"
   },
   "greeting": {
     "good_morning": "Bom dia, {{name}}!",

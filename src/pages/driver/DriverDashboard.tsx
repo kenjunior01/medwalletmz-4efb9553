@@ -76,7 +76,8 @@ interface Stats {
   weekEarnings: number;
   monthEarnings: number;
   totalDeliveries: number;
-  rating: number;
+  rating: number | null;
+  weekTrend: number;
 }
 
 export default function DriverDashboard() {
@@ -93,15 +94,48 @@ export default function DriverDashboard() {
   const [optimizing, setOptimizing] = useState(false);
 
   const optimizeRoutes = async () => {
+    if (optimizing) return;
     setOptimizing(true);
-    toast.info("A otimizar rotas...", {
-      description: "A usar Route Optimization API para poupar combustível."
-    });
-    await new Promise(r => setTimeout(r, 2000));
-    setOptimizing(false);
-    toast.success("Rotas otimizadas!", {
-      description: "Sequência de entrega atualizada para o menor tempo."
-    });
+    try {
+      if (!currentLocation) {
+        toast.info("Ativa o GPS para otimizar rotas", {
+          description: "A ordenação por proximidade precisa da tua localização atual."
+        });
+        return;
+      }
+      const withCoords = assignments.filter(
+        (a: any) => a.order?.store?.latitude != null && a.order?.store?.longitude != null
+      );
+      if (withCoords.length < 2) {
+        toast.info("Sem entregas suficientes para otimizar", {
+          description: "A sequência atual já é a melhor possível."
+        });
+        return;
+      }
+      // Haversine — ordena por distância real a partir da posição atual
+      const dist = (a: any) => {
+        const R = 6371;
+        const dLat = (a.order.store.latitude - currentLocation.lat) * Math.PI / 180;
+        const dLon = (a.order.store.longitude - currentLocation.lng) * Math.PI / 180;
+        const la1 = currentLocation.lat * Math.PI / 180;
+        const la2 = a.order.store.latitude * Math.PI / 180;
+        const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) ** 2;
+        return 2 * R * Math.asin(Math.sqrt(h));
+      };
+      const sorted = [...assignments].sort((a: any, b: any) => dist(a) - dist(b));
+      const before = assignments.map((a: any) => a.order?.store?.name).join(' → ');
+      const after = sorted.map((a: any) => a.order?.store?.name).join(' → ');
+      if (before === after) {
+        toast.success("Rota já otimizada", { description: "A sequência atual é a mais curta." });
+        return;
+      }
+      setAssignments(sorted);
+      toast.success("Rota otimizada por proximidade", {
+        description: "Entregas reordenadas da mais próxima para a mais distante."
+      });
+    } finally {
+      setOptimizing(false);
+    }
   };
 
   useEffect(() => {
@@ -149,7 +183,7 @@ export default function DriverDashboard() {
             is_priority,
             requires_cold_chain,
             priority_level,
-            store:stores(name, address)
+            store:stores(name, address, latitude, longitude)
           )
         `)
         .eq('driver_id', user.id)
@@ -203,6 +237,27 @@ export default function DriverDashboard() {
         .eq('driver_id', user.id)
         .eq('status', 'delivered');
 
+      // Avaliação REAL: média das reviews ligadas às encomendas entregues
+      const { data: deliveredIdsData } = await supabase
+        .from('driver_assignments')
+        .select('order_id')
+        .eq('driver_id', user.id)
+        .eq('status', 'delivered')
+        .limit(200);
+      const deliveredOrderIds = (deliveredIdsData || []).map((d: any) => d.order_id);
+      let driverRating: number | null = null;
+      if (deliveredOrderIds.length) {
+        const { data: reviewsData } = await supabase
+          .from('reviews')
+          .select('rating')
+          .in('order_id', deliveredOrderIds);
+        if (reviewsData?.length) {
+          driverRating = Math.round(
+            (reviewsData.reduce((s, r) => s + (r.rating || 0), 0) / reviewsData.length) * 10
+          ) / 10;
+        }
+      }
+
       const todayDeliveries = todayData?.length || 0;
       const todayEarnings = todayData?.reduce((sum, d) => sum + (d.order?.delivery_fee || 0), 0) || 0;
       const weekEarnings = weekData?.reduce((sum, d) => sum + (d.order?.delivery_fee || 0), 0) || 0;
@@ -218,13 +273,29 @@ export default function DriverDashboard() {
       });
       setWeeklyData(Array.from(dailyMap.entries()).map(([name, value]) => ({ name, value })));
 
+      // Tendência REAL: comparação semana actual vs. semana anterior
+      const prevWeekStart = new Date(weekAgo);
+      prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+      const { data: prevWeekData } = await supabase
+        .from('driver_assignments')
+        .select('order:orders(delivery_fee)')
+        .eq('driver_id', user.id)
+        .eq('status', 'delivered')
+        .gte('delivered_at', prevWeekStart.toISOString())
+        .lt('delivered_at', weekAgo.toISOString());
+      const prevWeekEarnings = prevWeekData?.reduce((sum, d) => sum + (d.order?.delivery_fee || 0), 0) || 0;
+      const weekTrend = prevWeekEarnings > 0
+        ? Math.round(((weekEarnings - prevWeekEarnings) / prevWeekEarnings) * 100)
+        : (weekEarnings > 0 ? 100 : 0);
+
       setStats({
         todayDeliveries,
         todayEarnings,
         weekEarnings,
         monthEarnings,
         totalDeliveries: totalDeliveries || 0,
-        rating: 4.8
+        rating: driverRating,
+        weekTrend
       });
 
       // Set up realtime subscription
@@ -451,8 +522,8 @@ export default function DriverDashboard() {
             />
             <StatWidget 
               title="Avaliação"
-              value={`${stats?.rating || 0} ⭐`}
-              subtitle="Média geral"
+              value={`${stats?.rating != null ? stats.rating : '—'} ⭐`}
+              subtitle={stats?.rating != null ? 'Média das avaliações reais' : 'Sem avaliações ainda'}
               icon={Star}
               colorClass="text-yellow-500"
             />
@@ -462,7 +533,7 @@ export default function DriverDashboard() {
               subtitle={`Semana: ${(stats?.weekEarnings || 0).toLocaleString()} MZN`}
               icon={DollarSign}
               colorClass="text-green-500"
-              trend={{ value: 15, isPositive: true }}
+              trend={{ value: stats?.weekTrend ?? 0, isPositive: (stats?.weekTrend ?? 0) >= 0 }}
             />
           </div>
 
@@ -682,7 +753,7 @@ export default function DriverDashboard() {
         <Card>
           <CardContent className="p-4 text-center">
             <span className="text-2xl">⭐</span>
-            <p className="text-2xl font-bold">{stats?.rating || '—'}</p>
+            <p className="text-2xl font-bold">{stats?.rating != null ? stats.rating : '—'}</p>
             <p className="text-xs text-muted-foreground">Avaliação</p>
           </CardContent>
         </Card>

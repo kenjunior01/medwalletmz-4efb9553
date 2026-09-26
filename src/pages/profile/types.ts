@@ -25,7 +25,7 @@ export interface CompletionStep {
 }
 
 export interface InstitutionRole {
-  role: "doctor" | "clinic" | "store_owner" | "lab" | "driver";
+  role: "doctor" | "clinic" | "store_owner" | "lab" | "driver" | "insurance" | "country_manager" | "provincial_manager" | "regional_ceo" | "admin";
   icon: LucideIcon;
   color: string;
   bgColor: string;

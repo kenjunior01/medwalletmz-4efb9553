@@ -171,6 +171,16 @@ const AdminInsurance = lazy(() => import("./pages/admin/AdminInsurance"));
 const Insurance = lazy(() => import("./pages/insurance/Insurance"));
 const InsuranceDetail = lazy(() => import("./pages/insurance/InsuranceDetail"));
 const InsuranceDashboard = lazy(() => import("./pages/insurance/InsuranceDashboard"));
+// ---- Suite Regional (páginas provinciais reais — resgatadas) ----
+const ProvinceOpsDashboard = lazy(() => import("./pages/regional/RegionalManagerDashboard"));
+const ProvinceFacilities = lazy(() => import("./pages/regional/RegionalFacilities"));
+const ProvinceOrders = lazy(() => import("./pages/regional/RegionalOrders"));
+const ProvinceRiders = lazy(() => import("./pages/regional/RegionalRiders"));
+const ProvinceUsers = lazy(() => import("./pages/regional/RegionalUsers"));
+const ProvinceAnalytics = lazy(() => import("./pages/regional/RegionalAnalytics"));
+const ProvinceTeam = lazy(() => import("./pages/regional/RegionalTeam"));
+const ProvinceEarnings = lazy(() => import("./pages/regional/RegionalEarnings"));
+const ProvinceSettings = lazy(() => import("./pages/regional/RegionalSettings"));
 const Ads = lazy(() => import("./pages/ads/Ads"));
 const AdForm = lazy(() => import("./pages/ads/AdForm"));
 const MyAds = lazy(() => import("./pages/ads/MyAds"));
@@ -479,21 +489,9 @@ const App = () => {
                     <Route path="mz-verticals/malaria" element={<MalariaWorkflowPage />} />
                     <Route path="mz-verticals/maternal" element={<MaternalHealthPage />} />
                     <Route path="google-cloud" element={<GoogleCloudHub />} />
-                    <Route path="regional-ceo" element={
-                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
-                        <RegionalCEODashboard />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="regional-content" element={
-                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
-                        <RegionalContentCMS />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="global-ranking" element={
-                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
-                        <GlobalRanking />
-                      </ProtectedRoute>
-                    } />
+                    {/* regional-ceo/content/ranking movidos para rotas de topo
+                        /regional-ceo etc. — o guard pai de /admin bloqueava
+                        regional_ceo antes de chegar ao guard filho. */}
                     <Route path="country-onboarding" element={
                       <ProtectedRoute allowedRoles={['admin', 'regional_ceo']}>
                         <CountryOnboardingWizard />
@@ -548,12 +546,95 @@ const App = () => {
                     <Route path="metrics" element={<RegionalMetrics />} />
                   </Route>
 
-                  {/* Regional (provincial) — CONSOLIDADO: o escopo provincial
-                      foi removido da base de dados (20260725); gestores
-                      regionais gerem países em /manager. Rotas antigas
-                      redirecionam para não quebrar links/bookmarks. */}
-                  <Route path="/regional" element={<Navigate to="/manager" replace />} />
-                  <Route path="/regional/*" element={<Navigate to="/manager" replace />} />
+                  {/* ── Painel Regional CEO — rota de TOPO (fora do guard /admin,
+                      que só permite admin global) ── */}
+                  <Route path="/regional-ceo" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
+                        <RegionalCEODashboard />
+                      </ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional-metrics" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
+                        <RegionalMetrics />
+                      </ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional-content" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
+                        <RegionalContentCMS />
+                      </ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional-ranking" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'regional_ceo', 'regional_manager']}>
+                        <GlobalRanking />
+                      </ProtectedRoute>
+                    </Suspense>
+                  } />
+                  {/* Aliases antigos /admin/* para não quebrar bookmarks */}
+                  <Route path="/admin/regional-ceo" element={<Navigate to="/regional-ceo" replace />} />
+                  <Route path="/admin/regional-metrics" element={<Navigate to="/regional-metrics" replace />} />
+                  <Route path="/admin/regional-content" element={<Navigate to="/regional-content" replace />} />
+                  <Route path="/admin/global-ranking" element={<Navigate to="/regional-ranking" replace />} />
+
+                  {/* ── Suite Regional (operação provincial real) ──
+                      Páginas resgatadas, autocontidas (cada uma com o seu
+                      header) — rotas irmãs, sem layout aninhado. */}
+                  <Route path="/regional" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><ProvinceOpsDashboard /></ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional/facilities" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><ProvinceFacilities /></ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional/orders" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><ProvinceOrders /></ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional/riders" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><ProvinceRiders /></ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional/users" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><ProvinceUsers /></ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional/analytics" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><ProvinceAnalytics /></ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional/team" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><ProvinceTeam /></ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional/earnings" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><ProvinceEarnings /></ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional/content" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><RegionalContentCMS /></ProtectedRoute>
+                    </Suspense>
+                  } />
+                  <Route path="/regional/settings" element={
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ProtectedRoute allowedRoles={['admin', 'country_manager', 'provincial_manager', 'regional_manager', 'regional_ceo']}><ProvinceSettings /></ProtectedRoute>
+                    </Suspense>
+                  } />
 
                   {/* Store Owner Routes — protegido ao nível da rota */}
                   <Route path="/store/register" element={<RegistrationWizard />} />

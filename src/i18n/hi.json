@@ -394,7 +394,17 @@
     "delete_account_confirm_action": "Contactar Suporte",
     "delete_account_toast": "Por favor, contacte o suporte para apagar a conta.",
     "version_label": "MedWallet v1.0.0",
-    "guest_stats_aria": "Estatísticas de visitante — valor zero"
+    "guest_stats_aria": "Estatísticas de visitante — valor zero",
+    "role_insurance": "बीमा",
+    "role_insurance_desc": "स्वास्थ्य योजनाएँ और पॉलिसियाँ",
+    "role_country_manager": "देश प्रबंधक",
+    "role_country_manager_desc": "/manager में राष्ट्रीय संचालन",
+    "role_regional_manager": "प्रांतीय प्रबंधक",
+    "role_regional_manager_desc": "/regional में प्रांतीय संचालन",
+    "role_regional_ceo": "क्षेत्रीय निदेशक",
+    "role_regional_ceo_desc": "बहु-क्षेत्रीय कार्यकारी दृष्टि",
+    "role_admin": "प्रशासक",
+    "role_admin_desc": "ग्लोबल प्लेटफ़ॉर्म प्रबंधन"
   },
   "settings": {
     "title": "Definições",
@@ -725,7 +735,8 @@
     "clinic": "Clinic",
     "lab": "Lab",
     "driver": "Driver",
-    "global_shop": "Loja Global"
+    "global_shop": "Loja Global",
+    "provincial_ops": "प्रांतीय संचालन"
   },
   "greeting": {
     "good_morning": "Bom dia, {{name}}!",

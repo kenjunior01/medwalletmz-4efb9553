@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Building2, UserPlus, Crown, ArrowLeft, LogOut } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 
@@ -15,43 +16,61 @@ export default function ClinicDashboard() {
   const [clinic, setClinic] = useState<any>(null);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [hasActivePlan, setHasActivePlan] = useState(false);
+  const [consultsToday, setConsultsToday] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(false);
   const [doctorEmail, setDoctorEmail] = useState('');
 
   const load = async () => {
     if (!user) return;
-    const { data: c } = await supabase
-      .from('clinics')
-      .select('*')
-      .eq('owner_id', user.id)
-      .maybeSingle();
-    setClinic(c);
-
-    if (c) {
-      const { data: cd } = await supabase
-        .from('clinic_doctors')
+    setLoading(true);
+    try {
+      const { data: c } = await supabase
+        .from('clinics')
         .select('*')
-        .eq('clinic_id', c.id);
-      const list = cd ?? [];
-      if (list.length) {
-        const { data: profs } = await supabase
-          .from('profiles')
-          .select('user_id, full_name, phone')
-          .in('user_id', list.map((d: any) => d.doctor_id));
-        setDoctors(list.map((d: any) => ({
-          ...d,
-          doctor: profs?.find((p: any) => p.user_id === d.doctor_id),
-        })));
-      } else {
-        setDoctors([]);
-      }
-    }
+        .eq('owner_id', user.id)
+        .maybeSingle();
+      setClinic(c);
 
-    const { data: sub } = await supabase
-      .from('subscriptions')
-      .select('*, plan:subscription_plans(target_audience)')
-      .eq('user_id', user.id)
-      .eq('status', 'active');
-    setHasActivePlan((sub ?? []).some((s: any) => s.plan?.target_audience === 'clinic'));
+      if (c) {
+        const { data: cd } = await supabase
+          .from('clinic_doctors')
+          .select('*')
+          .eq('clinic_id', c.id);
+        const list = cd ?? [];
+        if (list.length) {
+          const [{ data: profs }, { count: todayCount }] = await Promise.all([
+            supabase.from('profiles').select('user_id, full_name, phone')
+              .in('user_id', list.map((d: any) => d.doctor_id)),
+            (() => {
+              const s = new Date(); s.setHours(0, 0, 0, 0);
+              const e = new Date(); e.setHours(23, 59, 59, 999);
+              return supabase.from('consultations').select('id', { count: 'exact', head: true })
+                .in('doctor_id', list.map((d: any) => d.doctor_id))
+                .gte('scheduled_at', s.toISOString())
+                .lte('scheduled_at', e.toISOString());
+            })(),
+          ]);
+          setDoctors(list.map((d: any) => ({
+            ...d,
+            doctor: profs?.find((p: any) => p.user_id === d.doctor_id),
+          })));
+          setConsultsToday(todayCount ?? 0);
+        } else {
+          setDoctors([]);
+          setConsultsToday(0);
+        }
+      }
+
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('*, plan:subscription_plans(target_audience)')
+        .eq('user_id', user.id)
+        .eq('status', 'active');
+      setHasActivePlan((sub ?? []).some((s: any) => s.plan?.target_audience === 'clinic'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -59,23 +78,65 @@ export default function ClinicDashboard() {
   }, [user]);
 
   const addDoctor = async () => {
-    if (!clinic || !doctorEmail) return;
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('user_id, full_name')
-      .ilike('full_name', `%${doctorEmail}%`)
-      .maybeSingle();
-    if (!profile) return toast.error('Médico não encontrado pelo nome');
-
-    const { error } = await supabase.from('clinic_doctors').insert({
-      clinic_id: clinic.id,
-      doctor_id: profile.user_id,
-    });
-    if (error) return toast.error(error.message);
-    toast.success(`${profile.full_name} adicionado`);
-    setDoctorEmail('');
-    load();
+    if (!clinic || !doctorEmail.trim() || adding) return;
+    setAdding(true);
+    try {
+      const term = doctorEmail.trim();
+      // Procura por telefone (exacto, normalizado) OU nome (parcial)
+      const digits = term.replace(/\D/g, '');
+      let query = supabase.from('profiles').select('user_id, full_name, phone').limit(5);
+      if (digits.length >= 7) {
+        query = query.or(`phone.ilike.%${digits}%,full_name.ilike.%${term}%`);
+      } else {
+        query = query.ilike('full_name', `%${term}%`);
+      }
+      const { data: candidates } = await query;
+      if (!candidates?.length) {
+        toast.error('Nenhum profissional encontrado. Usa o telefone ou nome completo do médico.');
+        return;
+      }
+      // Verifica quais são médicos registados
+      const { data: dps } = await supabase.from('doctor_profiles')
+        .select('user_id')
+        .in('user_id', candidates.map((c: any) => c.user_id));
+      const doctorIds = new Set((dps ?? []).map((d: any) => d.user_id));
+      const profile = candidates.find((c: any) => doctorIds.has(c.user_id));
+      if (!profile) {
+        toast.error('Encontrado, mas ainda não é médico registado no MedWallet.');
+        return;
+      }
+      if (doctors.some((d) => d.doctor_id === profile.user_id)) {
+        toast.info(`${profile.full_name} já está na clínica`);
+        setDoctorEmail('');
+        return;
+      }
+      const { error } = await supabase.from('clinic_doctors').insert({
+        clinic_id: clinic.id,
+        doctor_id: profile.user_id,
+      });
+      if (error) return toast.error(error.message);
+      toast.success(`${profile.full_name} adicionado`);
+      setDoctorEmail('');
+      load();
+    } finally {
+      setAdding(false);
+    }
   };
+
+  if (loading && !clinic) {
+    return (
+      <div className="min-h-screen bg-background p-4 space-y-4">
+        <Skeleton className="h-14 w-full rounded-xl" />
+        <div className="grid grid-cols-3 gap-3">
+          <Skeleton className="h-20 rounded-xl" />
+          <Skeleton className="h-20 rounded-xl" />
+          <Skeleton className="h-20 rounded-xl" />
+        </div>
+        <Skeleton className="h-28 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
+      </div>
+    );
+  }
 
   if (!clinic) {
     return (
@@ -130,7 +191,9 @@ export default function ClinicDashboard() {
             <p className="text-xs text-muted-foreground">Médicos</p>
           </Card>
           <Card className="p-3 text-center">
-            <p className="text-2xl font-bold text-primary">0</p>
+            <p className="text-2xl font-bold text-primary">
+              {consultsToday === null ? '…' : consultsToday}
+            </p>
             <p className="text-xs text-muted-foreground">Consultas hoje</p>
           </Card>
           <Card className="p-3 text-center">
@@ -151,9 +214,12 @@ export default function ClinicDashboard() {
             <Input
               value={doctorEmail}
               onChange={(e) => setDoctorEmail(e.target.value)}
-              placeholder="Nome do médico"
+              placeholder="Telefone ou nome do médico"
+              onKeyDown={(e) => { if (e.key === 'Enter') addDoctor(); }}
             />
-            <Button onClick={addDoctor}>Adicionar</Button>
+            <Button onClick={addDoctor} disabled={adding}>
+              {adding ? 'A adicionar…' : 'Adicionar'}
+            </Button>
           </div>
         </Card>
 

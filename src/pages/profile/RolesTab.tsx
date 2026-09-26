@@ -13,8 +13,12 @@ export function RolesTab() {
   const { hasRole } = useAuth();
   const { t } = useCountry();
 
+  // Papéis atribuídos pela plataforma (não se auto-registam) — só aparecem
+  // como painéis quando o utilizador os tem, nunca como CTA de registo.
+  const PRIVILEGED_ROLES = new Set(["country_manager", "provincial_manager", "regional_ceo", "admin"]);
+
   const activeInstitutions = INSTITUTION_ROLES.filter((ir) => hasRole(ir.role));
-  const availableRoles = INSTITUTION_ROLES.filter((ir) => !hasRole(ir.role));
+  const availableRoles = INSTITUTION_ROLES.filter((ir) => !hasRole(ir.role) && !PRIVILEGED_ROLES.has(ir.role));
 
   return (
     <motion.div

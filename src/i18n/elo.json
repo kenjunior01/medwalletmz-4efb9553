@@ -429,7 +429,17 @@
     "delete_account_confirm_action": "Contactar Suporte",
     "delete_account_toast": "Por favor, contacte o suporte para apagar a conta.",
     "version_label": "MedWallet v1.0.0",
-    "guest_stats_aria": "Estatísticas de visitante — valor zero"
+    "guest_stats_aria": "Estatísticas de visitante — valor zero",
+    "role_insurance": "Insalansi",
+    "role_insurance_desc": "Milimo ya bumi ne mipango",
+    "role_country_manager": "Mumwi wa Shintu",
+    "role_country_manager_desc": "Milimo ya chikundo mu /manager",
+    "role_regional_manager": "Mumwi wa Chisala",
+    "role_regional_manager_desc": "Milimo ya chisala mu /regional",
+    "role_regional_ceo": "Mumwi Mukulu",
+    "role_regional_ceo_desc": "Moyangidwe wa milimo yonse",
+    "role_admin": "Nchimwi",
+    "role_admin_desc": "Kusambilila kwa platifomu yonse"
   },
   "settings": {
     "title": "Definições",
@@ -759,7 +769,8 @@
     "doctor": "Doctor",
     "clinic": "Clinic",
     "lab": "Lab",
-    "driver": "Driver"
+    "driver": "Driver",
+    "provincial_ops": "Milimo ya Chisala"
   },
   "greeting": {
     "good_morning": "Bom dia, {{name}}!",

@@ -99,15 +99,20 @@ class RegionalGoal {
 
 /// Papéis que abrem o painel de gestão regional (enum `app_role` +
 /// valores usados em produção, ex.: regional_manager/regional_ceo).
+/// `provincial_manager` é o papel escrito pelo wizard/admin web
+/// (AssignProvincialManager) — sem ele, gestores provinciais ficavam
+/// sem painel na app.
 const managerRoles = <String>[
   'country_manager',
   'admin',
+  'provincial_manager',
   'regional_manager',
   'regional_ceo',
 ];
 
 String managerRoleLabel(String r) => switch (r) {
       'country_manager' => 'Gestor de País',
+      'provincial_manager' => 'Gestor Provincial',
       'regional_manager' => 'Gestor Regional',
       'regional_ceo' => 'CEO Regional',
       'admin' => 'Administrador Global',

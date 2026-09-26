@@ -429,7 +429,16 @@
     "delete_account_confirm_action": "Contactar Suporte",
     "delete_account_toast": "Por favor, contacte o suporte para apagar a conta.",
     "version_label": "MedWallet v1.0.0",
-    "guest_stats_aria": "Estatísticas de visitante — valor zero"
+    "guest_stats_aria": "Estatísticas de visitante — valor zero",
+    "role_insurance": "Inshorense",
+    "role_country_manager": "Molaodi wa Naga",
+    "role_country_manager_desc": "Ditiro tsa bosetšhaba mo /manager",
+    "role_regional_manager": "Molaodi wa Kgaolo",
+    "role_regional_manager_desc": "Ditiro tsa kgaolo mo /regional",
+    "role_regional_ceo": "Mokwaledi wa Kgaolo",
+    "role_regional_ceo_desc": "Pono ya botlhokwa ya dikgaolo",
+    "role_admin": "Motsamaisi",
+    "role_admin_desc": "Taolo ya sethala sa botlhabo"
   },
   "settings": {
     "title": "Definições",
@@ -760,7 +769,8 @@
     "clinic": "Clinic",
     "lab": "Lab",
     "driver": "Driver",
-    "global_shop": "Loja Global"
+    "global_shop": "Loja Global",
+    "provincial_ops": "Ditiro tsa Kgaolo"
   },
   "greeting": {
     "good_morning": "Bom dia, {{name}}!",

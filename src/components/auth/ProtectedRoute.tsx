@@ -32,9 +32,13 @@ export default function ProtectedRoute({ allowedRoles, children }: ProtectedRout
   }
 
   if (allowedRoles && !allowedRoles.some(r => hasRole(r as any))) {
-    // Se é gestor regional, redirecionar silenciosamente para o seu painel
-    if (hasRole('country_manager')) {
+    // Redirecionamento silencioso para o painel correto de cada papel —
+    // evita o ecrã "Acesso Negado" quando o utilizador acede por link antigo.
+    if (hasRole('country_manager') || hasRole('provincial_manager') || hasRole('regional_manager')) {
       return <Navigate to="/manager" replace />;
+    }
+    if (hasRole('regional_ceo')) {
+      return <Navigate to="/regional-ceo" replace />;
     }
     return (
       <div className="flex items-center justify-center min-h-screen bg-background p-4">
