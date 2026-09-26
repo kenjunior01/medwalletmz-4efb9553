@@ -61,7 +61,7 @@ class _SolidarityScreenState extends ConsumerState<SolidarityScreen> {
                         icon: Icons.arrow_back_rounded,
                         onTap: () => context.pop()),
                     const SizedBox(width: 12),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Solidariedade',
                         style: TextStyle(
@@ -77,7 +77,7 @@ class _SolidarityScreenState extends ConsumerState<SolidarityScreen> {
                 const _HeroCard(),
                 const SizedBox(height: 18),
                 if (mine.isNotEmpty) ...[
-                  const Text(
+                         Text(
                     'Os meus pedidos',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -90,7 +90,7 @@ class _SolidarityScreenState extends ConsumerState<SolidarityScreen> {
                   for (final r in mine) _MyRequestCard(request: r),
                   const SizedBox(height: 18),
                 ],
-                const Text(
+                       Text(
                   'Campanhas verificadas',
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -166,7 +166,7 @@ class _SolidarityScreenState extends ConsumerState<SolidarityScreen> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-  const _IconBtn({required this.icon, required this.onTap});
+         _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -219,11 +219,11 @@ class _HeroCard extends StatelessWidget {
               color: AppColors.teal.withOpacity(0.2),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(Icons.volunteer_activism_rounded,
+            child:        Icon(Icons.volunteer_activism_rounded,
                 color: AppColors.teal, size: 26),
           ),
           const SizedBox(width: 14),
-          const Expanded(
+                 Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -253,7 +253,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _AidCard extends StatelessWidget {
-  const _AidCard({required this.request, required this.onDonate});
+         _AidCard({required this.request, required this.onDonate});
   final AidRequest request;
   final VoidCallback onDonate;
 
@@ -284,7 +284,7 @@ class _AidCard extends StatelessWidget {
                     color: AppColors.success.withOpacity(0.14),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Row(
+                  child:        Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.verified_rounded,
@@ -310,7 +310,7 @@ class _AidCard extends StatelessWidget {
                     color: AppColors.danger.withOpacity(0.16),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
+                  child:        Text(
                     'CRÍTICO',
                     style: TextStyle(
                       color: AppColors.danger,
@@ -324,7 +324,7 @@ class _AidCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             request.title,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w900,
               fontSize: 15.5,
@@ -335,7 +335,7 @@ class _AidCard extends StatelessWidget {
             '${request.patientName}'
             '${request.patientAge != null ? ', ${request.patientAge} anos' : ''}'
             ' · ${request.hospitalName}',
-            style: const TextStyle(
+            style:        TextStyle(
                 color: AppColors.textSecondary, fontSize: 12.5),
           ),
           const SizedBox(height: 8),
@@ -343,7 +343,7 @@ class _AidCard extends StatelessWidget {
             request.conditionDescription,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12.5,
               height: 1.45,
@@ -356,7 +356,7 @@ class _AidCard extends StatelessWidget {
               value: request.progress,
               minHeight: 8,
               backgroundColor: Colors.white.withOpacity(0.08),
-              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.teal),
+              valueColor:        AlwaysStoppedAnimation<Color>(AppColors.teal),
             ),
           ),
           const SizedBox(height: 8),
@@ -365,7 +365,7 @@ class _AidCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   '${formatMZN(request.collectedAmount)} de ${formatMZN(request.goalAmount)}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 12.5,
@@ -374,7 +374,7 @@ class _AidCard extends StatelessWidget {
               ),
               Text(
                 '${(request.progress * 100).toStringAsFixed(0)}%',
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.teal,
                   fontWeight: FontWeight.w900,
                   fontSize: 12.5,
@@ -406,7 +406,7 @@ class _AidCard extends StatelessWidget {
 }
 
 class _MyRequestCard extends StatelessWidget {
-  const _MyRequestCard({required this.request});
+         _MyRequestCard({required this.request});
   final AidRequest request;
 
   @override
@@ -443,7 +443,7 @@ class _MyRequestCard extends StatelessWidget {
                   request.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,
@@ -452,7 +452,7 @@ class _MyRequestCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   '${formatMZN(request.collectedAmount)} de ${formatMZN(request.goalAmount)}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary, fontSize: 11.5),
                 ),
               ],
@@ -482,7 +482,7 @@ class _MyRequestCard extends StatelessWidget {
 // ── Folha de doação ────────────────────────────────────────────────────────
 
 class _DonateSheet extends ConsumerStatefulWidget {
-  const _DonateSheet({required this.request});
+         _DonateSheet({required this.request});
   final AidRequest request;
 
   @override
@@ -540,7 +540,7 @@ class _DonateSheetState extends ConsumerState<_DonateSheet> {
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           color: AppColors.bgHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -565,7 +565,7 @@ class _DonateSheetState extends ConsumerState<_DonateSheet> {
                 'Doar para "${widget.request.title}"',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w900,
                   fontSize: 16,
@@ -608,7 +608,7 @@ class _DonateSheetState extends ConsumerState<_DonateSheet> {
                 ],
               ),
               const SizedBox(height: 16),
-              const Text('Método',
+                     Text('Método',
                   style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
@@ -616,7 +616,7 @@ class _DonateSheetState extends ConsumerState<_DonateSheet> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  for (final m in const [
+                  for (final m in        [
                     ('wallet', 'Carteira', Icons.account_balance_wallet_rounded),
                     ('mpesa', 'M-Pesa', Icons.phone_android_rounded),
                     ('emola', 'e-Mola', Icons.phone_iphone_rounded),
@@ -681,7 +681,7 @@ class _DonateSheetState extends ConsumerState<_DonateSheet> {
                     border: Border.all(
                         color: AppColors.warning.withOpacity(0.3)),
                   ),
-                  child: const Text(
+                  child:        Text(
                     'Registamos a tua intenção. Transfere o valor por M-Pesa/e-Mola para a conta oficial MedWallet — a confirmação actualiza o total arrecadado.',
                     style: TextStyle(
                         color: AppColors.textSecondary, fontSize: 11.5),
@@ -763,7 +763,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
         _patient.text.trim().isEmpty ||
         _condition.text.trim().isEmpty ||
         _hospital.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Preenche título, paciente, condição e hospital.'),
         backgroundColor: AppColors.warning,
       ));
@@ -785,7 +785,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
     setState(() => _saving = false);
     if (err == null) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text(
             'Pedido submetido! A equipa MedWallet vai verificar e publicar.'),
         backgroundColor: AppColors.success,
@@ -806,7 +806,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
       child: Container(
         constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.85),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           color: AppColors.bgHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -827,7 +827,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text(
+                     Text(
                 'Pedir apoio médico',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -836,7 +836,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
+                     Text(
                 'Depois de submetido, a equipa verifica a documentação antes de publicar.',
                 style: TextStyle(color: AppColors.textMuted, fontSize: 11.5),
               ),
@@ -865,13 +865,13 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
               const SizedBox(height: 14),
               Row(
                 children: [
-                  const Text('Urgência',
+                         Text('Urgência',
                       style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.w800)),
                   const Spacer(),
-                  for (final u in const [
+                  for (final u in        [
                     ('normal', 'Normal'),
                     ('urgent', 'Urgente'),
                     ('critical', 'Crítico'),
@@ -930,7 +930,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
 }
 
 class _SheetField extends StatelessWidget {
-  const _SheetField({
+         _SheetField({
     required this.controller,
     required this.hint,
     this.maxLines = 1,
@@ -948,21 +948,21 @@ class _SheetField extends StatelessWidget {
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboard,
-      style: const TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
+      style:        TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+        hintStyle:        TextStyle(color: AppColors.textMuted, fontSize: 13),
         filled: true,
         fillColor: AppColors.glassFill,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.glassBorder),
+          borderSide:        BorderSide(color: AppColors.glassBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.accent),
+          borderSide:        BorderSide(color: AppColors.accent),
         ),
       ),
     );

@@ -11,7 +11,7 @@ import '../../auth/presentation/auth_controller.dart';
 /// Conteúdo regional publicado pela gestão (tabela `regional_content`):
 /// campanhas de saúde, avisos de emergência, dicas locais, etc.
 class HomeRegionalContent {
-  const HomeRegionalContent({
+         HomeRegionalContent({
     required this.id,
     required this.title,
     required this.contentType,
@@ -184,7 +184,7 @@ class RegionalBanner extends ConsumerWidget {
                               first.title,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style:        TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 14.5,
                                 fontWeight: FontWeight.w800,
@@ -229,7 +229,7 @@ class RegionalBanner extends ConsumerWidget {
                   ),
                 ),
                 if (list.length > 1)
-                  const Icon(Icons.expand_more_rounded,
+                         Icon(Icons.expand_more_rounded,
                       color: AppColors.textMuted),
               ],
             ),
@@ -246,7 +246,7 @@ class RegionalBanner extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -272,7 +272,7 @@ class RegionalBanner extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+                     Text(
                 'Novidades da tua região',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -301,7 +301,7 @@ class RegionalBanner extends ConsumerWidget {
                           children: [
                             Text(
                               item.title,
-                              style: const TextStyle(
+                              style:        TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,

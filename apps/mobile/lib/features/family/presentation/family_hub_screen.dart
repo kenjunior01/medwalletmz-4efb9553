@@ -53,11 +53,11 @@ class _FamilyHubScreenState extends ConsumerState<FamilyHubScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.bgHigh,
-        title: const Text('Remover familiar',
+        title:        Text('Remover familiar',
             style: TextStyle(color: AppColors.textPrimary, fontSize: 17)),
         content: Text(
             'Remover ${m.fullName} da tua lista? Os dados de medicação ficam guardados.',
-            style: const TextStyle(
+            style:        TextStyle(
                 color: AppColors.textSecondary, fontSize: 13)),
         actions: [
           TextButton(
@@ -96,7 +96,7 @@ class _FamilyHubScreenState extends ConsumerState<FamilyHubScreen> {
                         icon: Icons.arrow_back_rounded,
                         onTap: () => context.pop()),
                     const SizedBox(width: 12),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Família',
                         style: TextStyle(
@@ -111,7 +111,7 @@ class _FamilyHubScreenState extends ConsumerState<FamilyHubScreen> {
                 const SizedBox(height: 12),
                 const _HeroCard(),
                 const SizedBox(height: 18),
-                const Text(
+                       Text(
                   'Os meus familiares',
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -166,7 +166,7 @@ class _FamilyHubScreenState extends ConsumerState<FamilyHubScreen> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-  const _IconBtn({required this.icon, required this.onTap});
+         _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -209,7 +209,7 @@ class _HeroCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
       ),
-      child: const Row(
+      child:        Row(
         children: [
           Icon(Icons.family_restroom_rounded,
               color: Color(0xFF60A5FA), size: 30),
@@ -244,7 +244,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _MemberCard extends ConsumerWidget {
-  const _MemberCard({
+         _MemberCard({
     required this.member,
     required this.onEdit,
     required this.onRemove,
@@ -298,7 +298,7 @@ class _MemberCard extends ConsumerWidget {
                       member.fullName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w900,
                         fontSize: 14.5,
@@ -309,7 +309,7 @@ class _MemberCard extends ConsumerWidget {
                       '${member.relationshipLabel}'
                       '${member.age != null ? ' · ${member.age} anos' : ''}'
                       '${member.bloodType != null ? ' · ${member.bloodType}' : ''}',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textSecondary, fontSize: 12),
                     ),
                   ],
@@ -317,12 +317,12 @@ class _MemberCard extends ConsumerWidget {
               ),
               IconButton(
                 onPressed: onEdit,
-                icon: const Icon(Icons.edit_rounded,
+                icon:        Icon(Icons.edit_rounded,
                     size: 18, color: AppColors.textSecondary),
               ),
               IconButton(
                 onPressed: onRemove,
-                icon: const Icon(Icons.delete_outline_rounded,
+                icon:        Icon(Icons.delete_outline_rounded,
                     size: 18, color: AppColors.textMuted),
               ),
             ],
@@ -343,7 +343,7 @@ class _MemberCard extends ConsumerWidget {
           ],
           if (member.medications.isNotEmpty) ...[
             const SizedBox(height: 12),
-            const Text(
+                   Text(
               'Medicação do familiar',
               style: TextStyle(
                 color: AppColors.textSecondary,
@@ -382,7 +382,7 @@ class _MemberCard extends ConsumerWidget {
 
 /// Linha de medicação: cria/ver lembretes e marca "tomou".
 class _MedRow extends ConsumerStatefulWidget {
-  const _MedRow({required this.memberId, required this.medName});
+         _MedRow({required this.memberId, required this.medName});
   final String memberId;
   final String medName;
 
@@ -455,13 +455,13 @@ class _MedRowState extends ConsumerState<_MedRow> {
         children: [
           Row(
             children: [
-              const Icon(Icons.medication_rounded,
+                     Icon(Icons.medication_rounded,
                   size: 15, color: AppColors.accent),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   widget.medName,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
@@ -477,7 +477,7 @@ class _MedRowState extends ConsumerState<_MedRow> {
                     color: AppColors.accent.withOpacity(0.14),
                     borderRadius: BorderRadius.circular(7),
                   ),
-                  child: const Text(
+                  child:        Text(
                     '+ Lembrete',
                     style: TextStyle(
                       color: AppColors.accent,
@@ -498,12 +498,12 @@ class _MedRowState extends ConsumerState<_MedRow> {
                   children: [
                     Text(
                       log.timeLabel,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 11.5),
                     ),
                     const SizedBox(width: 8),
                     if (log.isTaken)
-                      const Text(
+                             Text(
                         'Tomou ✓',
                         style: TextStyle(
                             color: AppColors.success,
@@ -511,7 +511,7 @@ class _MedRowState extends ConsumerState<_MedRow> {
                             fontWeight: FontWeight.w800),
                       )
                     else if (log.isSkipped)
-                      const Text(
+                             Text(
                         'Saltou',
                         style: TextStyle(
                             color: AppColors.textMuted,
@@ -519,13 +519,13 @@ class _MedRowState extends ConsumerState<_MedRow> {
                             fontWeight: FontWeight.w700),
                       )
                     else ...[
-                      const Text('Pendente',
+                             Text('Pendente',
                           style: TextStyle(
                               color: AppColors.warning, fontSize: 11.5)),
                       const Spacer(),
                       GestureDetector(
                         onTap: () => _mark(log, true),
-                        child: const Icon(Icons.check_circle_outline_rounded,
+                        child:        Icon(Icons.check_circle_outline_rounded,
                             size: 18, color: AppColors.success),
                       ),
                     ],
@@ -544,7 +544,7 @@ class _MedRowState extends ConsumerState<_MedRow> {
 // ── Folha: adicionar/editar familiar ───────────────────────────────────────
 
 class _MemberSheet extends ConsumerStatefulWidget {
-  const _MemberSheet({required this.member});
+         _MemberSheet({required this.member});
   final FamilyMember? member;
 
   @override
@@ -610,7 +610,7 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
 
   Future<void> _save() async {
     if (_name.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Indica o nome do familiar.'),
         backgroundColor: AppColors.warning,
       ));
@@ -655,7 +655,7 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
       child: Container(
         constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.88),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           color: AppColors.bgHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -680,7 +680,7 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
                 widget.member == null
                     ? 'Adicionar familiar'
                     : 'Editar familiar',
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w900,
                   fontSize: 17,
@@ -694,7 +694,7 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
                   hint: 'Nascimento (AAAA-MM-DD)',
                   keyboard: TextInputType.datetime),
               const SizedBox(height: 12),
-              const Text('Relação',
+                     Text('Relação',
                   style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
@@ -727,7 +727,7 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
                 ],
               ),
               const SizedBox(height: 12),
-              const Text('Tipo sanguíneo',
+                     Text('Tipo sanguíneo',
                   style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
@@ -782,7 +782,7 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
               const SizedBox(height: 10),
               _Field(controller: _emergency, hint: 'Contacto de emergência'),
               const SizedBox(height: 12),
-              const Text('Cor de identificação',
+                     Text('Cor de identificação',
                   style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
@@ -845,7 +845,7 @@ class _MemberSheetState extends ConsumerState<_MemberSheet> {
 }
 
 class _Field extends StatelessWidget {
-  const _Field({
+         _Field({
     required this.controller,
     required this.hint,
     this.keyboard,
@@ -860,21 +860,21 @@ class _Field extends StatelessWidget {
     return TextField(
       controller: controller,
       keyboardType: keyboard,
-      style: const TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
+      style:        TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+        hintStyle:        TextStyle(color: AppColors.textMuted, fontSize: 13),
         filled: true,
         fillColor: AppColors.glassFill,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.glassBorder),
+          borderSide:        BorderSide(color: AppColors.glassBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.accent),
+          borderSide:        BorderSide(color: AppColors.accent),
         ),
       ),
     );

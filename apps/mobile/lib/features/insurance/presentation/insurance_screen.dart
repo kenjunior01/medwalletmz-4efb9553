@@ -44,10 +44,10 @@ class InsuranceScreen extends ConsumerWidget {
                 children: [
                   IconButton(
                     onPressed: () => context.pop(),
-                    icon: const Icon(Icons.arrow_back_rounded,
+                    icon:        Icon(Icons.arrow_back_rounded,
                         color: AppColors.textPrimary),
                   ),
-                  const Expanded(
+                         Expanded(
                     child: Text(
                       'Seguros de saúde',
                       style: TextStyle(
@@ -81,7 +81,7 @@ class InsuranceScreen extends ConsumerWidget {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                             Text(
                         'AS MINHAS APÓLICES',
                         style: TextStyle(
                           color: AppColors.textMuted,
@@ -100,7 +100,7 @@ class InsuranceScreen extends ConsumerWidget {
               ),
 
               // ── Planos disponíveis ─────────────────────────────
-              const Text(
+                     Text(
                 'PLANOS DISPONÍVEIS',
                 style: TextStyle(
                   color: AppColors.textMuted,
@@ -145,7 +145,7 @@ class InsuranceScreen extends ConsumerWidget {
 }
 
 class _PlanCard extends ConsumerWidget {
-  const _PlanCard({required this.plan});
+         _PlanCard({required this.plan});
 
   final InsurancePlan plan;
 
@@ -156,7 +156,7 @@ class _PlanCard extends ConsumerWidget {
       isScrollControlled: true,
       builder: (ctx) => Container(
         padding: const EdgeInsets.fromLTRB(22, 18, 22, 24),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient:
               LinearGradient(colors: [AppColors.bgHigh, AppColors.bgDeep]),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -167,7 +167,7 @@ class _PlanCard extends ConsumerWidget {
           children: [
             Text(
               'Subscrever ${plan.name}',
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 17,
                   fontWeight: FontWeight.w800),
@@ -211,7 +211,7 @@ class _PlanCard extends ConsumerWidget {
       await ref.read(insuranceRepositoryProvider).subscribe(plan.id);
       ref.invalidate(myPoliciesProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.success,
           content: Text('Subscrição registada — estado pendente de '
               'confirmação.'),
@@ -219,7 +219,7 @@ class _PlanCard extends ConsumerWidget {
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text('Não foi possível subscrever este plano.'),
         ));
@@ -259,7 +259,7 @@ class _PlanCard extends ConsumerWidget {
                   children: [
                     Text(
                       plan.name,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 14.5,
@@ -281,13 +281,13 @@ class _PlanCard extends ConsumerWidget {
                 children: [
                   Text(
                     formatMZN(plan.monthlyPrice),
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.success,
                       fontWeight: FontWeight.w800,
                       fontSize: 14,
                     ),
                   ),
-                  const Text(
+                         Text(
                     '/mês',
                     style: TextStyle(
                       color: AppColors.textMuted,
@@ -342,7 +342,7 @@ class _PlanCard extends ConsumerWidget {
 }
 
 class _CoveragePill extends StatelessWidget {
-  const _CoveragePill({required this.label});
+         _CoveragePill({required this.label});
 
   final String label;
 
@@ -356,7 +356,7 @@ class _CoveragePill extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: const TextStyle(
+        style:        TextStyle(
           color: AppColors.success,
           fontSize: 11,
           fontWeight: FontWeight.w700,
@@ -367,7 +367,7 @@ class _CoveragePill extends StatelessWidget {
 }
 
 class _PolicyCard extends ConsumerWidget {
-  const _PolicyCard({required this.p});
+         _PolicyCard({required this.p});
 
   final MyInsurancePolicy p;
 
@@ -410,7 +410,7 @@ class _PolicyCard extends ConsumerWidget {
                   p.memberNumber == null
                       ? 'Apólice ${p.id.substring(0, 8)}'
                       : 'Membro ${p.memberNumber}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,

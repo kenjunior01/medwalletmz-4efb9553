@@ -127,10 +127,10 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                           context.go('/home');
                         }
                       },
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Triagem Inteligente',
                         style: TextStyle(
@@ -142,7 +142,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                     ),
                     Text(
                       'Passo ${_step + 1} de $_totalSteps',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.accent,
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
@@ -160,7 +160,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                     minHeight: 6,
                     backgroundColor: Colors.white.withOpacity(0.08),
                     valueColor:
-                        const AlwaysStoppedAnimation(AppColors.accent),
+                               AlwaysStoppedAnimation(AppColors.accent),
                   ),
                 ),
               ),
@@ -213,7 +213,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
           controller: _ageCtrl,
           keyboardType: TextInputType.number,
           maxLength: 3,
-          style: const TextStyle(color: AppColors.textPrimary),
+          style:        TextStyle(color: AppColors.textPrimary),
           onChanged: (v) => _age = int.tryParse(v),
           decoration: const InputDecoration(
             hintText: 'Idade (anos)',
@@ -221,7 +221,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
           ),
         ),
         const SizedBox(height: 18),
-        const Text(
+               Text(
           'Contexto adicional (opcional)',
           style: TextStyle(
             color: AppColors.textMuted,
@@ -305,7 +305,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                         Expanded(
                           child: Text(
                             group.area,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w700,
                               fontSize: 13.5,
@@ -315,7 +315,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                         AnimatedRotation(
                           turns: open ? 0.5 : 0,
                           duration: const Duration(milliseconds: 200),
-                          child: const Icon(Icons.expand_more_rounded,
+                          child:        Icon(Icons.expand_more_rounded,
                               color: AppColors.textMuted, size: 20),
                         ),
                       ],
@@ -350,7 +350,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
           const SizedBox(height: 6),
           Text(
             '${_symptoms.length} sintoma(s) seleccionado(s)',
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.accent,
               fontSize: 12,
               fontWeight: FontWeight.w700,
@@ -395,7 +395,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
         TextField(
           controller: _freeTextCtrl,
           maxLines: 4,
-          style: const TextStyle(color: AppColors.textPrimary),
+          style:        TextStyle(color: AppColors.textPrimary),
           decoration: const InputDecoration(
             hintText:
                 'Ex.: a dor piora à noite, já tomei paracetamol sem efeito…',
@@ -541,7 +541,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
 // ── Peças reutilizadas pelo wizard ──────────────────────────────────────
 
 class _StepTitle extends StatelessWidget {
-  const _StepTitle({
+         _StepTitle({
     required this.emoji,
     required this.title,
     required this.subtitle,
@@ -562,7 +562,7 @@ class _StepTitle extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               title,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 19,
                 fontWeight: FontWeight.w800,
@@ -585,7 +585,7 @@ class _StepTitle extends StatelessWidget {
 }
 
 class _SelectChip extends StatelessWidget {
-  const _SelectChip({
+         _SelectChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -627,7 +627,7 @@ class _SelectChip extends StatelessWidget {
 }
 
 class _OptionRow extends StatelessWidget {
-  const _OptionRow({
+         _OptionRow({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -684,7 +684,7 @@ class _OptionRow extends StatelessWidget {
 }
 
 class _ReviewRow extends StatelessWidget {
-  const _ReviewRow({required this.label, required this.value});
+         _ReviewRow({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -706,7 +706,7 @@ class _ReviewRow extends StatelessWidget {
             width: 86,
             child: Text(
               label,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textMuted,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -716,7 +716,7 @@ class _ReviewRow extends StatelessWidget {
           Expanded(
             child: Text(
               value.isEmpty ? '—' : value,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 12.8,
                 height: 1.4,

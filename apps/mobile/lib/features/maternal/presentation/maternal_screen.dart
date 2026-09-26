@@ -76,7 +76,7 @@ class _MaternalScreenState extends ConsumerState<MaternalScreen> {
                   ? Center(
                       child: Text(_error!,
                           style:
-                              const TextStyle(color: AppColors.textSecondary)))
+                                     TextStyle(color: AppColors.textSecondary)))
                   : _profile == null
                       ? _OnboardingForm(onSaved: _load)
                       : RefreshIndicator(
@@ -104,7 +104,7 @@ class _MaternalScreenState extends ConsumerState<MaternalScreen> {
 // ── Componentes ─────────────────────────────────────────────────────────
 
 class _ProgressCard extends StatelessWidget {
-  const _ProgressCard({required this.profile});
+         _ProgressCard({required this.profile});
   final MaternalProfile profile;
 
   @override
@@ -114,10 +114,10 @@ class _ProgressCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient:        LinearGradient(
             colors: [Color(0xFF9D5CE6), Color(0xFF6D3FC4)]),
         borderRadius: BorderRadius.circular(18),
-        boxShadow: const [
+        boxShadow:        [
           BoxShadow(color: Color(0x339D5CE6), blurRadius: 22),
         ],
       ),
@@ -214,7 +214,7 @@ class _Stat extends StatelessWidget {
 }
 
 class _AncCard extends ConsumerWidget {
-  const _AncCard({required this.profile});
+         _AncCard({required this.profile});
   final MaternalProfile profile;
 
   @override
@@ -304,7 +304,7 @@ class _AncCard extends ConsumerWidget {
 }
 
 class _VitalsCard extends ConsumerStatefulWidget {
-  const _VitalsCard({required this.profile});
+         _VitalsCard({required this.profile});
   final MaternalProfile profile;
 
   @override
@@ -397,7 +397,7 @@ class _VitalsCardState extends ConsumerState<_VitalsCard> {
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Row(
-                children: const [
+                children:        [
                   Icon(Icons.warning_amber_rounded,
                       color: AppColors.warning, size: 18),
                   SizedBox(width: 6),
@@ -434,7 +434,7 @@ class _VitalsCardState extends ConsumerState<_VitalsCard> {
 }
 
 class _VitalField extends StatelessWidget {
-  const _VitalField(
+         _VitalField(
       {required this.controller, required this.label, required this.hint});
   final TextEditingController controller;
   final String label;
@@ -446,7 +446,7 @@ class _VitalField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(
+            style:        TextStyle(
                 fontSize: 11.5, color: AppColors.textSecondary)),
         const SizedBox(height: 6),
         TextField(
@@ -455,7 +455,7 @@ class _VitalField extends StatelessWidget {
           style: const TextStyle(fontSize: 15),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: AppColors.textMuted),
+            hintStyle:        TextStyle(color: AppColors.textMuted),
             filled: true,
             fillColor: AppColors.glassFill,
             contentPadding:
@@ -483,7 +483,7 @@ class _EmergencyNote extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.danger.withOpacity(0.35)),
       ),
-      child: const Row(
+      child:        Row(
         children: [
           Icon(Icons.emergency_rounded, color: AppColors.danger, size: 22),
           SizedBox(width: 10),
@@ -502,7 +502,7 @@ class _EmergencyNote extends StatelessWidget {
 }
 
 class _OnboardingForm extends ConsumerStatefulWidget {
-  const _OnboardingForm({required this.onSaved});
+         _OnboardingForm({required this.onSaved});
   final VoidCallback onSaved;
 
   @override
@@ -565,7 +565,7 @@ class _OnboardingFormState extends ConsumerState<_OnboardingForm> {
         const Text('💜 Vamos acompanhar a tua gravidez',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
         const SizedBox(height: 8),
-        const Text(
+               Text(
           'Precisamos da data da última menstruação (DUM) para calcular '
           'a data provável do parto e o plano de 8 consultas pré-natais.',
           style: TextStyle(
@@ -575,7 +575,7 @@ class _OnboardingFormState extends ConsumerState<_OnboardingForm> {
         OutlinedButton(
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.textPrimary,
-            side: const BorderSide(color: AppColors.glassBorder),
+            side:        BorderSide(color: AppColors.glassBorder),
             backgroundColor: AppColors.glassFill,
             padding: const EdgeInsets.symmetric(vertical: 14),
           ),
@@ -592,7 +592,7 @@ class _OnboardingFormState extends ConsumerState<_OnboardingForm> {
             child: Text(
               'Parto previsto: ${formatDateShort(edd)}',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.accent, fontWeight: FontWeight.w700),
             ),
           ),
@@ -629,14 +629,14 @@ class _OnboardingFormState extends ConsumerState<_OnboardingForm> {
                         color: _bloodType == b
                             ? Colors.white
                             : AppColors.textSecondary),
-                    side: const BorderSide(color: AppColors.glassBorder),
+                    side:        BorderSide(color: AppColors.glassBorder),
                     onSelected: (_) => setState(() => _bloodType = b),
                   ))
               .toList(),
         ),
         const SizedBox(height: 16),
         SegmentedButton<String>(
-          segments: const [
+          segments:        [
             ButtonSegment(value: 'low', label: Text('Risco baixo')),
             ButtonSegment(value: 'medium', label: Text('Médio')),
             ButtonSegment(value: 'high', label: Text('Alto')),
@@ -665,7 +665,7 @@ class _OnboardingFormState extends ConsumerState<_OnboardingForm> {
 }
 
 class _Stepper extends StatelessWidget {
-  const _Stepper(
+         _Stepper(
       {required this.label, required this.value, required this.onChanged});
   final String label;
   final int value;
@@ -683,7 +683,7 @@ class _Stepper extends StatelessWidget {
       child: Column(
         children: [
           Text(label,
-              style: const TextStyle(
+              style:        TextStyle(
                   fontSize: 11.5, color: AppColors.textSecondary)),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

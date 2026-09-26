@@ -66,7 +66,7 @@ class _InstitutionsPanelState extends ConsumerState<InstitutionsPanel> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text(
               'Sem permissão para alterar esta instituição (RLS).'),
@@ -91,7 +91,7 @@ class _InstitutionsPanelState extends ConsumerState<InstitutionsPanel> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text('Não foi possível verificar.'),
         ));
@@ -103,7 +103,7 @@ class _InstitutionsPanelState extends ConsumerState<InstitutionsPanel> {
   @override
   Widget build(BuildContext context) {
     final rows = _rows;
-    final filtered = (rows ?? const <InstitutionRow>[]).where((r) {
+    final filtered = (rows ??        <InstitutionRow>[]).where((r) {
       switch (_filter) {
         case 'active':
           return r.isActive;
@@ -146,7 +146,7 @@ class _InstitutionsPanelState extends ConsumerState<InstitutionsPanel> {
             const Spacer(),
             IconButton(
               onPressed: _load,
-              icon: const Icon(Icons.refresh_rounded,
+              icon:        Icon(Icons.refresh_rounded,
                   color: AppColors.accent, size: 20),
             ),
           ],
@@ -176,7 +176,7 @@ class _InstitutionsPanelState extends ConsumerState<InstitutionsPanel> {
 }
 
 class _InstitutionCard extends StatelessWidget {
-  const _InstitutionCard({
+         _InstitutionCard({
     required this.r,
     required this.busy,
     required this.onToggle,
@@ -226,7 +226,7 @@ class _InstitutionCard extends StatelessWidget {
                         r.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w700,
                           fontSize: 13.5,
@@ -235,7 +235,7 @@ class _InstitutionCard extends StatelessWidget {
                     ),
                     if (r.isVerified) ...[
                       const SizedBox(width: 5),
-                      const Icon(Icons.verified_rounded,
+                             Icon(Icons.verified_rounded,
                           color: AppColors.success, size: 15),
                     ],
                   ],
@@ -256,7 +256,7 @@ class _InstitutionCard extends StatelessWidget {
             tooltip: 'Google Maps',
             onPressed: () => launchUrl(Uri.parse(r.mapsQuery),
                 mode: LaunchMode.externalApplication),
-            icon: const Icon(Icons.map_rounded,
+            icon:        Icon(Icons.map_rounded,
                 color: AppColors.accent, size: 20),
           ),
           PopupMenuButton<String>(
@@ -326,7 +326,7 @@ class _PaymentsPanelState extends ConsumerState<PaymentsPanel> {
       builder: (ctx) => Container(
         padding: EdgeInsets.fromLTRB(
             22, 18, 22, MediaQuery.of(ctx).viewInsets.bottom + 20),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient:
               LinearGradient(colors: [AppColors.bgHigh, AppColors.bgDeep]),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -337,7 +337,7 @@ class _PaymentsPanelState extends ConsumerState<PaymentsPanel> {
           children: [
             Text(
               'Confirmar ${p.reference}',
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 17,
                   fontWeight: FontWeight.w800),
@@ -352,7 +352,7 @@ class _PaymentsPanelState extends ConsumerState<PaymentsPanel> {
             const SizedBox(height: 14),
             TextField(
               controller: txCtrl,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style:        TextStyle(color: AppColors.textPrimary),
               decoration: const InputDecoration(
                   hintText: 'Ex.: QGH7JK2R91'),
             ),
@@ -393,7 +393,7 @@ class _PaymentsPanelState extends ConsumerState<PaymentsPanel> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text('Falhou a confirmação — verifica o teu papel.'),
         ));
@@ -422,7 +422,7 @@ class _PaymentsPanelState extends ConsumerState<PaymentsPanel> {
         ),
         Row(
           children: [
-            for (final (k, l) in const [
+            for (final (k, l) in        [
               ('pending', 'Pendentes'),
               ('confirmed', 'Confirmados'),
               ('all', 'Todos'),
@@ -463,7 +463,7 @@ class _PaymentsPanelState extends ConsumerState<PaymentsPanel> {
 }
 
 class _PaymentCard extends StatelessWidget {
-  const _PaymentCard({
+         _PaymentCard({
     required this.p,
     required this.onConfirm,
     required this.onReject,
@@ -513,7 +513,7 @@ class _PaymentCard extends StatelessWidget {
                   children: [
                     Text(
                       '${formatMZN(p.amount)} · ${p.reference}',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 13.5,
@@ -601,7 +601,7 @@ class _UsersPanelState extends ConsumerState<UsersPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final rows = _rows ?? const <ManagerUserRow>[];
+    final rows = _rows ??        <ManagerUserRow>[];
     final filtered = rows.where((u) {
       if (_query.isEmpty) return true;
       final q = _query.toLowerCase();
@@ -621,8 +621,8 @@ class _UsersPanelState extends ConsumerState<UsersPanel> {
         ),
         TextField(
           onChanged: (v) => setState(() => _query = v),
-          style: const TextStyle(color: AppColors.textPrimary),
-          decoration: const InputDecoration(
+          style:        TextStyle(color: AppColors.textPrimary),
+          decoration:        InputDecoration(
             prefixIcon: Icon(Icons.search_rounded, color: AppColors.textMuted),
             hintText: 'Pesquisar utilizadores…',
           ),
@@ -672,7 +672,7 @@ class _UsersPanelState extends ConsumerState<UsersPanel> {
                           u.fullName ?? 'Sem nome',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
@@ -737,7 +737,7 @@ class _SosMonitorPanelState extends ConsumerState<SosMonitorPanel> {
           .updateSosStatus(a.id, status);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text(
               'Sem permissão para actualizar alertas (precisas de papel '
@@ -784,7 +784,7 @@ class _SosMonitorPanelState extends ConsumerState<SosMonitorPanel> {
             const Spacer(),
             IconButton(
               onPressed: _load,
-              icon: const Icon(Icons.refresh_rounded,
+              icon:        Icon(Icons.refresh_rounded,
                   color: AppColors.accent, size: 20),
             ),
           ],
@@ -814,7 +814,7 @@ class _SosMonitorPanelState extends ConsumerState<SosMonitorPanel> {
 }
 
 class _SosCard extends StatelessWidget {
-  const _SosCard({
+         _SosCard({
     required this.a,
     required this.onAck,
     required this.onResolve,
@@ -857,7 +857,7 @@ class _SosCard extends StatelessWidget {
                 child: Text(
                   '${a.city ?? 'Local desconhecido'}'
                   '${a.countryId != null ? ' (${a.countryId})' : ''}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,

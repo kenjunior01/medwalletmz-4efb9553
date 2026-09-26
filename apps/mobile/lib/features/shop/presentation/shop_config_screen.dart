@@ -68,7 +68,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.card,
           content: Text('Loja ligada: ${shop.name}',
-              style: const TextStyle(color: AppColors.textPrimary)),
+              style:        TextStyle(color: AppColors.textPrimary)),
         ),
       );
     } on FormatException {
@@ -119,7 +119,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const AppBackground(
+      return        AppBackground(
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Center(
@@ -145,11 +145,11 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                 children: [
                   IconButton(
                     onPressed: () => context.pop(),
-                    icon: const Icon(Icons.arrow_back_rounded,
+                    icon:        Icon(Icons.arrow_back_rounded,
                         color: AppColors.textSecondary),
                   ),
                   const Spacer(),
-                  const Icon(Icons.settings_rounded,
+                         Icon(Icons.settings_rounded,
                       size: 20, color: AppColors.textMuted),
                   const SizedBox(width: 22),
                 ],
@@ -171,7 +171,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                         color: Colors.white, size: 26),
                   ),
                   const SizedBox(width: 13),
-                  const Expanded(
+                         Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -220,7 +220,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                         children: [
                           Text(
                             _connectedName ?? 'Nenhuma loja ligada',
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w800,
                                 fontSize: 13.5),
@@ -232,7 +232,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                                 : _fromEnv
                                     ? 'Configurada via build (produção)'
                                     : 'Configurada neste dispositivo',
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 color: AppColors.textMuted, fontSize: 11.5),
                           ),
                         ],
@@ -241,7 +241,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                     if (_connectedName != null && !_fromEnv)
                       GestureDetector(
                         onTap: _disconnect,
-                        child: const Padding(
+                        child:        Padding(
                           padding: EdgeInsets.all(6),
                           child: Icon(Icons.link_off_rounded,
                               size: 20, color: AppColors.danger),
@@ -257,13 +257,13 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Ligar loja Shopify',
+                           Text('Ligar loja Shopify',
                         style: TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w800,
                             fontSize: 14)),
                     const SizedBox(height: 4),
-                    const Text(
+                           Text(
                       'Precisas de uma app personalizada com a Storefront API '
                       'activada. O token é público (apenas leitura de '
                       'produtos e carrinhos) — seguro para o dispositivo.',
@@ -296,7 +296,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                         height: 50,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
+                          gradient:        LinearGradient(
                               colors: AppColors.buttonGradient),
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -323,7 +323,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Como obter o token (2 min)',
+                           Text('Como obter o token (2 min)',
                         style: TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w800,
@@ -345,13 +345,13 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Configuração permanente (produção)',
+                           Text('Configuração permanente (produção)',
                         style: TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w800,
                             fontSize: 14)),
                     const SizedBox(height: 8),
-                    const Text(
+                           Text(
                       'Para a loja aparecer para todos os utilizadores sem '
                       'configuração local, compila a app com:',
                       style: TextStyle(
@@ -368,7 +368,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: AppColors.glassBorder),
                       ),
-                      child: const Text(
+                      child:        Text(
                         '--dart-define=SHOPIFY_DOMAIN=minhaloja.myshopify.com\n'
                         '--dart-define=SHOPIFY_TOKEN=shpat_…',
                         style: TextStyle(
@@ -388,7 +388,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(children: [
+                           Row(children: [
                       Icon(Icons.public_rounded,
                           size: 17, color: Color(0xFF10B981)),
                       SizedBox(width: 8),
@@ -430,7 +430,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
               ],
 
               const SizedBox(height: 18),
-              const Text(
+                     Text(
                 'O token Storefront é uma chave pública: só permite ler '
                 'produtos e criar carrinhos. Nunca uses aqui chaves de Admin API.',
                 textAlign: TextAlign.center,
@@ -459,7 +459,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
 
   Widget _label(String text) => Text(
         text.toUpperCase(),
-        style: const TextStyle(
+        style:        TextStyle(
             color: AppColors.textMuted,
             fontSize: 10,
             fontWeight: FontWeight.w800,
@@ -481,10 +481,10 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
           obscureText: obscure,
           autocorrect: false,
           enableSuggestions: false,
-          style: const TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
+          style:        TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 12.5),
+            hintStyle:        TextStyle(color: AppColors.textMuted, fontSize: 12.5),
             prefixIcon: Icon(icon, size: 18, color: AppColors.textMuted),
             filled: true,
             fillColor: AppColors.glassFill,
@@ -496,7 +496,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.accent),
+              borderSide:        BorderSide(color: AppColors.accent),
             ),
           ),
         ),
@@ -517,7 +517,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
                 borderRadius: BorderRadius.circular(7),
               ),
               child: Text(n,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.accent,
                       fontSize: 11,
                       fontWeight: FontWeight.w900)),
@@ -525,7 +525,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
             const SizedBox(width: 10),
             Expanded(
               child: Text(text,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
                       height: 1.45)),
@@ -543,7 +543,7 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
             const SizedBox(width: 10),
             Expanded(
               child: Text(text,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
                       height: 1.5)),
@@ -568,12 +568,12 @@ class _ShopConfigScreenState extends ConsumerState<ShopConfigScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(label,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w700)),
               ),
-              const Icon(Icons.open_in_new_rounded,
+                     Icon(Icons.open_in_new_rounded,
                   size: 16, color: AppColors.textMuted),
             ],
           ),

@@ -73,7 +73,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                         icon: Icons.arrow_back_rounded,
                         onTap: () => context.pop()),
                     const SizedBox(width: 12),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Diário de Saúde',
                         style: TextStyle(
@@ -96,12 +96,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.local_fire_department_rounded,
+                                   Icon(Icons.local_fire_department_rounded,
                                 size: 15, color: AppColors.warning),
                             const SizedBox(width: 4),
                             Text(
                               '$_streak dias',
-                              style: const TextStyle(
+                              style:        TextStyle(
                                 color: AppColors.warning,
                                 fontWeight: FontWeight.w900,
                                 fontSize: 12,
@@ -114,7 +114,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                 ),
                 const SizedBox(height: 14),
                 if (_loading)
-                  const Column(
+                         Column(
                     children: [
                       AppSkeleton(height: 130),
                       SizedBox(height: 12),
@@ -134,7 +134,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                     _AiInsightCard(insight: _today!.aiInsight!),
                     const SizedBox(height: 16),
                   ],
-                  const Text(
+                         Text(
                     'Últimos 14 dias',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -180,7 +180,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
 const _moodEmojis = ['😞', '🙁', '😐', '🙂', '😄'];
 
 class _IconBtn extends StatelessWidget {
-  const _IconBtn({required this.icon, required this.onTap});
+         _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -207,7 +207,7 @@ class _IconBtn extends StatelessWidget {
 }
 
 class _TodayCard extends StatelessWidget {
-  const _TodayCard({required this.entry, required this.onCheckIn});
+         _TodayCard({required this.entry, required this.onCheckIn});
   final JournalEntry? entry;
   final VoidCallback onCheckIn;
 
@@ -239,7 +239,7 @@ class _TodayCard extends StatelessWidget {
               children: [
                 Text(
                   filled ? 'Já fizeste o check-in!' : 'Como te sentes hoje?',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w900,
                     fontSize: 15,
@@ -250,7 +250,7 @@ class _TodayCard extends StatelessWidget {
                   filled
                       ? 'Toca para editar a entrada de hoje.'
                       : 'Regista o teu bem-estar em menos de 1 minuto.',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary, fontSize: 12),
                 ),
               ],
@@ -278,7 +278,7 @@ class _TodayCard extends StatelessWidget {
 }
 
 class _AiInsightCard extends StatelessWidget {
-  const _AiInsightCard({required this.insight});
+         _AiInsightCard({required this.insight});
   final String insight;
 
   @override
@@ -293,7 +293,7 @@ class _AiInsightCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+                 Row(
             children: [
               Icon(Icons.auto_awesome_rounded,
                   size: 16, color: AppColors.warning),
@@ -311,7 +311,7 @@ class _AiInsightCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             insight,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12.5,
               height: 1.5,
@@ -324,7 +324,7 @@ class _AiInsightCard extends StatelessWidget {
 }
 
 class _HistoryTile extends StatelessWidget {
-  const _HistoryTile({required this.entry});
+         _HistoryTile({required this.entry});
   final JournalEntry entry;
 
   @override
@@ -350,7 +350,7 @@ class _HistoryTile extends StatelessWidget {
               children: [
                 Text(
                   formatRelative(entry.entryDate),
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 12.5,
@@ -360,23 +360,23 @@ class _HistoryTile extends StatelessWidget {
                 Row(
                   children: [
                     if (entry.sleepHours != null) ...[
-                      const Icon(Icons.bedtime_rounded,
+                             Icon(Icons.bedtime_rounded,
                           size: 12, color: AppColors.textMuted),
                       const SizedBox(width: 3),
                       Text(
                         '${entry.sleepHours!.toStringAsFixed(entry.sleepHours! == entry.sleepHours!.roundToDouble() ? 0 : 1)}h',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textSecondary, fontSize: 11),
                       ),
                       const SizedBox(width: 10),
                     ],
                     if (entry.painLevel != null && entry.painLevel! > 0) ...[
-                      const Icon(Icons.healing_rounded,
+                             Icon(Icons.healing_rounded,
                           size: 12, color: AppColors.danger),
                       const SizedBox(width: 3),
                       Text(
                         'dor ${entry.painLevel}/10',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textSecondary, fontSize: 11),
                       ),
                       const SizedBox(width: 10),
@@ -387,7 +387,7 @@ class _HistoryTile extends StatelessWidget {
                           entry.symptoms.take(2).join(', '),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textMuted, fontSize: 11),
                         ),
                       ),
@@ -399,7 +399,7 @@ class _HistoryTile extends StatelessWidget {
                     entry.notes!,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textSecondary, fontSize: 11.5),
                   ),
                 ],
@@ -415,7 +415,7 @@ class _HistoryTile extends StatelessWidget {
 // ── Folha de check-in ──────────────────────────────────────────────────────
 
 class _CheckInSheet extends ConsumerStatefulWidget {
-  const _CheckInSheet({required this.existing});
+         _CheckInSheet({required this.existing});
   final JournalEntry? existing;
 
   @override
@@ -462,7 +462,7 @@ class _CheckInSheetState extends ConsumerState<_CheckInSheet> {
     setState(() => _saving = false);
     if (err == null) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Check-in guardado. Um dia de cada vez!'),
         backgroundColor: AppColors.success,
       ));
@@ -482,7 +482,7 @@ class _CheckInSheetState extends ConsumerState<_CheckInSheet> {
       child: Container(
         constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.9),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           color: AppColors.bgHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -503,7 +503,7 @@ class _CheckInSheetState extends ConsumerState<_CheckInSheet> {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text(
+                     Text(
                 'Check-in de hoje',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -670,7 +670,7 @@ class _Label extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style:        TextStyle(
         color: AppColors.textSecondary,
         fontSize: 12,
         fontWeight: FontWeight.w800,
@@ -680,14 +680,14 @@ class _Label extends StatelessWidget {
 }
 
 class _SliderSection extends StatelessWidget {
-  const _SliderSection({
+         _SliderSection({
     required this.label,
     required this.value,
     required this.max,
     required this.display,
     required this.onChanged,
     this.divisions,
-    this.accent = AppColors.accent,
+    this.accent,
   });
 
   final String label;
@@ -696,10 +696,12 @@ class _SliderSection extends StatelessWidget {
   final String display;
   final ValueChanged<double> onChanged;
   final int? divisions;
-  final Color accent;
+  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
+    // F33 — accent dinâmico (AppColors.accent segue o modo).
+    final color = accent ?? AppColors.accent;
     return Padding(
       padding: const EdgeInsets.only(top: 14),
       child: Column(
@@ -707,19 +709,19 @@ class _SliderSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(label, style: const _LabelStyle()),
+              Text(label, style: _labelStyle()),
               const Spacer(),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: accent.withOpacity(0.16),
+                  color: color.withOpacity(0.16),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   display,
                   style: TextStyle(
-                    color: accent,
+                    color: color,
                     fontWeight: FontWeight.w900,
                     fontSize: 12,
                   ),
@@ -729,10 +731,10 @@ class _SliderSection extends StatelessWidget {
           ),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              activeTrackColor: accent,
+              activeTrackColor: color,
               inactiveTrackColor: Colors.white.withOpacity(0.1),
-              thumbColor: accent,
-              overlayColor: accent.withOpacity(0.15),
+              thumbColor: color,
+              overlayColor: color.withOpacity(0.15),
               trackHeight: 4,
             ),
             child: Slider(
@@ -748,17 +750,14 @@ class _SliderSection extends StatelessWidget {
   }
 }
 
-class _LabelStyle extends TextStyle {
-  const _LabelStyle()
-      : super(
-          color: AppColors.textSecondary,
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-        );
-}
+TextStyle _labelStyle() => TextStyle(
+      color: AppColors.textSecondary,
+      fontSize: 12,
+      fontWeight: FontWeight.w800,
+    );
 
 class _SheetField extends StatelessWidget {
-  const _SheetField({
+         _SheetField({
     required this.controller,
     required this.hint,
     this.maxLines = 1,
@@ -776,21 +775,21 @@ class _SheetField extends StatelessWidget {
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboard,
-      style: const TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
+      style:        TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+        hintStyle:        TextStyle(color: AppColors.textMuted, fontSize: 13),
         filled: true,
         fillColor: AppColors.glassFill,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.glassBorder),
+          borderSide:        BorderSide(color: AppColors.glassBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.accent),
+          borderSide:        BorderSide(color: AppColors.accent),
         ),
       ),
     );

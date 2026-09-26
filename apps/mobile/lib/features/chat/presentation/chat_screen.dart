@@ -191,7 +191,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     // Resolução do alvo ainda em curso.
     if (target == null) {
-      return const Scaffold(
+      return        Scaffold(
         body: AppBackground(
           child: Center(
             child: CircularProgressIndicator(color: AppColors.accent),
@@ -216,7 +216,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
                     Container(
@@ -241,7 +241,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             facility.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w800,
                               fontSize: 15,
@@ -265,7 +265,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               // ── Mensagens ─────────────────────────────────────────
               Expanded(
                 child: messages.when(
-                  loading: () => const Center(
+                  loading: () =>        Center(
                     child: CircularProgressIndicator(color: AppColors.accent),
                   ),
                   error: (e, _) => EmptyState(
@@ -329,7 +329,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               Text(
                 'Fala com ${facility.name}',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w800,
                   fontSize: 15,
@@ -353,7 +353,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             .fadeIn(duration: 300.ms)
             .slideY(begin: 0.1, curve: Curves.easeOutCubic),
         const SizedBox(height: 12),
-        const Align(
+               Align(
           alignment: Alignment.centerLeft,
           child: Text(
             'PERGUNTAS RÁPIDAS',
@@ -402,7 +402,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 // ── Bolha de mensagem ───────────────────────────────────────────────────
 
 class _MessageBubble extends ConsumerWidget {
-  const _MessageBubble({required this.message, required this.facilityColor, required this.target});
+         _MessageBubble({required this.message, required this.facilityColor, required this.target});
 
   final FacilityMessage message;
   final Color facilityColor;
@@ -442,7 +442,7 @@ class _MessageBubble extends ConsumerWidget {
                 padding: EdgeInsets.only(top: message.hasAttachment ? 8 : 0),
                 child: Text(
                   message.body!,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14,
                     height: 1.35,
@@ -481,7 +481,7 @@ class _MessageBubble extends ConsumerWidget {
 /// Anexo (foto da receita) — URL assinado gerado a pedido porque o
 /// bucket é privado.
 class _Attachment extends ConsumerStatefulWidget {
-  const _Attachment({required this.path});
+         _Attachment({required this.path});
 
   final String path;
 
@@ -511,7 +511,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
               width: 190,
               height: 130,
               color: Colors.white.withOpacity(0.06),
-              child: const Center(
+              child:        Center(
                 child: SizedBox(
                   width: 20,
                   height: 20,
@@ -528,7 +528,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
               height: 80,
               color: Colors.white.withOpacity(0.06),
               alignment: Alignment.center,
-              child: const Text(
+              child:        Text(
                 'Anexo indisponível',
                 style: TextStyle(color: AppColors.textMuted, fontSize: 12),
               ),
@@ -545,7 +545,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
                 height: 80,
                 color: Colors.white.withOpacity(0.06),
                 alignment: Alignment.center,
-                child: const Text(
+                child:        Text(
                   'Anexo indisponível',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
@@ -574,7 +574,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
 // ── Perguntas rápidas ───────────────────────────────────────────────────
 
 class _QuickChip extends StatelessWidget {
-  const _QuickChip({required this.label, required this.onTap});
+         _QuickChip({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
@@ -592,7 +592,7 @@ class _QuickChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: const TextStyle(
+          style:        TextStyle(
             color: AppColors.accent,
             fontSize: 12.5,
             fontWeight: FontWeight.w600,
@@ -606,7 +606,7 @@ class _QuickChip extends StatelessWidget {
 // ── Barra de escrita ────────────────────────────────────────────────────
 
 class _Composer extends StatelessWidget {
-  const _Composer({
+         _Composer({
     required this.controller,
     required this.sending,
     required this.uploading,
@@ -646,12 +646,12 @@ class _Composer extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: uploading
-                  ? const Padding(
+                  ?        Padding(
                       padding: EdgeInsets.all(12),
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: AppColors.success),
                     )
-                  : const Icon(Icons.photo_camera_back_rounded,
+                  :        Icon(Icons.photo_camera_back_rounded,
                       color: AppColors.success, size: 20),
             ),
           ),
@@ -662,7 +662,7 @@ class _Composer extends StatelessWidget {
               maxLines: 4,
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => onSend(),
-              style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+              style:        TextStyle(color: AppColors.textPrimary, fontSize: 14),
               decoration: const InputDecoration(
                 hintText: 'Pergunta o que precisas…',
                 border: InputBorder.none,
@@ -678,9 +678,9 @@ class _Composer extends StatelessWidget {
               height: 42,
               decoration: BoxDecoration(
                 gradient: busy
-                    ? const LinearGradient(
+                    ?        LinearGradient(
                         colors: [Color(0xFF22344A), Color(0xFF1A2939)])
-                    : const LinearGradient(
+                    :        LinearGradient(
                         colors: AppColors.buttonGradient),
                 shape: BoxShape.circle,
               ),

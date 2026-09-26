@@ -238,11 +238,11 @@ class _AppLockGateState extends State<AppLockGate>
                   height: 84,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: const LinearGradient(
+                    gradient:        LinearGradient(
                         colors: AppColors.heroCardGradient),
                     border: Border.all(
                         color: Colors.white.withOpacity(0.25), width: 1.5),
-                    boxShadow: const [
+                    boxShadow:        [
                       BoxShadow(
                           color: AppColors.glowCyan,
                           blurRadius: 30,
@@ -253,7 +253,7 @@ class _AppLockGateState extends State<AppLockGate>
                       color: Colors.white, size: 40),
                 ),
                 const SizedBox(height: 22),
-                const Text(
+                       Text(
                   'MedWallet bloqueada',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -286,7 +286,7 @@ class _AppLockGateState extends State<AppLockGate>
 
 /// Botão discreto de emergência no ecrã de bloqueio.
 class _EmergencyLinkButton extends StatelessWidget {
-  const _EmergencyLinkButton({required this.onTap});
+         _EmergencyLinkButton({required this.onTap});
 
   final VoidCallback onTap;
 
@@ -301,7 +301,7 @@ class _EmergencyLinkButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.danger.withOpacity(0.45)),
         ),
-        child: const Row(
+        child:        Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.emergency_rounded, color: AppColors.danger, size: 20),
@@ -322,7 +322,7 @@ class _EmergencyLinkButton extends StatelessWidget {
 }
 
 class _UnlockButton extends StatelessWidget {
-  const _UnlockButton({required this.onTap});
+         _UnlockButton({required this.onTap});
 
   final VoidCallback onTap;
 
@@ -336,10 +336,10 @@ class _UnlockButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 15),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: AppColors.buttonGradient),
+          gradient:        LinearGradient(colors: AppColors.buttonGradient),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: Colors.white.withOpacity(0.18)),
-          boxShadow: const [
+          boxShadow:        [
             BoxShadow(color: AppColors.glowBlue, blurRadius: 18),
           ],
         ),

@@ -41,7 +41,7 @@ class WalletScreen extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  const Text(
+                         Text(
                     'Carteira',
                     style: TextStyle(
                       color: AppColors.textPrimary,
@@ -197,7 +197,7 @@ class WalletScreen extends ConsumerWidget {
 }
 
 class _StatsRow extends StatelessWidget {
-  const _StatsRow({
+         _StatsRow({
     required this.deposited,
     required this.spent,
     required this.hidden,
@@ -234,7 +234,7 @@ class _StatsRow extends StatelessWidget {
 }
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({
+         _StatCard({
     required this.icon,
     required this.color,
     required this.label,
@@ -273,7 +273,7 @@ class _StatCard extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textMuted,
                     fontSize: 11.5,
                     fontWeight: FontWeight.w600,
@@ -283,7 +283,7 @@ class _StatCard extends StatelessWidget {
                 FittedBox(
                   child: Text(
                     value,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
@@ -307,7 +307,7 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
         text,
-        style: const TextStyle(
+        style:        TextStyle(
           color: AppColors.textSecondary,
           fontSize: 13,
           fontWeight: FontWeight.w700,
@@ -345,7 +345,7 @@ class _WithdrawalsSection extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.local_atm_rounded,
+                           Icon(Icons.local_atm_rounded,
                         color: AppColors.accent, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
@@ -354,7 +354,7 @@ class _WithdrawalsSection extends ConsumerWidget {
                         children: [
                           Text(
                             '${formatMZN(w.amount)} · ${w.method}',
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 13.5,
                               fontWeight: FontWeight.w700,
@@ -365,7 +365,7 @@ class _WithdrawalsSection extends ConsumerWidget {
                             '${formatRelative(w.createdAt)} · ${w.destination}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 color: AppColors.textMuted, fontSize: 11.5),
                           ),
                         ],
@@ -399,7 +399,7 @@ class _WithdrawalsSection extends ConsumerWidget {
 }
 
 class _TxTile extends StatelessWidget {
-  const _TxTile({required this.tx});
+         _TxTile({required this.tx});
 
   final WalletTransaction tx;
 
@@ -445,7 +445,7 @@ class _TxTile extends StatelessWidget {
                       : txTypeLabel(tx.type),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14.5,
                     fontWeight: FontWeight.w600,
@@ -456,7 +456,7 @@ class _TxTile extends StatelessWidget {
                   children: [
                     Text(
                       formatRelative(tx.createdAt),
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 12),
                     ),
                     if (tx.status == TxStatus.pending) ...[
@@ -468,7 +468,7 @@ class _TxTile extends StatelessWidget {
                           color: AppColors.warning.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
+                        child:        Text(
                           'Pendente',
                           style: TextStyle(
                             color: AppColors.warning,

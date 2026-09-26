@@ -140,7 +140,7 @@ class _PermissionsPanelState extends ConsumerState<PermissionsPanel> {
                         isGlobal
                             ? 'Gestor Global — acesso total'
                             : 'Gestor Regional — $_permsCountry',
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w800,
                           fontSize: 13.5,
@@ -191,7 +191,7 @@ class _PermissionsPanelState extends ConsumerState<PermissionsPanel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                       Text(
                   'Permissões activas',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -272,7 +272,7 @@ class _PermissionsPanelState extends ConsumerState<PermissionsPanel> {
 
 /// Cartão de limite (valor actual vs máximo, com barra de progresso).
 class _LimitCard extends StatelessWidget {
-  const _LimitCard({
+         _LimitCard({
     required this.icon,
     required this.title,
     required this.value,
@@ -316,7 +316,7 @@ class _LimitCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
@@ -358,7 +358,7 @@ class _LimitCard extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════════
 
 class ManagerPermissionsEditorSheet extends ConsumerStatefulWidget {
-  const ManagerPermissionsEditorSheet({
+         ManagerPermissionsEditorSheet({
     super.key,
     required this.userId,
     required this.countryId,
@@ -465,7 +465,7 @@ class _ManagerPermissionsEditorSheetState
     } catch (_) {
       if (mounted) {
         setState(() => _busy = false);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text(
               'Não foi possível guardar (só o Gestor Global edita '
@@ -480,7 +480,7 @@ class _ManagerPermissionsEditorSheetState
     return Container(
       padding: EdgeInsets.fromLTRB(
           22, 18, 22, MediaQuery.of(context).viewInsets.bottom + 20),
-      decoration: const BoxDecoration(
+      decoration:        BoxDecoration(
         gradient:
             LinearGradient(colors: [AppColors.bgHigh, AppColors.bgDeep]),
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -492,7 +492,7 @@ class _ManagerPermissionsEditorSheetState
           children: [
             Text(
               'Permissões — ${widget.userName}',
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 17,
                   fontWeight: FontWeight.w800),
@@ -521,7 +521,7 @@ class _ManagerPermissionsEditorSheetState
                       size: 20),
                   title: Text(
                     label,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textPrimary, fontSize: 13.5),
                   ),
                 ),
@@ -532,7 +532,7 @@ class _ManagerPermissionsEditorSheetState
                     child: TextField(
                       controller: _dailyCtrl,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary, fontSize: 13),
                       decoration: const InputDecoration(
                           labelText: 'Limite diário de aprovações'),
@@ -543,7 +543,7 @@ class _ManagerPermissionsEditorSheetState
                     child: TextField(
                       controller: _contentCtrl,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary, fontSize: 13),
                       decoration: const InputDecoration(
                           labelText: 'Máx. banners activos'),

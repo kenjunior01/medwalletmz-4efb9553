@@ -79,7 +79,7 @@ class _BloodHubScreenState extends ConsumerState<BloodHubScreen>
                         icon: Icons.arrow_back_rounded,
                         onTap: () => context.pop()),
                     const SizedBox(width: 12),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Banco de Sangue',
                         style: TextStyle(
@@ -101,7 +101,7 @@ class _BloodHubScreenState extends ConsumerState<BloodHubScreen>
                         ),
                         child: Text(
                           _donor!.bloodType,
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.danger,
                             fontWeight: FontWeight.w900,
                             fontSize: 13,
@@ -121,7 +121,7 @@ class _BloodHubScreenState extends ConsumerState<BloodHubScreen>
                   unselectedLabelColor: AppColors.textMuted,
                   labelStyle: const TextStyle(
                       fontWeight: FontWeight.w800, fontSize: 13.5),
-                  tabs: const [
+                  tabs:        [
                     Tab(text: 'Pedidos'),
                     Tab(text: 'Dador'),
                     Tab(text: 'Campanhas'),
@@ -159,7 +159,7 @@ class _BloodHubScreenState extends ConsumerState<BloodHubScreen>
     if (_loading) {
       return ListView(
         padding: const EdgeInsets.all(20),
-        children: const [
+        children:        [
           AppSkeleton(height: 120),
           SizedBox(height: 12),
           AppSkeleton(height: 120),
@@ -175,7 +175,7 @@ class _BloodHubScreenState extends ConsumerState<BloodHubScreen>
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
         children: [
           if (_matches.isNotEmpty) ...[
-            const Text(
+                   Text(
               'As minhas disponibilizações',
               style: TextStyle(
                 color: AppColors.textSecondary,
@@ -215,7 +215,7 @@ class _BloodHubScreenState extends ConsumerState<BloodHubScreen>
   Future<void> _volunteer(BloodRequest r) async {
     if (_donor == null) {
       _tab.animateTo(1);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Regista-te primeiro como dador na aba "Dador".'),
         backgroundColor: AppColors.warning,
       ));
@@ -258,7 +258,7 @@ class _BloodHubScreenState extends ConsumerState<BloodHubScreen>
     if (_loading) {
       return ListView(
         padding: const EdgeInsets.all(20),
-        children: const [
+        children:        [
           AppSkeleton(height: 150),
           SizedBox(height: 12),
           AppSkeleton(height: 150),
@@ -302,7 +302,7 @@ class _BloodHubScreenState extends ConsumerState<BloodHubScreen>
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-  const _IconBtn({required this.icon, required this.onTap});
+         _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -329,7 +329,7 @@ class _IconBtn extends StatelessWidget {
 }
 
 class _RequestCard extends StatelessWidget {
-  const _RequestCard({
+         _RequestCard({
     required this.request,
     required this.onVolunteer,
     this.iAmDonor = false,
@@ -383,7 +383,7 @@ class _RequestCard extends StatelessWidget {
                 ),
                 child: Text(
                   request.bloodType,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.danger,
                     fontWeight: FontWeight.w900,
                     fontSize: 15,
@@ -402,7 +402,7 @@ class _RequestCard extends StatelessWidget {
                             request.hospitalName ?? 'Hospital não indicado',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w800,
                               fontSize: 14.5,
@@ -432,7 +432,7 @@ class _RequestCard extends StatelessWidget {
                     Text(
                       '${request.city} · ${request.unitsNeeded} unidade(s)'
                       ' · ${formatRelative(request.createdAt)}',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 12,
                       ),
@@ -448,7 +448,7 @@ class _RequestCard extends StatelessWidget {
               request.reason!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary, fontSize: 12.5),
             ),
           ],
@@ -465,7 +465,7 @@ class _RequestCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             '${request.unitsReceived}/${request.unitsNeeded} unidades recebidas',
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
+            style:        TextStyle(color: AppColors.textMuted, fontSize: 11),
           ),
           const SizedBox(height: 12),
           Row(
@@ -476,13 +476,13 @@ class _RequestCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   request.contactPhone!,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary, fontSize: 12),
                 ),
               ],
               const Spacer(),
               if (request.isMine)
-                const Text(
+                       Text(
                   'O meu pedido',
                   style: TextStyle(
                       color: AppColors.textMuted,
@@ -519,7 +519,7 @@ class _RequestCard extends StatelessWidget {
 }
 
 class _MatchChip extends StatelessWidget {
-  const _MatchChip({required this.match});
+         _MatchChip({required this.match});
   final BloodMatch match;
 
   @override
@@ -556,7 +556,7 @@ class _MatchChip extends StatelessWidget {
             ),
           ),
           if (done)
-            const Text(
+                   Text(
               '+100 MT na carteira',
               style: TextStyle(
                   color: AppColors.success,
@@ -570,7 +570,7 @@ class _MatchChip extends StatelessWidget {
 }
 
 class _DonorSummaryCard extends StatelessWidget {
-  const _DonorSummaryCard({required this.donor});
+         _DonorSummaryCard({required this.donor});
   final BloodDonor donor;
 
   @override
@@ -598,7 +598,7 @@ class _DonorSummaryCard extends StatelessWidget {
               color: AppColors.danger.withOpacity(0.22),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(Icons.favorite_rounded,
+            child:        Icon(Icons.favorite_rounded,
                 color: AppColors.danger, size: 26),
           ),
           const SizedBox(width: 14),
@@ -608,7 +608,7 @@ class _DonorSummaryCard extends StatelessWidget {
               children: [
                 Text(
                   '${donor.totalDonations} doação(ões) até hoje',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w900,
                     fontSize: 15,
@@ -619,7 +619,7 @@ class _DonorSummaryCard extends StatelessWidget {
                   donor.lastDonationDate != null
                       ? 'Última: ${formatDateShort(donor.lastDonationDate!)} · ${donor.bloodType}'
                       : 'Ainda sem doações registadas · ${donor.bloodType}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary, fontSize: 12),
                 ),
               ],
@@ -632,7 +632,7 @@ class _DonorSummaryCard extends StatelessWidget {
 }
 
 class _DonorFormCard extends ConsumerStatefulWidget {
-  const _DonorFormCard({
+         _DonorFormCard({
     required this.donor,
     required this.bloodTypes,
     required this.onSaved,
@@ -696,14 +696,14 @@ class _DonorFormCardState extends ConsumerState<_DonorFormCard> {
             widget.donor == null
                 ? 'Torna-te dador'
                 : 'Actualiza o teu registo',
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w900,
               fontSize: 15.5,
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
+                 Text(
             'Dadores compatíveis são notificados quando alguém precisar do teu tipo de sangue.',
             style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
@@ -783,7 +783,7 @@ class _DonorFormCardState extends ConsumerState<_DonorFormCard> {
 }
 
 class _Field extends StatelessWidget {
-  const _Field({
+         _Field({
     required this.controller,
     required this.hint,
     this.maxLines = 1,
@@ -801,21 +801,21 @@ class _Field extends StatelessWidget {
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboard,
-      style: const TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
+      style:        TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+        hintStyle:        TextStyle(color: AppColors.textMuted, fontSize: 13),
         filled: true,
         fillColor: AppColors.glassFill,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.glassBorder),
+          borderSide:        BorderSide(color: AppColors.glassBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.accent),
+          borderSide:        BorderSide(color: AppColors.accent),
         ),
       ),
     );
@@ -823,7 +823,7 @@ class _Field extends StatelessWidget {
 }
 
 class _CampaignCard extends StatelessWidget {
-  const _CampaignCard({required this.campaign});
+         _CampaignCard({required this.campaign});
   final BloodCampaign campaign;
 
   @override
@@ -864,7 +864,7 @@ class _CampaignCard extends StatelessWidget {
               const Spacer(),
               Text(
                 '${formatDateShort(campaign.startsAt)} → ${formatDateShort(campaign.endsAt)}',
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textMuted, fontSize: 11),
               ),
             ],
@@ -872,7 +872,7 @@ class _CampaignCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             campaign.title,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w900,
               fontSize: 15,
@@ -885,14 +885,14 @@ class _CampaignCard extends StatelessWidget {
               campaign.description!,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary, fontSize: 12.5),
             ),
           ],
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(Icons.place_rounded,
+                     Icon(Icons.place_rounded,
                   size: 14, color: AppColors.textMuted),
               const SizedBox(width: 4),
               Expanded(
@@ -900,14 +900,14 @@ class _CampaignCard extends StatelessWidget {
                   [campaign.city, campaign.address]
                       .whereType<String>()
                       .join(' · '),
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary, fontSize: 12),
                 ),
               ),
               if (campaign.targetUnits != null)
                 Text(
                   'Meta: ${campaign.targetUnits} un.',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textMuted, fontSize: 11.5),
                 ),
             ],
@@ -928,7 +928,7 @@ class _CampaignCard extends StatelessWidget {
                     ),
                     child: Text(
                       t,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.danger,
                         fontSize: 11,
                         fontWeight: FontWeight.w900,
@@ -945,7 +945,7 @@ class _CampaignCard extends StatelessWidget {
 }
 
 class _CreateRequestSheet extends ConsumerStatefulWidget {
-  const _CreateRequestSheet({required this.bloodTypes});
+         _CreateRequestSheet({required this.bloodTypes});
   final List<String> bloodTypes;
 
   @override
@@ -978,7 +978,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
     if (_hospital.text.trim().isEmpty ||
         _city.text.trim().isEmpty ||
         _phone.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Preenche hospital, cidade e contacto.'),
         backgroundColor: AppColors.warning,
       ));
@@ -999,7 +999,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
     setState(() => _saving = false);
     if (err == null) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Pedido publicado! Dadores compatíveis serão notificados.'),
         backgroundColor: AppColors.success,
       ));
@@ -1017,7 +1017,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           color: AppColors.bgHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -1038,7 +1038,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text(
+                     Text(
                 'Pedir sangue',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -1058,7 +1058,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
               const SizedBox(height: 10),
               _Field(controller: _reason, hint: 'Motivo (cirurgia, acidente…)', maxLines: 2),
               const SizedBox(height: 14),
-              const Text('Tipo de sangue',
+                     Text('Tipo de sangue',
                   style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
@@ -1102,13 +1102,13 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
               const SizedBox(height: 14),
               Row(
                 children: [
-                  const Text('Urgência',
+                         Text('Urgência',
                       style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.w800)),
                   const Spacer(),
-                  for (final u in const [
+                  for (final u in        [
                     ('normal', 'Normal'),
                     ('urgent', 'Urgente'),
                     ('critical', 'Crítico'),
@@ -1139,7 +1139,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
               const SizedBox(height: 14),
               Row(
                 children: [
-                  const Text('Unidades',
+                         Text('Unidades',
                       style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
@@ -1149,11 +1149,11 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
                     onPressed: _units > 1
                         ? () => setState(() => _units--)
                         : null,
-                    icon: const Icon(Icons.remove_circle_outline_rounded,
+                    icon:        Icon(Icons.remove_circle_outline_rounded,
                         color: AppColors.textSecondary),
                   ),
                   Text('$_units',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w900,
                           fontSize: 15)),
@@ -1161,7 +1161,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
                     onPressed: _units < 10
                         ? () => setState(() => _units++)
                         : null,
-                    icon: const Icon(Icons.add_circle_outline_rounded,
+                    icon:        Icon(Icons.add_circle_outline_rounded,
                         color: AppColors.accent),
                   ),
                 ],

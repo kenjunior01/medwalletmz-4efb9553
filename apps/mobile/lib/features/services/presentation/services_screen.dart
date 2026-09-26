@@ -34,7 +34,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
             children: [
-              const Text(
+                     Text(
                 'Serviços de saúde',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -61,7 +61,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.menu_book_rounded,
                     title: 'Educação',
                     subtitle: 'Artigos de saúde',
-                    colors: const [Color(0xFF0EA5E9), Color(0xFF0C4A6E)],
+                    colors:        [Color(0xFF0EA5E9), Color(0xFF0C4A6E)],
                     onTap: () => context.push('/health-hub'),
                   ),
                 ),
@@ -71,7 +71,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.verified_user_rounded,
                     title: 'Verificar receita',
                     subtitle: 'Valida o código',
-                    colors: const [Color(0xFF22C55E), Color(0xFF14532D)],
+                    colors:        [Color(0xFF22C55E), Color(0xFF14532D)],
                     onTap: () => context.push('/verify-prescription'),
                   ),
                 ),
@@ -83,7 +83,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.bloodtype_rounded,
                     title: 'Banco de sangue',
                     subtitle: 'Doar ou pedir',
-                    colors: const [Color(0xFFEF4444), Color(0xFF7F1D1D)],
+                    colors:        [Color(0xFFEF4444), Color(0xFF7F1D1D)],
                     onTap: () => context.push('/blood'),
                   ),
                 ),
@@ -93,7 +93,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.volunteer_activism_rounded,
                     title: 'Solidariedade',
                     subtitle: 'Apoio médico',
-                    colors: const [Color(0xFF14B8A6), Color(0xFF134E4A)],
+                    colors:        [Color(0xFF14B8A6), Color(0xFF134E4A)],
                     onTap: () => context.push('/solidarity'),
                   ),
                 ),
@@ -105,7 +105,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.auto_stories_rounded,
                     title: 'Diário',
                     subtitle: 'Bem-estar diário',
-                    colors: const [Color(0xFF8B5CF6), Color(0xFF4C1D95)],
+                    colors:        [Color(0xFF8B5CF6), Color(0xFF4C1D95)],
                     onTap: () => context.push('/journal'),
                   ),
                 ),
@@ -115,7 +115,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.family_restroom_rounded,
                     title: 'Família',
                     subtitle: 'Cuidar à distância',
-                    colors: const [Color(0xFF3B82F6), Color(0xFF1E3A8A)],
+                    colors:        [Color(0xFF3B82F6), Color(0xFF1E3A8A)],
                     onTap: () => context.push('/family'),
                   ),
                 ),
@@ -127,7 +127,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.workspace_premium_rounded,
                     title: 'Planos',
                     subtitle: 'Subscrição M-Pesa',
-                    colors: const [Color(0xFFF59E0B), Color(0xFF78350F)],
+                    colors:        [Color(0xFFF59E0B), Color(0xFF78350F)],
                     onTap: () => context.push('/plans'),
                   ),
                 ),
@@ -137,7 +137,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.emoji_events_rounded,
                     title: 'Ranking',
                     subtitle: 'Melhor avaliados',
-                    colors: const [Color(0xFFEC4899), Color(0xFF831843)],
+                    colors:        [Color(0xFFEC4899), Color(0xFF831843)],
                     onTap: () => context.push('/ranking'),
                   ),
                 ),
@@ -150,7 +150,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.document_scanner_rounded,
                     title: 'Scanner',
                     subtitle: 'Lê receitas e exames',
-                    colors: const [Color(0xFF6366F1), Color(0xFF312E81)],
+                    colors:        [Color(0xFF6366F1), Color(0xFF312E81)],
                     onTap: () => context.push('/vision-scan'),
                   ),
                 ),
@@ -160,7 +160,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.mic_rounded,
                     title: 'Voz',
                     subtitle: 'Diário falado com IA',
-                    colors: const [Color(0xFF06B6D4), Color(0xFF164E63)],
+                    colors:        [Color(0xFF06B6D4), Color(0xFF164E63)],
                     onTap: () => context.push('/voice-journal'),
                   ),
                 ),
@@ -172,7 +172,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.pregnant_woman_rounded,
                     title: 'Maternal',
                     subtitle: 'Acompanha a gravidez',
-                    colors: const [Color(0xFFA855F7), Color(0xFF581C87)],
+                    colors:        [Color(0xFFA855F7), Color(0xFF581C87)],
                     onTap: () => context.push('/maternal'),
                   ),
                 ),
@@ -182,7 +182,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.medical_services_rounded,
                     title: 'Agentes de saúde',
                     subtitle: 'Enfermeiros, APEs…',
-                    colors: const [Color(0xFF10B981), Color(0xFF064E3B)],
+                    colors:        [Color(0xFF10B981), Color(0xFF064E3B)],
                     onTap: () => context.push('/health-workers'),
                   ),
                 ),
@@ -195,7 +195,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.directions_bike_rounded,
                     title: 'Riders',
                     subtitle: 'Entrega e ganha',
-                    colors: const [Color(0xFF059669), Color(0xFF064E3B)],
+                    colors:        [Color(0xFF059669), Color(0xFF064E3B)],
                     onTap: () => context.push('/riders'),
                   ),
                 ),
@@ -205,7 +205,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.storefront_rounded,
                     title: 'Classificados',
                     subtitle: 'Compra e vende',
-                    colors: const [Color(0xFF7C3AED), Color(0xFF4C1D95)],
+                    colors:        [Color(0xFF7C3AED), Color(0xFF4C1D95)],
                     onTap: () => context.push('/ads'),
                   ),
                 ),
@@ -217,7 +217,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.emoji_events_rounded,
                     title: 'Recompensas',
                     subtitle: 'Níveis e conquistas',
-                    colors: const [Color(0xFFF59E0B), Color(0xFF78350F)],
+                    colors:        [Color(0xFFF59E0B), Color(0xFF78350F)],
                     onTap: () => context.push('/rewards'),
                   ),
                 ),
@@ -227,7 +227,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.public_rounded,
                     title: 'Impacto',
                     subtitle: 'Números da rede',
-                    colors: const [Color(0xFF0EA5E9), Color(0xFF0C4A6E)],
+                    colors:        [Color(0xFF0EA5E9), Color(0xFF0C4A6E)],
                     onTap: () => context.push('/impact'),
                   ),
                 ),
@@ -239,7 +239,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.pets_rounded,
                     title: 'Veterinária',
                     subtitle: 'Cuidado animal',
-                    colors: const [Color(0xFF16A34A), Color(0xFF14532D)],
+                    colors:        [Color(0xFF16A34A), Color(0xFF14532D)],
                     onTap: () => context.push('/veterinary'),
                   ),
                 ),
@@ -249,7 +249,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.groups_rounded,
                     title: 'Rede APE',
                     subtitle: 'Agentes comunitários',
-                    colors: const [Color(0xFFEA580C), Color(0xFF92400E)],
+                    colors:        [Color(0xFFEA580C), Color(0xFF92400E)],
                     onTap: () => context.push('/ape-network'),
                   ),
                 ),
@@ -261,7 +261,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.savings_rounded,
                     title: 'Monetização',
                     subtitle: 'Convite & ganhos',
-                    colors: const [Color(0xFF1D4ED8), Color(0xFF172554)],
+                    colors:        [Color(0xFF1D4ED8), Color(0xFF172554)],
                     onTap: () => context.push('/monetization'),
                   ),
                 ),
@@ -271,7 +271,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     icon: Icons.local_shipping_rounded,
                     title: 'Entregas',
                     subtitle: 'Pedir & tracking ao vivo',
-                    colors: const [Color(0xFFEA580C), Color(0xFF7C2D12)],
+                    colors:        [Color(0xFFEA580C), Color(0xFF7C2D12)],
                     onTap: () => context.push('/deliveries'),
                   ),
                 ),
@@ -285,7 +285,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     height: 38, child: Center(child: AppSkeleton(width: 240))),
               ),
               const SizedBox(height: 20),
-              const Text(
+                     Text(
                 'Médicos disponíveis',
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -342,7 +342,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
   Widget _searchField() => TextField(
         onChanged: (v) => setState(() => _query = v.trim()),
-        style: const TextStyle(color: AppColors.textPrimary),
+        style:        TextStyle(color: AppColors.textPrimary),
         decoration: const InputDecoration(
           hintText: 'Pesquisar especialidade ou médico…',
           prefixIcon: Icon(Icons.search_rounded),
@@ -372,7 +372,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 gradient: active
-                    ? const LinearGradient(colors: AppColors.buttonGradient)
+                    ?        LinearGradient(colors: AppColors.buttonGradient)
                     : null,
                 color: active ? null : AppColors.glassFill,
                 borderRadius: BorderRadius.circular(13),
@@ -416,7 +416,7 @@ class _LabsBanner extends StatelessWidget {
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: const LinearGradient(
+          gradient:        LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [Color(0xFF7C3AED), Color(0xFF4C1D95)],
@@ -475,7 +475,7 @@ class _LabsBanner extends StatelessWidget {
 }
 
 class _DoctorCard extends StatelessWidget {
-  const _DoctorCard({required this.doctor});
+         _DoctorCard({required this.doctor});
 
   final Doctor doctor;
 
@@ -497,7 +497,7 @@ class _DoctorCard extends StatelessWidget {
             height: 58,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const LinearGradient(
+              gradient:        LinearGradient(
                   colors: AppColors.heroCardGradient),
               border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
@@ -520,7 +520,7 @@ class _DoctorCard extends StatelessWidget {
                         doctor.specialtyName ?? 'Consulta geral',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 15.5,
                           fontWeight: FontWeight.w700,
@@ -529,7 +529,7 @@ class _DoctorCard extends StatelessWidget {
                     ),
                     if (doctor.isVerified) ...[
                       const SizedBox(width: 6),
-                      const Icon(Icons.verified_rounded,
+                             Icon(Icons.verified_rounded,
                           color: AppColors.accent, size: 16),
                     ],
                   ],
@@ -540,18 +540,18 @@ class _DoctorCard extends StatelessWidget {
                     doctor.bio!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted, fontSize: 12.5),
                   ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.star_rounded,
+                           Icon(Icons.star_rounded,
                         color: AppColors.warning, size: 15),
                     const SizedBox(width: 3),
                     Text(
                       doctor.rating.toStringAsFixed(1),
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -560,7 +560,7 @@ class _DoctorCard extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text(
                       '${doctor.yearsExperience} anos exp.',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 12),
                     ),
                   ],
@@ -574,7 +574,7 @@ class _DoctorCard extends StatelessWidget {
             children: [
               Text(
                 formatMZN(doctor.consultationFee),
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.accent,
                   fontSize: 14.5,
                   fontWeight: FontWeight.w800,
@@ -587,7 +587,7 @@ class _DoctorCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
+                    gradient:        LinearGradient(
                         colors: AppColors.buttonGradient),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [

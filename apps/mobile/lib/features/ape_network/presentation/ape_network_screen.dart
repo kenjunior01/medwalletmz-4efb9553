@@ -128,7 +128,7 @@ class ApeNetworkScreen extends StatelessWidget {
                         SizedBox(
                           width: 110,
                           child: Text(p.$1,
-                              style: const TextStyle(
+                              style:        TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 11)),
                         ),
@@ -189,12 +189,12 @@ class ApeNetworkScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('APE ${a.$1} — ${a.$2}',
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                       color: AppColors.textPrimary,
                                       fontWeight: FontWeight.w800,
                                       fontSize: 12.5)),
                               Text('${a.$4} meses activo',
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                       color: AppColors.textMuted,
                                       fontSize: 10.5)),
                             ],
@@ -204,11 +204,11 @@ class ApeNetworkScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text('${a.$3}',
-                                style: const TextStyle(
+                                style:        TextStyle(
                                     color: AppColors.success,
                                     fontWeight: FontWeight.w800,
                                     fontSize: 14)),
-                            const Text('pacientes',
+                                   Text('pacientes',
                                 style: TextStyle(
                                     color: AppColors.textMuted,
                                     fontSize: 10)),
@@ -246,13 +246,13 @@ class ApeNetworkScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(b.$2,
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                       color: AppColors.textPrimary,
                                       fontWeight: FontWeight.w800,
                                       fontSize: 13)),
                               const SizedBox(height: 2),
                               Text(b.$3,
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                       color: AppColors.textMuted,
                                       fontSize: 11.5,
                                       height: 1.4)),
@@ -320,7 +320,7 @@ class ApeNetworkScreen extends StatelessWidget {
 }
 
 class _HeroStat extends StatelessWidget {
-  const _HeroStat({required this.value, required this.label});
+         _HeroStat({required this.value, required this.label});
   final String value;
   final String label;
 
@@ -343,7 +343,7 @@ class _HeroStat extends StatelessWidget {
 }
 
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.title, required this.child});
+         _SectionCard({required this.title, required this.child});
   final String title;
   final Widget child;
 
@@ -360,7 +360,7 @@ class _SectionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w800,
                   fontSize: 14)),

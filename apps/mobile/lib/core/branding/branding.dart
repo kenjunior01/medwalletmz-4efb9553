@@ -20,7 +20,7 @@ import '../theme/app_colors.dart';
 /// }
 /// ```
 class BrandingConfig {
-  const BrandingConfig({
+         BrandingConfig({
     this.primary,
     this.secondary,
     this.accent,
@@ -60,7 +60,7 @@ class BrandingConfig {
 
 /// Paleta efectiva da app — resolve defaults quando o país não define.
 class EffectivePalette {
-  const EffectivePalette({
+         EffectivePalette({
     required this.primary,
     required this.primarySoft,
     required this.primaryDark,
@@ -80,7 +80,10 @@ class EffectivePalette {
   final Color glowPrimary;
   final String? countryName;
 
-  static const EffectivePalette defaults = EffectivePalette(
+  // F33 — AppColors passou a getters dinâmicos (modos claro/escuro),
+  // pelo que os defaults já não podem ser const: são avaliados no
+  // arranque e acompanham o tema escuro por omissão.
+  static final EffectivePalette defaults = EffectivePalette(
     primary: AppColors.primary,
     primarySoft: AppColors.primarySoft,
     primaryDark: AppColors.primaryDark,

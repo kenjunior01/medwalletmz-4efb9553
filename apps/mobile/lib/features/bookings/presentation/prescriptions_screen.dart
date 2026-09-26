@@ -36,10 +36,10 @@ class PrescriptionsScreen extends ConsumerWidget {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Receitas',
                         style: TextStyle(
@@ -72,7 +72,7 @@ class PrescriptionsScreen extends ConsumerWidget {
                 child: prescriptions.when(
                   loading: () => ListView(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    children: const [ListSkeleton(count: 4, itemHeight: 92)],
+                    children:        [ListSkeleton(count: 4, itemHeight: 92)],
                   ),
                   error: (e, _) => EmptyState(
                     icon: Icons.wifi_off_rounded,
@@ -109,7 +109,7 @@ class PrescriptionsScreen extends ConsumerWidget {
 // ── Cartão de receita ───────────────────────────────────────────────────
 
 class _PrescriptionCard extends ConsumerStatefulWidget {
-  const _PrescriptionCard({required this.p});
+         _PrescriptionCard({required this.p});
 
   final Prescription p;
 
@@ -127,7 +127,7 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
         ? ref.watch(prescriptionItemsProvider(p.id)).when(
               data: (list) => list,
               loading: () => const <PrescriptionItem>[],
-              error: (_, __) => const <PrescriptionItem>[],
+              error: (_, __) =>        <PrescriptionItem>[],
             )
         : null;
 
@@ -171,7 +171,7 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
                   children: [
                     Text(
                       'Receita ${p.verificationCode ?? 'pendente'}',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 14,
@@ -215,7 +215,7 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
             const SizedBox(height: 10),
             Text(
               p.notes!,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 12.5,
                 height: 1.4,
@@ -246,12 +246,12 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.copy_rounded,
+                           Icon(Icons.copy_rounded,
                         size: 13, color: AppColors.accent),
                     const SizedBox(width: 6),
                     Text(
                       'Código: ${p.verificationCode} (toca para copiar)',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.accent,
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
@@ -273,7 +273,7 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
                   _expanded
                       ? 'Esconder medicamentos'
                       : 'Ver medicamentos',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.accent,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -292,7 +292,7 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
           if (_expanded)
             ...((items == null
                 ? [
-                    const Padding(
+                           Padding(
                       padding: EdgeInsets.only(top: 10),
                       child: SizedBox(
                         width: 18,
@@ -305,7 +305,7 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
                 : !items.isEmpty
                     ? items.map((item) => _ItemRow(item: item)).toList()
                     : [
-                        const Padding(
+                               Padding(
                           padding: EdgeInsets.only(top: 10),
                           child: Text(
                             'Sem medicamentos registados.',
@@ -324,7 +324,7 @@ class _PrescriptionCardState extends ConsumerState<_PrescriptionCard> {
 }
 
 class _ItemRow extends StatelessWidget {
-  const _ItemRow({required this.item});
+         _ItemRow({required this.item});
 
   final PrescriptionItem item;
 
@@ -342,7 +342,7 @@ class _ItemRow extends StatelessWidget {
         children: [
           Text(
             item.medicationName,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
               fontSize: 13,
@@ -366,7 +366,7 @@ class _ItemRow extends StatelessWidget {
               padding: const EdgeInsets.only(top: 3),
               child: Text(
                 item.instructions!,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textMuted,
                   fontSize: 11.3,
                   fontStyle: FontStyle.italic,

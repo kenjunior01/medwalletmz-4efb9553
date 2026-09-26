@@ -42,7 +42,7 @@ class NotificationBanner {
 }
 
 class _BannerView extends StatelessWidget {
-  const _BannerView({
+         _BannerView({
     required this.notification,
     required this.onDismiss,
     required this.onTap,
@@ -67,16 +67,18 @@ class _BannerView extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
           decoration: BoxDecoration(
-            color: const Color(0xE60B1D31),
+            // F33 — vidro do modo + blur real (banner flutuante).
+            color: AppColors.navBar,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: urgent
                   ? AppColors.danger.withOpacity(0.55)
-                  : const Color(0x2E38BDF8),
+                  : AppColors.accent.withOpacity(0.18),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.5),
+                color: AppColors.shadowTint
+                    .withOpacity(AppColors.isDark ? 0.5 : 0.2),
                 blurRadius: 26,
                 offset: const Offset(0, 12),
               ),
@@ -89,7 +91,7 @@ class _BannerView extends StatelessWidget {
                 height: 40,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: const Color(0x1A38BDF8),
+                  color: AppColors.accent.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(emoji, style: const TextStyle(fontSize: 18)),
@@ -106,7 +108,7 @@ class _BannerView extends StatelessWidget {
                             notification.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w800,
                               fontSize: 13.5,

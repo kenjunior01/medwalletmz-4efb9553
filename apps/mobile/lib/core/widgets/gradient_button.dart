@@ -1,11 +1,14 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 
-/// Botão primário com gradiente Medical Blue, glow externo e micro-
-/// interação de pressão (escala 0.97 via AnimatedScale).
+/// Botão primário com gradiente Medical Blue, glow externo, varrimento
+/// de luz periódico (paridade `ShimmerButton` da web — um brilho branco
+/// atravessa o botão a cada ~2.8 s) e micro-interação de pressão.
 class GradientButton extends StatefulWidget {
-  const GradientButton({
+         GradientButton({
     super.key,
     required this.label,
     required this.onPressed,
@@ -28,19 +31,42 @@ class GradientButton extends StatefulWidget {
   State<GradientButton> createState() => _GradientButtonState();
 }
 
-class _GradientButtonState extends State<GradientButton> {
+class _GradientButtonState extends State<GradientButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _sweep;
   bool _pressed = false;
 
   bool get _interactive =>
       widget.enabled && !widget.loading && widget.onPressed != null;
 
   @override
+  void initState() {
+    super.initState();
+    _sweep = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2800),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _sweep.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final disabled = !_interactive;
+    final reduceMotion = MediaQuery.of(context).disableAnimations;
     final gradient = widget.gradient ??
         (disabled
-            ? const LinearGradient(colors: [Color(0xFF22344A), Color(0xFF1A2939)])
-            : const LinearGradient(
+            ? LinearGradient(
+                colors: [
+                  AppColors.glassFillStrong,
+                  AppColors.glassFill,
+                ],
+              )
+            : LinearGradient(
                 colors: AppColors.buttonGradient,
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
@@ -59,15 +85,20 @@ class _GradientButtonState extends State<GradientButton> {
             borderRadius: BorderRadius.circular(18),
             gradient: gradient,
             border: Border.all(
-              color: disabled
-                  ? Colors.white.withOpacity(0.06)
-                  : Colors.white.withOpacity(0.16),
+              color: AppColors.isDark
+                  ? (disabled
+                      ? Colors.white.withOpacity(0.06)
+                      : Colors.white.withOpacity(0.16))
+                  : (disabled
+                      ? AppColors.glassBorder
+                      : Colors.white.withOpacity(0.35)),
             ),
             boxShadow: disabled
                 ? null
                 : [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.55),
+                      color: AppColors.primary.withOpacity(
+                          AppColors.isDark ? 0.55 : 0.30),
                       blurRadius: 26,
                       offset: const Offset(0, 10),
                     ),
@@ -78,37 +109,76 @@ class _GradientButtonState extends State<GradientButton> {
             child: InkWell(
               onTap: _interactive ? widget.onPressed : null,
               borderRadius: BorderRadius.circular(18),
-              child: SizedBox(
-                height: widget.height,
-                child: Center(
-                  child: widget.loading
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.4,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (widget.icon != null) ...[
-                              Icon(widget.icon,
-                                  size: 20, color: Colors.white),
-                              const SizedBox(width: 10),
-                            ],
-                            Text(
-                              widget.label,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 15.5,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.2,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: Stack(
+                  children: [
+                    // ── Varrimento de luz (ShimmerButton da web) ────
+                    if (!disabled && !reduceMotion)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: AnimatedBuilder(
+                            animation: _sweep,
+                            builder: (context, _) => Align(
+                              alignment: Alignment(
+                                  _sweep.value * 2.6 - 1.8, 0),
+                              child: Transform.rotate(
+                                angle: -math.pi / 5.2, // ~105°/2 diagonal
+                                child: Container(
+                                  width: 44,
+                                  height: 220,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.white.withOpacity(0),
+                                        Colors.white
+                                            .withOpacity(AppColors.isDark
+                                            ? 0.20
+                                            : 0.34),
+                                        Colors.white.withOpacity(0),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
+                      ),
+                    SizedBox(
+                      height: widget.height,
+                      child: Center(
+                        child: widget.loading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.4,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (widget.icon != null) ...[
+                                    Icon(widget.icon,
+                                        size: 20, color: Colors.white),
+                                    const SizedBox(width: 10),
+                                  ],
+                                  Text(
+                                    widget.label,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15.5,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -121,7 +191,7 @@ class _GradientButtonState extends State<GradientButton> {
 
 /// Botão secundário "ghost" em vidro — para ações de apoio.
 class GlassGhostButton extends StatelessWidget {
-  const GlassGhostButton({
+         GlassGhostButton({
     super.key,
     required this.label,
     required this.onPressed,

@@ -58,7 +58,7 @@ class _ImpactScreenState extends ConsumerState<ImpactScreen> {
         body: _loading
             ? ListView(
                 padding: const EdgeInsets.all(16),
-                children: const [
+                children:        [
                   AppSkeleton(height: 130),
                   SizedBox(height: 12),
                   AppSkeleton(height: 90),
@@ -78,7 +78,7 @@ class _ImpactScreenState extends ConsumerState<ImpactScreen> {
                     const SizedBox(height: 14),
                     _KpiCard(
                       icon: Icons.people_alt_rounded,
-                      colors: const [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+                      colors:        [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
                       label: 'Utilizadores registados',
                       value: _stats.totalUsers,
                       hint: 'Em todas as províncias',
@@ -86,7 +86,7 @@ class _ImpactScreenState extends ConsumerState<ImpactScreen> {
                     const SizedBox(height: 10),
                     _KpiCard(
                       icon: Icons.trending_up_rounded,
-                      colors: const [Color(0xFF10B981), Color(0xFF047857)],
+                      colors:        [Color(0xFF10B981), Color(0xFF047857)],
                       label: 'Subscrições activas',
                       value: _stats.activeSubscriptions,
                       hint: 'Planos Plus/Premium MZ',
@@ -94,7 +94,7 @@ class _ImpactScreenState extends ConsumerState<ImpactScreen> {
                     const SizedBox(height: 10),
                     _KpiCard(
                       icon: Icons.health_and_safety_rounded,
-                      colors: const [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
+                      colors:        [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
                       label: 'Triagens realizadas',
                       value: _stats.totalTriages,
                       hint: 'Triagem de sinais vitais com IA',
@@ -112,13 +112,13 @@ class _ImpactScreenState extends ConsumerState<ImpactScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Transparência',
+                                 Text('Transparência',
                               style: TextStyle(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.w800,
                                   fontSize: 13.5)),
                           const SizedBox(height: 6),
-                          const Text(
+                                 Text(
                             'Este painel mostra apenas números agregados e '
                             'anónimos — nunca dados clínicos ou pessoais. '
                             'Os valores refrescam a cada 60 segundos.',
@@ -132,7 +132,7 @@ class _ImpactScreenState extends ConsumerState<ImpactScreen> {
                             Text(
                               'Última actualização: '
                               '${_stats.lastUpdated!.toLocal().toString().substring(0, 16)}',
-                              style: const TextStyle(
+                              style:        TextStyle(
                                   color: AppColors.textMuted, fontSize: 11),
                             ),
                           ],
@@ -148,7 +148,7 @@ class _ImpactScreenState extends ConsumerState<ImpactScreen> {
 }
 
 class _HeroCard extends StatelessWidget {
-  const _HeroCard({required this.stats});
+         _HeroCard({required this.stats});
   final PublicImpactStats stats;
 
   @override
@@ -214,7 +214,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _KpiCard extends StatelessWidget {
-  const _KpiCard({
+         _KpiCard({
     required this.icon,
     required this.colors,
     required this.label,
@@ -254,10 +254,10 @@ class _KpiCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textSecondary, fontSize: 12)),
                 Text(hint,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted, fontSize: 10.5)),
               ],
             ),
@@ -268,7 +268,7 @@ class _KpiCard extends StatelessWidget {
             curve: Curves.easeOutCubic,
             builder: (_, v, __) => Text(
               v.round().toString(),
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 22,
                   fontWeight: FontWeight.w900),

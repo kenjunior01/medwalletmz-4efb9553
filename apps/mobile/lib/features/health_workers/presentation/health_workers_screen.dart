@@ -154,7 +154,7 @@ class _Tab extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             gradient: active
-                ? const LinearGradient(colors: AppColors.buttonGradient)
+                ?        LinearGradient(colors: AppColors.buttonGradient)
                 : null,
             borderRadius: BorderRadius.circular(10),
           ),
@@ -174,7 +174,7 @@ class _Tab extends StatelessWidget {
 }
 
 class _BrowseView extends StatelessWidget {
-  const _BrowseView({
+         _BrowseView({
     required this.workers,
     required this.profession,
     required this.onFilter,
@@ -210,7 +210,7 @@ class _BrowseView extends StatelessWidget {
                   child: AppSkeleton(height: 120),
                 )
               : workers!.isEmpty
-                  ? const Center(
+                  ?        Center(
                       child: Text(
                         'Ainda sem profissionais verificados\nnesta categoria.',
                         textAlign: TextAlign.center,
@@ -258,7 +258,7 @@ class _ProfChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             gradient: active
-                ? const LinearGradient(colors: AppColors.buttonGradient)
+                ?        LinearGradient(colors: AppColors.buttonGradient)
                 : null,
             color: active ? null : AppColors.glassFill,
             borderRadius: BorderRadius.circular(20),
@@ -280,7 +280,7 @@ class _ProfChip extends StatelessWidget {
 }
 
 class _WorkerCard extends StatelessWidget {
-  const _WorkerCard({required this.worker, required this.onTap});
+         _WorkerCard({required this.worker, required this.onTap});
   final HealthWorker worker;
   final VoidCallback onTap;
 
@@ -336,13 +336,13 @@ class _WorkerCard extends StatelessWidget {
                     ].join(' · '),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         fontSize: 12, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded,
+                             Icon(Icons.star_rounded,
                           size: 15, color: AppColors.warning),
                       Text('${worker.rating.toStringAsFixed(1)}',
                           style: const TextStyle(
@@ -350,13 +350,13 @@ class _WorkerCard extends StatelessWidget {
                               fontWeight: FontWeight.w700)),
                       const SizedBox(width: 4),
                       Text('(${worker.totalBookings})',
-                          style: const TextStyle(
+                          style:        TextStyle(
                               fontSize: 11,
                               color: AppColors.textMuted)),
                       const Spacer(),
                       Text(
                         'desde ${feeLabel(effectiveFee(worker, 'telehealth') ?? worker.consultationFee)}',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
                             color: AppColors.accent),
@@ -366,7 +366,7 @@ class _WorkerCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
+                   Icon(Icons.chevron_right_rounded,
                 color: AppColors.textMuted),
           ],
         ),
@@ -376,7 +376,7 @@ class _WorkerCard extends StatelessWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.worker, this.size = 48});
+         _Avatar({required this.worker, this.size = 48});
   final HealthWorker worker;
   final double size;
 
@@ -386,7 +386,7 @@ class _Avatar extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: AppColors.heroCardGradient),
+        gradient:        LinearGradient(colors: AppColors.heroCardGradient),
         borderRadius: BorderRadius.circular(size * 0.3),
       ),
       child: worker.photoUrl != null
@@ -415,7 +415,7 @@ class _Avatar extends StatelessWidget {
 }
 
 class _WorkerSheet extends ConsumerStatefulWidget {
-  const _WorkerSheet({required this.worker});
+         _WorkerSheet({required this.worker});
   final HealthWorker worker;
 
   @override
@@ -542,7 +542,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
     return Container(
       constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.88),
-      decoration: const BoxDecoration(
+      decoration:        BoxDecoration(
         color: AppColors.bgMid,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -580,19 +580,19 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
                               if (w.yearsOfExperience != null)
                                 '${w.yearsOfExperience} anos exp.',
                             ].join(' · '),
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 fontSize: 12.5,
                                 color: AppColors.textSecondary),
                           ),
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Icon(Icons.star_rounded,
+                                     Icon(Icons.star_rounded,
                                   size: 16, color: AppColors.warning),
                               Text(
                                 '${w.rating.toStringAsFixed(1)} · '
                                 '${w.totalBookings} reservas',
-                                style: const TextStyle(
+                                style:        TextStyle(
                                     fontSize: 12,
                                     color: AppColors.textSecondary),
                               ),
@@ -619,13 +619,13 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
                               label: Text(l,
                                   style: const TextStyle(fontSize: 11.5)),
                               backgroundColor: AppColors.glassFill,
-                              side: const BorderSide(
+                              side:        BorderSide(
                                   color: AppColors.glassBorder),
                             ))
                         .toList(),
                   ),
                 ],
-                const Divider(color: AppColors.glassBorder, height: 28),
+                       Divider(color: AppColors.glassBorder, height: 28),
                 const Text('Reservar',
                     style: TextStyle(
                         fontSize: 15, fontWeight: FontWeight.w800)),
@@ -645,7 +645,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
                                   horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
                                 gradient: _service == s.$1
-                                    ? const LinearGradient(
+                                    ?        LinearGradient(
                                         colors:
                                             AppColors.buttonGradient)
                                     : null,
@@ -676,7 +676,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.textPrimary,
-                    side: const BorderSide(color: AppColors.glassBorder),
+                    side:        BorderSide(color: AppColors.glassBorder),
                     backgroundColor: AppColors.glassFill,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -718,7 +718,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
                                 color: _duration == d
                                     ? Colors.white
                                     : AppColors.textSecondary),
-                            side: const BorderSide(
+                            side:        BorderSide(
                                 color: AppColors.glassBorder),
                             onSelected: (_) =>
                                 setState(() => _duration = d),
@@ -735,7 +735,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
                   ),
                   child: Row(
                     children: [
-                      const Expanded(
+                             Expanded(
                         child: Text('Total a pagar da carteira',
                             style: TextStyle(
                                 fontSize: 13,
@@ -743,7 +743,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
                       ),
                       Text(
                         formatMZN(_fee ?? 0),
-                        style: const TextStyle(
+                        style:        TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                             color: AppColors.accent),
@@ -770,7 +770,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
                           style: TextStyle(fontWeight: FontWeight.w700)),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                       Text(
                   '80% para o profissional · 20% plataforma. '
                   'Podes cancelar até à hora marcada falando com o suporte.',
                   textAlign: TextAlign.center,
@@ -787,7 +787,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
 
   InputDecoration _input(String hint) => InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textMuted),
+        hintStyle:        TextStyle(color: AppColors.textMuted),
         filled: true,
         fillColor: AppColors.glassFill,
         contentPadding:
@@ -800,7 +800,7 @@ class _WorkerSheetState extends ConsumerState<_WorkerSheet> {
 }
 
 class _BookingsView extends StatelessWidget {
-  const _BookingsView({required this.bookings, required this.onReload});
+         _BookingsView({required this.bookings, required this.onReload});
   final List<WorkerBooking>? bookings;
   final VoidCallback onReload;
 
@@ -817,7 +817,7 @@ class _BookingsView extends StatelessWidget {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children:        [
             Icon(Icons.event_busy_rounded,
                 size: 44, color: AppColors.textMuted),
             SizedBox(height: 10),
@@ -884,22 +884,22 @@ class _BookingsView extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   '${b.serviceLabel} · ${formatDateTime(b.scheduledAt)} · ${b.durationMinutes} min',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       fontSize: 12.5, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
                     Text(formatMZN(b.fee),
-                        style: const TextStyle(
+                        style:        TextStyle(
                             fontWeight: FontWeight.w800,
                             color: AppColors.accent)),
                     const SizedBox(width: 8),
                     if (b.paymentStatus == 'paid')
-                      const Icon(Icons.verified_rounded,
+                             Icon(Icons.verified_rounded,
                           size: 15, color: AppColors.success)
                     else
-                      const Text('não pago',
+                             Text('não pago',
                           style: TextStyle(
                               fontSize: 11, color: AppColors.warning)),
                     const Spacer(),
@@ -937,7 +937,7 @@ class _BookingsView extends StatelessWidget {
                             onReload();
                           }
                         },
-                        child: const Text('Cancelar',
+                        child:        Text('Cancelar',
                             style:
                                 TextStyle(color: AppColors.danger)),
                       ),

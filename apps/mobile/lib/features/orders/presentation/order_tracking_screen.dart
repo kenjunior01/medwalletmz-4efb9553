@@ -152,10 +152,10 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'A acompanhar pedido',
                         style: TextStyle(
@@ -165,14 +165,14 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                         ),
                       ),
                     ),
-                    const Icon(Icons.sync_rounded,
+                           Icon(Icons.sync_rounded,
                         size: 16, color: AppColors.textSecondary),
                   ],
                 ),
               ),
               Expanded(
                 child: _loading
-                    ? const Center(
+                    ?        Center(
                         child: CircularProgressIndicator(
                             color: AppColors.accent),
                       )
@@ -219,7 +219,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
 // ── Loja ───────────────────────────────────────────────────────────
 
 class _StoreCard extends StatelessWidget {
-  const _StoreCard({required this.order});
+         _StoreCard({required this.order});
 
   final PharmacyOrder order;
 
@@ -253,7 +253,7 @@ class _StoreCard extends StatelessWidget {
               children: [
                 Text(
                   order.storeName,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 15,
@@ -264,7 +264,7 @@ class _StoreCard extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 3),
                     child: Row(
                       children: [
-                        const Icon(Icons.place_rounded,
+                               Icon(Icons.place_rounded,
                             size: 13, color: AppColors.textSecondary),
                         const SizedBox(width: 4),
                         Expanded(
@@ -272,7 +272,7 @@ class _StoreCard extends StatelessWidget {
                             order.deliveryAddress!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 12,
                             ),
@@ -297,7 +297,7 @@ class _StoreCard extends StatelessWidget {
           color: Color(0x1438BDF8),
           borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
-        child: const Icon(Icons.local_pharmacy_rounded,
+        child:        Icon(Icons.local_pharmacy_rounded,
             color: AppColors.accent, size: 22),
       );
 }
@@ -305,7 +305,7 @@ class _StoreCard extends StatelessWidget {
 // ── Timeline ───────────────────────────────────────────────────────
 
 class _TimelineCard extends StatelessWidget {
-  const _TimelineCard({
+         _TimelineCard({
     required this.order,
     required this.steps,
     required this.current,
@@ -333,7 +333,7 @@ class _TimelineCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   steps[current].$2,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 16,
@@ -342,7 +342,7 @@ class _TimelineCard extends StatelessWidget {
               ),
               Text(
                 '${(progress * 100).round()}%',
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.accent,
                   fontWeight: FontWeight.w800,
                   fontSize: 13,
@@ -358,7 +358,7 @@ class _TimelineCard extends StatelessWidget {
               minHeight: 6,
               backgroundColor: const Color(0x22223B4F),
               valueColor:
-                  const AlwaysStoppedAnimation<Color>(AppColors.accent),
+                         AlwaysStoppedAnimation<Color>(AppColors.accent),
             ),
           ),
           const SizedBox(height: 16),
@@ -381,7 +381,7 @@ class _TimelineCard extends StatelessWidget {
 enum _StepState { done, current, todo }
 
 class _StepRow extends StatelessWidget {
-  const _StepRow({
+         _StepRow({
     required this.step,
     required this.state,
     required this.isLast,
@@ -460,7 +460,7 @@ class _StepRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     description,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 11.5,
                     ),
@@ -478,7 +478,7 @@ class _StepRow extends StatelessWidget {
 // ── Entregador ─────────────────────────────────────────────────────
 
 class DriverInfo {
-  const DriverInfo({
+         DriverInfo({
     required this.name,
     this.phone,
     this.vehicle,
@@ -492,7 +492,7 @@ class DriverInfo {
 }
 
 class _DriverCard extends StatelessWidget {
-  const _DriverCard({required this.driver});
+         _DriverCard({required this.driver});
 
   final DriverInfo driver;
 
@@ -515,7 +515,7 @@ class _DriverCard extends StatelessWidget {
               color: Color(0x1438BDF8),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.two_wheeler_rounded,
+            child:        Icon(Icons.two_wheeler_rounded,
                 color: AppColors.accent),
           ),
           const SizedBox(width: 12),
@@ -525,7 +525,7 @@ class _DriverCard extends StatelessWidget {
               children: [
                 Text(
                   driver.name,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 14,
@@ -533,7 +533,7 @@ class _DriverCard extends StatelessWidget {
                 ),
                 Text(
                   _vehicleLabel(driver.vehicle),
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
@@ -581,7 +581,7 @@ class _DriverCard extends StatelessWidget {
 // ── Items ──────────────────────────────────────────────────────────
 
 class _ItemsCard extends StatelessWidget {
-  const _ItemsCard({required this.order});
+         _ItemsCard({required this.order});
 
   final PharmacyOrder order;
 
@@ -597,7 +597,7 @@ class _ItemsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+                 Text(
             'ITEMS DO PEDIDO',
             style: TextStyle(
               color: AppColors.textSecondary,
@@ -608,7 +608,7 @@ class _ItemsCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           if (order.items.isEmpty)
-            const Text(
+                   Text(
               'Sem detalhe de items disponível.',
               style: TextStyle(
                 color: AppColors.textSecondary,
@@ -623,7 +623,7 @@ class _ItemsCard extends StatelessWidget {
                   children: [
                     Text(
                       '${item.quantity}×',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.accent,
                         fontWeight: FontWeight.w800,
                         fontSize: 13,
@@ -635,7 +635,7 @@ class _ItemsCard extends StatelessWidget {
                         item.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 13.5,
                         ),
@@ -644,7 +644,7 @@ class _ItemsCard extends StatelessWidget {
                     Text(
                       // F33 — formatMZN com cêntimos (era arredondado).
                       formatMZN(item.lineTotal),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w700,
                         fontSize: 12.5,
@@ -664,7 +664,7 @@ class _ItemsCard extends StatelessWidget {
               ),
               child: Text(
                 order.notes!,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
                   fontStyle: FontStyle.italic,
@@ -681,7 +681,7 @@ class _ItemsCard extends StatelessWidget {
 // ── Totais ─────────────────────────────────────────────────────────
 
 class _TotalsCard extends StatelessWidget {
-  const _TotalsCard({required this.order});
+         _TotalsCard({required this.order});
 
   final PharmacyOrder order;
 
@@ -698,14 +698,14 @@ class _TotalsCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Expanded(
+                     Expanded(
                 child: Text('Subtotal',
                     style: TextStyle(
                         color: AppColors.textSecondary, fontSize: 13)),
               ),
               Text(
                 formatMZN(order.subtotal),
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppColors.textPrimary, fontSize: 13),
               ),
             ],
@@ -713,14 +713,14 @@ class _TotalsCard extends StatelessWidget {
           const SizedBox(height: 6),
           Row(
             children: [
-              const Expanded(
+                     Expanded(
                 child: Text('Entrega',
                     style: TextStyle(
                         color: AppColors.textSecondary, fontSize: 13)),
               ),
               Text(
                 formatMZN(order.deliveryFee),
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppColors.textPrimary, fontSize: 13),
               ),
             ],
@@ -728,7 +728,7 @@ class _TotalsCard extends StatelessWidget {
           const Divider(height: 18, color: Color(0x1E223B4F)),
           Row(
             children: [
-              const Expanded(
+                     Expanded(
                 child: Text('Total',
                     style: TextStyle(
                       color: AppColors.textPrimary,
@@ -738,7 +738,7 @@ class _TotalsCard extends StatelessWidget {
               ),
               Text(
                 formatMZN(order.total),
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.accent,
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
@@ -795,10 +795,10 @@ class _NotFound extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.inventory_2_rounded,
+                 Icon(Icons.inventory_2_rounded,
               size: 46, color: AppColors.textSecondary),
           const SizedBox(height: 14),
-          const Text(
+                 Text(
             'Pedido não encontrado',
             style: TextStyle(
               color: AppColors.textPrimary,

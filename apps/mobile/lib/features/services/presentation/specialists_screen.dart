@@ -74,7 +74,7 @@ class _SpecialistsScreenState extends ConsumerState<SpecialistsScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
                     Expanded(
@@ -85,7 +85,7 @@ class _SpecialistsScreenState extends ConsumerState<SpecialistsScreen> {
                             title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 19,
                               fontWeight: FontWeight.w800,
@@ -116,11 +116,11 @@ class _SpecialistsScreenState extends ConsumerState<SpecialistsScreen> {
                     Expanded(
                       child: TextField(
                         onChanged: (v) => setState(() => _search = v),
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary, fontSize: 13.5),
                         decoration: InputDecoration(
                           hintText: 'Pesquisar profissional…',
-                          prefixIcon: const Icon(Icons.search_rounded,
+                          prefixIcon:        Icon(Icons.search_rounded,
                               color: AppColors.textMuted, size: 19),
                           isDense: true,
                         ),
@@ -138,12 +138,12 @@ class _SpecialistsScreenState extends ConsumerState<SpecialistsScreen> {
                         child: DropdownButton<SpecialistSort>(
                           value: _sort,
                           dropdownColor: const Color(0xFF0B1D31),
-                          icon: const Icon(Icons.sort_rounded,
+                          icon:        Icon(Icons.sort_rounded,
                               size: 18, color: AppColors.textMuted),
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 12.5),
-                          items: const [
+                          items:        [
                             DropdownMenuItem(
                               value: SpecialistSort.rating,
                               child: Text('Avaliação'),
@@ -215,7 +215,7 @@ class _SpecialistsScreenState extends ConsumerState<SpecialistsScreen> {
 // ── Cartão de especialista ──────────────────────────────────────────────
 
 class _SpecialistCard extends StatelessWidget {
-  const _SpecialistCard({required this.doctor, this.highlighted = false});
+         _SpecialistCard({required this.doctor, this.highlighted = false});
 
   final Doctor doctor;
   final bool highlighted;
@@ -258,7 +258,7 @@ class _SpecialistCard extends StatelessWidget {
                     ? Center(
                         child: Text(
                           _initials(doctor.displayName),
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.accent,
                             fontWeight: FontWeight.w800,
                             fontSize: 16,
@@ -279,7 +279,7 @@ class _SpecialistCard extends StatelessWidget {
                             doctor.displayName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w800,
                               fontSize: 14.5,
@@ -288,7 +288,7 @@ class _SpecialistCard extends StatelessWidget {
                         ),
                         if (doctor.isVerified) ...[
                           const SizedBox(width: 5),
-                          const Icon(Icons.verified_rounded,
+                                 Icon(Icons.verified_rounded,
                               color: AppColors.accent, size: 15),
                         ],
                       ],
@@ -296,7 +296,7 @@ class _SpecialistCard extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       doctor.specialtyName ?? 'Clínica Geral',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.accent,
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
@@ -310,19 +310,19 @@ class _SpecialistCard extends StatelessWidget {
                         const SizedBox(width: 3),
                         Text(
                           doctor.rating.toStringAsFixed(1),
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(width: 10),
-                        const Icon(Icons.work_history_rounded,
+                               Icon(Icons.work_history_rounded,
                             color: AppColors.textMuted, size: 13),
                         const SizedBox(width: 3),
                         Text(
                           '${doctor.yearsExperience} anos',
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 11.5,
                           ),
@@ -337,7 +337,7 @@ class _SpecialistCard extends StatelessWidget {
                 children: [
                   Text(
                     formatMZN(doctor.consultationFee),
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w800,
                       fontSize: 13.5,

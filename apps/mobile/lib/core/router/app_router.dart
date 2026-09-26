@@ -65,6 +65,7 @@ import '../../features/notifications/presentation/notification_center_screen.dar
 import '../../features/notifications/presentation/notification_prefs_screen.dart';
 import '../../features/notifications/presentation/notifications_controller.dart';
 import '../../features/videocall/presentation/video_call_screen.dart';
+import '../../features/profile/presentation/appearance_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/profile/presentation/profile_edit_screen.dart';
 import '../../features/profile/presentation/change_password_screen.dart';
@@ -87,9 +88,12 @@ import '../../features/triage/presentation/triage_wizard_screen.dart';
 import '../../features/vision/presentation/vision_scanner_screen.dart';
 import '../../features/voice_journal/presentation/voice_journal_screen.dart';
 import '../../features/wallet/presentation/wallet_screen.dart';
+import 'dart:ui' show ImageFilter;
+
 import '../config.dart';
 import '../l10n/app_strings.dart';
 import '../l10n/locale_provider.dart';
+import '../theme/app_colors.dart';
 import '../widgets/notification_banner.dart';
 
 /// Índices das abas do shell.
@@ -341,6 +345,10 @@ final router = GoRouter(
         path: '/health-profile',
         builder: (_, __) => const HealthProfileScreen()),
     GoRoute(path: '/help', builder: (_, __) => const HelpLegalScreen()),
+    // F33 — Aparência: modos de tema (claro/escuro/sistema) + efeitos.
+    GoRoute(
+        path: '/appearance',
+        builder: (_, __) => const AppearanceScreen()),
 
     // F9 — Verificação pública de receitas (RPC verify_prescription).
     GoRoute(
@@ -498,7 +506,7 @@ class _AppShellState extends ConsumerState<AppShell> {
 /// do ícone ativo (cápsula deslizante com glow). Rótulos localizados
 /// com o idioma escolhido (14 línguas).
 class _GlassNavBar extends ConsumerWidget {
-  const _GlassNavBar({required this.currentIndex, required this.onTap});
+         _GlassNavBar({required this.currentIndex, required this.onTap});
 
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -525,101 +533,115 @@ class _GlassNavBar extends ConsumerWidget {
       child: Container(
         margin: const EdgeInsets.fromLTRB(20, 0, 20, 14),
         height: 68,
+        // F33 — sombra no contentor exterior (fora do clip) e vidro
+        // REAL: BackdropFilter blur(24) sobre o conteúdo que passa
+        // por baixo — paridade com .mw-bottomnav da web.
         decoration: BoxDecoration(
-          color: const Color(0xCC0B1D31),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0x1FFFFFFF)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.45),
+              color: AppColors.shadowTint
+                  .withOpacity(AppColors.isDark ? 0.45 : 0.16),
               blurRadius: 30,
               offset: const Offset(0, 14),
             ),
           ],
         ),
-        child: Row(
-          children: List.generate(destinations.length, (i) {
-            final d = destinations[i];
-            final active = i == currentIndex;
-            return Expanded(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => onTap(i),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // F32: indicador superior do item activo — paridade
-                    // com o .mw-nav-active::before da web (cápsula com
-                    // glow no topo do ícone).
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 260),
-                      curve: Curves.easeOutCubic,
-                      width: active ? 24 : 0,
-                      height: 3,
-                      margin: const EdgeInsets.only(bottom: 3),
-                      decoration: BoxDecoration(
-                        color: active
-                            ? const Color(0xFF38BDF8)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(3),
-                        boxShadow: active
-                            ? [
-                                BoxShadow(
-                                  color: const Color(0xFF38BDF8)
-                                      .withOpacity(0.55),
-                                  blurRadius: 8,
-                                ),
-                              ]
-                            : null,
-                      ),
-                    ),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 260),
-                      curve: Curves.easeOutCubic,
-                      height: 34,
-                      width: 44,
-                      decoration: BoxDecoration(
-                        color: active
-                            ? const Color(0x2E1E6B9C)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(14),
-                        // F32: mw-nav-glow — o ícone activo "acende".
-                        boxShadow: active
-                            ? [
-                                BoxShadow(
-                                  color: const Color(0xFF38BDF8)
-                                      .withOpacity(0.30),
-                                  blurRadius: 14,
-                                  spreadRadius: 1,
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Icon(
-                        d.icon,
-                        size: 24,
-                        color: active
-                            ? const Color(0xFF38BDF8)
-                            : const Color(0xFF5D7285),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      d.label,
-                      style: TextStyle(
-                        fontSize: 10.5,
-                        fontWeight:
-                            active ? FontWeight.w700 : FontWeight.w500,
-                        color: active
-                            ? const Color(0xFFF2F7FB)
-                            : const Color(0xFF5D7285),
-                      ),
-                    ),
-                  ],
-                ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.navBar,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: AppColors.glassBorder),
               ),
-            );
-          }),
+              child: Row(
+                  children: List.generate(destinations.length, (i) {
+                final d = destinations[i];
+                final active = i == currentIndex;
+                return Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => onTap(i),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // F32: indicador superior do item activo — paridade
+                        // com o .mw-nav-active::before da web (cápsula com
+                        // glow no topo do ícone).
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 260),
+                          curve: Curves.easeOutCubic,
+                          width: active ? 24 : 0,
+                          height: 3,
+                          margin: const EdgeInsets.only(bottom: 3),
+                          decoration: BoxDecoration(
+                            color: active
+                                ? AppColors.accent
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(3),
+                            boxShadow: active
+                                ? [
+                                    BoxShadow(
+                                      color: AppColors.accent
+                                          .withOpacity(0.55),
+                                      blurRadius: 8,
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 260),
+                          curve: Curves.easeOutCubic,
+                          height: 34,
+                          width: 44,
+                          decoration: BoxDecoration(
+                            color: active
+                                ? AppColors.primary.withOpacity(0.18)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(14),
+                            // F32: mw-nav-glow — o ícone activo "acende".
+                            boxShadow: active
+                                ? [
+                                    BoxShadow(
+                                      color: AppColors.accent
+                                          .withOpacity(0.30),
+                                      blurRadius: 14,
+                                      spreadRadius: 1,
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Icon(
+                            d.icon,
+                            size: 24,
+                            color: active
+                                ? AppColors.accent
+                                : AppColors.textMuted,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          d.label,
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight:
+                                active ? FontWeight.w700 : FontWeight.w500,
+                            color: active
+                                ? AppColors.textPrimary
+                                : AppColors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              })),
+            ),
+          ),
         ),
       ),
     );

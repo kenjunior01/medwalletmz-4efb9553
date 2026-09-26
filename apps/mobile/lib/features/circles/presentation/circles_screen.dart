@@ -97,10 +97,10 @@ class _CirclesScreenState extends ConsumerState<CirclesScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Círculos de Apoio',
                         style: TextStyle(
@@ -113,7 +113,7 @@ class _CirclesScreenState extends ConsumerState<CirclesScreen> {
                   ],
                 ),
               ),
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.fromLTRB(20, 2, 20, 12),
                 child: Text(
                   'Comunidades moderadas — partilha experiências com quem vive o mesmo que tu',
@@ -183,7 +183,7 @@ class _CirclesScreenState extends ConsumerState<CirclesScreen> {
                 child: _loading
                     ? ListView(
                         padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-                        children: const [
+                        children:        [
                           AppSkeleton(width: double.infinity, height: 120, radius: 20),
                           SizedBox(height: 12),
                           AppSkeleton(width: double.infinity, height: 120, radius: 20),
@@ -232,7 +232,7 @@ class _CirclesScreenState extends ConsumerState<CirclesScreen> {
 }
 
 class _CircleCard extends StatelessWidget {
-  const _CircleCard({
+         _CircleCard({
     required this.circle,
     required this.onToggleJoin,
     this.onOpen,
@@ -283,7 +283,7 @@ class _CircleCard extends StatelessWidget {
                       circle.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 15,
@@ -301,7 +301,7 @@ class _CircleCard extends StatelessWidget {
                           ),
                           child: Text(
                             CircleTags.label(circle.conditionTag),
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.accent,
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
@@ -314,7 +314,7 @@ class _CircleCard extends StatelessWidget {
                         const SizedBox(width: 3),
                         Text(
                           '${circle.memberCount} membros',
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 11,
                           ),
@@ -334,7 +334,7 @@ class _CircleCard extends StatelessWidget {
                                 Container(
                                   width: 5,
                                   height: 5,
-                                  decoration: const BoxDecoration(
+                                  decoration:        BoxDecoration(
                                     color: AppColors.accent,
                                     shape: BoxShape.circle,
                                   ),
@@ -344,7 +344,7 @@ class _CircleCard extends StatelessWidget {
                                   circle.unread > 99
                                       ? '99+'
                                       : '${circle.unread} novas',
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                     color: AppColors.accent,
                                     fontSize: 9.5,
                                     fontWeight: FontWeight.w800,
@@ -368,7 +368,7 @@ class _CircleCard extends StatelessWidget {
               circle.description!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 12,
                 height: 1.4,
@@ -455,10 +455,10 @@ class _EmptyPane extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.groups_rounded,
+                   Icon(Icons.groups_rounded,
                 size: 46, color: AppColors.textMuted),
             const SizedBox(height: 14),
-            const Text(
+                   Text(
               'Sem círculos nesta condição',
               style: TextStyle(
                   color: AppColors.textPrimary,
@@ -466,7 +466,7 @@ class _EmptyPane extends StatelessWidget {
                   fontSize: 16),
             ),
             const SizedBox(height: 6),
-            const Text(
+                   Text(
               'Escolhe outra condição ou verifica mais tarde — a comunidade cresce todos os dias.',
               textAlign: TextAlign.center,
               style:
@@ -480,7 +480,7 @@ class _EmptyPane extends StatelessWidget {
 }
 
 class _ErrorPane extends StatelessWidget {
-  const _ErrorPane({required this.message, required this.onRetry});
+         _ErrorPane({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -491,16 +491,16 @@ class _ErrorPane extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.wifi_off_rounded,
+                 Icon(Icons.wifi_off_rounded,
               size: 42, color: AppColors.textMuted),
           const SizedBox(height: 12),
           Text(message,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary, fontSize: 13)),
           const SizedBox(height: 12),
           TextButton(
             onPressed: onRetry,
-            child: const Text('Tentar novamente',
+            child:        Text('Tentar novamente',
                 style: TextStyle(color: AppColors.accent)),
           ),
         ],

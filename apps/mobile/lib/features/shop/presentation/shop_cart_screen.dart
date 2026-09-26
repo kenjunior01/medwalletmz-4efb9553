@@ -44,16 +44,16 @@ class _ShopCartScreenState extends ConsumerState<ShopCartScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textSecondary),
                     ),
                     const Spacer(),
-                    const Icon(Icons.shopping_cart_rounded,
+                           Icon(Icons.shopping_cart_rounded,
                         size: 18, color: AppColors.textSecondary),
                     const SizedBox(width: 7),
                     Text(
                       cart.count > 0 ? 'Carrinho (${cart.count})' : 'Carrinho',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 15,
                           fontWeight: FontWeight.w900),
@@ -86,7 +86,7 @@ class _ShopCartScreenState extends ConsumerState<ShopCartScreen> {
             child: Text(
               cart.error!,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.danger, fontSize: 12),
+              style:        TextStyle(color: AppColors.danger, fontSize: 12),
             ),
           ),
         _Summary(cart: cart),
@@ -103,7 +103,7 @@ class _Loading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return        Center(
       child: SizedBox(
         width: 34,
         height: 34,
@@ -124,16 +124,16 @@ class _Empty extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.shopping_cart_outlined,
+                   Icon(Icons.shopping_cart_outlined,
                 size: 58, color: AppColors.textMuted),
             const SizedBox(height: 16),
-            const Text('O teu carrinho está vazio',
+                   Text('O teu carrinho está vazio',
                 style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 15.5)),
             const SizedBox(height: 8),
-            const Text(
+                   Text(
               'Explora a Loja Global e encontra produtos\ncom envio para os EUA e Canadá.',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -146,7 +146,7 @@ class _Empty extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 26, vertical: 13),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient:        LinearGradient(
                       colors: AppColors.buttonGradient),
                   borderRadius: BorderRadius.circular(15),
                 ),
@@ -165,7 +165,7 @@ class _Empty extends StatelessWidget {
 }
 
 class _Line extends ConsumerWidget {
-  const _Line({required this.line});
+         _Line({required this.line});
 
   final ShopifyCartLine line;
 
@@ -214,7 +214,7 @@ class _Line extends ConsumerWidget {
                         line.productTitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: 13.5,
@@ -223,7 +223,7 @@ class _Line extends ConsumerWidget {
                     ),
                     GestureDetector(
                       onTap: () => controller.remove(line.id),
-                      child: const Padding(
+                      child:        Padding(
                         padding: EdgeInsets.all(4),
                         child: Icon(Icons.delete_outline_rounded,
                             size: 19, color: AppColors.textMuted),
@@ -236,7 +236,7 @@ class _Line extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(line.variantTitle,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textMuted, fontSize: 11)),
                   ),
                 const SizedBox(height: 10),
@@ -253,7 +253,7 @@ class _Line extends ConsumerWidget {
                         children: [
                           _stepBtn('−', () => controller.updateQty(line.id, line.quantity - 1)),
                           Text('${line.quantity}',
-                              style: const TextStyle(
+                              style:        TextStyle(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.w900,
                                   fontSize: 13)),
@@ -264,7 +264,7 @@ class _Line extends ConsumerWidget {
                     const Spacer(),
                     Text(
                       line.linePrice.formatted(),
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w900,
                           fontSize: 13.5),
@@ -281,7 +281,7 @@ class _Line extends ConsumerWidget {
 
   Widget _imgFallback() => Container(
         color: AppColors.bgHigh,
-        child: const Icon(Icons.inventory_2_rounded,
+        child:        Icon(Icons.inventory_2_rounded,
             color: AppColors.textMuted, size: 26),
       );
 
@@ -290,7 +290,7 @@ class _Line extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
           child: Text(sym,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 15,
                   fontWeight: FontWeight.w900)),
@@ -299,7 +299,7 @@ class _Line extends ConsumerWidget {
 }
 
 class _Summary extends ConsumerWidget {
-  const _Summary({required this.cart});
+         _Summary({required this.cart});
 
   final ShopCartController cart;
 
@@ -319,18 +319,18 @@ class _Summary extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Subtotal',
+                     Text('Subtotal',
                   style: TextStyle(
                       color: AppColors.textSecondary, fontSize: 13)),
               Text(c?.subtotal?.formatted() ?? '—',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w800,
                       fontSize: 13.5)),
             ],
           ),
           const SizedBox(height: 4),
-          const Row(
+                 Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Envio e impostos',
@@ -339,7 +339,7 @@ class _Summary extends ConsumerWidget {
                   style: TextStyle(color: AppColors.textMuted, fontSize: 11.5)),
             ],
           ),
-          const Padding(
+                 Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
             child: Divider(
                 color: AppColors.glassBorder, height: 1, thickness: 1),
@@ -349,13 +349,14 @@ class _Summary extends ConsumerWidget {
             children: [
               // F33 — "Total" era enganador: é o subtotal (envio/impostos
               // ficam para o checkout, como a linha acima já avisa).
-              const Text('Subtotal',
+              // Tokens dinâmicos: sem const (AppColors é getter).
+              Text('Subtotal',
                   style: TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w800,
                       fontSize: 14.5)),
               Text(c?.subtotal?.formatted() ?? '—',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w900,
                       fontSize: 17)),
@@ -382,7 +383,7 @@ class _Summary extends ConsumerWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 gradient:
-                    const LinearGradient(colors: AppColors.successGradient),
+                           LinearGradient(colors: AppColors.successGradient),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: cart.busy
@@ -399,7 +400,7 @@ class _Summary extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
+                 Text(
             'Serás redireccionado para o checkout alojado da Shopify — '
             'cartão, Apple Pay, Google Pay e PayPal.',
             textAlign: TextAlign.center,
@@ -429,7 +430,7 @@ class _TrustRow extends StatelessWidget {
                 const SizedBox(height: 5),
                 Text(label,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 9.5,
                         height: 1.2)),

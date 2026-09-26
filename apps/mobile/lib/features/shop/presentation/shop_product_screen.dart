@@ -121,7 +121,7 @@ class _ShopProductScreenState extends ConsumerState<ShopProductScreen> {
           backgroundColor: AppColors.card,
           content: Text(
             'Adicionado ao carrinho · ${data.product.title}',
-            style: const TextStyle(color: AppColors.textPrimary),
+            style:        TextStyle(color: AppColors.textPrimary),
           ),
           action: goCart
               ? null
@@ -186,7 +186,7 @@ class _LoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(20),
-      children: const [
+      children:        [
         AppSkeleton(height: 320, radius: 24),
         SizedBox(height: 18),
         AppSkeleton(height: 22, radius: 8),
@@ -202,7 +202,7 @@ class _LoadingView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.error});
+         _ErrorView({required this.error});
 
   final String error;
 
@@ -214,12 +214,12 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline_rounded,
+                   Icon(Icons.error_outline_rounded,
                 size: 52, color: AppColors.danger),
             const SizedBox(height: 16),
             Text(error,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13.5,
                     height: 1.5)),
@@ -234,7 +234,7 @@ class _ErrorView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.glassBorder),
                 ),
-                child: const Text('Voltar à loja',
+                child:        Text('Voltar à loja',
                     style: TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w700)),
@@ -248,7 +248,7 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _ContentView extends ConsumerWidget {
-  const _ContentView({
+         _ContentView({
     required this.data,
     required this.gallery,
     required this.imgIndex,
@@ -295,11 +295,11 @@ class _ContentView extends ConsumerWidget {
               children: [
                 IconButton(
                   onPressed: () => context.pop(),
-                  icon: const Icon(Icons.arrow_back_rounded,
+                  icon:        Icon(Icons.arrow_back_rounded,
                       color: AppColors.textSecondary),
                 ),
                 const Spacer(),
-                const Text('Loja Global',
+                       Text('Loja Global',
                     style: TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 12.5,
@@ -334,7 +334,7 @@ class _ContentView extends ConsumerWidget {
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => Container(
                                 color: AppColors.bgHigh,
-                                child: const Icon(Icons.shopping_bag_rounded,
+                                child:        Icon(Icons.shopping_bag_rounded,
                                     color: AppColors.textMuted, size: 56),
                               ),
                             ),
@@ -342,7 +342,7 @@ class _ContentView extends ConsumerWidget {
                         else
                           Container(
                             color: AppColors.bgHigh,
-                            child: const Icon(Icons.shopping_bag_rounded,
+                            child:        Icon(Icons.shopping_bag_rounded,
                                 color: AppColors.textMuted, size: 56),
                           ),
                         if (p.discountPercent > 0)
@@ -402,14 +402,14 @@ class _ContentView extends ConsumerWidget {
             delegate: SliverChildListDelegate([
               if (p.vendor != null && p.vendor!.isNotEmpty)
                 Text(p.vendor!.toUpperCase(),
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.accent,
                         fontSize: 10.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1)),
               const SizedBox(height: 4),
               Text(p.title,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
@@ -420,20 +420,20 @@ class _ContentView extends ConsumerWidget {
                 textBaseline: TextBaseline.alphabetic,
                 children: [
                   Text(price.formatted(),
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 26,
                           fontWeight: FontWeight.w900)),
                   if (showRange)
                     Text(' – ${p.priceMax.formatted()}',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.w800)),
                   const SizedBox(width: 8),
                   if (p.discountPercent > 0 && p.priceCompareAt != null)
                     Text(p.priceCompareAt!.formatted(),
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 14,
                             decoration: TextDecoration.lineThrough)),
@@ -443,7 +443,7 @@ class _ContentView extends ConsumerWidget {
               Text(
                 'Preço em ${price.currencyCode == 'CAD' ? 'dólares canadianos (CAD)' : 'dólares americanos (USD)'} · '
                 'envio e impostos no checkout',
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textMuted, fontSize: 11, height: 1.4),
               ),
               const SizedBox(height: 14),
@@ -482,7 +482,7 @@ class _ContentView extends ConsumerWidget {
                 const SizedBox(height: 16),
                 Text(
                   '${opt.name}${(selected[opt.name] ?? '').isNotEmpty ? '  ·  ${selected[opt.name]}' : ''}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w800),
@@ -558,14 +558,14 @@ class _ContentView extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Descrição',
+                             Text('Descrição',
                           style: TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w800,
                               fontSize: 13.5)),
                       const SizedBox(height: 8),
                       Text(stripHtml(p.descriptionHtml),
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 12.5,
                               height: 1.6)),
@@ -613,7 +613,7 @@ class _ContentView extends ConsumerWidget {
                   children: [
                     _qtyBtn('−', () => onQty(qty > 1 ? qty - 1 : 1)),
                     Text('$qty',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w900,
                             fontSize: 14)),
@@ -631,7 +631,7 @@ class _ContentView extends ConsumerWidget {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       gradient: canBuy
-                          ? const LinearGradient(colors: AppColors.buttonGradient)
+                          ?        LinearGradient(colors: AppColors.buttonGradient)
                           : null,
                       color: canBuy ? null : AppColors.glassFill,
                       borderRadius: BorderRadius.circular(14),
@@ -722,7 +722,7 @@ class _ContentView extends ConsumerWidget {
             const SizedBox(height: 4),
             Text(label,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textMuted, fontSize: 9.5, height: 1.2)),
           ],
         ),
@@ -736,7 +736,7 @@ class _ContentView extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
           child: Text(sym,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 17,
                   fontWeight: FontWeight.w900)),

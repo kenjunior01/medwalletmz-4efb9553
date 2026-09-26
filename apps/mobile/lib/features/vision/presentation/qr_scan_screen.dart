@@ -124,7 +124,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
           else if (_error != null)
             _ScanError(message: _error!, onRetry: _start)
           else
-            const Center(
+                   Center(
               child: CircularProgressIndicator(color: AppColors.accent),
             ),
 
@@ -165,7 +165,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
 }
 
 class _ScanError extends StatelessWidget {
-  const _ScanError({required this.message, required this.onRetry});
+         _ScanError({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -178,13 +178,13 @@ class _ScanError extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.no_photography_rounded,
+                   Icon(Icons.no_photography_rounded,
                 color: AppColors.textSecondary, size: 44),
             const SizedBox(height: 14),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13.5,
                 height: 1.5,

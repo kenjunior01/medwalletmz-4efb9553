@@ -77,13 +77,13 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Icon(Icons.receipt_long_rounded,
+                           Icon(Icons.receipt_long_rounded,
                         color: AppColors.accent),
                     const SizedBox(width: 8),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Encomendas',
                         style: TextStyle(
@@ -96,7 +96,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                   ],
                 ),
               ),
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.fromLTRB(20, 2, 20, 12),
                 child: Text(
                   'Pedidos às farmácias — estado sincronizado com a web',
@@ -133,7 +133,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
               // ── Lista ────────────────────────────────────────────
               Expanded(
                 child: _loading
-                    ? const Center(
+                    ?        Center(
                         child: CircularProgressIndicator(
                             color: AppColors.accent),
                       )
@@ -169,7 +169,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 // ── Aba ────────────────────────────────────────────────────────────
 
 class _Tab extends StatelessWidget {
-  const _Tab({
+         _Tab({
     required this.label,
     required this.selected,
     required this.count,
@@ -233,7 +233,7 @@ class _Tab extends StatelessWidget {
 // ── Cartão de encomenda ────────────────────────────────────────────
 
 class _OrderCard extends StatelessWidget {
-  const _OrderCard({required this.order});
+         _OrderCard({required this.order});
 
   final PharmacyOrder order;
 
@@ -326,7 +326,7 @@ class _OrderCard extends StatelessWidget {
                                   order.storeName,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                     color: AppColors.textPrimary,
                                     fontWeight: FontWeight.w800,
                                     fontSize: 14.5,
@@ -334,7 +334,7 @@ class _OrderCard extends StatelessWidget {
                                 ),
                                 Text(
                                   _fmtDate(order.createdAt),
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                     color: AppColors.textSecondary,
                                     fontSize: 11.5,
                                   ),
@@ -388,7 +388,7 @@ class _OrderCard extends StatelessWidget {
                         _itemsLabel,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12.5,
                         ),
@@ -409,14 +409,14 @@ class _OrderCard extends StatelessWidget {
                       // F33 — formatMZN: "250 MZN" arredondava cêntimos
                       // fora (249,90 MT → "250 MZN").
                       formatMZN(order.total),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 14,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(Icons.chevron_right_rounded,
+                           Icon(Icons.chevron_right_rounded,
                         size: 18, color: AppColors.textSecondary),
                   ],
                 ),
@@ -436,7 +436,7 @@ class _OrderCard extends StatelessWidget {
           color: Color(0x1438BDF8),
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
-        child: const Icon(Icons.local_pharmacy_rounded,
+        child:        Icon(Icons.local_pharmacy_rounded,
             color: AppColors.accent, size: 20),
       );
 }
@@ -444,7 +444,7 @@ class _OrderCard extends StatelessWidget {
 // ── Estado vazio ───────────────────────────────────────────────────
 
 class _EmptyOrders extends StatelessWidget {
-  const _EmptyOrders({required this.active});
+         _EmptyOrders({required this.active});
 
   final bool active;
 
@@ -473,14 +473,14 @@ class _EmptyOrders extends StatelessWidget {
             active
                 ? 'Sem encomendas activas'
                 : 'Sem encomendas no histórico',
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),
-          const Padding(
+                 Padding(
             padding: EdgeInsets.symmetric(horizontal: 44),
             child: Text(
               'Os pedidos feitos à farmácia (na app ou no site) '

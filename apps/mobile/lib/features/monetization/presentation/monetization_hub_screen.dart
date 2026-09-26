@@ -81,7 +81,7 @@ class _MonetizationHubScreenState extends ConsumerState<MonetizationHubScreen> {
     } catch (_) {
       Clipboard.setData(ClipboardData(text: text));
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Mensagem copiada — cola no WhatsApp'),
         backgroundColor: AppColors.info,
       ));
@@ -107,7 +107,7 @@ class _MonetizationHubScreenState extends ConsumerState<MonetizationHubScreen> {
         body: _loading
             ? ListView(
                 padding: const EdgeInsets.all(16),
-                children: const [
+                children:        [
                   AppSkeleton(height: 120),
                   SizedBox(height: 12),
                   AppSkeleton(height: 170),
@@ -143,7 +143,7 @@ class _MonetizationHubScreenState extends ConsumerState<MonetizationHubScreen> {
 }
 
 class _SubscriptionCard extends StatelessWidget {
-  const _SubscriptionCard({required this.status});
+         _SubscriptionCard({required this.status});
   final String? status;
 
   @override
@@ -194,7 +194,7 @@ class _SubscriptionCard extends StatelessWidget {
                   active
                       ? 'Benefícios Plus/Premium activos em toda a app.'
                       : 'Subscreve com M-Pesa para desbloquear benefícios.',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary, fontSize: 12),
                 ),
               ],
@@ -203,7 +203,7 @@ class _SubscriptionCard extends StatelessWidget {
           if (!active)
             TextButton(
               onPressed: () => context.push('/plans'),
-              child: const Text('Ver planos',
+              child:        Text('Ver planos',
                   style: TextStyle(
                       color: AppColors.accent,
                       fontWeight: FontWeight.w800)),
@@ -215,7 +215,7 @@ class _SubscriptionCard extends StatelessWidget {
 }
 
 class _ReferralCard extends StatelessWidget {
-  const _ReferralCard({
+         _ReferralCard({
     required this.referral,
     required this.bonusMzn,
     required this.bonusCoins,
@@ -326,7 +326,7 @@ class _ReferralCard extends StatelessWidget {
 }
 
 class _RefStat extends StatelessWidget {
-  const _RefStat({required this.value, required this.label});
+         _RefStat({required this.value, required this.label});
   final String value;
   final String label;
 
@@ -401,7 +401,7 @@ class _QuickLinks extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Formas de ganhar',
+               Text('Formas de ganhar',
             style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 15,
@@ -442,13 +442,13 @@ class _QuickLinks extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(l.$2,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w800,
                             fontSize: 12)),
                     Text(l.$3,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textMuted, fontSize: 9.5)),
                   ],
                 ),
@@ -462,7 +462,7 @@ class _QuickLinks extends StatelessWidget {
 }
 
 class _RecentTxs extends StatelessWidget {
-  const _RecentTxs({required this.txs});
+         _RecentTxs({required this.txs});
   final List<HubWalletTx> txs;
 
   @override
@@ -472,7 +472,7 @@ class _RecentTxs extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text('Últimos movimentos da carteira',
+                   Text('Últimos movimentos da carteira',
                 style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 15,
@@ -480,7 +480,7 @@ class _RecentTxs extends StatelessWidget {
             const Spacer(),
             TextButton(
               onPressed: () => context.push('/wallet'),
-              child: const Text('Ver tudo',
+              child:        Text('Ver tudo',
                   style: TextStyle(
                       color: AppColors.accent, fontWeight: FontWeight.w700)),
             ),
@@ -496,7 +496,7 @@ class _RecentTxs extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.glassBorder),
             ),
-            child: const Text(
+            child:        Text(
               'Sem movimentos ainda. Convites, entregas e sugestões de '
               'instituições aprovadas entram aqui como DINHEIRO REAL.',
               textAlign: TextAlign.center,
@@ -527,7 +527,7 @@ class _RecentTxs extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(label,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: 12.5)),

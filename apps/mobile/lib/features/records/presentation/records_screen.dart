@@ -52,7 +52,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (sheetCtx) => Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           color: AppColors.bgHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -61,30 +61,30 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 14),
-              const Text('Anexo do registo',
+                     Text('Anexo do registo',
                   style: TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w800,
                       fontSize: 15)),
               const SizedBox(height: 10),
               ListTile(
-                leading: const Icon(Icons.photo_camera_rounded,
+                leading:        Icon(Icons.photo_camera_rounded,
                     color: AppColors.accent),
-                title: const Text('Fotografar agora',
+                title:        Text('Fotografar agora',
                     style: TextStyle(color: AppColors.textPrimary)),
                 onTap: () => Navigator.of(sheetCtx).pop('camera'),
               ),
               ListTile(
-                leading: const Icon(Icons.photo_rounded,
+                leading:        Icon(Icons.photo_rounded,
                     color: AppColors.accent),
-                title: const Text('Escolher da galeria',
+                title:        Text('Escolher da galeria',
                     style: TextStyle(color: AppColors.textPrimary)),
                 onTap: () => Navigator.of(sheetCtx).pop('gallery'),
               ),
               ListTile(
-                leading: const Icon(Icons.description_rounded,
+                leading:        Icon(Icons.description_rounded,
                     color: AppColors.textSecondary),
-                title: const Text('Sem anexo (só texto)',
+                title:        Text('Sem anexo (só texto)',
                     style: TextStyle(color: AppColors.textSecondary)),
                 onTap: () => Navigator.of(sheetCtx).pop('none'),
               ),
@@ -135,7 +135,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(sheetCtx).viewInsets.bottom),
           child: Container(
-            decoration: const BoxDecoration(
+            decoration:        BoxDecoration(
               color: AppColors.bgHigh,
               borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
@@ -160,7 +160,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                     attachment != null
                         ? 'Novo registo com anexo'
                         : 'Novo registo',
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 17,
                         fontWeight: FontWeight.w800),
@@ -172,7 +172,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                     hint: 'Ex.: Hemograma completo',
                   ),
                   const SizedBox(height: 10),
-                  const Text('Tipo',
+                         Text('Tipo',
                       style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 11.5,
@@ -289,21 +289,21 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
       context: context,
       builder: (dlgCtx) => AlertDialog(
         backgroundColor: AppColors.bgHigh,
-        title: const Text('Apagar registo',
+        title:        Text('Apagar registo',
             style: TextStyle(color: AppColors.textPrimary, fontSize: 17)),
         content: Text(
           'Apagar "${record.title}"? Esta acção não pode ser revertida.',
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          style:        TextStyle(color: AppColors.textSecondary, fontSize: 13),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dlgCtx).pop(false),
-            child: const Text('Cancelar',
+            child:        Text('Cancelar',
                 style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.of(dlgCtx).pop(true),
-            child: const Text('Apagar',
+            child:        Text('Apagar',
                 style: TextStyle(color: AppColors.danger)),
           ),
         ],
@@ -338,10 +338,10 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Registos médicos',
                         style: TextStyle(
@@ -354,13 +354,13 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                     IconButton(
                       tooltip: 'Novo registo',
                       onPressed: _addRecord,
-                      icon: const Icon(Icons.add_circle_rounded,
+                      icon:        Icon(Icons.add_circle_rounded,
                           color: AppColors.accent),
                     ),
                   ],
                 ),
               ),
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
                 child: Text(
                   'Exames, receitas e relatórios num lugar seguro — partilha com o médico quando quiseres',
@@ -373,7 +373,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                 child: _loading
                     ? ListView(
                         padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                        children: const [
+                        children:        [
                           AppSkeleton(width: double.infinity, height: 96, radius: 20),
                           SizedBox(height: 12),
                           AppSkeleton(width: double.infinity, height: 96, radius: 20),
@@ -388,10 +388,10 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.folder_shared_rounded,
+                                         Icon(Icons.folder_shared_rounded,
                                       size: 46, color: AppColors.textMuted),
                                   const SizedBox(height: 14),
-                                  const Text(
+                                         Text(
                                     'Sem registos ainda',
                                     style: TextStyle(
                                         color: AppColors.textPrimary,
@@ -399,7 +399,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                                         fontSize: 16),
                                   ),
                                   const SizedBox(height: 6),
-                                  const Text(
+                                         Text(
                                     'Fotografa um exame ou receita e guarda aqui — depois partilha com o teu médico num toque.',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -475,7 +475,7 @@ String _typeLabel(String t) {
 }
 
 class _RecordCard extends StatelessWidget {
-  const _RecordCard({
+         _RecordCard({
     required this.record,
     this.onOpenFile,
     required this.onShare,
@@ -538,7 +538,7 @@ class _RecordCard extends StatelessWidget {
                       record.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w800,
                           fontSize: 14.5),
@@ -554,7 +554,7 @@ class _RecordCard extends StatelessWidget {
                       ].join(' · '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textSecondary, fontSize: 11.5),
                     ),
                   ],
@@ -562,7 +562,7 @@ class _RecordCard extends StatelessWidget {
               ),
               PopupMenuButton<String>(
                 color: AppColors.bgHigh,
-                icon: const Icon(Icons.more_vert_rounded,
+                icon:        Icon(Icons.more_vert_rounded,
                     color: AppColors.textSecondary, size: 20),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),
@@ -571,7 +571,7 @@ class _RecordCard extends StatelessWidget {
                   if (v == 'delete') onDelete();
                 },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(
+                         PopupMenuItem(
                     value: 'share',
                     child: Row(
                       children: [
@@ -584,7 +584,7 @@ class _RecordCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                         PopupMenuItem(
                     value: 'delete',
                     child: Row(
                       children: [
@@ -607,7 +607,7 @@ class _RecordCard extends StatelessWidget {
               record.description!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary, fontSize: 12),
             ),
           ],
@@ -615,9 +615,9 @@ class _RecordCard extends StatelessWidget {
             const SizedBox(height: 10),
             TextButton.icon(
               onPressed: onOpenFile,
-              icon: const Icon(Icons.open_in_new_rounded,
+              icon:        Icon(Icons.open_in_new_rounded,
                   size: 14, color: AppColors.accent),
-              label: const Text('Abrir anexo',
+              label:        Text('Abrir anexo',
                   style: TextStyle(
                       color: AppColors.accent,
                       fontSize: 12,
@@ -633,7 +633,7 @@ class _RecordCard extends StatelessWidget {
 /// Folha de partilha com médico: lista dos médicos com quem já tens
 /// consulta + estado das partilhas do registo (revogável).
 class _ShareSheet extends ConsumerStatefulWidget {
-  const _ShareSheet({required this.record, required this.onDone});
+         _ShareSheet({required this.record, required this.onDone});
 
   final MedicalRecord record;
   final VoidCallback onDone;
@@ -701,7 +701,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
     ];
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration:        BoxDecoration(
         color: AppColors.bgHigh,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -726,20 +726,20 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
               'Partilhar "${widget.record.title}"',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 4),
-            const Text(
+                   Text(
               'O médico vê o registo e o anexo até revogares.',
               style: TextStyle(color: AppColors.textMuted, fontSize: 11.5),
             ),
             const SizedBox(height: 14),
 
             if (_loading)
-              const Center(
+                     Center(
                 child: Padding(
                   padding: EdgeInsets.all(18),
                   child: CircularProgressIndicator(
@@ -748,7 +748,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
               )
             else ...[
               if (activeShares.isNotEmpty) ...[
-                const Text('JÁ PARTILHADO COM',
+                       Text('JÁ PARTILHADO COM',
                     style: TextStyle(
                         color: AppColors.accent,
                         fontSize: 10.5,
@@ -768,13 +768,13 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.verified_rounded,
+                               Icon(Icons.verified_rounded,
                             size: 16, color: AppColors.success),
                         const SizedBox(width: 9),
                         Expanded(
                           child: Text(
                             s.doctorName ?? 'Médico',
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700),
@@ -789,7 +789,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
                               color: AppColors.danger.withOpacity(0.12),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Text('Revogar',
+                            child:        Text('Revogar',
                                 style: TextStyle(
                                     color: AppColors.danger,
                                     fontSize: 11,
@@ -803,7 +803,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
                 const SizedBox(height: 10),
               ],
 
-              const Text('PARTILHAR COM OS MEUS MÉDICOS',
+                     Text('PARTILHAR COM OS MEUS MÉDICOS',
                   style: TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 10.5,
@@ -812,7 +812,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
               const SizedBox(height: 8),
 
               if (_doctors.isEmpty)
-                const Padding(
+                       Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     'Agenda primeiro uma consulta — depois podes partilhar os registos com esse especialista.',
@@ -833,18 +833,18 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
                         d.name.isNotEmpty
                             ? d.name.characters.first.toUpperCase()
                             : '?',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.accent,
                             fontSize: 12,
                             fontWeight: FontWeight.w800),
                       ),
                     ),
                     title: Text(d.name,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 13.5,
                             fontWeight: FontWeight.w700)),
-                    trailing: const Icon(Icons.share_rounded,
+                    trailing:        Icon(Icons.share_rounded,
                         size: 17, color: AppColors.accent),
                     onTap: () => _share(d),
                   ),
@@ -859,7 +859,7 @@ class _ShareSheetState extends ConsumerState<_ShareSheet> {
 
 // ── Campo simples da folha ───────────────────────────────────────────
 class _SheetField extends StatelessWidget {
-  const _SheetField({
+         _SheetField({
     required this.label,
     required this.controller,
     required this.hint,
@@ -877,7 +877,7 @@ class _SheetField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(
+            style:        TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 11.5,
                 fontWeight: FontWeight.w700)),
@@ -885,14 +885,14 @@ class _SheetField extends StatelessWidget {
         TextField(
           controller: controller,
           maxLines: maxLines,
-          style: const TextStyle(
+          style:        TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13.5,
               fontWeight: FontWeight.w600),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle:
-                const TextStyle(color: AppColors.textMuted, fontSize: 12.5),
+                       TextStyle(color: AppColors.textMuted, fontSize: 12.5),
             filled: true,
             fillColor: Colors.white.withOpacity(0.05),
             contentPadding:
@@ -903,7 +903,7 @@ class _SheetField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.accent),
+              borderSide:        BorderSide(color: AppColors.accent),
             ),
           ),
         ),

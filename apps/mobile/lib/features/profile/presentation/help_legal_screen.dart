@@ -63,10 +63,10 @@ class HelpLegalScreen extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () => Navigator.of(context).maybePop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Text(
+                           Text(
                       'Ajuda & Legal',
                       style: TextStyle(
                         color: AppColors.textPrimary,
@@ -133,7 +133,7 @@ class HelpLegalScreen extends StatelessWidget {
   Widget _contactCard() => Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [
+          gradient:        LinearGradient(colors: [
             Color(0x331E6B9C),
             Color(0x1414B8A6),
           ]),
@@ -143,7 +143,7 @@ class HelpLegalScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+                   Row(
               children: [
                 Icon(Icons.support_agent_rounded,
                     color: AppColors.accent, size: 22),
@@ -206,7 +206,7 @@ class _SectionTitle extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 10),
         child: Text(
           text,
-          style: const TextStyle(
+          style:        TextStyle(
             color: AppColors.textSecondary,
             fontSize: 12.5,
             fontWeight: FontWeight.w800,
@@ -217,7 +217,7 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _FaqCard extends StatelessWidget {
-  const _FaqCard({
+         _FaqCard({
     required this.question,
     required this.answer,
     required this.index,
@@ -247,7 +247,7 @@ class _FaqCard extends StatelessWidget {
           collapsedIconColor: AppColors.textMuted,
           title: Text(
             question,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13.5,
               fontWeight: FontWeight.w700,
@@ -273,7 +273,7 @@ class _FaqCard extends StatelessWidget {
 }
 
 class _LegalTile extends StatelessWidget {
-  const _LegalTile({
+         _LegalTile({
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -307,7 +307,7 @@ class _LegalTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -316,13 +316,13 @@ class _LegalTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted, fontSize: 11.5),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.open_in_new_rounded,
+                   Icon(Icons.open_in_new_rounded,
                 color: AppColors.textMuted, size: 18),
           ],
         ),
@@ -332,7 +332,7 @@ class _LegalTile extends StatelessWidget {
 }
 
 class _ContactChip extends StatelessWidget {
-  const _ContactChip({
+         _ContactChip({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -360,7 +360,7 @@ class _ContactChip extends StatelessWidget {
             const SizedBox(width: 7),
             Text(
               label,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 12.5,
                 fontWeight: FontWeight.w700,

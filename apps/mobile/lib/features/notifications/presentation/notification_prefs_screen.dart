@@ -62,7 +62,7 @@ class _NotificationPrefsScreenState
       await ref.read(notificationRepositoryProvider).savePrefs(uid, prefs);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+               SnackBar(
           content: Text('Preferências guardadas com sucesso.'),
           backgroundColor: AppColors.success,
         ),
@@ -70,7 +70,7 @@ class _NotificationPrefsScreenState
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+               SnackBar(
           content: Text('Não foi possível guardar. Tenta de novo.'),
           backgroundColor: AppColors.danger,
         ),
@@ -89,7 +89,7 @@ class _NotificationPrefsScreenState
           child: _loading
               ? ListView(
                   padding: const EdgeInsets.all(20),
-                  children: const [ListSkeleton(count: 5, itemHeight: 72)],
+                  children:        [ListSkeleton(count: 5, itemHeight: 72)],
                 )
               : ListView(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
@@ -98,10 +98,10 @@ class _NotificationPrefsScreenState
                       children: [
                         IconButton(
                           onPressed: () => context.pop(),
-                          icon: const Icon(Icons.arrow_back_rounded,
+                          icon:        Icon(Icons.arrow_back_rounded,
                               color: AppColors.textPrimary),
                         ),
-                        const Expanded(
+                               Expanded(
                           child: Text(
                             'Preferências de notificação',
                             style: TextStyle(
@@ -203,7 +203,7 @@ class _NotificationPrefsScreenState
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.privacy_tip_rounded,
+                                 Icon(Icons.privacy_tip_rounded,
                               color: AppColors.accent, size: 18),
                           const SizedBox(width: 10),
                           Expanded(
@@ -251,7 +251,7 @@ class _NotificationPrefsScreenState
 // ── Cartão de toggle ────────────────────────────────────────────────────
 
 class _ToggleCard extends StatelessWidget {
-  const _ToggleCard({
+         _ToggleCard({
     required this.emoji,
     required this.title,
     required this.subtitle,
@@ -294,7 +294,7 @@ class _ToggleCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
                     fontSize: 13.8,
@@ -326,7 +326,7 @@ class _ToggleCard extends StatelessWidget {
 // ── Horas de silêncio ───────────────────────────────────────────────────
 
 class _QuietHoursCard extends StatelessWidget {
-  const _QuietHoursCard({required this.prefs, required this.onChanged});
+         _QuietHoursCard({required this.prefs, required this.onChanged});
 
   final NotificationPrefs prefs;
   final void Function(int start, int end) onChanged;
@@ -346,7 +346,7 @@ class _QuietHoursCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+                 Row(
             children: [
               Icon(Icons.bedtime_rounded,
                   color: Color(0xFFA78BFA), size: 18),
@@ -381,7 +381,7 @@ class _QuietHoursCard extends StatelessWidget {
                       onChanged(v, prefs.quietHoursEnd),
                 ),
               ),
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Icon(Icons.arrow_forward_rounded,
                     size: 16, color: AppColors.textMuted),
@@ -403,7 +403,7 @@ class _QuietHoursCard extends StatelessWidget {
 }
 
 class _HourDropdown extends StatelessWidget {
-  const _HourDropdown({
+         _HourDropdown({
     required this.value,
     required this.label,
     required this.onChanged,
@@ -420,7 +420,7 @@ class _HourDropdown extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style:        TextStyle(
             color: AppColors.textMuted,
             fontSize: 11,
             fontWeight: FontWeight.w700,
@@ -439,7 +439,7 @@ class _HourDropdown extends StatelessWidget {
               value: value,
               isExpanded: true,
               dropdownColor: const Color(0xFF0B1D31),
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary, fontSize: 13.5),
               items: [
                 for (var h = 0; h <= 23; h++)

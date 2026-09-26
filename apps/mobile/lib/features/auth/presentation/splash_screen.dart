@@ -175,7 +175,7 @@ class _BeatingLogo extends StatelessWidget {
           height: 96,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(28),
-            gradient: const LinearGradient(
+            gradient:        LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
@@ -292,7 +292,7 @@ class _EcgPainter extends CustomPainter {
       ..strokeWidth = 2.4
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..shader = const LinearGradient(
+      ..shader =        LinearGradient(
         colors: [AppColors.accent, AppColors.teal, AppColors.accent],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
@@ -361,7 +361,7 @@ class _ShimmerWordmarkState extends State<_ShimmerWordmark>
           shaderCallback: (bounds) => LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: const [
+            colors:        [
               Colors.white,
               AppColors.accent,
               Color(0xFFFBBF24), // âmbar da web (region-logo-accent)
@@ -456,7 +456,7 @@ class _ShimmerLinePainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.centerLeft,
         end: Alignment.centerRight,
-        colors: const [
+        colors:        [
           Colors.transparent,
           AppColors.teal,
           Color(0xFFFBBF24),

@@ -102,13 +102,13 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
                     const Icon(Icons.favorite_rounded,
                         color: Color(0xFFF43F5E)),
                     const SizedBox(width: 8),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Favoritos',
                         style: TextStyle(
@@ -120,12 +120,12 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                     ),
                     // Ponto "sync" — igual à web quando muda.
                     if (!_loading)
-                      const Icon(Icons.sync_rounded,
+                             Icon(Icons.sync_rounded,
                           size: 16, color: AppColors.textSecondary),
                   ],
                 ),
               ),
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.fromLTRB(20, 2, 20, 10),
                 child: Text(
                   'Sincronizado com a versão web, em tempo real',
@@ -192,7 +192,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
 // ── Cabeçalho de secção ────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.icon, required this.label});
+         _SectionHeader({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -207,7 +207,7 @@ class _SectionHeader extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label.toUpperCase(),
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textSecondary,
               fontSize: 11.5,
               fontWeight: FontWeight.w800,
@@ -223,7 +223,7 @@ class _SectionHeader extends StatelessWidget {
 // ── Cartão de farmácia ─────────────────────────────────────────────
 
 class _StoreCard extends StatelessWidget {
-  const _StoreCard({required this.fav, required this.onRemove});
+         _StoreCard({required this.fav, required this.onRemove});
 
   final FavoriteStore fav;
   final VoidCallback onRemove;
@@ -256,7 +256,7 @@ class _StoreCard extends StatelessWidget {
           fav.name,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style:        TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
             fontSize: 14.5,
@@ -272,7 +272,7 @@ class _StoreCard extends StatelessWidget {
             ].join(' · '),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style:        TextStyle(
                 color: AppColors.textSecondary, fontSize: 12),
           ),
         ),
@@ -298,7 +298,7 @@ class _StoreCard extends StatelessWidget {
           color: Color(0x1438BDF8),
           borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
-        child: const Icon(Icons.local_pharmacy_rounded,
+        child:        Icon(Icons.local_pharmacy_rounded,
             color: AppColors.accent, size: 22),
       );
 }
@@ -306,7 +306,7 @@ class _StoreCard extends StatelessWidget {
 // ── Cartão de produto ──────────────────────────────────────────────
 
 class _ProductCard extends StatelessWidget {
-  const _ProductCard({required this.fav});
+         _ProductCard({required this.fav});
 
   final FavoriteProduct fav;
 
@@ -338,7 +338,7 @@ class _ProductCard extends StatelessWidget {
           fav.name,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style:        TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
             fontSize: 14.5,
@@ -349,7 +349,7 @@ class _ProductCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 3),
                 child: Text(
                   '${fav.price!.toStringAsFixed(0)} MZN',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.accent,
                       fontWeight: FontWeight.w700,
                       fontSize: 12.5),
@@ -370,7 +370,7 @@ class _ProductCard extends StatelessWidget {
           color: Color(0x1438BDF8),
           borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
-        child: const Icon(Icons.medication_rounded,
+        child:        Icon(Icons.medication_rounded,
             color: AppColors.accent, size: 22),
       );
 }
@@ -396,7 +396,7 @@ class _EmptyFavorites extends StatelessWidget {
                 size: 44, color: Color(0xFFF43F5E)),
           ),
           const SizedBox(height: 18),
-          const Text(
+                 Text(
             'Ainda sem favoritos',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -405,7 +405,7 @@ class _EmptyFavorites extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          const Padding(
+                 Padding(
             padding: EdgeInsets.symmetric(horizontal: 40),
             child: Text(
               'Toca no ♥ no detalhe de uma farmácia — ou no site — '

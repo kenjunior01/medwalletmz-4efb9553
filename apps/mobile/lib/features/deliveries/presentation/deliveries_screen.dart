@@ -86,7 +86,7 @@ class _DeliveriesScreenState extends ConsumerState<DeliveriesScreen> {
         body: _loading
             ? ListView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                children: const [
+                children:        [
                   AppSkeleton(height: 120, radius: 20),
                   SizedBox(height: 14),
                   AppSkeleton(height: 110, radius: 18),
@@ -151,7 +151,7 @@ class _DeliveriesScreenState extends ConsumerState<DeliveriesScreen> {
 // ── Hero ──────────────────────────────────────────────────────────────
 
 class _HeroCard extends StatelessWidget {
-  const _HeroCard({required this.balance});
+         _HeroCard({required this.balance});
 
   final double balance;
 
@@ -160,7 +160,7 @@ class _HeroCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient:        LinearGradient(
           colors: [Color(0xFF1E6B9C), Color(0xFF124B70)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -218,7 +218,7 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.onRequest});
+         _EmptyState({required this.onRequest});
 
   final VoidCallback onRequest;
 
@@ -235,7 +235,7 @@ class _EmptyState extends StatelessWidget {
         children: [
           const Text('🛵', style: TextStyle(fontSize: 44)),
           const SizedBox(height: 10),
-          const Text('Ainda sem entregas',
+                 Text('Ainda sem entregas',
               style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
@@ -263,7 +263,7 @@ class _EmptyState extends StatelessWidget {
 // ── Cartão de entrega ─────────────────────────────────────────────────
 
 class _DeliveryCard extends StatelessWidget {
-  const _DeliveryCard({
+         _DeliveryCard({
     required this.delivery,
     required this.statusColor,
     required this.onTap,
@@ -312,7 +312,7 @@ class _DeliveryCard extends StatelessWidget {
                         Text(d.pickupName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 14,
                                 color: AppColors.textPrimary)),
@@ -386,7 +386,7 @@ class _DeliveryCard extends StatelessWidget {
 }
 
 class _MiniStat extends StatelessWidget {
-  const _MiniStat({required this.icon, required this.label});
+         _MiniStat({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -427,7 +427,7 @@ class _InfoCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.shield_rounded, size: 20, color: AppColors.teal),
+                 Icon(Icons.shield_rounded, size: 20, color: AppColors.teal),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -592,7 +592,7 @@ class _NewDeliverySheetState extends ConsumerState<_NewDeliverySheet> {
       child: Container(
         constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * .92),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           color: AppColors.bgMid,
           borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
         ),
@@ -616,7 +616,7 @@ class _NewDeliverySheetState extends ConsumerState<_NewDeliverySheet> {
                   Expanded(
                     child: Text(
                       ['Recolha', 'Destino', 'Encomenda', 'Revisão'][_step],
-                      style: const TextStyle(
+                      style:        TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: AppColors.textPrimary),
@@ -666,12 +666,12 @@ class _NewDeliverySheetState extends ConsumerState<_NewDeliverySheet> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline_rounded,
+                             Icon(Icons.error_outline_rounded,
                           size: 18, color: AppColors.danger),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(_error!,
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 fontSize: 12, color: AppColors.danger)),
                       ),
                     ],
@@ -743,7 +743,7 @@ class _NewDeliverySheetState extends ConsumerState<_NewDeliverySheet> {
                     selected: _pickupKind == k,
                     onSelected: (_) => setState(() => _pickupKind = k),
                     selectedColor: AppColors.primary.withOpacity(.35),
-                    labelStyle: const TextStyle(color: AppColors.textPrimary),
+                    labelStyle:        TextStyle(color: AppColors.textPrimary),
                     backgroundColor: AppColors.glassFill,
                   ))
               .toList(),
@@ -819,7 +819,7 @@ class _NewDeliverySheetState extends ConsumerState<_NewDeliverySheet> {
                     selected: _package == p,
                     onSelected: (_) => setState(() => _package = p),
                     selectedColor: AppColors.primary.withOpacity(.35),
-                    labelStyle: const TextStyle(color: AppColors.textPrimary),
+                    labelStyle:        TextStyle(color: AppColors.textPrimary),
                     backgroundColor: AppColors.glassFill,
                   ))
               .toList(),
@@ -834,7 +834,7 @@ class _NewDeliverySheetState extends ConsumerState<_NewDeliverySheet> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.ac_unit_rounded,
+                       Icon(Icons.ac_unit_rounded,
                     size: 18, color: AppColors.info),
                 const SizedBox(width: 8),
                 Expanded(
@@ -886,7 +886,7 @@ class _NewDeliverySheetState extends ConsumerState<_NewDeliverySheet> {
                     selected: _vehicleKey == e.key,
                     onSelected: (_) => setState(() => _vehicleKey = e.key),
                     selectedColor: AppColors.primary.withOpacity(.35),
-                    labelStyle: const TextStyle(color: AppColors.textPrimary),
+                    labelStyle:        TextStyle(color: AppColors.textPrimary),
                     backgroundColor: AppColors.glassFill,
                   ))
               .toList(),
@@ -905,7 +905,7 @@ class _NewDeliverySheetState extends ConsumerState<_NewDeliverySheet> {
                   '${_distanceKm.toStringAsFixed(1)} km'),
               _QuoteRow('Cadeia de frio',
                   _package.coldChain ? '+${formatMZN(30)}' : '—'),
-              const Divider(height: 18, color: AppColors.glassBorder),
+                     Divider(height: 18, color: AppColors.glassBorder),
               _QuoteRow('Total a pagar da carteira',
                   formatMZN(quote.fee),
                   bold: true),
@@ -946,7 +946,7 @@ class _FieldLabel extends StatelessWidget {
 }
 
 class _Field extends StatelessWidget {
-  const _Field({
+         _Field({
     required this.controller,
     required this.hint,
     this.keyboard,
@@ -964,7 +964,7 @@ class _Field extends StatelessWidget {
       controller: controller,
       keyboardType: keyboard,
       maxLines: maxLines,
-      style: const TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
+      style:        TextStyle(color: AppColors.textPrimary, fontSize: 13.5),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 13),
@@ -978,7 +978,7 @@ class _Field extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary),
+          borderSide:        BorderSide(color: AppColors.primary),
         ),
       ),
     );
@@ -986,7 +986,7 @@ class _Field extends StatelessWidget {
 }
 
 class _MapPickTile extends StatelessWidget {
-  const _MapPickTile({
+         _MapPickTile({
     required this.label,
     required this.hasPoint,
     required this.onTap,
@@ -1041,7 +1041,7 @@ class _MapPickTile extends StatelessWidget {
 }
 
 class _RouteSummary extends StatelessWidget {
-  const _RouteSummary({
+         _RouteSummary({
     required this.pickupKind,
     required this.pickupName,
     required this.dropName,
@@ -1073,7 +1073,7 @@ class _RouteSummary extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(pickupName,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary)),
@@ -1107,7 +1107,7 @@ class _RouteSummary extends StatelessWidget {
               Expanded(
                 child: Text(
                   dropAddr.isEmpty ? dropName : '$dropName · $dropAddr',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary),
@@ -1122,7 +1122,7 @@ class _RouteSummary extends StatelessWidget {
 }
 
 class _QuoteRow extends StatelessWidget {
-  const _QuoteRow(this.label, this.value, {this.bold = false});
+         _QuoteRow(this.label, this.value, {this.bold = false});
 
   final String label;
   final String value;

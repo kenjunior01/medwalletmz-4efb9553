@@ -1,27 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/branding/branding.dart';
 import 'core/config.dart';
 import 'core/router/app_router.dart';
 import 'core/security/app_lock_service.dart';
+import 'core/theme/app_palette.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_controller.dart';
 
-/// Raiz da app — aplica o tema dark glassmorphism com a PALETA EFECTIVA
-/// do país do utilizador (countries.branding_config). Quando o gestor
-/// regional publica novas cores na Consola, a app veste a bandeira.
-class MedWalletApp extends ConsumerWidget {
+/// Raiz da app — F33: MODOS (sistema/claro/escuro) + paleta efectiva
+/// do país (countries.branding_config). A paleta resolvida é aplicada
+/// nos tokens globais (AppColors) ANTES de construir o MaterialApp, e
+/// os dois temas (claro/escuro) partilham a mesma gramática visual.
+/// Quando o gestor regional publica novas cores na Consola, a app veste
+/// a bandeira — em ambos os modos.
+class MedWalletApp extends ConsumerStatefulWidget {
   const MedWalletApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final palette = ref.watch(effectivePaletteProvider);
+  ConsumerState<MedWalletApp> createState() => _MedWalletAppState();
+}
+
+class _MedWalletAppState extends ConsumerState<MedWalletApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // Tema "Sistema": segue a mudança de brilho do SO em tempo real.
+  @override
+  void didChangePlatformBrightness() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mode = ref.watch(appThemeModeProvider);
+    final branding = ref.watch(effectivePaletteProvider);
+
+    final platformBright =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final brightness = resolveBrightness(mode, platformBright);
+
+    final palette = AppPalette.resolve(
+      brightness: brightness,
+      branding: branding,
+    );
+    // Tokens dinâmicos (AppColors.*) coerentes com o modo em toda a
+    // árvore — os getters reavaliam a cada rebuild do MaterialApp.
+    AppColors.apply(palette);
+
+    // Ícones da status bar acompanham o modo (claro → ícones escuros).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness:
+            brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+        statusBarBrightness: brightness, // iOS
+      ));
+    });
+
+    final themeMode = switch (mode) {
+      AppThemeMode.system => ThemeMode.system,
+      AppThemeMode.light => ThemeMode.light,
+      AppThemeMode.dark => ThemeMode.dark,
+    };
 
     return MaterialApp.router(
       title: 'MedWallet MZ',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark(palette),
-      themeMode: ThemeMode.dark,
+      theme: AppTheme.light(palette),
+      darkTheme: AppTheme.dark(palette),
+      themeMode: themeMode,
       routerConfig: router,
       builder: (context, child) {
         // Aviso explícito se correr sem as dart-defines de ambiente.

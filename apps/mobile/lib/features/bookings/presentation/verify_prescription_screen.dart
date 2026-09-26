@@ -14,7 +14,7 @@ import '../../../core/widgets/gradient_button.dart';
 
 /// Resultado do RPC `verify_prescription(_code)` (público na BD).
 class PrescriptionCheck {
-  const PrescriptionCheck({
+         PrescriptionCheck({
     required this.code,
     required this.status,
     required this.isValid,
@@ -105,10 +105,10 @@ class _VerifyPrescriptionScreenState
                   children: [
                     IconButton(
                       onPressed: () => Navigator.of(context).maybePop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Text(
+                           Text(
                       'Verificar receita',
                       style: TextStyle(
                         color: AppColors.textPrimary,
@@ -126,7 +126,7 @@ class _VerifyPrescriptionScreenState
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(colors: [
+                        gradient:        LinearGradient(colors: [
                           Color(0x331E6B9C),
                           Color(0x1414B8A6),
                         ]),
@@ -135,7 +135,7 @@ class _VerifyPrescriptionScreenState
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.verified_user_rounded,
+                                 Icon(Icons.verified_user_rounded,
                               color: AppColors.accent, size: 26),
                           const SizedBox(width: 14),
                           Expanded(
@@ -155,7 +155,7 @@ class _VerifyPrescriptionScreenState
                     TextField(
                       controller: _codeCtrl,
                       textCapitalization: TextCapitalization.characters,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
@@ -294,7 +294,7 @@ class _VerifyPrescriptionScreenState
               width: 108,
               child: Text(
                 label,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textMuted, fontSize: 12.5),
               ),
             ),
@@ -362,7 +362,7 @@ class _VerifyPrescriptionScreenState
 
 /// Cartão de estado (erro) com o mesmo estilo do resultado.
 class _StatusCard extends StatelessWidget {
-  const _StatusCard({
+         _StatusCard({
     required this.icon,
     required this.color,
     required this.title,

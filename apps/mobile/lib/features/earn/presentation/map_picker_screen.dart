@@ -79,10 +79,10 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Toque no mapa para marcar',
                         style: TextStyle(
@@ -95,7 +95,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                     IconButton(
                       onPressed: _useGps,
                       tooltip: 'Minha localização',
-                      icon: const Icon(Icons.gps_fixed_rounded,
+                      icon:        Icon(Icons.gps_fixed_rounded,
                           color: AppColors.accent),
                     ),
                   ],
@@ -129,7 +129,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                             ? 'Nenhum local marcado'
                             : '${_selected!.latitude.toStringAsFixed(6)}, '
                                 '${_selected!.longitude.toStringAsFixed(6)}',
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12.5,
                         ),
@@ -142,11 +142,11 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                         height: 46,
                         decoration: BoxDecoration(
                           gradient: _selected == null
-                              ? const LinearGradient(colors: [
+                              ?        LinearGradient(colors: [
                                   Color(0xFF22344A),
                                   Color(0xFF1A2939)
                                 ])
-                              : const LinearGradient(
+                              :        LinearGradient(
                                   colors: AppColors.buttonGradient),
                           shape: BoxShape.circle,
                         ),
@@ -182,11 +182,11 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
               children: [
                 IconButton(
                   onPressed: () => context.pop(),
-                  icon: const Icon(Icons.arrow_back_rounded,
+                  icon:        Icon(Icons.arrow_back_rounded,
                       color: AppColors.textPrimary),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                       Text(
                   'Coordenadas da instituição',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -209,7 +209,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                 TextField(
                   controller: latCtrl,
                   keyboardType: TextInputType.text,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style:        TextStyle(color: AppColors.textPrimary),
                   decoration:
                       const InputDecoration(hintText: 'Latitude (ex.: -25.9692)'),
                 ),
@@ -217,7 +217,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                 TextField(
                   controller: lngCtrl,
                   keyboardType: TextInputType.text,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style:        TextStyle(color: AppColors.textPrimary),
                   decoration:
                       const InputDecoration(hintText: 'Longitude (ex.: 32.5732)'),
                 ),

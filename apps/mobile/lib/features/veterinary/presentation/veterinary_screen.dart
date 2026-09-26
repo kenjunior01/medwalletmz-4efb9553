@@ -8,7 +8,7 @@ import '../../../core/theme/app_colors.dart';
 /// dados mock no cliente — mantemos a mesma abordagem até existir uma
 /// tabela dedicada (zero alterações de backend).
 class _Vet {
-  const _Vet({
+         _Vet({
     required this.name,
     required this.specialty,
     required this.address,
@@ -117,12 +117,12 @@ class _VeterinaryScreenState extends State<VeterinaryScreen> {
             const SizedBox(height: 14),
             TextField(
               onChanged: (v) => setState(() => _search = v),
-              style: const TextStyle(color: AppColors.textPrimary),
+              style:        TextStyle(color: AppColors.textPrimary),
               decoration: InputDecoration(
                 hintText: 'Procurar clínica ou especialidade…',
-                hintStyle: const TextStyle(color: AppColors.textMuted),
+                hintStyle:        TextStyle(color: AppColors.textMuted),
                 prefixIcon:
-                    const Icon(Icons.search_rounded, color: AppColors.textMuted),
+                           Icon(Icons.search_rounded, color: AppColors.textMuted),
                 filled: true,
                 fillColor: AppColors.glassFill,
                 enabledBorder: OutlineInputBorder(
@@ -131,13 +131,13 @@ class _VeterinaryScreenState extends State<VeterinaryScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppColors.accent),
+                  borderSide:        BorderSide(color: AppColors.accent),
                 ),
               ),
             ),
             const SizedBox(height: 14),
             if (filtered.isEmpty)
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.symmetric(vertical: 48),
                 child: Column(
                   children: [
@@ -159,7 +159,7 @@ class _VeterinaryScreenState extends State<VeterinaryScreen> {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.glassBorder),
               ),
-              child: const Text(
+              child:        Text(
                 'ℹ️ A tua clínica veterinária aparece aqui — fala com o gestor '
                 'regional da tua província para ser verificada e listada.',
                 style: TextStyle(color: AppColors.textMuted,
@@ -208,13 +208,13 @@ class _VetCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(vet.name,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w800,
                             fontSize: 14)),
                     const SizedBox(height: 2),
                     Text(vet.specialty,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textSecondary, fontSize: 12)),
                   ],
                 ),
@@ -223,18 +223,18 @@ class _VetCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded,
+                             Icon(Icons.star_rounded,
                           color: AppColors.warning, size: 15),
                       const SizedBox(width: 2),
                       Text(vet.rating.toStringAsFixed(1),
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.warning,
                               fontWeight: FontWeight.w800,
                               fontSize: 12.5)),
                     ],
                   ),
                   Text('${vet.reviews} avaliações',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 10)),
                 ],
               ),
@@ -243,12 +243,12 @@ class _VetCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.location_on_rounded,
+                     Icon(Icons.location_on_rounded,
                   size: 14, color: AppColors.textMuted),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(vet.address,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted, fontSize: 12)),
               ),
             ],
@@ -266,7 +266,7 @@ class _VetCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(s,
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.accent,
                               fontSize: 10.5,
                               fontWeight: FontWeight.w700)),
@@ -276,10 +276,10 @@ class _VetCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.verified_rounded,
+                     Icon(Icons.verified_rounded,
                   size: 14, color: AppColors.success),
               const SizedBox(width: 4),
-              const Text('Parceiro verificado pela equipa regional',
+                     Text('Parceiro verificado pela equipa regional',
                   style: TextStyle(color: AppColors.success, fontSize: 11.5)),
             ],
           ),

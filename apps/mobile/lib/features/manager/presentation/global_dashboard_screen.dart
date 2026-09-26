@@ -43,11 +43,11 @@ class _GlobalDashboardScreenState
         child: SafeArea(
           bottom: false,
           child: access.when(
-            loading: () => const Center(
+            loading: () =>        Center(
               child:
                   CircularProgressIndicator(color: AppColors.accent),
             ),
-            error: (e, _) => const Center(
+            error: (e, _) =>        Center(
               child: Text('Erro ao verificar papéis.',
                   style: TextStyle(color: AppColors.textSecondary)),
             ),
@@ -70,7 +70,7 @@ class _GlobalDashboardScreenState
                 );
               }
 
-              final list = countries.value ?? const <CountryFull>[];
+              final list = countries.value ??        <CountryFull>[];
               final stats = globalStats.value ?? const {};
 
               // Totais agregados.
@@ -186,7 +186,7 @@ class _GlobalDashboardScreenState
                         border: Border.all(
                             color: const Color(0x4D38BDF8)),
                       ),
-                      child: const Row(
+                      child:        Row(
                         children: [
                           Icon(Icons.auto_awesome_rounded,
                               color: Color(0xFF38BDF8), size: 22),
@@ -210,7 +210,7 @@ class _GlobalDashboardScreenState
                   // ── Tabs ─────────────────────────────────────────
                   Row(
                     children: [
-                      for (final (k, l) in const [
+                      for (final (k, l) in        [
                         ('paises', 'Países'),
                         ('pagamentos', 'Pagamentos'),
                         ('sos', 'SOS'),
@@ -246,7 +246,7 @@ class _GlobalDashboardScreenState
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.onBack});
+         _Header({required this.onBack});
 
   final VoidCallback onBack;
 
@@ -256,10 +256,10 @@ class _Header extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onBack,
-          icon: const Icon(Icons.arrow_back_rounded,
+          icon:        Icon(Icons.arrow_back_rounded,
               color: AppColors.textPrimary),
         ),
-        const Expanded(
+               Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -289,7 +289,7 @@ class _Header extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: const Color(0x4D22C55E)),
           ),
-          child: const Text(
+          child:        Text(
             'ADMIN',
             style: TextStyle(
               color: AppColors.success,
@@ -305,7 +305,7 @@ class _Header extends StatelessWidget {
 }
 
 class _UrgencyTile extends StatelessWidget {
-  const _UrgencyTile({
+         _UrgencyTile({
     required this.icon,
     required this.label,
     required this.value,
@@ -370,7 +370,7 @@ class _UrgencyTile extends StatelessWidget {
 }
 
 class _CountriesTable extends ConsumerWidget {
-  const _CountriesTable({
+         _CountriesTable({
     required this.countries,
     required this.stats,
     required this.isLoading,
@@ -435,7 +435,7 @@ class _CountriesTable extends ConsumerWidget {
                       children: [
                         Text(
                           c.name,
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: 13,
@@ -474,7 +474,7 @@ class _CountriesTable extends ConsumerWidget {
                         ),
                       ),
                     ),
-                  const Icon(Icons.chevron_right_rounded,
+                         Icon(Icons.chevron_right_rounded,
                       color: AppColors.textSecondary, size: 20),
                 ],
               ),
@@ -582,7 +582,7 @@ class _TeamPanelState extends ConsumerState<TeamPanel> {
                     backgroundColor: const Color(0x2E22C55E),
                     child: Text(
                       initials(a.fullName ?? '?'),
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.success,
                         fontSize: 11.5,
                         fontWeight: FontWeight.w800,
@@ -596,7 +596,7 @@ class _TeamPanelState extends ConsumerState<TeamPanel> {
                       children: [
                         Text(
                           a.fullName ?? a.userId.substring(0, 8),
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: 13,

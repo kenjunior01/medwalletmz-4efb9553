@@ -107,7 +107,7 @@ class _VisionScannerScreenState extends ConsumerState<VisionScannerScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              const Text(
+                     Text(
                 'Fotografa um documento de saúde e a IA extrai os dados '
                 'automaticamente — receitas, exames, rótulos e vacinas.',
                 style: TextStyle(
@@ -149,7 +149,7 @@ class _VisionScannerScreenState extends ConsumerState<VisionScannerScreen> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: AppColors.glassBorder),
                   ),
-                  child: const Row(
+                  child:        Row(
                     children: [
                       SizedBox(
                         width: 20,
@@ -195,7 +195,7 @@ class _VisionScannerScreenState extends ConsumerState<VisionScannerScreen> {
 // ── Componentes ─────────────────────────────────────────────────────────
 
 class _TypeSelector extends StatelessWidget {
-  const _TypeSelector({required this.selected, required this.onSelect});
+         _TypeSelector({required this.selected, required this.onSelect});
   final String selected;
   final void Function(String) onSelect;
 
@@ -222,7 +222,7 @@ class _TypeSelector extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
             decoration: BoxDecoration(
               gradient: active
-                  ? const LinearGradient(colors: AppColors.buttonGradient)
+                  ?        LinearGradient(colors: AppColors.buttonGradient)
                   : null,
               color: active ? null : AppColors.glassFill,
               borderRadius: BorderRadius.circular(12),
@@ -255,7 +255,7 @@ class _TypeSelector extends StatelessWidget {
 }
 
 class _CaptureButton extends StatelessWidget {
-  const _CaptureButton(
+         _CaptureButton(
       {required this.icon, required this.label, required this.onTap});
   final IconData icon;
   final String label;
@@ -268,9 +268,9 @@ class _CaptureButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: AppColors.buttonGradient),
+          gradient:        LinearGradient(colors: AppColors.buttonGradient),
           borderRadius: BorderRadius.circular(16),
-          boxShadow: const [BoxShadow(color: AppColors.glowBlue, blurRadius: 18)],
+          boxShadow:        [BoxShadow(color: AppColors.glowBlue, blurRadius: 18)],
         ),
         child: Column(
           children: [
@@ -302,7 +302,7 @@ class _NoKeyHint extends StatelessWidget {
         border:
             Border.all(color: AppColors.warning.withOpacity(0.35)),
       ),
-      child: const Row(
+      child:        Row(
         children: [
           Icon(Icons.info_outline_rounded, color: AppColors.warning, size: 20),
           SizedBox(width: 10),
@@ -323,7 +323,7 @@ class _NoKeyHint extends StatelessWidget {
 }
 
 class _HistoryList extends StatelessWidget {
-  const _HistoryList({
+         _HistoryList({
     required this.loading,
     required this.scans,
     required this.onTap,
@@ -352,7 +352,7 @@ class _HistoryList extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.glassBorder),
         ),
-        child: const Center(
+        child:        Center(
           child: Text(
             'Ainda sem scans.\nFotografa a tua primeira receita acima 👆',
             textAlign: TextAlign.center,
@@ -373,7 +373,7 @@ class _HistoryList extends StatelessWidget {
 }
 
 class _HistoryTile extends StatelessWidget {
-  const _HistoryTile({required this.scan, required this.onTap});
+         _HistoryTile({required this.scan, required this.onTap});
   final VisionScan scan;
   final VoidCallback onTap;
 
@@ -397,7 +397,7 @@ class _HistoryTile extends StatelessWidget {
                 color: AppColors.primarySoft.withOpacity(0.18),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.image_rounded,
+              child:        Icon(Icons.image_rounded,
                   color: AppColors.accent, size: 22),
             ),
             const SizedBox(width: 12),
@@ -411,7 +411,7 @@ class _HistoryTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     formatDateTime(scan.createdAt),
-                    style: const TextStyle(
+                    style:        TextStyle(
                         fontSize: 12, color: AppColors.textMuted),
                   ),
                 ],
@@ -425,12 +425,12 @@ class _HistoryTile extends StatelessWidget {
                   color: AppColors.warning.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text('Pendente',
+                child:        Text('Pendente',
                     style: TextStyle(
                         fontSize: 10.5, color: AppColors.warning)),
               )
             else
-              const Icon(Icons.chevron_right_rounded,
+                     Icon(Icons.chevron_right_rounded,
                   color: AppColors.textMuted),
           ],
         ),
@@ -440,7 +440,7 @@ class _HistoryTile extends StatelessWidget {
 }
 
 class _ResultSheet extends ConsumerStatefulWidget {
-  const _ResultSheet({required this.scan});
+         _ResultSheet({required this.scan});
   final VisionScan scan;
 
   @override
@@ -485,7 +485,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> {
     return Container(
       constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.86),
-      decoration: const BoxDecoration(
+      decoration:        BoxDecoration(
         color: AppColors.bgMid,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -531,7 +531,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: AppColors.glassBorder),
                     ),
-                    child: const Text(
+                    child:        Text(
                       'Análise IA pendente — o documento ficou guardado e '
                       'podes re-analisar quando a chave IA estiver activa.',
                       style: TextStyle(
@@ -558,13 +558,13 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> {
                   if (_scan.confidenceScore != null)
                     Row(
                       children: [
-                        const Icon(Icons.verified_rounded,
+                               Icon(Icons.verified_rounded,
                             size: 16, color: AppColors.success),
                         const SizedBox(width: 6),
                         Text(
                           'Confiança da IA: '
                           '${(_scan.confidenceScore! * 100).round()}%',
-                          style: const TextStyle(
+                          style:        TextStyle(
                               fontSize: 12.5,
                               color: AppColors.textSecondary),
                         ),
@@ -599,7 +599,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> {
                                   if (m.duration != null)
                                     'durante ${m.duration!}',
                                 ].join(' · '),
-                                style: const TextStyle(
+                                style:        TextStyle(
                                     fontSize: 12.5,
                                     color: AppColors.textSecondary),
                               ),
@@ -647,7 +647,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> {
                                 const SizedBox(width: 8),
                                 if (r.referenceRange != null)
                                   Text(r.referenceRange!,
-                                      style: const TextStyle(
+                                      style:        TextStyle(
                                           fontSize: 11,
                                           color: AppColors.textMuted)),
                               ],
@@ -661,7 +661,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> {
                   if (_scan.extractedData['summary'] is String)
                     Text(
                       _scan.extractedData['summary'] as String,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           fontSize: 13.5,
                           height: 1.5,
                           color: AppColors.textSecondary),
@@ -680,7 +680,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> {
                           if (_scan.detectedDate != null)
                             '📅 ${_scan.detectedDate}',
                         ].join('\n'),
-                        style: const TextStyle(
+                        style:        TextStyle(
                             fontSize: 12.5, color: AppColors.textMuted),
                       ),
                     ),

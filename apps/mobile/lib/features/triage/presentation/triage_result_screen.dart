@@ -76,10 +76,10 @@ class TriageResultScreen extends ConsumerWidget {
                 children: [
                   IconButton(
                     onPressed: () => context.pop(),
-                    icon: const Icon(Icons.arrow_back_rounded,
+                    icon:        Icon(Icons.arrow_back_rounded,
                         color: AppColors.textPrimary),
                   ),
-                  const Expanded(
+                         Expanded(
                     child: Text(
                       'Resultado da triagem',
                       style: TextStyle(
@@ -156,7 +156,7 @@ class TriageResultScreen extends ConsumerWidget {
               // ── Recomendação ─────────────────────────────────────
               Text(
                 result.recommendation,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 14.5,
                   height: 1.6,
@@ -179,7 +179,7 @@ class TriageResultScreen extends ConsumerWidget {
               // ── Sinais de alarme ─────────────────────────────────
               if (result.redFlags.isNotEmpty) ...[
                 const SizedBox(height: 18),
-                const _SectionHeading(
+                       _SectionHeading(
                     title: 'Sinais de alarme', color: AppColors.danger),
                 ...result.redFlags.map((f) => _Bullet(text: f, color: color)),
               ],
@@ -187,7 +187,7 @@ class TriageResultScreen extends ConsumerWidget {
               // ── Auto-cuidados ────────────────────────────────────
               if (result.selfCare.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                const _SectionHeading(
+                       _SectionHeading(
                     title: 'Auto-cuidados', color: AppColors.success),
                 ...result.selfCare.map((f) => _Bullet(
                     text: f, color: AppColors.success)),
@@ -196,7 +196,7 @@ class TriageResultScreen extends ConsumerWidget {
               // ── Causas possíveis ─────────────────────────────────
               if (result.possibleCauses.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                const _SectionHeading(
+                       _SectionHeading(
                     title: 'Causas possíveis', color: AppColors.accent),
                 ...result.possibleCauses
                     .map((f) => _Bullet(text: f, color: AppColors.accent)),
@@ -212,13 +212,13 @@ class TriageResultScreen extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.schedule_rounded,
+                             Icon(Icons.schedule_rounded,
                           color: AppColors.warning, size: 17),
                       const SizedBox(width: 9),
                       Expanded(
                         child: Text(
                           result.whenToSeekHelp!,
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 12.5,
                               height: 1.45),
@@ -248,7 +248,7 @@ class TriageResultScreen extends ConsumerWidget {
 
               // ── Histórico ────────────────────────────────────────
               const SizedBox(height: 26),
-              const Text(
+                     Text(
                 'HISTÓRICO DE TRIAGENS',
                 style: TextStyle(
                   color: AppColors.textMuted,
@@ -290,7 +290,7 @@ class TriageResultScreen extends ConsumerWidget {
 // ── Cartão da especialidade recomendada ─────────────────────────────────
 
 class _SpecialtyCard extends StatelessWidget {
-  const _SpecialtyCard({required this.specialty});
+         _SpecialtyCard({required this.specialty});
 
   final Specialty specialty;
 
@@ -307,7 +307,7 @@ class _SpecialtyCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+                 Row(
             children: [
               Icon(Icons.recommend_rounded,
                   color: AppColors.accent, size: 19),
@@ -337,7 +337,7 @@ class _SpecialtyCard extends StatelessWidget {
                   children: [
                     Text(
                       specialty.name,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
@@ -378,7 +378,7 @@ class _SpecialtyCard extends StatelessWidget {
 }
 
 class _SectionHeading extends StatelessWidget {
-  const _SectionHeading({required this.title, required this.color});
+         _SectionHeading({required this.title, required this.color});
 
   final String title;
   final Color color;
@@ -397,7 +397,7 @@ class _SectionHeading extends StatelessWidget {
 }
 
 class _Bullet extends StatelessWidget {
-  const _Bullet({required this.text, required this.color});
+         _Bullet({required this.text, required this.color});
 
   final String text;
   final Color color;
@@ -413,7 +413,7 @@ class _Bullet extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12.5,
                   height: 1.4),
@@ -426,7 +426,7 @@ class _Bullet extends StatelessWidget {
 }
 
 class _HistoryCard extends StatelessWidget {
-  const _HistoryCard({required this.log});
+         _HistoryCard({required this.log});
 
   final TriageLog log;
 
@@ -467,7 +467,7 @@ class _HistoryCard extends StatelessWidget {
                   log.symptoms,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 12.8,
                     fontWeight: FontWeight.w600,

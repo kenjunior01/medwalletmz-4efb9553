@@ -99,10 +99,10 @@ class _FacilityInboxScreenState extends ConsumerState<FacilityInboxScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Inbox das instituições',
                         style: TextStyle(
@@ -114,7 +114,7 @@ class _FacilityInboxScreenState extends ConsumerState<FacilityInboxScreen> {
                     ),
                     IconButton(
                       onPressed: _load,
-                      icon: const Icon(Icons.refresh_rounded,
+                      icon:        Icon(Icons.refresh_rounded,
                           color: AppColors.textSecondary),
                     ),
                   ],
@@ -153,7 +153,7 @@ class _FacilityInboxScreenState extends ConsumerState<FacilityInboxScreen> {
             'Ainda não possuis instituições registadas na plataforma. Regista a tua farmácia/clinica no portal web para responder aos clientes aqui.',
       );
     }
-    final convos = _conversations ?? const <FacilityConversation>[];
+    final convos = _conversations ??        <FacilityConversation>[];
     final ownerLabel =
         owned.length == 1 ? owned.first.name : 'as tuas instituições';
 
@@ -182,12 +182,12 @@ class _FacilityInboxScreenState extends ConsumerState<FacilityInboxScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.store_rounded,
+                               Icon(Icons.store_rounded,
                             color: AppColors.accent, size: 14),
                         const SizedBox(width: 6),
                         Text(
                           o.name,
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.accent,
                             fontSize: 11.5,
                             fontWeight: FontWeight.w800,
@@ -216,7 +216,7 @@ class _FacilityInboxScreenState extends ConsumerState<FacilityInboxScreen> {
 }
 
 class _ConvTile extends StatelessWidget {
-  const _ConvTile({required this.conversation});
+         _ConvTile({required this.conversation});
 
   final FacilityConversation conversation;
 
@@ -271,7 +271,7 @@ class _ConvTile extends StatelessWidget {
                 border:
                     Border.all(color: AppColors.accent.withOpacity(0.35)),
               ),
-              child: const Icon(Icons.person_rounded,
+              child:        Icon(Icons.person_rounded,
                   color: AppColors.accent, size: 22),
             ),
             const SizedBox(width: 12),
@@ -286,7 +286,7 @@ class _ConvTile extends StatelessWidget {
                           c.facilityName ?? 'Instituição',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
@@ -296,7 +296,7 @@ class _ConvTile extends StatelessWidget {
                       if (c.lastMessageAt != null)
                         Text(
                           formatTimeOnly(c.lastMessageAt!),
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textMuted, fontSize: 11),
                         ),
                     ],
@@ -328,7 +328,7 @@ class _ConvTile extends StatelessWidget {
                         Container(
                           width: 9,
                           height: 9,
-                          decoration: const BoxDecoration(
+                          decoration:        BoxDecoration(
                             shape: BoxShape.circle,
                             color: AppColors.accent,
                           ),

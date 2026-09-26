@@ -33,7 +33,7 @@ void showConfetti(BuildContext context, {String? message}) {
 }
 
 class _ConfettiOverlay extends StatefulWidget {
-  const _ConfettiOverlay({required this.onDone, this.message});
+         _ConfettiOverlay({required this.onDone, this.message});
 
   final VoidCallback onDone;
   final String? message;
@@ -56,7 +56,7 @@ class _ConfettiOverlayState extends State<_ConfettiOverlay>
       ..forward();
 
     final rng = math.Random();
-    const palette = [
+    final palette = [
       AppColors.accent,
       AppColors.teal,
       AppColors.success,
@@ -124,7 +124,7 @@ class _ConfettiOverlayState extends State<_ConfettiOverlay>
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                                 color: AppColors.glassHighlight),
-                            boxShadow: const [
+                            boxShadow:        [
                               BoxShadow(
                                   color: AppColors.glowCyan, blurRadius: 24),
                             ],
@@ -132,7 +132,7 @@ class _ConfettiOverlayState extends State<_ConfettiOverlay>
                           child: Text(
                             widget.message!,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.w800,

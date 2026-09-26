@@ -35,10 +35,10 @@ class EarnHomeScreen extends ConsumerWidget {
                 children: [
                   IconButton(
                     onPressed: () => context.pop(),
-                    icon: const Icon(Icons.arrow_back_rounded,
+                    icon:        Icon(Icons.arrow_back_rounded,
                         color: AppColors.textPrimary),
                   ),
-                  const Expanded(
+                         Expanded(
                     child: Text(
                       'Ganhe com o MedWallet',
                       style: TextStyle(
@@ -84,7 +84,7 @@ class EarnHomeScreen extends ConsumerWidget {
                                 'ATÉ '
                                 '${AppConfig.rewardPerProposal.toStringAsFixed(0)} '
                                 'MT POR INSTITUIÇÃO',
-                                style: const TextStyle(
+                                style:        TextStyle(
                                   color: AppColors.success,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
@@ -92,7 +92,7 @@ class EarnHomeScreen extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              const Text(
+                                     Text(
                                 'Dinheiro real, sem pontos nem moedas '
                                 'virtuais: creditado directamente na tua '
                                 'carteira na moeda do país.',
@@ -105,7 +105,7 @@ class EarnHomeScreen extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        const Icon(Icons.savings_rounded,
+                               Icon(Icons.savings_rounded,
                             color: AppColors.success, size: 42),
                       ],
                     ),
@@ -146,7 +146,7 @@ class EarnHomeScreen extends ConsumerWidget {
               const SizedBox(height: 22),
 
               // ── Como funciona ────────────────────────────────────
-              const Text(
+                     Text(
                 'COMO FUNCIONA',
                 style: TextStyle(
                   color: AppColors.textMuted,
@@ -180,7 +180,7 @@ class EarnHomeScreen extends ConsumerWidget {
               const SizedBox(height: 22),
 
               // ── As minhas submissões ─────────────────────────────
-              const Text(
+                     Text(
                 'AS MINHAS SUBMISSÕES',
                 style: TextStyle(
                   color: AppColors.textMuted,
@@ -210,7 +210,7 @@ class EarnHomeScreen extends ConsumerWidget {
                       ),
                       child: Column(
                         children: [
-                          const Icon(Icons.travel_explore_rounded,
+                                 Icon(Icons.travel_explore_rounded,
                               color: AppColors.accent, size: 32),
                           const SizedBox(height: 8),
                           Text(
@@ -240,7 +240,7 @@ class EarnHomeScreen extends ConsumerWidget {
                     color: AppColors.warning.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
+                  child:        Text(
                     'Tens o máximo de submissões em análise '
                     '(${AppConfig.maxPendingPerUser}). Espera pelas '
                     'avaliações para continuar.',
@@ -260,7 +260,7 @@ class EarnHomeScreen extends ConsumerWidget {
 // ── Peças ───────────────────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({
+         _StatCard({
     required this.label,
     required this.value,
     required this.color,
@@ -309,7 +309,7 @@ class _StatCard extends StatelessWidget {
 }
 
 class _HowStep extends StatelessWidget {
-  const _HowStep({required this.n, required this.text});
+         _HowStep({required this.n, required this.text});
 
   final int n;
   final String text;
@@ -331,7 +331,7 @@ class _HowStep extends StatelessWidget {
             ),
             child: Text(
               '$n',
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.accent,
                 fontWeight: FontWeight.w800,
                 fontSize: 12,
@@ -356,7 +356,7 @@ class _HowStep extends StatelessWidget {
 }
 
 class _ProposalCard extends StatelessWidget {
-  const _ProposalCard({required this.p});
+         _ProposalCard({required this.p});
 
   final PlaceProposal p;
 
@@ -394,7 +394,7 @@ class _ProposalCard extends StatelessWidget {
                   p.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 13.8,

@@ -13,7 +13,7 @@ import 'prescriptions_controller.dart';
 /// instruções. Grava em `prescriptions` + `prescription_items` e
 /// notifica o paciente no chat com o código de verificação.
 class PrescriptionComposerSheet extends ConsumerStatefulWidget {
-  const PrescriptionComposerSheet({
+         PrescriptionComposerSheet({
     super.key,
     required this.patientId,
     required this.consultationId,
@@ -104,7 +104,7 @@ class _PrescriptionComposerSheetState
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.9,
       ),
-      decoration: const BoxDecoration(
+      decoration:        BoxDecoration(
         gradient: LinearGradient(colors: [AppColors.bgHigh, AppColors.bgDeep]),
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
@@ -131,10 +131,10 @@ class _PrescriptionComposerSheetState
         children: [
           Row(
             children: [
-              const Icon(Icons.receipt_long_rounded,
+                     Icon(Icons.receipt_long_rounded,
                   color: AppColors.accent, size: 22),
               const SizedBox(width: 10),
-              const Expanded(
+                     Expanded(
                 child: Text(
                   'Emitir receita',
                   style: TextStyle(
@@ -146,7 +146,7 @@ class _PrescriptionComposerSheetState
               ),
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.close_rounded,
+                icon:        Icon(Icons.close_rounded,
                     color: AppColors.textMuted),
               ),
             ],
@@ -190,7 +190,7 @@ class _PrescriptionComposerSheetState
           TextField(
             controller: _notesCtrl,
             maxLines: 2,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style:        TextStyle(color: AppColors.textPrimary),
             decoration: const InputDecoration(
               hintText: 'Observações para o paciente (opcional)',
             ),
@@ -231,11 +231,11 @@ class _PrescriptionComposerSheetState
               shape: BoxShape.circle,
               color: Color(0x1A22C55E),
             ),
-            child: const Icon(Icons.check_circle_rounded,
+            child:        Icon(Icons.check_circle_rounded,
                 color: AppColors.success, size: 40),
           ),
           const SizedBox(height: 16),
-          const Text(
+                 Text(
             'Receita emitida!',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -287,7 +287,7 @@ class _ItemForm {
 }
 
 class _ItemCard extends StatelessWidget {
-  const _ItemCard({
+         _ItemCard({
     required this.index,
     required this.form,
     this.onChanged,
@@ -315,7 +315,7 @@ class _ItemCard extends StatelessWidget {
             children: [
               Text(
                 'Medicamento $index',
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.accent,
                   fontWeight: FontWeight.w800,
                   fontSize: 12.5,
@@ -325,7 +325,7 @@ class _ItemCard extends StatelessWidget {
               if (onRemove != null)
                 GestureDetector(
                   onTap: onRemove,
-                  child: const Icon(Icons.delete_outline_rounded,
+                  child:        Icon(Icons.delete_outline_rounded,
                       color: AppColors.danger, size: 19),
                 ),
             ],
@@ -333,7 +333,7 @@ class _ItemCard extends StatelessWidget {
           const SizedBox(height: 10),
           TextField(
             controller: form.nameCtrl,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style:        TextStyle(color: AppColors.textPrimary),
             decoration: const InputDecoration(hintText: 'Nome (ex.: Paracetamol)'),
             onChanged: (_) => onChanged?.call(),
           ),
@@ -343,7 +343,7 @@ class _ItemCard extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: form.dosageCtrl,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style:        TextStyle(color: AppColors.textPrimary),
                   decoration:
                       const InputDecoration(hintText: 'Dosagem (500mg)'),
                 ),
@@ -352,7 +352,7 @@ class _ItemCard extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: form.freqCtrl,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style:        TextStyle(color: AppColors.textPrimary),
                   decoration:
                       const InputDecoration(hintText: 'Frequência (3x/dia)'),
                 ),
@@ -362,14 +362,14 @@ class _ItemCard extends StatelessWidget {
           const SizedBox(height: 8),
           TextField(
             controller: form.durationCtrl,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style:        TextStyle(color: AppColors.textPrimary),
             decoration:
                 const InputDecoration(hintText: 'Duração (ex.: 7 dias)'),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: form.instructionsCtrl,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style:        TextStyle(color: AppColors.textPrimary),
             decoration: const InputDecoration(
                 hintText: 'Instruções (após as refeições…)'),
           ),

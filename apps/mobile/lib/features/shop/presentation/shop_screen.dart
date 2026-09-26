@@ -172,7 +172,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                     else
                       _ProductGrid(products: _products),
                     if (_loadingMore)
-                      const SliverToBoxAdapter(
+                             SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.all(16),
                           child: Center(
@@ -199,7 +199,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 // ═══════════════════════════════════════════════════════════════════════
 
 class _Header extends ConsumerWidget {
-  const _Header({this.shopName});
+         _Header({this.shopName});
 
   final String? shopName;
 
@@ -234,14 +234,14 @@ class _Header extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Loja Global',
+                         Text('Loja Global',
                       style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 21,
                           fontWeight: FontWeight.w900)),
                   Text(
                     shopName != null ? 'pela Shopify · $shopName' : 'pela Shopify',
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted, fontSize: 12),
                   ),
                 ],
@@ -254,7 +254,7 @@ class _Header extends ConsumerWidget {
             const SizedBox(width: 8),
             IconButton(
               onPressed: () => context.push('/shop-config'),
-              icon: const Icon(Icons.settings_rounded, color: AppColors.textSecondary),
+              icon:        Icon(Icons.settings_rounded, color: AppColors.textSecondary),
               tooltip: 'Gestão da loja',
             ),
           ],
@@ -265,7 +265,7 @@ class _Header extends ConsumerWidget {
 }
 
 class _CartButton extends StatelessWidget {
-  const _CartButton({required this.count});
+         _CartButton({required this.count});
 
   final int count;
 
@@ -284,7 +284,7 @@ class _CartButton extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            const Icon(Icons.shopping_cart_rounded,
+                   Icon(Icons.shopping_cart_rounded,
                 color: AppColors.textSecondary, size: 22),
             if (count > 0)
               Positioned(
@@ -321,7 +321,7 @@ class _TrustBar extends StatelessWidget {
           Icon(i, size: 14, color: const Color(0xFF10B981)),
           const SizedBox(width: 5),
           Text(label,
-              style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              style:        TextStyle(color: AppColors.textMuted, fontSize: 11)),
         ]);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
@@ -347,7 +347,7 @@ class _TrustBar extends StatelessWidget {
 }
 
 class _SearchSortBar extends StatelessWidget {
-  const _SearchSortBar({
+         _SearchSortBar({
     required this.searchCtrl,
     required this.sort,
     required this.onSubmit,
@@ -370,11 +370,11 @@ class _SearchSortBar extends StatelessWidget {
               controller: searchCtrl,
               textInputAction: TextInputAction.search,
               onSubmitted: onSubmit,
-              style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+              style:        TextStyle(color: AppColors.textPrimary, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Procurar produtos…',
-                hintStyle: const TextStyle(color: AppColors.textMuted),
-                prefixIcon: const Icon(Icons.search_rounded,
+                hintStyle:        TextStyle(color: AppColors.textMuted),
+                prefixIcon:        Icon(Icons.search_rounded,
                     color: AppColors.textMuted, size: 20),
                 filled: true,
                 fillColor: AppColors.glassFill,
@@ -386,7 +386,7 @@ class _SearchSortBar extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppColors.accent),
+                  borderSide:        BorderSide(color: AppColors.accent),
                 ),
               ),
             ),
@@ -406,13 +406,13 @@ class _SearchSortBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.glassBorder),
               ),
-              child: const Icon(Icons.sort_rounded, color: AppColors.textSecondary, size: 20),
+              child:        Icon(Icons.sort_rounded, color: AppColors.textSecondary, size: 20),
             ),
             itemBuilder: (_) => ProductSort.values
                 .map((s) => PopupMenuItem(
                       value: s,
                       child: Text(s.labelPt,
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textPrimary, fontSize: 13.5)),
                     ))
                 .toList(),
@@ -424,7 +424,7 @@ class _SearchSortBar extends StatelessWidget {
 }
 
 class _CollectionsBar extends StatelessWidget {
-  const _CollectionsBar({
+         _CollectionsBar({
     required this.collections,
     required this.selected,
     required this.onSelect,
@@ -480,7 +480,7 @@ class _CollectionsBar extends StatelessWidget {
 }
 
 class _ProductGrid extends StatelessWidget {
-  const _ProductGrid({required this.products});
+         _ProductGrid({required this.products});
 
   final List<ShopifyProduct> products;
 
@@ -505,7 +505,7 @@ class _ProductGrid extends StatelessWidget {
 }
 
 class _ProductCard extends StatelessWidget {
-  const _ProductCard({required this.product});
+         _ProductCard({required this.product});
 
   final ShopifyProduct product;
 
@@ -541,14 +541,14 @@ class _ProductCard extends StatelessWidget {
                                 : Container(color: AppColors.bgHigh),
                         errorBuilder: (_, __, ___) => Container(
                           color: AppColors.bgHigh,
-                          child: const Icon(Icons.shopping_bag_rounded,
+                          child:        Icon(Icons.shopping_bag_rounded,
                               color: AppColors.textMuted, size: 34),
                         ),
                       )
                     else
                       Container(
                         color: AppColors.bgHigh,
-                        child: const Icon(Icons.shopping_bag_rounded,
+                        child:        Icon(Icons.shopping_bag_rounded,
                             color: AppColors.textMuted, size: 34),
                       ),
                     if (p.discountPercent > 0)
@@ -583,7 +583,7 @@ class _ProductCard extends StatelessWidget {
                                 color: const Color(0xE610263C),
                                 borderRadius: BorderRadius.circular(999),
                               ),
-                              child: const Text('Esgotado',
+                              child:        Text('Esgotado',
                                   style: TextStyle(
                                       color: AppColors.textSecondary,
                                       fontSize: 11.5,
@@ -607,7 +607,7 @@ class _ProductCard extends StatelessWidget {
                       p.vendor!.toUpperCase(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
@@ -618,7 +618,7 @@ class _ProductCard extends StatelessWidget {
                     p.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -634,7 +634,7 @@ class _ProductCard extends StatelessWidget {
                           p.priceMin.formatted(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 13.5,
                               fontWeight: FontWeight.w900),
@@ -645,7 +645,7 @@ class _ProductCard extends StatelessWidget {
                       if (p.discountPercent > 0 && p.priceCompareAt != null)
                         Text(
                           p.priceCompareAt!.formatted(),
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textMuted,
                               fontSize: 10.5,
                               decoration: TextDecoration.lineThrough),
@@ -686,7 +686,7 @@ class _GridSkeleton extends StatelessWidget {
 }
 
 class _EmptyGrid extends StatelessWidget {
-  const _EmptyGrid({required this.hasFilters});
+         _EmptyGrid({required this.hasFilters});
 
   final bool hasFilters;
 
@@ -697,10 +697,10 @@ class _EmptyGrid extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
         child: Column(
           children: [
-            const Icon(Icons.inventory_2_rounded,
+                   Icon(Icons.inventory_2_rounded,
                 size: 56, color: AppColors.textMuted),
             const SizedBox(height: 14),
-            const Text('Nenhum produto encontrado',
+                   Text('Nenhum produto encontrado',
                 style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
@@ -709,7 +709,7 @@ class _EmptyGrid extends StatelessWidget {
             Text(
               'Ainda não há produtos publicados na loja.\nAdiciona-os no Shopify Admin.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textMuted, fontSize: 12.5, height: 1.5),
             ),
           ],
@@ -720,7 +720,7 @@ class _EmptyGrid extends StatelessWidget {
 }
 
 class _ErrorBox extends StatelessWidget {
-  const _ErrorBox({required this.error, required this.onRetry});
+         _ErrorBox({required this.error, required this.onRetry});
 
   final String error;
   final VoidCallback onRetry;
@@ -740,7 +740,7 @@ class _ErrorBox extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              children: const [
+              children:        [
                 Icon(Icons.error_outline_rounded,
                     color: AppColors.danger, size: 20),
                 SizedBox(width: 8),
@@ -753,7 +753,7 @@ class _ErrorBox extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(error,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12.5,
                     height: 1.45)),
@@ -779,7 +779,7 @@ class _FooterNote extends StatelessWidget {
       child: Text(
         'Checkout e pagamentos processados pela Shopify · Preços em USD (EUA) e CAD (Canadá)',
         textAlign: TextAlign.center,
-        style: const TextStyle(color: AppColors.textMuted, fontSize: 10.5, height: 1.5),
+        style:        TextStyle(color: AppColors.textMuted, fontSize: 10.5, height: 1.5),
       ),
     );
   }
@@ -787,7 +787,7 @@ class _FooterNote extends StatelessWidget {
 
 /// Ecrã mostrado quando nenhuma loja está ligada.
 class _NotConfigured extends StatelessWidget {
-  const _NotConfigured({required this.onConfig});
+         _NotConfigured({required this.onConfig});
 
   final VoidCallback onConfig;
 
@@ -813,14 +813,14 @@ class _NotConfigured extends StatelessWidget {
               size: 42, color: Color(0xFF10B981)),
         ),
         const SizedBox(height: 22),
-        const Text('Loja Global',
+               Text('Loja Global',
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 23,
                 fontWeight: FontWeight.w900)),
         const SizedBox(height: 10),
-        const Text(
+               Text(
           'Produtos internacionais com envio para os EUA e Canadá, '
           'geridos pela Shopify — a plataforma de e-commerce mais '
           'confiável do mundo. A loja ainda não está ligada.',
@@ -839,7 +839,7 @@ class _NotConfigured extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(children: [
+                     Row(children: [
                 Icon(Icons.settings_rounded, size: 18, color: AppColors.accent),
                 SizedBox(width: 8),
                 Text('Ligar a loja em 2 minutos',
@@ -863,7 +863,7 @@ class _NotConfigured extends StatelessWidget {
             height: 52,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: AppColors.buttonGradient),
+              gradient:        LinearGradient(colors: AppColors.buttonGradient),
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Text('Configurar loja agora',
@@ -893,7 +893,7 @@ class _NotConfigured extends StatelessWidget {
                 borderRadius: BorderRadius.circular(7),
               ),
               child: Text(n,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.accent,
                       fontSize: 11,
                       fontWeight: FontWeight.w900)),
@@ -901,7 +901,7 @@ class _NotConfigured extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(text,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12.5,
                       height: 1.45)),

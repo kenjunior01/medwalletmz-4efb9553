@@ -95,7 +95,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -127,7 +127,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
                 height: 52,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient:        LinearGradient(
                       colors: AppColors.heroCardGradient),
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white.withOpacity(0.2)),
@@ -144,7 +144,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
                   children: [
                     Text(
                       widget.doctor.specialtyName ?? 'Consulta geral',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
@@ -153,7 +153,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
                     const SizedBox(height: 2),
                     Text(
                       '${formatMZN(widget.doctor.consultationFee)} · 30 min',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 12.5),
                     ),
                   ],
@@ -195,7 +195,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
           TextField(
             controller: _reason,
             maxLines: 3,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style:        TextStyle(color: AppColors.textPrimary),
             decoration: const InputDecoration(
               hintText: 'Motivo da consulta (opcional)',
             ),
@@ -241,13 +241,13 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.info_outline_rounded,
+                   Icon(Icons.info_outline_rounded,
                 color: AppColors.accent, size: 15),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 text,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.accent,
                     fontSize: 11.5,
                     fontWeight: FontWeight.w600),
@@ -265,7 +265,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             _dayLabel(entry.key),
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12.5,
               fontWeight: FontWeight.w800,
@@ -311,7 +311,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           gradient: selected
-              ? const LinearGradient(colors: AppColors.buttonGradient)
+              ?        LinearGradient(colors: AppColors.buttonGradient)
               : null,
           color: selected ? null : AppColors.glassFill,
           borderRadius: BorderRadius.circular(12),
@@ -341,7 +341,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const LinearGradient(colors: AppColors.successGradient),
+              gradient:        LinearGradient(colors: AppColors.successGradient),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.success.withOpacity(0.4),
@@ -354,7 +354,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
                 color: Colors.white, size: 38),
           ).animate().scale(duration: 450.ms, curve: Curves.elasticOut),
           const SizedBox(height: 18),
-          const Text(
+                 Text(
             'Consulta agendada!',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -365,14 +365,14 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
           const SizedBox(height: 6),
           Text(
             _scheduledAt == null ? '' : formatDateTime(_scheduledAt!),
-            style: const TextStyle(
+            style:        TextStyle(
                 color: AppColors.textSecondary, fontSize: 14),
           ),
           const SizedBox(height: 8),
           if (_paidNow)
             Text(
               'Pagamento de ${formatMZN(widget.doctor.consultationFee)} confirmado da carteira.',
-              style: const TextStyle(color: AppColors.success, fontSize: 12.5),
+              style:        TextStyle(color: AppColors.success, fontSize: 12.5),
             ),
           const SizedBox(height: 24),
           GradientButton(
@@ -405,14 +405,14 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
                 const SizedBox(width: 12),
                 Text(
                   label,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14.5,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const Spacer(),
-                const Icon(Icons.expand_more_rounded,
+                       Icon(Icons.expand_more_rounded,
                     color: AppColors.textMuted),
               ],
             ),
@@ -440,7 +440,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
       lastDate: now.add(const Duration(days: 90)),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme:        ColorScheme.dark(
             primary: AppColors.primary,
             surface: AppColors.card,
           ),
@@ -457,7 +457,7 @@ class _BookingSheetState extends ConsumerState<BookingSheet> {
       initialTime: TimeOfDay.now(),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme:        ColorScheme.dark(
             primary: AppColors.primary,
             surface: AppColors.card,
           ),

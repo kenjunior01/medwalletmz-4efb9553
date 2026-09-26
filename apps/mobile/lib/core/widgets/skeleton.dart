@@ -15,8 +15,9 @@ class AppSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: const Color(0xFF16324D),
-      highlightColor: const Color(0xFF245070),
+      // F33 — tokens do modo (claro/escuro) em vez de azul fixo.
+      baseColor: AppColors.skeletonBase,
+      highlightColor: AppColors.skeletonHighlight,
       period: const Duration(milliseconds: 1400),
       child: Container(
         width: width,
@@ -85,7 +86,7 @@ class ListSkeleton extends StatelessWidget {
 
 /// Estado vazio ilustrado com ícone em círculo de vidro.
 class EmptyState extends StatelessWidget {
-  const EmptyState({
+         EmptyState({
     super.key,
     required this.icon,
     required this.title,
@@ -125,7 +126,7 @@ class EmptyState extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
@@ -135,7 +136,7 @@ class EmptyState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textMuted,
                 fontSize: 13.5,
                 height: 1.45,
@@ -147,7 +148,7 @@ class EmptyState extends StatelessWidget {
                 onPressed: onAction,
                 child: Text(
                   actionLabel!,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.accent,
                     fontWeight: FontWeight.w700,
                   ),

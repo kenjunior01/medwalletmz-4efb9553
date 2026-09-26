@@ -10,7 +10,7 @@ import '../data/manager_models.dart';
 /// `meddy-copilot`). Recebe um snapshot de contexto (países, KPIs,
 /// propostas…) e responde em Markdown com análise e recomendações.
 class MeddyCopilotSheet extends StatefulWidget {
-  const MeddyCopilotSheet({
+         MeddyCopilotSheet({
     super.key,
     required this.buildContext,
     this.suggestions = const [
@@ -118,7 +118,7 @@ class _MeddyCopilotSheetState extends State<MeddyCopilotSheet> {
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Container(
         height: MediaQuery.of(context).size.height * 0.82,
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient:
               LinearGradient(colors: [AppColors.bgHigh, AppColors.bgDeep]),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -152,7 +152,7 @@ class _MeddyCopilotSheetState extends State<MeddyCopilotSheet> {
                         color: Colors.white, size: 21),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                         Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -178,7 +178,7 @@ class _MeddyCopilotSheetState extends State<MeddyCopilotSheet> {
                 ],
               ),
             ),
-            const Divider(color: AppColors.glassBorder, height: 1),
+                   Divider(color: AppColors.glassBorder, height: 1),
             Expanded(
               child: _messages.isEmpty
                   ? ListView(
@@ -207,7 +207,7 @@ class _MeddyCopilotSheetState extends State<MeddyCopilotSheet> {
             ),
             Container(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              decoration: const BoxDecoration(
+              decoration:        BoxDecoration(
                 color: Color(0x660B1D31),
                 border: Border(top: BorderSide(color: AppColors.glassBorder)),
               ),
@@ -220,7 +220,7 @@ class _MeddyCopilotSheetState extends State<MeddyCopilotSheet> {
                       maxLines: 4,
                       textInputAction: TextInputAction.send,
                       onSubmitted: _ask,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary, fontSize: 13.5),
                       decoration: InputDecoration(
                         hintText: 'Pergunta sobre os teus dados…',
@@ -240,7 +240,7 @@ class _MeddyCopilotSheetState extends State<MeddyCopilotSheet> {
                   ),
                   const SizedBox(width: 10),
                   _loading
-                      ? const SizedBox(
+                      ?        SizedBox(
                           width: 44,
                           height: 44,
                           child: Padding(
@@ -285,7 +285,7 @@ class EmptyHint extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.glassBorder),
       ),
-      child: const Text(
+      child:        Text(
         'Pergunta em linguagem natural sobre os dados de gestão: '
         'crescimento por país, submissões pendentes, pagamentos, '
         'metas. O Meddy analisa o snapshot actual e responde com '
@@ -301,7 +301,7 @@ class EmptyHint extends StatelessWidget {
 }
 
 class _SuggestionChip extends StatelessWidget {
-  const _SuggestionChip({required this.label, required this.onTap});
+         _SuggestionChip({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
@@ -341,7 +341,7 @@ class _TypingBubble extends StatelessWidget {
               width: 7,
               height: 7,
               margin: const EdgeInsets.only(right: 5),
-              decoration: const BoxDecoration(
+              decoration:        BoxDecoration(
                 color: AppColors.accent,
                 shape: BoxShape.circle,
               ),
@@ -359,7 +359,7 @@ class _TypingBubble extends StatelessWidget {
 }
 
 class _Bubble extends StatelessWidget {
-  const _Bubble({required this.msg});
+         _Bubble({required this.msg});
 
   final _Msg msg;
 
@@ -392,7 +392,7 @@ class _Bubble extends StatelessWidget {
         child: fromUser
             ? Text(
                 msg.text,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 13.5,
                   height: 1.45,
@@ -402,7 +402,7 @@ class _Bubble extends StatelessWidget {
                 data: msg.text,
                 selectable: true,
                 styleSheet: MarkdownStyleSheet(
-                  p: const TextStyle(
+                  p:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13,
                     height: 1.5,
@@ -412,7 +412,7 @@ class _Bubble extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
                   ),
-                  listBullet: const TextStyle(color: AppColors.accent),
+                  listBullet:        TextStyle(color: AppColors.accent),
                   h2: const TextStyle(
                     color: Colors.white,
                     fontSize: 14.5,
@@ -422,7 +422,7 @@ class _Bubble extends StatelessWidget {
                       color: AppColors.glassBorder, width: 0.5),
                   tableHead: const TextStyle(
                       color: Colors.white, fontWeight: FontWeight.w700),
-                  tableBody: const TextStyle(
+                  tableBody:        TextStyle(
                       color: AppColors.textPrimary, fontSize: 12),
                 ),
               ),

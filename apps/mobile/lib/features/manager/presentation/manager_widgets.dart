@@ -5,7 +5,7 @@ import '../../../core/theme/app_colors.dart';
 
 /// Cartão de estatística grande (visão geral das consolas).
 class StatCard extends StatelessWidget {
-  const StatCard({
+         StatCard({
     super.key,
     required this.label,
     required this.value,
@@ -57,7 +57,7 @@ class StatCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             value,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w800,
               fontSize: 19,
@@ -113,7 +113,7 @@ class KeyValueRow extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 12.3,
                 fontWeight: FontWeight.w600,
@@ -142,7 +142,7 @@ class SectionTitle extends StatelessWidget {
         children: [
           Text(
             text,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textPrimary,
               fontSize: 16.5,
               fontWeight: FontWeight.w800,
@@ -167,7 +167,7 @@ class SectionTitle extends StatelessWidget {
 
 /// Chip de filtro simples.
 class FilterChip2 extends StatelessWidget {
-  const FilterChip2({
+         FilterChip2({
     super.key,
     required this.label,
     required this.selected,

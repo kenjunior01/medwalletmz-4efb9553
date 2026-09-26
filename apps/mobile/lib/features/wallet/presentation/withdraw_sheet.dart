@@ -10,7 +10,7 @@ import '../../wallet/presentation/wallet_controller.dart';
 /// Levantamento de fundos via RPC `request_withdrawal`
 /// (débito atómico + fundos retidos para aprovação financeira).
 class WithdrawSheet extends ConsumerStatefulWidget {
-  const WithdrawSheet({
+         WithdrawSheet({
     super.key,
     required this.availableBalance,
   });
@@ -47,7 +47,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: inset),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -82,7 +82,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.warning.withOpacity(0.4)),
                 ),
-                child: const Icon(Icons.account_balance_rounded,
+                child:        Icon(Icons.account_balance_rounded,
                     color: AppColors.warning, size: 22),
               ),
               const SizedBox(width: 14),
@@ -90,7 +90,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                           Text(
                       'Levantar fundos',
                       style: TextStyle(
                         color: AppColors.textPrimary,
@@ -100,7 +100,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
                     ),
                     Text(
                       'Disponível: ${formatMZN(widget.availableBalance)}',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 12.5),
                     ),
                   ],
@@ -113,11 +113,11 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
             controller: _amount,
             keyboardType:
                 const TextInputType.numberWithOptions(decimal: true),
-            style: const TextStyle(
+            style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 22,
                 fontWeight: FontWeight.w800),
-            decoration: const InputDecoration(
+            decoration:        InputDecoration(
               hintText: 'Valor a levantar',
               suffixText: 'MT',
               suffixStyle: TextStyle(
@@ -137,7 +137,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
             keyboardType: _method == 'mpesa'
                 ? TextInputType.phone
                 : TextInputType.text,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style:        TextStyle(color: AppColors.textPrimary),
             decoration: InputDecoration(
               hintText: _method == 'mpesa'
                   ? 'Número M-Pesa (84…)'
@@ -150,7 +150,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
           const SizedBox(height: 12),
           TextField(
             controller: _name,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style:        TextStyle(color: AppColors.textPrimary),
             decoration: const InputDecoration(
               hintText: 'Nome do titular (opcional)',
               prefixIcon: Icon(Icons.person_outline_rounded),
@@ -202,7 +202,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
           padding: const EdgeInsets.symmetric(vertical: 13),
           decoration: BoxDecoration(
             gradient: selected
-                ? const LinearGradient(colors: AppColors.buttonGradient)
+                ?        LinearGradient(colors: AppColors.buttonGradient)
                 : null,
             color: selected ? null : AppColors.glassFill,
             borderRadius: BorderRadius.circular(14),
@@ -243,7 +243,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient:
-                  const LinearGradient(colors: AppColors.successGradient),
+                         LinearGradient(colors: AppColors.successGradient),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.success.withOpacity(0.4),
@@ -256,7 +256,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
                 color: Colors.white, size: 38),
           ).animate().scale(duration: 450.ms, curve: Curves.elasticOut),
           const SizedBox(height: 18),
-          const Text(
+                 Text(
             'Pedido registado!',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -269,7 +269,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
             'O valor de ${formatMZN(_value)} foi debitado e fica retido '
             'até à aprovação da equipa financeira.',
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textSecondary,
               fontSize: 13.5,
               height: 1.5,

@@ -105,10 +105,10 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Os meus exames',
                         style: TextStyle(
@@ -120,9 +120,9 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
                     ),
                     TextButton.icon(
                       onPressed: () => context.push('/labs'),
-                      icon: const Icon(Icons.add_circle_outline_rounded,
+                      icon:        Icon(Icons.add_circle_outline_rounded,
                           size: 17, color: AppColors.accent),
-                      label: const Text('Novo',
+                      label:        Text('Novo',
                           style: TextStyle(
                               color: AppColors.accent,
                               fontWeight: FontWeight.w800,
@@ -147,7 +147,7 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
                             width: double.infinity, height: 110, radius: 20),
                       );
                     }
-                    final orders = snap.data ?? const <LabOrder>[];
+                    final orders = snap.data ??        <LabOrder>[];
                     if (orders.isEmpty) {
                       return Center(
                         child: Padding(
@@ -155,10 +155,10 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.biotech_rounded,
+                                     Icon(Icons.biotech_rounded,
                                   size: 44, color: AppColors.textMuted),
                               const SizedBox(height: 14),
-                              const Text(
+                                     Text(
                                 'Sem pedidos ainda',
                                 style: TextStyle(
                                     color: AppColors.textPrimary,
@@ -166,7 +166,7 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
                                     fontSize: 16),
                               ),
                               const SizedBox(height: 6),
-                              const Text(
+                                     Text(
                                 'Escolhe um laboratório, marca os exames e paga da carteira — o histórico aparece aqui.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -231,7 +231,7 @@ class _LabOrdersScreenState extends ConsumerState<LabOrdersScreen> {
 }
 
 class _OrderCard extends StatelessWidget {
-  const _OrderCard({
+         _OrderCard({
     required this.order,
     required this.statusColor,
     required this.statusIcon,
@@ -268,7 +268,7 @@ class _OrderCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   color: AppColors.primary.withOpacity(0.22),
                 ),
-                child: const Icon(Icons.biotech_rounded,
+                child:        Icon(Icons.biotech_rounded,
                     color: AppColors.accent, size: 20),
               ),
               const SizedBox(width: 11),
@@ -280,14 +280,14 @@ class _OrderCard extends StatelessWidget {
                       order.labName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w800,
                           fontSize: 14),
                     ),
                     Text(
                       '${formatDateShort(order.createdAt)} · ${order.items.length} exame(s)',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textSecondary, fontSize: 11.5),
                     ),
                   ],
@@ -334,7 +334,7 @@ class _OrderCard extends StatelessWidget {
                   ),
                   child: Text(
                     item.name,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textSecondary, fontSize: 10.5),
                   ),
                 ),
@@ -348,7 +348,7 @@ class _OrderCard extends StatelessWidget {
                   ),
                   child: Text(
                     '+${order.items.length - 4}',
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textSecondary, fontSize: 10.5),
                   ),
                 ),
@@ -360,23 +360,23 @@ class _OrderCard extends StatelessWidget {
             Row(
               children: [
                 if (order.scheduledAt != null) ...[
-                  const Icon(Icons.event_rounded,
+                         Icon(Icons.event_rounded,
                       size: 13, color: AppColors.accent),
                   const SizedBox(width: 4),
                   Flexible(
                     child: Text(
                       formatDateTime(order.scheduledAt!),
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textSecondary, fontSize: 11),
                     ),
                   ),
                   const SizedBox(width: 10),
                 ],
                 if (order.homeCollection) ...[
-                  const Icon(Icons.home_rounded,
+                         Icon(Icons.home_rounded,
                       size: 13, color: AppColors.success),
                   const SizedBox(width: 4),
-                  const Flexible(
+                         Flexible(
                     child: Text(
                       'Colheita ao domicílio',
                       style: TextStyle(
@@ -393,7 +393,7 @@ class _OrderCard extends StatelessWidget {
             children: [
               Text(
                 formatMZN(order.total),
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 15),
@@ -402,9 +402,9 @@ class _OrderCard extends StatelessWidget {
               if (onOpenResult != null)
                 TextButton.icon(
                   onPressed: onOpenResult,
-                  icon: const Icon(Icons.open_in_new_rounded,
+                  icon:        Icon(Icons.open_in_new_rounded,
                       size: 14, color: AppColors.success),
-                  label: const Text('Resultado',
+                  label:        Text('Resultado',
                       style: TextStyle(
                           color: AppColors.success,
                           fontSize: 12,
@@ -416,7 +416,7 @@ class _OrderCard extends StatelessWidget {
                   icon: Icon(Icons.close_rounded,
                       size: 14,
                       color: AppColors.danger.withOpacity(0.9)),
-                  label: const Text('Cancelar',
+                  label:        Text('Cancelar',
                       style: TextStyle(
                           color: AppColors.danger,
                           fontSize: 12,

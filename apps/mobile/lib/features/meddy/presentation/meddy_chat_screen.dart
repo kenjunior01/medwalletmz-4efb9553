@@ -261,7 +261,7 @@ class _MeddyChatScreenState extends ConsumerState<MeddyChatScreen> {
 // ── Componentes ─────────────────────────────────────────────────────────
 
 class _MeddyAvatar extends StatelessWidget {
-  const _MeddyAvatar({this.size = 44});
+         _MeddyAvatar({this.size = 44});
   final double size;
 
   @override
@@ -270,9 +270,9 @@ class _MeddyAvatar extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: AppColors.buttonGradient),
+        gradient:        LinearGradient(colors: AppColors.buttonGradient),
         borderRadius: BorderRadius.circular(size * 0.32),
-        boxShadow: const [BoxShadow(color: AppColors.glowCyan, blurRadius: 14)],
+        boxShadow:        [BoxShadow(color: AppColors.glowCyan, blurRadius: 14)],
       ),
       child: Center(
         child: Text(
@@ -285,7 +285,7 @@ class _MeddyAvatar extends StatelessWidget {
 }
 
 class _Bubble extends StatelessWidget {
-  const _Bubble({required this.message, required this.onAction});
+         _Bubble({required this.message, required this.onAction});
   final MeddyMessage message;
   final void Function(MeddyAction) onAction;
 
@@ -317,7 +317,7 @@ class _Bubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!isUser)
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.only(bottom: 4),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -332,7 +332,7 @@ class _Bubble extends StatelessWidget {
               ),
             Text(
               message.content,
-              style: const TextStyle(
+              style:        TextStyle(
                   fontSize: 14.5, height: 1.45, color: AppColors.textPrimary),
             ),
             if (message.suggestedActions.isNotEmpty)
@@ -347,7 +347,7 @@ class _Bubble extends StatelessWidget {
                                 style: const TextStyle(fontSize: 12)),
                             backgroundColor:
                                 AppColors.glassFillStrong,
-                            side: const BorderSide(
+                            side:        BorderSide(
                                 color: AppColors.glassBorder),
                             onPressed: () => onAction(a),
                           ))
@@ -358,7 +358,7 @@ class _Bubble extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 formatTimeOnly(message.createdAt),
-                style: const TextStyle(
+                style:        TextStyle(
                     fontSize: 10, color: AppColors.textMuted),
               ),
             ),
@@ -391,7 +391,7 @@ class _TypingBubble extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 2),
               width: 7,
               height: 7,
-              decoration: const BoxDecoration(
+              decoration:        BoxDecoration(
                 color: AppColors.accent,
                 shape: BoxShape.circle,
               ),
@@ -406,7 +406,7 @@ class _TypingBubble extends StatelessWidget {
 }
 
 class _CrisisCard extends StatelessWidget {
-  const _CrisisCard({required this.resource});
+         _CrisisCard({required this.resource});
   final CrisisResource resource;
 
   @override
@@ -421,7 +421,7 @@ class _CrisisCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.support_agent_rounded,
+                 Icon(Icons.support_agent_rounded,
               color: AppColors.danger, size: 26),
           const SizedBox(width: 10),
           Expanded(
@@ -429,12 +429,12 @@ class _CrisisCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(resource.name,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary)),
                 Text(resource.hours,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         fontSize: 11.5, color: AppColors.textSecondary)),
               ],
             ),
@@ -462,7 +462,7 @@ class _CrisisCard extends StatelessWidget {
 }
 
 class _Composer extends StatelessWidget {
-  const _Composer({
+         _Composer({
     required this.controller,
     required this.sending,
     required this.onSend,
@@ -476,7 +476,7 @@ class _Composer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
-      decoration: const BoxDecoration(
+      decoration:        BoxDecoration(
         color: Color(0xCC0A1826),
         border: Border(top: BorderSide(color: AppColors.glassBorder)),
       ),
@@ -488,11 +488,11 @@ class _Composer extends StatelessWidget {
               minLines: 1,
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary, fontSize: 14.5),
               decoration: InputDecoration(
                 hintText: 'Fala com o Meddy…',
-                hintStyle: const TextStyle(color: AppColors.textMuted),
+                hintStyle:        TextStyle(color: AppColors.textMuted),
                 filled: true,
                 fillColor: AppColors.glassFill,
                 contentPadding:
@@ -511,7 +511,7 @@ class _Composer extends StatelessWidget {
             child: Container(
               width: 46,
               height: 46,
-              decoration: const BoxDecoration(
+              decoration:        BoxDecoration(
                 gradient: LinearGradient(colors: AppColors.buttonGradient),
                 shape: BoxShape.circle,
               ),
@@ -531,7 +531,7 @@ class _Composer extends StatelessWidget {
 }
 
 class _Welcome extends StatelessWidget {
-  const _Welcome({required this.onPick});
+         _Welcome({required this.onPick});
   final void Function(String) onPick;
 
   static const _suggestions = [
@@ -555,7 +555,7 @@ class _Welcome extends StatelessWidget {
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 8),
-        const Text(
+               Text(
           'Estou aqui para conversar sobre o teu bem-estar, lembrar '
           'medicação e ajudar-te a usar o MedWallet. Como te sentes hoje?',
           textAlign: TextAlign.center,
@@ -569,7 +569,7 @@ class _Welcome extends StatelessWidget {
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.textPrimary,
-                side: const BorderSide(color: AppColors.glassBorder),
+                side:        BorderSide(color: AppColors.glassBorder),
                 backgroundColor: AppColors.glassFill,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
@@ -586,7 +586,7 @@ class _Welcome extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message});
+         _ErrorView({required this.message});
   final String message;
 
   @override
@@ -597,14 +597,14 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded,
+                   Icon(Icons.wifi_off_rounded,
                 size: 42, color: AppColors.textMuted),
             const SizedBox(height: 12),
             Text(
               message,
               textAlign: TextAlign.center,
               style:
-                  const TextStyle(color: AppColors.textSecondary, height: 1.5),
+                         TextStyle(color: AppColors.textSecondary, height: 1.5),
             ),
             const SizedBox(height: 8),
             Text(
@@ -612,7 +612,7 @@ class _ErrorView extends StatelessWidget {
                   ? 'Tenta novamente em instantes.'
                   : kGeminiUnavailableHint,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                   fontSize: 12.5, color: AppColors.textMuted, height: 1.5),
             ),
           ],

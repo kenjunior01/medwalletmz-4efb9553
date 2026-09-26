@@ -224,7 +224,7 @@ class WalletRepository {
 
 /// Conta de recebimento da plataforma (leitura pública).
 class PlatformAccount {
-  const PlatformAccount({
+         PlatformAccount({
     required this.method,
     required this.accountName,
     required this.accountNumber,
@@ -269,7 +269,7 @@ class PlatformAccount {
       );
 
   /// Fallback quando a tabela não está acessível (config estática).
-  static List<PlatformAccount> fallback() => const [
+  static List<PlatformAccount> fallback() =>        [
         PlatformAccount(
           method: 'mpesa',
           accountName: 'MedWallet',
@@ -280,7 +280,7 @@ class PlatformAccount {
 
 /// Linha da tabela `withdrawal_requests`.
 class WithdrawalRow {
-  const WithdrawalRow({
+         WithdrawalRow({
     required this.id,
     required this.amount,
     required this.method,

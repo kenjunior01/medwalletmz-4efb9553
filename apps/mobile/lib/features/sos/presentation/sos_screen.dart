@@ -74,7 +74,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
           );
       _activatedId = id;
       if (mounted && id != null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           duration: Duration(seconds: 4),
           content: Text(
@@ -101,7 +101,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
         builder: (ctx, setSheet) => Container(
           padding: EdgeInsets.fromLTRB(
               22, 18, 22, MediaQuery.of(ctx).viewInsets.bottom + 20),
-          decoration: const BoxDecoration(
+          decoration:        BoxDecoration(
             gradient: LinearGradient(
                 colors: [AppColors.bgHigh, AppColors.bgDeep]),
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -110,7 +110,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+                     Text(
                 'Novo contacto de emergência',
                 style: TextStyle(
                     color: AppColors.textPrimary,
@@ -126,7 +126,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
               const SizedBox(height: 14),
               TextField(
                 controller: nameCtrl,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration:
                     const InputDecoration(labelText: 'Nome *'),
               ),
@@ -134,14 +134,14 @@ class _SosScreenState extends ConsumerState<SosScreen>
               TextField(
                 controller: phoneCtrl,
                 keyboardType: TextInputType.phone,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                     labelText: 'Telefone *', hintText: '+258 84 123 4567'),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: relCtrl,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                     labelText: 'Relação (mãe, irmão, médico…)'),
               ),
@@ -151,7 +151,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
                 onChanged: (v) => setSheet(() => primary = v),
                 activeColor: AppColors.accent,
                 contentPadding: EdgeInsets.zero,
-                title: const Text(
+                title:        Text(
                   'Contacto principal',
                   style: TextStyle(
                       color: AppColors.textPrimary, fontSize: 13.5),
@@ -184,7 +184,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
       EmergencyCardRepository.instance.refresh();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text('Não foi possível adicionar o contacto.'),
         ));
@@ -197,7 +197,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
     final contacts = ref.watch(sosContactsProvider);
     final alerts = ref.watch(mySosAlertsProvider);
     SosAlert? activeAlert;
-    for (final a in alerts.value ?? const <SosAlert>[]) {
+    for (final a in alerts.value ??        <SosAlert>[]) {
       if (a.isActive) {
         activeAlert = a;
         break;
@@ -215,10 +215,10 @@ class _SosScreenState extends ConsumerState<SosScreen>
                 children: [
                   IconButton(
                     onPressed: () => context.pop(),
-                    icon: const Icon(Icons.arrow_back_rounded,
+                    icon:        Icon(Icons.arrow_back_rounded,
                         color: AppColors.textPrimary),
                   ),
-                  const Expanded(
+                         Expanded(
                     child: Text(
                       'SOS Emergência',
                       style: TextStyle(
@@ -256,7 +256,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                           Text(
                       'Grupo sanguíneo',
                       style: TextStyle(
                         color: AppColors.textSecondary,
@@ -302,7 +302,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
                     const SizedBox(height: 12),
                     TextField(
                       controller: _conditionsCtrl,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary, fontSize: 13),
                       decoration: const InputDecoration(
                         labelText: 'Condições crónicas (separadas por ,)',
@@ -312,7 +312,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
                     const SizedBox(height: 12),
                     TextField(
                       controller: _allergiesCtrl,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textPrimary, fontSize: 13),
                       decoration: const InputDecoration(
                         labelText: 'Alergias (separadas por ,)',
@@ -329,19 +329,19 @@ class _SosScreenState extends ConsumerState<SosScreen>
                 title: 'Contactos de emergência',
                 trailing: IconButton(
                   onPressed: _addContact,
-                  icon: const Icon(Icons.person_add_alt_rounded,
+                  icon:        Icon(Icons.person_add_alt_rounded,
                       color: AppColors.accent, size: 20),
                 ),
                 child: contacts.when(
                   loading: () => const ListSkeleton(count: 2, itemHeight: 56),
-                  error: (_, __) => const Text(
+                  error: (_, __) =>        Text(
                     'Não foi possível carregar os contactos.',
                     style: TextStyle(color: AppColors.textSecondary,
                         fontSize: 12.5),
                   ),
                   data: (list) {
                     if (list.isEmpty) {
-                      return const Text(
+                      return        Text(
                         'Ainda não tens contactos. Adiciona família ou '
                         'amigos próximos — serão avisados num SOS.',
                         style: TextStyle(
@@ -423,7 +423,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
                                     EmergencyCardRepository.instance
                                         .refresh();
                                   },
-                                  icon: const Icon(
+                                  icon:        Icon(
                                       Icons.delete_outline_rounded,
                                       color: AppColors.textMuted,
                                       size: 19),
@@ -496,7 +496,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
 // ── Botão de pânico com pressão contínua ────────────────────────────
 
 class _HoldButton extends StatelessWidget {
-  const _HoldButton({
+         _HoldButton({
     required this.progress,
     required this.onHoldStart,
     required this.onHoldEnd,
@@ -597,7 +597,7 @@ class _HoldButton extends StatelessWidget {
 }
 
 class _ActiveAlertCard extends StatelessWidget {
-  const _ActiveAlertCard({required this.alert, required this.onCancel});
+         _ActiveAlertCard({required this.alert, required this.onCancel});
 
   final SosAlert alert;
   final VoidCallback onCancel;
@@ -613,10 +613,10 @@ class _ActiveAlertCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(Icons.emergency_rounded,
+                 Icon(Icons.emergency_rounded,
               color: AppColors.danger, size: 44),
           const SizedBox(height: 10),
-          const Text(
+                 Text(
             'SOS ACTIVO',
             style: TextStyle(
               color: AppColors.danger,
@@ -632,7 +632,7 @@ class _ActiveAlertCard extends StatelessWidget {
                 : 'à espera de ajuda'}'
             '${alert.latitude != null ? ' · localização partilhada' : ''}',
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style:        TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12.5,
               height: 1.45,
@@ -656,7 +656,7 @@ class _ActiveAlertCard extends StatelessWidget {
 // ── Cartão de secção genérico ───────────────────────────────────────
 
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({
+         _SectionCard({
     required this.title,
     required this.child,
     this.trailing,
@@ -683,7 +683,7 @@ class _SectionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 14,

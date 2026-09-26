@@ -51,11 +51,11 @@ class ConversationsScreen extends ConsumerWidget {
                     children: [
                       GestureDetector(
                         onTap: () => context.pop(),
-                        child: const Icon(Icons.arrow_back_rounded,
+                        child:        Icon(Icons.arrow_back_rounded,
                             color: AppColors.textPrimary),
                       ),
                       const SizedBox(width: 14),
-                      const Expanded(
+                             Expanded(
                         child: Text(
                           'Conversas',
                           style: TextStyle(
@@ -126,7 +126,7 @@ class ConversationsScreen extends ConsumerWidget {
                         loading: () => ListView(
                           padding:
                               const EdgeInsets.symmetric(horizontal: 20),
-                          children: const [
+                          children:        [
                             ListSkeleton(count: 4, itemHeight: 84),
                           ],
                         ),
@@ -225,7 +225,7 @@ class ConversationsScreen extends ConsumerWidget {
 // ── Badge pequeno ───────────────────────────────────────────────────────
 
 class _MiniBadge extends StatelessWidget {
-  const _MiniBadge({required this.count});
+         _MiniBadge({required this.count});
 
   final int count;
 
@@ -252,7 +252,7 @@ class _MiniBadge extends StatelessWidget {
 // ── Tile de conversa com instituição ────────────────────────────────────
 
 class _ConversationTile extends StatelessWidget {
-  const _ConversationTile({required this.conversation});
+         _ConversationTile({required this.conversation});
 
   final FacilityConversation conversation;
 
@@ -338,7 +338,7 @@ class _ConversationTile extends StatelessWidget {
                       if (conversation.lastMessageAt != null)
                         Text(
                           formatRelative(conversation.lastMessageAt!),
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 11,
                           ),
@@ -368,7 +368,7 @@ class _ConversationTile extends StatelessWidget {
                         Container(
                           width: 9,
                           height: 9,
-                          decoration: const BoxDecoration(
+                          decoration:        BoxDecoration(
                             color: AppColors.accent,
                             shape: BoxShape.circle,
                           ),
@@ -388,7 +388,7 @@ class _ConversationTile extends StatelessWidget {
 // ── Tile de conversa de consulta ────────────────────────────────────────
 
 class _ThreadTile extends StatelessWidget {
-  const _ThreadTile({required this.thread});
+         _ThreadTile({required this.thread});
 
   final ConsultationThread thread;
 
@@ -430,7 +430,7 @@ class _ThreadTile extends StatelessWidget {
               ),
               child: Text(
                 thread.title.characters.first.toUpperCase(),
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.accent,
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
@@ -446,7 +446,7 @@ class _ThreadTile extends StatelessWidget {
                     thread.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
@@ -458,7 +458,7 @@ class _ThreadTile extends StatelessWidget {
                     '${formatDateShort(consultation.scheduledAt)}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 12.2,
                     ),
@@ -466,7 +466,7 @@ class _ThreadTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chat_bubble_outline_rounded,
+                   Icon(Icons.chat_bubble_outline_rounded,
                 color: AppColors.textMuted, size: 18),
           ],
         ),

@@ -164,23 +164,23 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
         backgroundColor: AppColors.bgHigh,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Apagar mensagem',
+        title:        Text('Apagar mensagem',
             style: TextStyle(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w800,
                 fontSize: 16)),
-        content: const Text(
+        content:        Text(
             'A tua mensagem será removida do círculo para todos.',
             style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dlgCtx, false),
-            child: const Text('Cancelar',
+            child:        Text('Cancelar',
                 style: TextStyle(color: AppColors.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dlgCtx, true),
-            child: const Text('Apagar',
+            child:        Text('Apagar',
                 style: TextStyle(color: AppColors.danger)),
           ),
         ],
@@ -195,7 +195,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (sheetCtx) => Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           color: AppColors.bgHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -295,7 +295,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (sheetCtx) => Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           color: AppColors.bgHigh,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
@@ -315,7 +315,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
               ),
             ),
             const SizedBox(height: 14),
-            const Text(
+                   Text(
               'Diretrizes da comunidade',
               style: TextStyle(
                   color: AppColors.textPrimary,
@@ -327,14 +327,14 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
               widget.circle.guidelines ??
                   'Permitido: partilha de experiências, dicas de bem-estar e suporte emocional. '
                       'Proibido: conselhos médicos específicos que substituam um profissional.',
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13,
                   height: 1.5),
             ),
             const SizedBox(height: 12),
             Row(
-              children: const [
+              children:        [
                 Icon(Icons.verified_user_rounded,
                     size: 16, color: AppColors.success),
                 SizedBox(width: 7),
@@ -378,7 +378,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
                     Container(
@@ -407,7 +407,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                                   circle.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                     color: AppColors.textPrimary,
                                     fontWeight: FontWeight.w800,
                                     fontSize: 14.5,
@@ -418,7 +418,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                               Icon(Icons.circle,
                                   size: 7, color: AppColors.success),
                               const SizedBox(width: 3),
-                              const Text(
+                                     Text(
                                 'ao vivo',
                                 style: TextStyle(
                                     color: AppColors.success,
@@ -429,7 +429,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                           ),
                           Text(
                             '${circle.memberCount} membros · ${CircleTags.label(circle.conditionTag)}',
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textMuted,
                               fontSize: 11,
                             ),
@@ -440,7 +440,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                     IconButton(
                       tooltip: 'Diretrizes',
                       onPressed: _showGuidelines,
-                      icon: const Icon(Icons.info_outline_rounded,
+                      icon:        Icon(Icons.info_outline_rounded,
                           color: AppColors.accent, size: 20),
                     ),
                   ],
@@ -450,7 +450,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
               // ── Mensagens ────────────────────────────────────────
               Expanded(
                 child: _loading
-                    ? const Center(
+                    ?        Center(
                         child: CircularProgressIndicator(
                             color: AppColors.accent))
                     : _messages.isEmpty
@@ -460,10 +460,10 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.forum_outlined,
+                                         Icon(Icons.forum_outlined,
                                       size: 44, color: AppColors.textMuted),
                                   const SizedBox(height: 12),
-                                  const Text(
+                                         Text(
                                     'Sê o primeiro a partilhar',
                                     style: TextStyle(
                                         color: AppColors.textPrimary,
@@ -471,7 +471,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                                         fontSize: 15),
                                   ),
                                   const SizedBox(height: 6),
-                                  const Text(
+                                         Text(
                                     'Como foi a tua experiência? Podes enviar anonimamente.',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -522,7 +522,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.reply_rounded,
+                             Icon(Icons.reply_rounded,
                           size: 15, color: AppColors.accent),
                       const SizedBox(width: 8),
                       Expanded(
@@ -532,13 +532,13 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                               : 'A responder a ${_replyTo!.isAnonymous ? 'Anónimo' : (_authorNames[_replyTo!.userId] ?? 'Membro')}: ${_replyTo!.content}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textSecondary, fontSize: 11.5),
                         ),
                       ),
                       GestureDetector(
                         onTap: () => setState(() => _replyTo = null),
-                        child: const Icon(Icons.close_rounded,
+                        child:        Icon(Icons.close_rounded,
                             size: 16, color: AppColors.textMuted),
                       ),
                     ],
@@ -593,14 +593,14 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                         minLines: 1,
                         maxLines: 4,
                         textCapitalization: TextCapitalization.sentences,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 13.5),
                         decoration: InputDecoration(
                           hintText: _anonymous
                               ? 'Mensagem anónima…'
                               : 'Partilha com o círculo…',
-                          hintStyle: const TextStyle(
+                          hintStyle:        TextStyle(
                               color: AppColors.textMuted,
                               fontSize: 13),
                           border: InputBorder.none,
@@ -647,7 +647,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
 }
 
 class _ActionTile extends StatelessWidget {
-  const _ActionTile({
+         _ActionTile({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -690,7 +690,7 @@ class _ActionTile extends StatelessWidget {
 }
 
 class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({
+         _MessageBubble({
     required this.message,
     this.authorName,
     this.replySource,
@@ -780,7 +780,7 @@ class _MessageBubble extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   _timeLabel(message.createdAt),
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textMuted, fontSize: 9.5),
                 ),
               ],
@@ -811,7 +811,7 @@ class _MessageBubble extends StatelessWidget {
                             : replySource!.isAnonymous
                                 ? 'Anónimo'
                                 : 'Membro',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.accent,
                             fontSize: 10,
                             fontWeight: FontWeight.w800),
@@ -821,7 +821,7 @@ class _MessageBubble extends StatelessWidget {
                         replySource!.content,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textMuted, fontSize: 11),
                       ),
                     ],
@@ -830,7 +830,7 @@ class _MessageBubble extends StatelessWidget {
               ),
             Text(
               message.content,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 13.5,
                 height: 1.35,

@@ -124,7 +124,7 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen>
                 const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
             isScrollable: true,
             tabAlignment: TabAlignment.start,
-            tabs: const [
+            tabs:        [
               Tab(text: 'Desafios'),
               Tab(text: 'Ranking'),
               Tab(text: 'Conquistas'),
@@ -135,7 +135,7 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen>
         body: _loading
             ? ListView(
                 padding: const EdgeInsets.all(16),
-                children: const [
+                children:        [
                   AppSkeleton(height: 150),
                   SizedBox(height: 12),
                   AppSkeleton(height: 180),
@@ -217,7 +217,7 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen>
             ],
           ),
           const SizedBox(height: 18),
-          const Text('Ranking semanal',
+                 Text('Ranking semanal',
               style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
@@ -245,13 +245,13 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen>
                       e.value.userId == _gamification.userId,
                 )),
           const SizedBox(height: 18),
-          const Text('Top de pontos Pulse',
+                 Text('Top de pontos Pulse',
               style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w800)),
           const SizedBox(height: 2),
-          const Text('Quem acumula mais pontos por acções saudáveis',
+                 Text('Quem acumula mais pontos por acções saudáveis',
               style: TextStyle(color: AppColors.textMuted, fontSize: 11.5)),
           const SizedBox(height: 10),
           if (_points.isEmpty)
@@ -369,7 +369,7 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen>
 }
 
 class _ChallengeCard extends StatelessWidget {
-  const _ChallengeCard({
+         _ChallengeCard({
     required this.c,
     required this.joining,
     required this.onJoin,
@@ -405,7 +405,7 @@ class _ChallengeCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   c.title,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 14.5,
@@ -413,7 +413,7 @@ class _ChallengeCard extends StatelessWidget {
                 ),
               ),
               if (c.isCompleted)
-                const Icon(Icons.check_circle_rounded,
+                       Icon(Icons.check_circle_rounded,
                     color: AppColors.success, size: 20),
             ],
           ),
@@ -512,7 +512,7 @@ class _ChallengeCard extends StatelessWidget {
 }
 
 class _LeaderTile extends StatelessWidget {
-  const _LeaderTile({
+         _LeaderTile({
     required this.position,
     required this.name,
     required this.avatarUrl,
@@ -607,7 +607,7 @@ class _LeaderTile extends StatelessWidget {
             child: (avatarUrl == null || avatarUrl!.isEmpty)
                 ? Text(
                     (name ?? '?').isEmpty ? '?' : name![0].toUpperCase(),
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.accent,
                         fontWeight: FontWeight.w800,
                         fontSize: 14),
@@ -633,7 +633,7 @@ class _LeaderTile extends StatelessWidget {
                       fontSize: 13),
                 ),
                 Text(subtitle,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted, fontSize: 11)),
               ],
             ),
@@ -647,7 +647,7 @@ class _LeaderTile extends StatelessWidget {
                       fontWeight: FontWeight.w800,
                       fontSize: 14)),
               Text(valueLabel,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textMuted, fontSize: 10)),
             ],
           ),
@@ -658,7 +658,7 @@ class _LeaderTile extends StatelessWidget {
 }
 
 class _LevelCard extends StatelessWidget {
-  const _LevelCard({required this.g});
+         _LevelCard({required this.g});
   final UserGamification g;
 
   @override
@@ -666,7 +666,7 @@ class _LevelCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient:        LinearGradient(
           colors: [Color(0xFF7C3AED), Color(0xFF4C1D95)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -742,7 +742,7 @@ class _LevelCard extends StatelessWidget {
 }
 
 class _MiniStat extends StatelessWidget {
-  const _MiniStat({
+         _MiniStat({
     required this.icon,
     required this.color,
     required this.value,
@@ -772,7 +772,7 @@ class _MiniStat extends StatelessWidget {
                 style: TextStyle(
                     color: color, fontWeight: FontWeight.w800, fontSize: 15)),
             Text(label,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textMuted, fontSize: 10.5),
                 textAlign: TextAlign.center),
           ],
@@ -783,7 +783,7 @@ class _MiniStat extends StatelessWidget {
 }
 
 class _AchievementCard extends StatelessWidget {
-  const _AchievementCard({required this.a});
+         _AchievementCard({required this.a});
   final Achievement a;
 
   @override
@@ -819,7 +819,7 @@ class _AchievementCard extends StatelessWidget {
                     color: AppColors.warning.withOpacity(0.18),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text('DESBLOQUEADA',
+                  child:        Text('DESBLOQUEADA',
                       style: TextStyle(
                           color: AppColors.warning,
                           fontSize: 8.5,
@@ -907,12 +907,12 @@ class _TransactionTile extends StatelessWidget {
                 Text(t.description?.isNotEmpty == true
                     ? t.description!
                     : t.typeLabel,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w700,
                         fontSize: 12.5)),
                 Text(t.typeLabel,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted, fontSize: 11)),
               ],
             ),
@@ -930,7 +930,7 @@ class _TransactionTile extends StatelessWidget {
               ),
               if (t.createdAt != null)
                 Text(formatDateTime(t.createdAt!),
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted, fontSize: 10)),
             ],
           ),
@@ -941,7 +941,7 @@ class _TransactionTile extends StatelessWidget {
 }
 
 class _EmptyCard extends StatelessWidget {
-  const _EmptyCard({required this.icon, required this.text});
+         _EmptyCard({required this.icon, required this.text});
   final IconData icon;
   final String text;
 
@@ -961,7 +961,7 @@ class _EmptyCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(text,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textMuted, height: 1.5, fontSize: 12.5)),
         ],
       ),

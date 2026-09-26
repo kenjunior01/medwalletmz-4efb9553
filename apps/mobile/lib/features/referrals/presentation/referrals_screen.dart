@@ -92,7 +92,7 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
           child: _loading
               ? ListView(
                   padding: const EdgeInsets.all(20),
-                  children: const [
+                  children:        [
                     AppSkeleton(width: double.infinity, height: 150, radius: 22),
                     SizedBox(height: 14),
                     AppSkeleton(width: double.infinity, height: 90, radius: 20),
@@ -106,10 +106,10 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
                       children: [
                         IconButton(
                           onPressed: () => context.pop(),
-                          icon: const Icon(Icons.arrow_back_rounded,
+                          icon:        Icon(Icons.arrow_back_rounded,
                               color: AppColors.textPrimary),
                         ),
-                        const Expanded(
+                               Expanded(
                           child: Text(
                             'Convida e Ganha',
                             style: TextStyle(
@@ -128,7 +128,7 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(24),
-                        gradient: const LinearGradient(
+                        gradient:        LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
@@ -246,7 +246,7 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                                 Text(
                             'Foste convidado? Aplica o código do amigo',
                             style: TextStyle(
                                 color: AppColors.textPrimary,
@@ -254,7 +254,7 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
                                 fontSize: 13.5),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
+                                 Text(
                             'Só um código por conta. O bónus de boas-vindas cai na tua carteira após verificação.',
                             style: TextStyle(
                                 color: AppColors.textSecondary,
@@ -268,14 +268,14 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
                                   controller: _codeCtrl,
                                   textCapitalization:
                                       TextCapitalization.characters,
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                       color: AppColors.textPrimary,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: 1.5),
                                   decoration: InputDecoration(
                                     hintText: 'EX: MWZAB123',
-                                    hintStyle: const TextStyle(
+                                    hintStyle:        TextStyle(
                                         color: AppColors.textMuted,
                                         fontSize: 12.5,
                                         letterSpacing: 1.5),
@@ -295,7 +295,7 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius:
                                           BorderRadius.circular(12),
-                                      borderSide: const BorderSide(
+                                      borderSide:        BorderSide(
                                           color: AppColors.accent),
                                     ),
                                   ),
@@ -338,7 +338,7 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
                     const SizedBox(height: 16),
 
                     // ── Histórico ─────────────────────────────────
-                    const Text(
+                           Text(
                       'OS MEUS CONVITES',
                       style: TextStyle(
                         color: AppColors.accent,
@@ -355,7 +355,7 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
                           color: Colors.white.withOpacity(0.045),
                           borderRadius: BorderRadius.circular(18),
                         ),
-                        child: const Row(
+                        child:        Row(
                           children: [
                             Icon(Icons.inbox_rounded,
                                 size: 20, color: AppColors.textMuted),
@@ -387,7 +387,7 @@ class _ReferralsScreenState extends ConsumerState<ReferralsScreen> {
 }
 
 class _Stat extends StatelessWidget {
-  const _Stat({required this.value, required this.label});
+         _Stat({required this.value, required this.label});
 
   final String value;
   final String label;
@@ -410,7 +410,7 @@ class _Stat extends StatelessWidget {
 }
 
 class _InviteRow extends StatelessWidget {
-  const _InviteRow({required this.invite, required this.index});
+         _InviteRow({required this.invite, required this.index});
 
   final Referral invite;
   final int index;
@@ -452,14 +452,14 @@ class _InviteRow extends StatelessWidget {
                   invite.isCompleted
                       ? 'Convite verificado — bónus na carteira'
                       : 'Convite a aguardar verificação',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 12.5),
                 ),
                 Text(
                   '${formatDateShort(invite.createdAt)} · ${invite.isCompleted ? "recompensa creditada" : "a plataforma verifica e credita o dinheiro real"}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary, fontSize: 11),
                 ),
               ],

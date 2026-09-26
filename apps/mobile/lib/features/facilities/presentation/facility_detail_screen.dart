@@ -164,7 +164,7 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
               ],
               title: Text(
                 facility.name,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -217,12 +217,12 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
                                 ),
                                 if (facility.isVerified) ...[
                                   const SizedBox(width: 6),
-                                  const Icon(Icons.verified_rounded,
+                                         Icon(Icons.verified_rounded,
                                       size: 16, color: AppColors.accent),
                                 ],
                                 if (facility.emergency24h) ...[
                                   const SizedBox(width: 8),
-                                  const Text(
+                                         Text(
                                     '24h',
                                     style: TextStyle(
                                       color: AppColors.danger,
@@ -236,7 +236,7 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
                             const SizedBox(height: 2),
                             Text(
                               facility.city ?? 'Moçambique',
-                              style: const TextStyle(
+                              style:        TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 13,
                               ),
@@ -254,12 +254,12 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.star_rounded,
+                                     Icon(Icons.star_rounded,
                                   size: 15, color: AppColors.warning),
                               const SizedBox(width: 3),
                               Text(
                                 facility.rating!.toStringAsFixed(1),
-                                style: const TextStyle(
+                                style:        TextStyle(
                                   color: AppColors.warning,
                                   fontWeight: FontWeight.w800,
                                   fontSize: 13,
@@ -345,7 +345,7 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline_rounded,
+                               Icon(Icons.info_outline_rounded,
                             color: AppColors.accent, size: 20),
                         const SizedBox(width: 10),
                         Expanded(
@@ -466,7 +466,7 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
 // ── Cabeçalho ───────────────────────────────────────────────────────────
 
 class _HeroImage extends StatelessWidget {
-  const _HeroImage({required this.facility});
+         _HeroImage({required this.facility});
 
   final HealthFacility facility;
 
@@ -512,7 +512,7 @@ class _HeroImage extends StatelessWidget {
 // ── Blocos auxiliares ───────────────────────────────────────────────────
 
 class _GlassCard extends StatelessWidget {
-  const _GlassCard({required this.child});
+         _GlassCard({required this.child});
 
   final Widget child;
 
@@ -531,7 +531,7 @@ class _GlassCard extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({
+         _InfoRow({
     required this.icon,
     required this.label,
     required this.value,
@@ -566,7 +566,7 @@ class _InfoRow extends StatelessWidget {
                 const SizedBox(height: 1),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
@@ -583,7 +583,7 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _TextAction extends StatelessWidget {
-  const _TextAction({required this.label, required this.onTap});
+         _TextAction({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
@@ -601,7 +601,7 @@ class _TextAction extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: const TextStyle(
+          style:        TextStyle(
             color: AppColors.accent,
             fontSize: 12,
             fontWeight: FontWeight.w700,

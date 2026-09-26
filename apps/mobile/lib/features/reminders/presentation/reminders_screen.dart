@@ -147,7 +147,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
         body: _loading
             ? ListView(
                 padding: const EdgeInsets.all(16),
-                children: const [
+                children:        [
                   AppSkeleton(height: 96),
                   SizedBox(height: 12),
                   AppSkeleton(height: 120),
@@ -205,7 +205,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
 // ════════════════════════════════════════════════════════════════════
 
 class _MasterToggle extends StatelessWidget {
-  const _MasterToggle({
+         _MasterToggle({
     required this.on,
     required this.onChanged,
     required this.permsAsked,
@@ -247,7 +247,7 @@ class _MasterToggle extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                       Text(
                   'Lembretes activos',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -277,7 +277,7 @@ class _MasterToggle extends StatelessWidget {
 }
 
 class _NextDoseHero extends StatelessWidget {
-  const _NextDoseHero({required this.snap});
+         _NextDoseHero({required this.snap});
 
   final RemindersSnapshot? snap;
 
@@ -384,7 +384,7 @@ class _NextDoseHero extends StatelessWidget {
                   value,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 15.5,
                     fontWeight: FontWeight.w800,
@@ -400,7 +400,7 @@ class _NextDoseHero extends StatelessWidget {
 }
 
 class _AdherenceCard extends StatelessWidget {
-  const _AdherenceCard({required this.snap});
+         _AdherenceCard({required this.snap});
 
   final RemindersSnapshot snap;
 
@@ -425,7 +425,7 @@ class _AdherenceCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text(
+                     Text(
                 'Adesão · últimos 14 dias',
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -446,7 +446,7 @@ class _AdherenceCard extends StatelessWidget {
                 ),
                 child: Text(
                   '🔥 $streak dia${streak == 1 ? '' : 's'}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.warning,
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
@@ -486,7 +486,7 @@ class _AdherenceCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              const Text(
+                     Text(
                 'meta: 100% todos os dias',
                 style: TextStyle(color: AppColors.textMuted, fontSize: 11.5),
               ),
@@ -499,7 +499,7 @@ class _AdherenceCard extends StatelessWidget {
 }
 
 class _AdherencePainter extends CustomPainter {
-  const _AdherencePainter({required this.history});
+         _AdherencePainter({required this.history});
 
   final List<({String day, int percent})> history;
 
@@ -554,7 +554,7 @@ class _AdherencePainter extends CustomPainter {
 }
 
 class _Timeline extends StatelessWidget {
-  const _Timeline({
+         _Timeline({
     required this.snap,
     required this.busy,
     required this.onToggle,
@@ -581,7 +581,7 @@ class _Timeline extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+               Padding(
           padding: EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
             'Horário de hoje',
@@ -630,7 +630,7 @@ class _Timeline extends StatelessWidget {
 }
 
 class _SlotRow extends StatelessWidget {
-  const _SlotRow({
+         _SlotRow({
     required this.med,
     required this.hour,
     required this.log,
@@ -741,7 +741,7 @@ class _SlotRow extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   color: AppColors.accent.withOpacity(0.18),
                 ),
-                child: const Text(
+                child:        Text(
                   'próxima',
                   style: TextStyle(
                     color: AppColors.accent,
@@ -803,7 +803,7 @@ class _SlotRow extends StatelessWidget {
 }
 
 class _MutedList extends StatelessWidget {
-  const _MutedList({required this.snap, required this.onUnmute});
+         _MutedList({required this.snap, required this.onUnmute});
 
   final RemindersSnapshot snap;
   final void Function(String itemId, bool mute) onUnmute;
@@ -824,7 +824,7 @@ class _MutedList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+                 Text(
             'Silenciados',
             style: TextStyle(
               color: AppColors.textMuted,
@@ -838,18 +838,18 @@ class _MutedList extends StatelessWidget {
             ListTile(
               dense: true,
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.volume_off_rounded,
+              leading:        Icon(Icons.volume_off_rounded,
                   color: AppColors.textMuted, size: 20),
               title: Text(
                 m.name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textSecondary, fontSize: 13.5),
               ),
               trailing: TextButton(
                 onPressed: () => onUnmute(m.prescriptionItemId, false),
-                child: const Text('Reactivar',
+                child:        Text('Reactivar',
                     style: TextStyle(color: AppColors.accent, fontSize: 12.5)),
               ),
             ),
@@ -881,11 +881,11 @@ class _EmptyPlan extends StatelessWidget {
               color: AppColors.accent.withOpacity(0.12),
               border: Border.all(color: AppColors.accent.withOpacity(0.3)),
             ),
-            child: const Icon(Icons.medication_rounded,
+            child:        Icon(Icons.medication_rounded,
                 color: AppColors.accent, size: 30),
           ),
           const SizedBox(height: 14),
-          const Text(
+                 Text(
             'Sem plano de medicação activo',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -895,7 +895,7 @@ class _EmptyPlan extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 6),
-          const Text(
+                 Text(
             'Quando tiveres receitas activas (últimos 60 dias), os '
             'lembretes aparecem aqui automaticamente — com notificações '
             'no telemóvel, mesmo offline.',

@@ -32,11 +32,11 @@ class _ManagerHubScreenState extends ConsumerState<ManagerHubScreen> {
         child: SafeArea(
           bottom: false,
           child: access.when(
-            loading: () => const Center(
+            loading: () =>        Center(
               child:
                   CircularProgressIndicator(color: AppColors.accent),
             ),
-            error: (e, _) => const Center(
+            error: (e, _) =>        Center(
               child: Text(
                 'Não foi possível verificar os teus papéis.',
                 style: TextStyle(color: AppColors.textSecondary),
@@ -58,7 +58,7 @@ class _ManagerHubScreenState extends ConsumerState<ManagerHubScreen> {
 }
 
 class _Hub extends ConsumerWidget {
-  const _Hub({required this.managed, required this.countries});
+         _Hub({required this.managed, required this.countries});
 
   /// null = admin global.
   final Set<String>? managed;
@@ -75,10 +75,10 @@ class _Hub extends ConsumerWidget {
           children: [
             IconButton(
               onPressed: () => context.pop(),
-              icon: const Icon(Icons.arrow_back_rounded,
+              icon:        Icon(Icons.arrow_back_rounded,
                   color: AppColors.textPrimary),
             ),
-            const Expanded(
+                   Expanded(
               child: Text(
                 'Gestão',
                 style: TextStyle(
@@ -158,7 +158,7 @@ class _Hub extends ConsumerWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.warning.withOpacity(0.3)),
             ),
-            child: const Text(
+            child:        Text(
               'Tens papel de gestão mas nenhum país associado. A '
               'administração precisa de criar a atribuição em '
               'user_roles (country_id) ou country_management.',
@@ -228,7 +228,7 @@ class _GlobalCard extends ConsumerWidget {
                       color: Color(0xFF38BDF8), size: 24),
                 ),
                 const SizedBox(width: 13),
-                const Expanded(
+                       Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -251,7 +251,7 @@ class _GlobalCard extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded,
+                       Icon(Icons.chevron_right_rounded,
                     color: AppColors.textSecondary),
               ],
             ),
@@ -263,7 +263,7 @@ class _GlobalCard extends ConsumerWidget {
 }
 
 class _CountryCard extends ConsumerWidget {
-  const _CountryCard({required this.c, required this.isGlobal});
+         _CountryCard({required this.c, required this.isGlobal});
 
   final CountryFull c;
   final bool isGlobal;
@@ -308,7 +308,7 @@ class _CountryCard extends ConsumerWidget {
                 children: [
                   Text(
                     c.name,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w800,
                       fontSize: 14.5,
@@ -335,7 +335,7 @@ class _CountryCard extends ConsumerWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
+                   Icon(Icons.chevron_right_rounded,
                 color: AppColors.textSecondary),
           ],
         ),
@@ -345,7 +345,7 @@ class _CountryCard extends ConsumerWidget {
 }
 
 class _MeddyCard extends ConsumerWidget {
-  const _MeddyCard({required this.countries});
+         _MeddyCard({required this.countries});
 
   final List<CountryFull> countries;
 
@@ -382,7 +382,7 @@ class _MeddyCard extends ConsumerWidget {
                   color: Color(0xFF38BDF8), size: 22),
             ),
             const SizedBox(width: 13),
-            const Expanded(
+                   Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -426,10 +426,10 @@ class _NoAccess extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () => context.pop(),
-              icon: const Icon(Icons.arrow_back_rounded,
+              icon:        Icon(Icons.arrow_back_rounded,
                   color: AppColors.textPrimary),
             ),
-            const Expanded(
+                   Expanded(
               child: Text(
                 'Gestão',
                 style: TextStyle(

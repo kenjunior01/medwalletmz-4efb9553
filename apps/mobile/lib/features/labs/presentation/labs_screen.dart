@@ -10,7 +10,7 @@ import '../data/labs_repository.dart';
 
 /// Estado simples de carregamento dos laboratórios.
 class _LabsState {
-  const _LabsState({this.loading = true, this.labs = const [], this.error});
+         _LabsState({this.loading = true, this.labs = const [], this.error});
   final bool loading;
   final List<LabFacility> labs;
   final String? error;
@@ -45,10 +45,10 @@ class LabsScreen extends ConsumerWidget {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Laboratórios',
                         style: TextStyle(
@@ -63,7 +63,7 @@ class LabsScreen extends ConsumerWidget {
                       onPressed: () => context.push('/lab-orders'),
                       icon: Badge(
                         isLabelVisible: false,
-                        child: const Icon(
+                        child:        Icon(
                             Icons.receipt_long_rounded,
                             color: AppColors.accent),
                       ),
@@ -71,7 +71,7 @@ class LabsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.fromLTRB(20, 2, 20, 14),
                 child: Text(
                   'Analises e exames com colheita ao domicílio — pagas da carteira',
@@ -135,7 +135,7 @@ class LabsScreen extends ConsumerWidget {
 }
 
 class _LabCard extends StatelessWidget {
-  const _LabCard({required this.lab});
+         _LabCard({required this.lab});
 
   final LabFacility lab;
 
@@ -170,7 +170,7 @@ class _LabCard extends StatelessWidget {
               ),
               child: (lab.imageUrl == null ||
                       !lab.imageUrl!.startsWith('http'))
-                  ? const Icon(Icons.biotech_rounded,
+                  ?        Icon(Icons.biotech_rounded,
                       color: AppColors.accent, size: 26)
                   : null,
             ),
@@ -183,7 +183,7 @@ class _LabCard extends StatelessWidget {
                     lab.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w800,
                       fontSize: 14.5,
@@ -199,7 +199,7 @@ class _LabCard extends StatelessWidget {
                     ].join(' · '),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
                     ),
@@ -213,7 +213,7 @@ class _LabCard extends StatelessWidget {
                 color: AppColors.accent.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.arrow_forward_rounded,
+              child:        Icon(Icons.arrow_forward_rounded,
                   size: 16, color: AppColors.accent),
             ),
           ],
@@ -242,7 +242,7 @@ class _LabsSkeleton extends StatelessWidget {
 }
 
 class _EmptyPane extends StatelessWidget {
-  const _EmptyPane({
+         _EmptyPane({
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -263,7 +263,7 @@ class _EmptyPane extends StatelessWidget {
             Icon(icon, size: 44, color: AppColors.textMuted),
             const SizedBox(height: 14),
             Text(title,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
@@ -272,7 +272,7 @@ class _EmptyPane extends StatelessWidget {
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary, fontSize: 12.5),
             ),
           ],

@@ -75,10 +75,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Text(
+                           Text(
                       'Editar perfil',
                       style: TextStyle(
                         color: AppColors.textPrimary,
@@ -108,7 +108,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                                       height: 96,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        gradient: const LinearGradient(
+                                        gradient:        LinearGradient(
                                             colors:
                                                 AppColors.heroCardGradient),
                                         border: Border.all(
@@ -147,7 +147,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                               ),
                             ).animate().fadeIn(duration: 300.ms),
                             const SizedBox(height: 8),
-                            const Center(
+                                   Center(
                               child: Text(
                                 'Toque na foto para alterar',
                                 style: TextStyle(
@@ -157,7 +157,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                             const SizedBox(height: 22),
                             TextField(
                               controller: _name,
-                              style: const TextStyle(
+                              style:        TextStyle(
                                   color: AppColors.textPrimary),
                               decoration: const InputDecoration(
                                 labelText: 'Nome completo',
@@ -168,7 +168,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                             TextField(
                               controller: _phone,
                               keyboardType: TextInputType.phone,
-                              style: const TextStyle(
+                              style:        TextStyle(
                                   color: AppColors.textPrimary),
                               decoration: const InputDecoration(
                                 labelText: 'Telefone',
@@ -179,7 +179,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                             const SizedBox(height: 12),
                             TextField(
                               controller: _city,
-                              style: const TextStyle(
+                              style:        TextStyle(
                                   color: AppColors.textPrimary),
                               decoration: const InputDecoration(
                                 labelText: 'Cidade',

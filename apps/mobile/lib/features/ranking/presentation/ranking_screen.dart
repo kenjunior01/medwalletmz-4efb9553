@@ -79,7 +79,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen>
                         icon: Icons.arrow_back_rounded,
                         onTap: () => context.pop()),
                     const SizedBox(width: 12),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Ranking',
                         style: TextStyle(
@@ -89,7 +89,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen>
                         ),
                       ),
                     ),
-                    const Icon(Icons.emoji_events_rounded,
+                           Icon(Icons.emoji_events_rounded,
                         color: AppColors.warning, size: 22),
                   ],
                 ),
@@ -106,7 +106,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen>
                   unselectedLabelColor: AppColors.textMuted,
                   labelStyle: const TextStyle(
                       fontWeight: FontWeight.w800, fontSize: 13),
-                  tabs: const [
+                  tabs:        [
                     Tab(text: 'Médicos'),
                     Tab(text: 'Farmácias'),
                     Tab(text: 'Clínicas'),
@@ -121,7 +121,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen>
                 child: _loading
                     ? ListView(
                         padding: const EdgeInsets.all(20),
-                        children: const [
+                        children:        [
                           AppSkeleton(height: 72),
                           SizedBox(height: 10),
                           AppSkeleton(height: 72),
@@ -149,7 +149,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen>
   Widget _doctorsList() {
     if (_doctors.isEmpty) {
       return ListView(
-        children: const [
+        children:        [
           EmptyState(
             icon: Icons.emoji_events_rounded,
             title: 'Sem avaliações ainda',
@@ -179,7 +179,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen>
   Widget _facilitiesList() {
     if (_facilities.isEmpty) {
       return ListView(
-        children: const [
+        children:        [
           EmptyState(
             icon: Icons.storefront_rounded,
             title: 'Sem avaliações ainda',
@@ -213,7 +213,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen>
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-  const _IconBtn({required this.icon, required this.onTap});
+         _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -240,7 +240,7 @@ class _IconBtn extends StatelessWidget {
 }
 
 class _RankTile extends StatelessWidget {
-  const _RankTile({
+         _RankTile({
     required this.position,
     required this.title,
     required this.subtitle,
@@ -313,7 +313,7 @@ class _RankTile extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,
@@ -324,7 +324,7 @@ class _RankTile extends StatelessWidget {
                     subtitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textMuted, fontSize: 11.5),
                   ),
               ],
@@ -347,7 +347,7 @@ class _RankTile extends StatelessWidget {
                   const SizedBox(width: 3),
                   Text(
                     rating.toStringAsFixed(rating == rating.roundToDouble() ? 0 : 1),
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w900,
                       fontSize: 13,
@@ -358,7 +358,7 @@ class _RankTile extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 '$reviews avaliações',
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textMuted, fontSize: 10.5),
               ),
             ],

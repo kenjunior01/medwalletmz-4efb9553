@@ -20,7 +20,7 @@ import '../data/emergency_card_repository.dart';
 ///   • Rota `/emergency-card` (SOS, Perfil, balcões rápidos)
 ///   • Long-press no ícone (App Shortcut nativo)
 class EmergencyCardScreen extends StatelessWidget {
-  const EmergencyCardScreen({
+         EmergencyCardScreen({
     super.key,
     this.data,
     this.onClose,
@@ -43,7 +43,7 @@ class EmergencyCardScreen extends StatelessWidget {
 }
 
 class _CardLoader extends StatefulWidget {
-  const _CardLoader({
+         _CardLoader({
     this.prefetched,
     this.onClose,
     required this.showClose,
@@ -119,7 +119,7 @@ class _CardLoaderState extends State<_CardLoader> {
                 _buildHeader(),
                 Expanded(
                   child: _loading
-                      ? const Center(
+                      ?        Center(
                           child: CircularProgressIndicator(
                               color: AppColors.danger))
                       : _data == null || _data!.isEmpty
@@ -148,14 +148,14 @@ class _CardLoaderState extends State<_CardLoader> {
                   Navigator.of(context).pop();
                 }
               },
-              icon: const Icon(Icons.close_rounded,
+              icon:        Icon(Icons.close_rounded,
                   color: AppColors.textPrimary),
             ),
           Expanded(
             child: Text(
               'FICHA DE EMERGÊNCIA',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.danger,
                 fontSize: 15,
                 fontWeight: FontWeight.w900,
@@ -172,7 +172,7 @@ class _CardLoaderState extends State<_CardLoader> {
 
 /// Conteúdo completo — só aparece se houver dados.
 class _CardContent extends StatelessWidget {
-  const _CardContent({required this.data});
+         _CardContent({required this.data});
 
   final EmergencyCardData data;
 
@@ -198,7 +198,7 @@ class _CardContent extends StatelessWidget {
                   children: [
                     Text(
                       data.fullName ?? 'Paciente MedWallet',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 22,
                         fontWeight: FontWeight.w900,
@@ -222,11 +222,11 @@ class _CardContent extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(
+                  gradient:        LinearGradient(
                       colors: [Color(0xFFB91C1C), AppColors.danger]),
                   border: Border.all(
                       color: Colors.white.withOpacity(0.3), width: 2),
-                  boxShadow: const [
+                  boxShadow:        [
                     BoxShadow(color: Color(0x66EF4444), blurRadius: 26),
                   ],
                 ),
@@ -375,7 +375,7 @@ class _CardContent extends StatelessWidget {
 
 /// Secção genérica (alergias / condições / medicação).
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({
+         _SectionCard({
     required this.icon,
     required this.title,
     required this.accent,
@@ -444,7 +444,7 @@ class _SectionCard extends StatelessWidget {
                     ),
                     child: Text(
                       item,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -461,7 +461,7 @@ class _SectionCard extends StatelessWidget {
 
 /// Cartão de chamada de 1 toque para o contacto de emergência.
 class _CallCard extends StatelessWidget {
-  const _CallCard({
+         _CallCard({
     required this.name,
     required this.phone,
     this.relationship,
@@ -484,11 +484,11 @@ class _CallCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient:        LinearGradient(
             colors: [Color(0xFFB91C1C), Color(0xFFDC2626)]),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white.withOpacity(0.2)),
-        boxShadow: const [
+        boxShadow:        [
           BoxShadow(color: Color(0x59EF4444), blurRadius: 22),
         ],
       ),
@@ -545,7 +545,7 @@ class _CallCard extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
-                boxShadow: const [
+                boxShadow:        [
                   BoxShadow(color: Color(0x4D000000), blurRadius: 12),
                 ],
               ),
@@ -561,7 +561,7 @@ class _CallCard extends StatelessWidget {
 
 /// Estado vazio honesto — sem dados na ficha.
 class _EmptyCard extends StatelessWidget {
-  const _EmptyCard({this.onClose});
+         _EmptyCard({this.onClose});
 
   final VoidCallback? onClose;
 
@@ -581,11 +581,11 @@ class _EmptyCard extends StatelessWidget {
                 color: AppColors.danger.withOpacity(0.15),
                 border: Border.all(color: AppColors.danger.withOpacity(0.4)),
               ),
-              child: const Icon(Icons.emergency_rounded,
+              child:        Icon(Icons.emergency_rounded,
                   color: AppColors.danger, size: 36),
             ),
             const SizedBox(height: 20),
-            const Text(
+                   Text(
               'Ficha ainda sem dados',
               style: TextStyle(
                 color: AppColors.textPrimary,

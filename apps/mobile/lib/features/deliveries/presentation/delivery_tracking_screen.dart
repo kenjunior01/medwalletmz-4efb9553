@@ -100,7 +100,7 @@ class _DeliveryTrackingScreenState
         backgroundColor: AppColors.bgHigh,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Cancelar entrega?',
+        title:        Text('Cancelar entrega?',
             style: TextStyle(color: AppColors.textPrimary)),
         content: Text(
           'O pedido ainda não foi aceite por nenhum estafeta. '
@@ -114,7 +114,7 @@ class _DeliveryTrackingScreenState
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Cancelar entrega',
+            child:        Text('Cancelar entrega',
                 style: TextStyle(color: AppColors.danger)),
           ),
         ],
@@ -149,14 +149,14 @@ class _DeliveryTrackingScreenState
             if (d != null && d.status == DeliveryStatus.pending)
               IconButton(
                 onPressed: _cancelDelivery,
-                icon: const Icon(Icons.cancel_outlined,
+                icon:        Icon(Icons.cancel_outlined,
                     color: AppColors.danger),
                 tooltip: 'Cancelar pedido',
               ),
           ],
         ),
         body: d == null
-            ? const Center(
+            ?        Center(
                 child: CircularProgressIndicator(color: AppColors.primary))
             : ListView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -181,7 +181,7 @@ class _DeliveryTrackingScreenState
 // ── Mapa ao vivo ──────────────────────────────────────────────────────
 
 class _LiveMapCard extends StatelessWidget {
-  const _LiveMapCard({
+         _LiveMapCard({
     required this.delivery,
     required this.riderPosition,
     required this.onMapCreated,
@@ -306,7 +306,7 @@ class _LiveMapCard extends StatelessWidget {
 }
 
 class _MapFallback extends StatelessWidget {
-  const _MapFallback({required this.delivery, required this.onOpenMaps});
+         _MapFallback({required this.delivery, required this.onOpenMaps});
 
   final PatientDelivery delivery;
   final void Function(LatLngPoint, String) onOpenMaps;
@@ -321,7 +321,7 @@ class _MapFallback extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.map_rounded, size: 18, color: AppColors.accent),
+                     Icon(Icons.map_rounded, size: 18, color: AppColors.accent),
               const SizedBox(width: 8),
               Expanded(
                 child: Text('Percurso',
@@ -361,7 +361,7 @@ class _MapFallback extends StatelessWidget {
 }
 
 class _MapLinkRow extends StatelessWidget {
-  const _MapLinkRow({
+         _MapLinkRow({
     required this.emoji,
     required this.title,
     required this.point,
@@ -393,7 +393,7 @@ class _MapLinkRow extends StatelessWidget {
               color: AppColors.primary.withOpacity(.18),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Text('Abrir no mapa',
+            child:        Text('Abrir no mapa',
                 style: TextStyle(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
@@ -408,7 +408,7 @@ class _MapLinkRow extends StatelessWidget {
 // ── Timeline de estados ───────────────────────────────────────────────
 
 class _StatusTimeline extends StatelessWidget {
-  const _StatusTimeline({required this.delivery});
+         _StatusTimeline({required this.delivery});
 
   final PatientDelivery delivery;
 
@@ -552,7 +552,7 @@ class _StatusTimeline extends StatelessWidget {
 // ── Detalhes ──────────────────────────────────────────────────────────
 
 class _DetailsCard extends StatelessWidget {
-  const _DetailsCard({required this.delivery});
+         _DetailsCard({required this.delivery});
 
   final PatientDelivery delivery;
 
@@ -569,7 +569,7 @@ class _DetailsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('DETALHES DA ENCOMENDA',
+                 Text('DETALHES DA ENCOMENDA',
               style: TextStyle(
                   fontSize: 10.5,
                   letterSpacing: 1.2,

@@ -34,10 +34,10 @@ class BookingsScreen extends ConsumerWidget {
                   children: [
                     IconButton(
                       onPressed: () => Navigator.of(context).maybePop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Text(
+                           Text(
                       'As minhas consultas',
                       style: TextStyle(
                         color: AppColors.textPrimary,
@@ -93,7 +93,7 @@ class BookingsScreen extends ConsumerWidget {
 }
 
 class _ConsultTile extends ConsumerWidget {
-  const _ConsultTile({required this.consultation});
+         _ConsultTile({required this.consultation});
 
   final Consultation consultation;
 
@@ -147,7 +147,7 @@ class _ConsultTile extends ConsumerWidget {
                                 : 'Consulta médica',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
@@ -176,13 +176,13 @@ class _ConsultTile extends ConsumerWidget {
                     const SizedBox(height: 5),
                     Text(
                       formatDateTime(consultation.scheduledAt),
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textSecondary, fontSize: 12.5),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       '${formatMZN(consultation.fee)} · ${consultation.durationMinutes} min',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 12),
                     ),
                   ],
@@ -224,21 +224,21 @@ class _ConsultTile extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF12263C),
-        title: const Text('Cancelar consulta?',
+        title:        Text('Cancelar consulta?',
             style: TextStyle(color: AppColors.textPrimary, fontSize: 18)),
-        content: const Text(
+        content:        Text(
           'O horário do médico fica imediatamente livre para outros pacientes.',
           style: TextStyle(color: AppColors.textSecondary, fontSize: 13.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Manter',
+            child:        Text('Manter',
                 style: TextStyle(color: AppColors.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Cancelar consulta',
+            child:        Text('Cancelar consulta',
                 style: TextStyle(color: AppColors.danger)),
           ),
         ],
@@ -286,7 +286,7 @@ class _ConsultTile extends ConsumerWidget {
 }
 
 class _ActionChip extends StatelessWidget {
-  const _ActionChip({
+         _ActionChip({
     required this.icon,
     required this.label,
     required this.color,
@@ -332,7 +332,7 @@ class _ActionChip extends StatelessWidget {
 /// Folha de avaliação — grava em `doctor_reviews` (UNIQUE por consulta,
 /// por isso um segundo toque actualiza a nota em vez de duplicar).
 class _ReviewSheet extends ConsumerStatefulWidget {
-  const _ReviewSheet({required this.consultation, required this.alreadyRated});
+         _ReviewSheet({required this.consultation, required this.alreadyRated});
 
   final Consultation consultation;
   final bool alreadyRated;
@@ -359,7 +359,7 @@ class _ReviewSheetState extends ConsumerState<_ReviewSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -392,7 +392,7 @@ class _ReviewSheetState extends ConsumerState<_ReviewSheet> {
                       ? 'Actualizar a tua avaliação'
                       : 'Como foi a consulta?',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
@@ -422,7 +422,7 @@ class _ReviewSheetState extends ConsumerState<_ReviewSheet> {
                 TextField(
                   controller: _comment,
                   maxLines: 3,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style:        TextStyle(color: AppColors.textPrimary),
                   decoration: const InputDecoration(
                     hintText:
                         'Comentário (opcional) — pontualidade, cuidado, clareza…',

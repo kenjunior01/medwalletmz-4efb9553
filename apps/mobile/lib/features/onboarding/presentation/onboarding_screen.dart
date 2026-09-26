@@ -79,7 +79,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 alignment: Alignment.topRight,
                 child: TextButton(
                   onPressed: _finish,
-                  child: const Text(
+                  child:        Text(
                     'Saltar',
                     style: TextStyle(
                       color: AppColors.textMuted,
@@ -106,14 +106,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             height: 132,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(40),
-                              gradient: const LinearGradient(
+                              gradient:        LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: AppColors.heroCardGradient,
                               ),
                               border: Border.all(
                                   color: Colors.white.withOpacity(0.18)),
-                              boxShadow: const [
+                              boxShadow:        [
                                 BoxShadow(
                                     color: AppColors.glowCyan, blurRadius: 44),
                               ],
@@ -133,7 +133,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Text(
                             s.title,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 24,
                               fontWeight: FontWeight.w800,

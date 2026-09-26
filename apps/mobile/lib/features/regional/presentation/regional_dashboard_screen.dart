@@ -45,7 +45,7 @@ class _RegionalDashboardScreenState
         child: SafeArea(
           bottom: false,
           child: access.when(
-            loading: () => const Center(
+            loading: () =>        Center(
               child: CircularProgressIndicator(color: AppColors.accent),
             ),
             error: (e, _) => EmptyState(
@@ -89,10 +89,10 @@ class _NoAccess extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () => context.pop(),
-              icon: const Icon(Icons.arrow_back_rounded,
+              icon:        Icon(Icons.arrow_back_rounded,
                   color: AppColors.textPrimary),
             ),
-            const Expanded(
+                   Expanded(
               child: Text(
                 'Gestão Regional',
                 style: TextStyle(
@@ -122,7 +122,7 @@ class _NoAccess extends StatelessWidget {
 // ── Dashboard ───────────────────────────────────────────────────────────
 
 class _Dashboard extends ConsumerWidget {
-  const _Dashboard({
+         _Dashboard({
     required this.countries,
     required this.countryId,
     required this.onCountry,
@@ -147,10 +147,10 @@ class _Dashboard extends ConsumerWidget {
           children: [
             IconButton(
               onPressed: () => context.pop(),
-              icon: const Icon(Icons.arrow_back_rounded,
+              icon:        Icon(Icons.arrow_back_rounded,
                   color: AppColors.textPrimary),
             ),
-            const Expanded(
+                   Expanded(
               child: Text(
                 'Gestão Regional',
                 style: TextStyle(
@@ -197,7 +197,7 @@ class _Dashboard extends ConsumerWidget {
               color: AppColors.warning.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
+            child:        Text(
               'Sem país associado ao teu papel. A administração precisa de '
               'criar uma entrada em user_roles (role country_manager + '
               'country_id) ou country_management.',
@@ -210,7 +210,7 @@ class _Dashboard extends ConsumerWidget {
         // ── Tabs ───────────────────────────────────────────────────
         Row(
           children: [
-            for (final (key, label, icon) in const [
+            for (final (key, label, icon) in        [
               ('pendentes', 'Pendentes', Icons.inbox_rounded),
               ('kpis', 'KPIs', Icons.insights_rounded),
               ('metas', 'Metas', Icons.flag_rounded),
@@ -246,7 +246,7 @@ class _Dashboard extends ConsumerWidget {
 // ── Lista pendente ──────────────────────────────────────────────────────
 
 class _PendingList extends ConsumerWidget {
-  const _PendingList({required this.countryId});
+         _PendingList({required this.countryId});
 
   final String countryId;
 
@@ -282,7 +282,7 @@ class _PendingList extends ConsumerWidget {
 }
 
 class _ReviewCard extends ConsumerWidget {
-  const _ReviewCard({required this.p});
+         _ReviewCard({required this.p});
 
   final PlaceProposal p;
 
@@ -300,7 +300,7 @@ class _ReviewCard extends ConsumerWidget {
         ),
       ));
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(
+      messenger.showSnackBar(       SnackBar(
         backgroundColor: AppColors.danger,
         content: Text('Falhou a aprovação — confirma o teu papel de '
             'gestor deste país.'),
@@ -317,7 +317,7 @@ class _ReviewCard extends ConsumerWidget {
       builder: (ctx) => Container(
         padding: EdgeInsets.fromLTRB(
             22, 18, 22, MediaQuery.of(ctx).viewInsets.bottom + 20),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient: LinearGradient(
               colors: [AppColors.bgHigh, AppColors.bgDeep]),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -326,7 +326,7 @@ class _ReviewCard extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+                   Text(
               'Rejeitar submissão',
               style: TextStyle(
                   color: AppColors.textPrimary,
@@ -344,7 +344,7 @@ class _ReviewCard extends ConsumerWidget {
             TextField(
               controller: notesCtrl,
               maxLines: 3,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style:        TextStyle(color: AppColors.textPrimary),
               decoration: const InputDecoration(
                   hintText: 'Ex.: telefone incompleto, já existe no '
                       'directório…'),
@@ -386,7 +386,7 @@ class _ReviewCard extends ConsumerWidget {
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+                 SnackBar(
               backgroundColor: AppColors.danger,
               content: Text('Falhou a rejeição — confirma o teu papel.')),
         );
@@ -430,7 +430,7 @@ class _ReviewCard extends ConsumerWidget {
                       p.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 14.5,
@@ -470,7 +470,7 @@ class _ReviewCard extends ConsumerWidget {
                       height: 86,
                       color: Colors.white.withOpacity(0.05),
                       alignment: Alignment.center,
-                      child: const Icon(Icons.broken_image_rounded,
+                      child:        Icon(Icons.broken_image_rounded,
                           color: AppColors.textMuted, size: 20),
                     ),
                   ),
@@ -557,7 +557,7 @@ extension NonNullJoin on List<String?> {
 // ── Detalhe ─────────────────────────────────────────────────────────────
 
 class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.icon, required this.text});
+         _DetailRow({required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -588,7 +588,7 @@ class _DetailRow extends StatelessWidget {
 // ── KPIs ────────────────────────────────────────────────────────────────
 
 class _KpiPanel extends ConsumerStatefulWidget {
-  const _KpiPanel({required this.countryId});
+         _KpiPanel({required this.countryId});
 
   final String countryId;
 
@@ -658,7 +658,7 @@ class _KpiPanelState extends ConsumerState<_KpiPanel> {
                         children: [
                           Text(
                             _kpiLabel(k.kpiKey),
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w700,
                               fontSize: 13.2,
@@ -678,7 +678,7 @@ class _KpiPanelState extends ConsumerState<_KpiPanel> {
                     ),
                     Text(
                       '${_num(k.kpiValue)}${k.kpiUnit ?? ''}',
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.accent,
                         fontWeight: FontWeight.w800,
                         fontSize: 15.5,
@@ -711,7 +711,7 @@ String _kpiLabel(String key) => switch (key) {
 // ── Metas ───────────────────────────────────────────────────────────────
 
 class _GoalsPanel extends ConsumerStatefulWidget {
-  const _GoalsPanel({required this.countryId});
+         _GoalsPanel({required this.countryId});
 
   final String countryId;
 
@@ -775,7 +775,7 @@ class _GoalsPanelState extends ConsumerState<_GoalsPanel> {
                         Expanded(
                           child: Text(
                             '${_goalLabel(g.goalKey)} · ${g.quarter}',
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w700,
                               fontSize: 13.2,
@@ -832,7 +832,7 @@ String _goalLabel(String key) => switch (key) {
     };
 
 class _GoalStatusChip extends StatelessWidget {
-  const _GoalStatusChip({required this.status});
+         _GoalStatusChip({required this.status});
 
   final String status;
 
@@ -867,7 +867,7 @@ class _GoalStatusChip extends StatelessWidget {
 // ── Chips de país/tabs ──────────────────────────────────────────────────
 
 class _CountryChip extends StatelessWidget {
-  const _CountryChip({
+         _CountryChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -910,7 +910,7 @@ class _CountryChip extends StatelessWidget {
 }
 
 class _TabChip extends StatelessWidget {
-  const _TabChip({
+         _TabChip({
     required this.label,
     required this.icon,
     required this.selected,

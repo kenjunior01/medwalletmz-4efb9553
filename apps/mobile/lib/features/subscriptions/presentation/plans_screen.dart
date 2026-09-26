@@ -68,15 +68,15 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.bgHigh,
-        title: const Text('M-Pesa para cobrar',
+        title:        Text('M-Pesa para cobrar',
             style: TextStyle(
                 color: AppColors.textPrimary, fontSize: 17)),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.phone,
           autofocus: true,
-          style: const TextStyle(color: AppColors.textPrimary),
-          decoration: const InputDecoration(
+          style:        TextStyle(color: AppColors.textPrimary),
+          decoration:        InputDecoration(
             hintText: '84x xxx xxx',
             hintStyle: TextStyle(color: AppColors.textMuted),
           ),
@@ -105,7 +105,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.bgHigh,
-        title: const Text('Paga com M-Pesa',
+        title:        Text('Paga com M-Pesa',
             style: TextStyle(color: AppColors.textPrimary, fontSize: 17)),
         content: SingleChildScrollView(
           child: Column(
@@ -120,7 +120,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
               _step('5',
                   'Referência: ${payment.reference} — usa-a quando possível.'),
               const SizedBox(height: 12),
-              const Text(
+                     Text(
                   'Depois de pagar, cola o ID de transacção (SMS do M-Pesa) para acelerar a activação:',
                   style: TextStyle(
                       color: AppColors.textSecondary,
@@ -129,8 +129,8 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
               const SizedBox(height: 10),
               TextField(
                 controller: txController,
-                style: const TextStyle(color: AppColors.textPrimary),
-                decoration: const InputDecoration(
+                style:        TextStyle(color: AppColors.textPrimary),
+                decoration:        InputDecoration(
                   hintText: 'Ex: PP240912.1234.A56789',
                   hintStyle: TextStyle(color: AppColors.textMuted),
                   isDense: true,
@@ -185,7 +185,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
             height: 18,
             alignment: Alignment.center,
             margin: const EdgeInsets.only(top: 1),
-            decoration: const BoxDecoration(
+            decoration:        BoxDecoration(
               color: AppColors.accent,
               shape: BoxShape.circle,
             ),
@@ -201,7 +201,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(text,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12.5,
                     height: 1.35)),
@@ -229,7 +229,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
                         icon: Icons.arrow_back_rounded,
                         onTap: () => context.pop()),
                     const SizedBox(width: 12),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Planos MedWallet',
                         style: TextStyle(
@@ -245,7 +245,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
 
                 // As minhas subscrições
                 if (_subs.isNotEmpty) ...[
-                  const Text(
+                         Text(
                     'As minhas subscrições',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -259,7 +259,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
                   const SizedBox(height: 18),
                 ],
 
-                const Text(
+                       Text(
                   'Planos para pacientes',
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -305,7 +305,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _IconBtn extends StatelessWidget {
-  const _IconBtn({required this.icon, required this.onTap});
+         _IconBtn({required this.icon, required this.onTap});
   final IconData icon;
   final VoidCallback onTap;
 
@@ -332,7 +332,7 @@ class _IconBtn extends StatelessWidget {
 }
 
 class _PlanCard extends StatelessWidget {
-  const _PlanCard({required this.plan, required this.onSubscribe});
+         _PlanCard({required this.plan, required this.onSubscribe});
   final SubPlan plan;
   final VoidCallback onSubscribe;
 
@@ -367,7 +367,7 @@ class _PlanCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   plan.name,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w900,
                     fontSize: 17,
@@ -384,7 +384,7 @@ class _PlanCard extends StatelessWidget {
                   ),
                   child: Text(
                     plan.badge!,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.accent,
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
@@ -399,14 +399,14 @@ class _PlanCard extends StatelessWidget {
             children: [
               Text(
                 formatMZN(plan.price, withSymbol: false),
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w900,
                   fontSize: 26,
                 ),
               ),
               const SizedBox(width: 6),
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.only(bottom: 4),
                 child: Text(
                   'MT/mês',
@@ -424,7 +424,7 @@ class _PlanCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               plan.description!,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12.5,
                   height: 1.4),
@@ -438,13 +438,13 @@ class _PlanCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.check_circle_rounded,
+                           Icon(Icons.check_circle_rounded,
                         size: 15, color: AppColors.success),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         f,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textSecondary, fontSize: 12.5),
                       ),
                     ),
@@ -476,7 +476,7 @@ class _PlanCard extends StatelessWidget {
 }
 
 class _SubTile extends StatelessWidget {
-  const _SubTile({required this.sub});
+         _SubTile({required this.sub});
   final MySubscription sub;
 
   Color get _color {
@@ -511,7 +511,7 @@ class _SubTile extends StatelessWidget {
               children: [
                 Text(
                   sub.planName ?? 'Plano',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,
@@ -522,7 +522,7 @@ class _SubTile extends StatelessWidget {
                   sub.expiresAt != null
                       ? 'Válida até ${formatDateShort(sub.expiresAt!)}'
                       : formatRelative(sub.createdAt),
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary, fontSize: 11.5),
                 ),
               ],

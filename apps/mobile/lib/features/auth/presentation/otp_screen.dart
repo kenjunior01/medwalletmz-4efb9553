@@ -60,7 +60,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   alignment: Alignment.centerLeft,
                   child: IconButton(
                     onPressed: () => context.pop(),
-                    icon: const Icon(Icons.arrow_back_rounded,
+                    icon:        Icon(Icons.arrow_back_rounded,
                         color: AppColors.textPrimary),
                   ),
                 ),
@@ -77,7 +77,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 Text(
                   _sent ? 'Introduz o código' : 'Entrar por SMS',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
@@ -101,9 +101,9 @@ class _OtpScreenState extends State<OtpScreen> {
                     controller: _phone,
                     keyboardType: TextInputType.phone,
                     autocorrect: false,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textPrimary, fontSize: 18),
-                    decoration: const InputDecoration(
+                    decoration:        InputDecoration(
                       hintText: '84 123 4567',
                       prefixText: '+258 ',
                       prefixStyle: TextStyle(
@@ -133,7 +133,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: _sending ? null : _send,
-                    child: const Text(
+                    child:        Text(
                       'Reenviar código',
                       style: TextStyle(color: AppColors.accent),
                     ),
@@ -172,13 +172,13 @@ class _OtpScreenState extends State<OtpScreen> {
           maxLength: 6,
           autofocus: true,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style:        TextStyle(
             color: AppColors.textPrimary,
             fontSize: 30,
             fontWeight: FontWeight.w800,
             letterSpacing: 14,
           ),
-          decoration: const InputDecoration(
+          decoration:        InputDecoration(
             counterText: '',
             border: InputBorder.none,
             hintText: '••••••',

@@ -129,7 +129,7 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
       await _loadDashboard();
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Outro estafeta foi mais rápido — entrega já ocupada'),
         backgroundColor: AppColors.danger,
       ));
@@ -152,7 +152,7 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
       await _loadDashboard();
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Não foi possível actualizar o estado'),
         backgroundColor: AppColors.danger,
       ));
@@ -188,7 +188,7 @@ class _RiderScreenState extends ConsumerState<RiderScreen>
         body: _loading
             ? ListView(
                 padding: const EdgeInsets.all(16),
-                children: const [
+                children:        [
                   AppSkeleton(height: 140),
                   SizedBox(height: 12),
                   AppSkeleton(height: 90),
@@ -255,7 +255,7 @@ class HealthRiderOnlineAdapter {
 /* ----------------------------- ONBOARDING ----------------------------- */
 
 class _OnboardingWizard extends ConsumerStatefulWidget {
-  const _OnboardingWizard({required this.onDone});
+         _OnboardingWizard({required this.onDone});
 
   final Future<void> Function() onDone;
 
@@ -311,7 +311,7 @@ class _OnboardingWizardState extends ConsumerState<_OnboardingWizard> {
     if (_name.text.trim().length < 3 ||
         _phone.text.trim().length < 9 ||
         _nationalId.text.trim().length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Preenche nome, telefone (9 dígitos) e nº do BI'),
         backgroundColor: AppColors.danger,
       ));
@@ -349,7 +349,7 @@ class _OnboardingWizardState extends ConsumerState<_OnboardingWizard> {
         onboardingProgress: 80,
       ));
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Candidatura enviada! A equipa verifica em breve.'),
         backgroundColor: AppColors.success,
       ));
@@ -402,7 +402,7 @@ class _OnboardingWizardState extends ConsumerState<_OnboardingWizard> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: const [
+                children:        [
                   _HeroChip(text: '💊 Medicamentos'),
                   _HeroChip(text: '🧪 Amostras'),
                   _HeroChip(text: '🏥 Equipamento'),
@@ -551,14 +551,14 @@ class _OnboardingWizardState extends ConsumerState<_OnboardingWizard> {
               onChanged: (v) => setState(() => _coldChain = v),
               activeColor: AppColors.accent,
               contentPadding: EdgeInsets.zero,
-              title: const Text('Aceito cadeia de frio',
+              title:        Text('Aceito cadeia de frio',
                   style: TextStyle(color: AppColors.textPrimary)),
-              subtitle: const Text('Medicamentos e amostras refrigeradas (+30 MZN)',
+              subtitle:        Text('Medicamentos e amostras refrigeradas (+30 MZN)',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
             ),
             Row(
               children: [
-                const Text('Distância máx.:',
+                       Text('Distância máx.:',
                     style: TextStyle(color: AppColors.textSecondary)),
                 Expanded(
                   child: Slider(
@@ -590,7 +590,7 @@ class _OnboardingWizardState extends ConsumerState<_OnboardingWizard> {
               onPick: () => _pickDoc(false),
             ),
             const SizedBox(height: 8),
-            const Text(
+                   Text(
               'As fotos vão para o bucket privado `rider-documents` e só são '
               'vistas pela equipa de verificação.',
               style: TextStyle(color: AppColors.textMuted, fontSize: 12),
@@ -620,7 +620,7 @@ class _OnboardingWizardState extends ConsumerState<_OnboardingWizard> {
 }
 
 class _HeroChip extends StatelessWidget {
-  const _HeroChip({required this.text});
+         _HeroChip({required this.text});
   final String text;
 
   @override
@@ -639,7 +639,7 @@ class _HeroChip extends StatelessWidget {
 }
 
 class _StepCard extends StatelessWidget {
-  const _StepCard({required this.title, required this.child});
+         _StepCard({required this.title, required this.child});
   final String title;
   final Widget child;
 
@@ -656,7 +656,7 @@ class _StepCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w800,
                   fontSize: 15)),
@@ -669,7 +669,7 @@ class _StepCard extends StatelessWidget {
 }
 
 class _Field extends StatelessWidget {
-  const _Field({
+         _Field({
     required this.controller,
     required this.label,
     required this.icon,
@@ -688,12 +688,12 @@ class _Field extends StatelessWidget {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
-      style: const TextStyle(color: AppColors.textPrimary),
+      style:        TextStyle(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textMuted),
-        labelStyle: const TextStyle(color: AppColors.textSecondary),
+        hintStyle:        TextStyle(color: AppColors.textMuted),
+        labelStyle:        TextStyle(color: AppColors.textSecondary),
         prefixIcon: Icon(icon, color: AppColors.textMuted, size: 20),
         filled: true,
         fillColor: AppColors.glassFill,
@@ -703,7 +703,7 @@ class _Field extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.accent),
+          borderSide:        BorderSide(color: AppColors.accent),
         ),
       ),
     );
@@ -711,7 +711,7 @@ class _Field extends StatelessWidget {
 }
 
 class _DocRow extends StatelessWidget {
-  const _DocRow({required this.label, required this.path, required this.onPick});
+         _DocRow({required this.label, required this.path, required this.onPick});
   final String label;
   final String? path;
   final VoidCallback onPick;
@@ -751,7 +751,7 @@ class _DocRow extends StatelessWidget {
 /* ---------------------- VERIFICAÇÃO PENDENTE ---------------------- */
 
 class _PendingVerification extends StatelessWidget {
-  const _PendingVerification({required this.rider});
+         _PendingVerification({required this.rider});
   final HealthRider rider;
 
   @override
@@ -780,7 +780,7 @@ class _PendingVerification extends StatelessWidget {
                   color: Colors.white, size: 40),
             ),
             const SizedBox(height: 20),
-            const Text('Verificação em curso',
+                   Text('Verificação em curso',
                 style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 19,
@@ -791,7 +791,7 @@ class _PendingVerification extends StatelessWidget {
               'está a ser verificada pela equipa MedWallet. '
               'Quando ficar aprovada, o dashboard do rider abre aqui automaticamente.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary, height: 1.5),
             ),
             const SizedBox(height: 18),
@@ -813,7 +813,7 @@ class _PendingVerification extends StatelessWidget {
 /* --------------------------- DASHBOARD --------------------------- */
 
 class _Dashboard extends StatelessWidget {
-  const _Dashboard({
+         _Dashboard({
     required this.rider,
     required this.tabs,
     required this.available,
@@ -865,7 +865,7 @@ class _Dashboard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.warning.withOpacity(0.4)),
               ),
-              child: const Text(
+              child:        Text(
                 'ℹ️ Modo demonstração: ainda não há entregas reais publicadas '
                 'para o teu país. Estas entregas de exemplo mostram como o fluxo funciona.',
                 style: TextStyle(color: AppColors.warning, fontSize: 12.5, height: 1.4),
@@ -879,7 +879,7 @@ class _Dashboard extends StatelessWidget {
             labelColor: AppColors.textPrimary,
             unselectedLabelColor: AppColors.textMuted,
             labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-            tabs: const [
+            tabs:        [
               Tab(text: 'Disponíveis'),
               Tab(text: 'Activas'),
               Tab(text: 'Histórico'),
@@ -904,7 +904,7 @@ class _Dashboard extends StatelessWidget {
 }
 
 class _RiderHeader extends StatelessWidget {
-  const _RiderHeader({
+         _RiderHeader({
     required this.rider,
     required this.isOnline,
     required this.onToggleOnline,
@@ -945,21 +945,21 @@ class _RiderHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(rider.fullName,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 15)),
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    const Icon(Icons.star_rounded,
+                           Icon(Icons.star_rounded,
                         color: AppColors.warning, size: 15),
                     const SizedBox(width: 3),
                     Text(
                       '${(rider.rating ?? 5.0).toStringAsFixed(1)} · '
                       '${rider.totalDeliveries} entregas · '
                       '${rider.vehicleType.label}',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textSecondary, fontSize: 12),
                     ),
                   ],
@@ -991,7 +991,7 @@ class _RiderHeader extends StatelessWidget {
 }
 
 class _EarningsCard extends StatelessWidget {
-  const _EarningsCard({required this.earnings, required this.rider});
+         _EarningsCard({required this.earnings, required this.rider});
   final EarningsSummary? earnings;
   final HealthRider rider;
 
@@ -1076,7 +1076,7 @@ class _EarnStat extends StatelessWidget {
 }
 
 class _DeliveryCard extends StatelessWidget {
-  const _DeliveryCard({
+         _DeliveryCard({
     required this.delivery,
     this.onAccept,
     this.onNext,
@@ -1112,7 +1112,7 @@ class _DeliveryCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(d.packageType.label,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 13.5)),
@@ -1169,14 +1169,14 @@ class _DeliveryCard extends StatelessWidget {
                       showEarnings
                           ? 'Tu recebes ${formatMZN(d.riderEarnings ?? 0)}'
                           : 'Taxa ${formatMZN(d.deliveryFee ?? 0)}',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.success,
                           fontWeight: FontWeight.w800,
                           fontSize: 14),
                     ),
                     Text(
                       d.isMock ? 'Entrega de demonstração' : d.customerName,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 11),
                     ),
                   ],
@@ -1247,7 +1247,7 @@ class _DeliveryCard extends StatelessWidget {
 }
 
 class _RouteRow extends StatelessWidget {
-  const _RouteRow({
+         _RouteRow({
     required this.icon,
     required this.color,
     required this.title,
@@ -1279,14 +1279,14 @@ class _RouteRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 12.5,
                       fontWeight: FontWeight.w700),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis),
               Text(subtitle,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textMuted, fontSize: 11),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis),
@@ -1299,7 +1299,7 @@ class _RouteRow extends StatelessWidget {
 }
 
 class _MetaChip extends StatelessWidget {
-  const _MetaChip({required this.icon, required this.text});
+         _MetaChip({required this.icon, required this.text});
   final IconData icon;
   final String text;
 
@@ -1311,14 +1311,14 @@ class _MetaChip extends StatelessWidget {
         Icon(icon, size: 13, color: AppColors.textMuted),
         const SizedBox(width: 3),
         Text(text,
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 11.5)),
+            style:        TextStyle(color: AppColors.textSecondary, fontSize: 11.5)),
       ],
     );
   }
 }
 
 class _AvailableList extends StatelessWidget {
-  const _AvailableList({
+         _AvailableList({
     required this.deliveries,
     required this.onAccept,
     required this.working,
@@ -1348,7 +1348,7 @@ class _AvailableList extends StatelessWidget {
 }
 
 class _ActiveList extends StatelessWidget {
-  const _ActiveList({required this.deliveries, required this.onAdvance});
+         _ActiveList({required this.deliveries, required this.onAdvance});
   final List<HealthDelivery> deliveries;
   final Future<void> Function(HealthDelivery, DeliveryStatus) onAdvance;
 
@@ -1395,7 +1395,7 @@ class _ActiveList extends StatelessWidget {
 }
 
 class _HistoryList extends StatelessWidget {
-  const _HistoryList({required this.deliveries});
+         _HistoryList({required this.deliveries});
   final List<HealthDelivery> deliveries;
 
   @override
@@ -1421,7 +1421,7 @@ class _HistoryList extends StatelessWidget {
 }
 
 class _EmptyTab extends StatelessWidget {
-  const _EmptyTab({required this.icon, required this.text});
+         _EmptyTab({required this.icon, required this.text});
   final IconData icon;
   final String text;
 
@@ -1436,7 +1436,7 @@ class _EmptyTab extends StatelessWidget {
           Text(
             text,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textMuted, height: 1.5),
+            style:        TextStyle(color: AppColors.textMuted, height: 1.5),
           ),
         ],
       ),

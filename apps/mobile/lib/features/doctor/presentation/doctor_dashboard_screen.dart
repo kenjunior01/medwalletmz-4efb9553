@@ -98,10 +98,10 @@ class _DoctorDashboardScreenState extends ConsumerState<DoctorDashboardScreen>
                       children: [
                         IconButton(
                           onPressed: () => context.pop(),
-                          icon: const Icon(Icons.arrow_back_rounded,
+                          icon:        Icon(Icons.arrow_back_rounded,
                               color: AppColors.textPrimary),
                         ),
-                        const Expanded(
+                               Expanded(
                           child: Text(
                             'Painel do Médico',
                             style: TextStyle(
@@ -126,7 +126,7 @@ class _DoctorDashboardScreenState extends ConsumerState<DoctorDashboardScreen>
                     unselectedLabelColor: AppColors.textMuted,
                     labelStyle: const TextStyle(
                         fontSize: 13.5, fontWeight: FontWeight.w700),
-                    tabs: const [
+                    tabs:        [
                       Tab(text: 'Agenda'),
                       Tab(text: 'Horários'),
                       Tab(text: 'Pacientes'),
@@ -157,7 +157,7 @@ class _DoctorDashboardScreenState extends ConsumerState<DoctorDashboardScreen>
 /// ── Interruptor de disponibilidade ───────────────────────────────────
 
 class _AvailabilitySwitch extends ConsumerWidget {
-  const _AvailabilitySwitch({required this.profile});
+         _AvailabilitySwitch({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -225,7 +225,7 @@ class _AvailabilitySwitch extends ConsumerWidget {
 /// ── KPIs ─────────────────────────────────────────────────────────────
 
 class _KpiRow extends ConsumerWidget {
-  const _KpiRow({required this.profile});
+         _KpiRow({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -283,7 +283,7 @@ class _Kpi extends StatelessWidget {
               child: Text(
                 value,
                 maxLines: 1,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 13.5,
                   fontWeight: FontWeight.w800,
@@ -295,7 +295,7 @@ class _Kpi extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+              style:        TextStyle(color: AppColors.textMuted, fontSize: 10),
             ),
           ],
         ),
@@ -307,7 +307,7 @@ class _Kpi extends StatelessWidget {
 /// ── Tab 1: Agenda ────────────────────────────────────────────────────
 
 class _AgendaTab extends ConsumerStatefulWidget {
-  const _AgendaTab({required this.profile});
+         _AgendaTab({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -406,7 +406,7 @@ class _SectionLabel extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Text(
           text,
-          style: const TextStyle(
+          style:        TextStyle(
             color: AppColors.textSecondary,
             fontSize: 12.5,
             fontWeight: FontWeight.w800,
@@ -417,7 +417,7 @@ class _SectionLabel extends StatelessWidget {
 }
 
 class _AgendaTile extends StatelessWidget {
-  const _AgendaTile({
+         _AgendaTile({
     required this.consultation,
     required this.busy,
     required this.onAction,
@@ -457,7 +457,7 @@ class _AgendaTile extends StatelessWidget {
                 ),
                 child: Text(
                   c.patientName.isNotEmpty ? c.patientName[0].toUpperCase() : 'P',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.accent,
                     fontWeight: FontWeight.w800,
                     fontSize: 15,
@@ -473,7 +473,7 @@ class _AgendaTile extends StatelessWidget {
                       c.patientName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 14.5,
                         fontWeight: FontWeight.w800,
@@ -482,7 +482,7 @@ class _AgendaTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '${formatDateTime(c.scheduledAt)} · ${c.durationMinutes} min',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textSecondary, fontSize: 12),
                     ),
                   ],
@@ -511,7 +511,7 @@ class _AgendaTile extends StatelessWidget {
               c.reason!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textMuted, fontSize: 12.5),
             ),
           ],
@@ -520,7 +520,7 @@ class _AgendaTile extends StatelessWidget {
             children: [
               Text(
                 formatMZN(c.fee),
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
@@ -560,7 +560,7 @@ class _AgendaTile extends StatelessWidget {
 }
 
 class _MiniButton extends StatelessWidget {
-  const _MiniButton({
+         _MiniButton({
     required this.label,
     required this.color,
     required this.onTap,
@@ -599,7 +599,7 @@ class _MiniButton extends StatelessWidget {
 /// ── Tab 2: Horários (slots) ──────────────────────────────────────────
 
 class _SlotsTab extends ConsumerStatefulWidget {
-  const _SlotsTab({required this.profile});
+         _SlotsTab({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -742,7 +742,7 @@ class _SlotsTabState extends ConsumerState<_SlotsTab> {
 }
 
 class _SeriesCard extends StatelessWidget {
-  const _SeriesCard({
+         _SeriesCard({
     required this.days,
     required this.startHour,
     required this.endHour,
@@ -771,7 +771,7 @@ class _SeriesCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [
+        gradient:        LinearGradient(colors: [
           Color(0x331E6B9C),
           Color(0x1414B8A6),
         ]),
@@ -783,10 +783,10 @@ class _SeriesCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.auto_awesome_rounded,
+                     Icon(Icons.auto_awesome_rounded,
                   color: AppColors.accent, size: 18),
               const SizedBox(width: 8),
-              const Expanded(
+                     Expanded(
                 child: Text(
                   'Criar série de horários',
                   style: TextStyle(
@@ -846,7 +846,7 @@ class _SeriesCard extends StatelessWidget {
 }
 
 class _HourPicker extends StatelessWidget {
-  const _HourPicker({
+         _HourPicker({
     required this.label,
     required this.value,
     required this.min,
@@ -874,7 +874,7 @@ class _HourPicker extends StatelessWidget {
             width: 150,
             child: Text(
               label,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary, fontSize: 12.5),
             ),
           ),
@@ -886,7 +886,7 @@ class _HourPicker extends StatelessWidget {
             child: Center(
               child: Text(
                 '$value $suffix',
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
@@ -905,7 +905,7 @@ class _HourPicker extends StatelessWidget {
 }
 
 class _RoundStep extends StatelessWidget {
-  const _RoundStep({required this.icon, required this.onTap});
+         _RoundStep({required this.icon, required this.onTap});
 
   final IconData icon;
   final VoidCallback? onTap;
@@ -932,7 +932,7 @@ class _RoundStep extends StatelessWidget {
 }
 
 class _SlotTile extends StatelessWidget {
-  const _SlotTile({required this.slot, required this.busy, required this.onDelete});
+         _SlotTile({required this.slot, required this.busy, required this.onDelete});
 
   final DoctorSlot slot;
   final bool busy;
@@ -958,7 +958,7 @@ class _SlotTile extends StatelessWidget {
               '${slot.startsAt.hour.toString().padLeft(2, '0')}:${slot.startsAt.minute.toString().padLeft(2, '0')}'
               ' – '
               '${slot.endsAt.hour.toString().padLeft(2, '0')}:${slot.endsAt.minute.toString().padLeft(2, '0')}',
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 13.5,
                 fontWeight: FontWeight.w700,
@@ -981,7 +981,7 @@ class _SlotTile extends StatelessWidget {
             const SizedBox(width: 8),
             GestureDetector(
               onTap: busy ? null : () => onDelete(slot),
-              child: const Icon(Icons.delete_outline_rounded,
+              child:        Icon(Icons.delete_outline_rounded,
                   color: AppColors.danger, size: 20),
             ),
           ],
@@ -994,7 +994,7 @@ class _SlotTile extends StatelessWidget {
 /// ── Tab 3: Pacientes ─────────────────────────────────────────────────
 
 class _PatientsTab extends ConsumerStatefulWidget {
-  const _PatientsTab({required this.profile});
+         _PatientsTab({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -1030,7 +1030,7 @@ class _PatientsTabState extends ConsumerState<_PatientsTab> {
   Widget build(BuildContext context) {
     if (_loading) return const ListSkeleton(count: 6, itemHeight: 76);
 
-    final list = _patients ?? const <DoctorPatient>[];
+    final list = _patients ??        <DoctorPatient>[];
     if (list.isEmpty) {
       return const EmptyState(
         icon: Icons.people_rounded,
@@ -1064,7 +1064,7 @@ class _PatientsTabState extends ConsumerState<_PatientsTab> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient:
-                        const LinearGradient(colors: AppColors.heroCardGradient),
+                               LinearGradient(colors: AppColors.heroCardGradient),
                     border: Border.all(color: Colors.white.withOpacity(0.2)),
                   ),
                   child: Text(
@@ -1084,7 +1084,7 @@ class _PatientsTabState extends ConsumerState<_PatientsTab> {
                         p.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
@@ -1095,7 +1095,7 @@ class _PatientsTabState extends ConsumerState<_PatientsTab> {
                         p.lastVisit != null
                             ? 'Última visita · ${formatDateShort(p.lastVisit!)}'
                             : 'Paciente',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textMuted, fontSize: 12),
                       ),
                     ],
@@ -1110,7 +1110,7 @@ class _PatientsTabState extends ConsumerState<_PatientsTab> {
                   ),
                   child: Text(
                     '${p.consultationCount}x',
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.accent,
                         fontSize: 12,
                         fontWeight: FontWeight.w800),
@@ -1128,7 +1128,7 @@ class _PatientsTabState extends ConsumerState<_PatientsTab> {
 /// ── Tab 4: Perfil profissional ───────────────────────────────────────
 
 class _DoctorProfileTab extends ConsumerStatefulWidget {
-  const _DoctorProfileTab({required this.profile});
+         _DoctorProfileTab({required this.profile});
 
   final MyDoctorProfile profile;
 
@@ -1179,7 +1179,7 @@ class _DoctorProfileTabState extends ConsumerState<_DoctorProfileTab> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient:
-                          const LinearGradient(colors: AppColors.heroCardGradient),
+                                 LinearGradient(colors: AppColors.heroCardGradient),
                       border:
                           Border.all(color: Colors.white.withOpacity(0.2)),
                     ),
@@ -1193,7 +1193,7 @@ class _DoctorProfileTabState extends ConsumerState<_DoctorProfileTab> {
                       children: [
                         Row(
                           children: [
-                            const Flexible(
+                                   Flexible(
                               child: Text(
                                 'Perfil profissional',
                                 style: TextStyle(
@@ -1214,7 +1214,7 @@ class _DoctorProfileTabState extends ConsumerState<_DoctorProfileTab> {
                         Text(
                           'Rating ${widget.profile.rating.toStringAsFixed(1)} · '
                           '${widget.profile.totalConsultations} consultas',
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textMuted, fontSize: 12),
                         ),
                       ],
@@ -1225,7 +1225,7 @@ class _DoctorProfileTabState extends ConsumerState<_DoctorProfileTab> {
               const SizedBox(height: 16),
               TextField(
                 controller: _license,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   labelText: 'Nº de licença (cédula)',
                   prefixIcon: Icon(Icons.badge_rounded),
@@ -1238,7 +1238,7 @@ class _DoctorProfileTabState extends ConsumerState<_DoctorProfileTab> {
                     child: TextField(
                       controller: _fee,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style:        TextStyle(color: AppColors.textPrimary),
                       decoration: const InputDecoration(
                         labelText: 'Preço (MT)',
                         prefixIcon: Icon(Icons.payments_rounded),
@@ -1250,7 +1250,7 @@ class _DoctorProfileTabState extends ConsumerState<_DoctorProfileTab> {
                     child: TextField(
                       controller: _years,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style:        TextStyle(color: AppColors.textPrimary),
                       decoration: const InputDecoration(
                         labelText: 'Anos exp.',
                         prefixIcon: Icon(Icons.work_history_rounded),
@@ -1263,7 +1263,7 @@ class _DoctorProfileTabState extends ConsumerState<_DoctorProfileTab> {
               TextField(
                 controller: _bio,
                 maxLines: 4,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   labelText: 'Bio profissional',
                   alignLabelWithHint: true,
@@ -1326,7 +1326,7 @@ class _DoctorProfileTabState extends ConsumerState<_DoctorProfileTab> {
 /// Cartão de avatar do médico — upload para o bucket `avatars` com
 /// upsert em `{uid}/avatar.jpg` (mesmo caminho usado pela web).
 class _AvatarCard extends ConsumerStatefulWidget {
-  const _AvatarCard({required this.avatarUrl});
+         _AvatarCard({required this.avatarUrl});
 
   final String? avatarUrl;
 
@@ -1397,10 +1397,10 @@ class _AvatarCardState extends ConsumerState<_AvatarCard> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.photo_camera_rounded,
+                 Icon(Icons.photo_camera_rounded,
               color: AppColors.accent, size: 22),
           const SizedBox(width: 12),
-          const Expanded(
+                 Expanded(
             child: Text(
               'Foto profissional\n(o cartão de médico da app)',
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12.5),
@@ -1422,7 +1422,7 @@ class _AvatarCardState extends ConsumerState<_AvatarCard> {
                       height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text(
+                  :        Text(
                       'Escolher',
                       style: TextStyle(
                         color: AppColors.accent,

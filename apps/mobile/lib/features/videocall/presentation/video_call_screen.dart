@@ -15,7 +15,7 @@ import '../data/video_call_repository.dart';
 /// Estado local do ecrã de chamada (micro/câmara são locais — a sala em
 /// si vive no Jitsi Meet; o estado da sessão vive em video_sessions).
 class _CallUiState {
-  const _CallUiState({
+         _CallUiState({
     this.micOn = true,
     this.camOn = true,
     this.speakerOn = true,
@@ -198,7 +198,7 @@ class _VideoCallScreenState extends ConsumerState<VideoCallScreen> {
       body: AppBackground(
         child: SafeArea(
           child: _loading
-              ? const Center(
+              ?        Center(
                   child: CircularProgressIndicator(color: AppColors.accent))
               : _error != null
                   ? _ErrorPane(message: _error!, onRetry: _boot)
@@ -221,7 +221,7 @@ class _VideoCallScreenState extends ConsumerState<VideoCallScreen> {
                                 Text(
                                   thread.title,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                  style:        TextStyle(
                                     color: AppColors.textPrimary,
                                     fontSize: 22,
                                     fontWeight: FontWeight.w800,
@@ -231,7 +231,7 @@ class _VideoCallScreenState extends ConsumerState<VideoCallScreen> {
                                 AnimatedSwitcher(
                                   duration: const Duration(milliseconds: 350),
                                   child: (session?.isWaiting ?? true)
-                                      ? const Text(
+                                      ?        Text(
                                           'A chamar… aguardando a outra parte',
                                           key: ValueKey('wait'),
                                           style: TextStyle(
@@ -242,7 +242,7 @@ class _VideoCallScreenState extends ConsumerState<VideoCallScreen> {
                                       : Text(
                                           'Em chamada · $_elapsedLabel',
                                           key: const ValueKey('live'),
-                                          style: const TextStyle(
+                                          style:        TextStyle(
                                             color: AppColors.success,
                                             fontSize: 13.5,
                                             fontWeight: FontWeight.w700,
@@ -281,7 +281,7 @@ class _VideoCallScreenState extends ConsumerState<VideoCallScreen> {
 
 // ── Cabeçalho minimalista ─────────────────────────────────────────────
 class _Header extends StatelessWidget {
-  const _Header({required this.onBack});
+         _Header({required this.onBack});
 
   final VoidCallback onBack;
 
@@ -293,10 +293,10 @@ class _Header extends StatelessWidget {
         children: [
           IconButton(
             onPressed: onBack,
-            icon: const Icon(Icons.arrow_back_rounded,
+            icon:        Icon(Icons.arrow_back_rounded,
                 color: AppColors.textPrimary),
           ),
-          const Expanded(
+                 Expanded(
             child: Text(
               'Videochamada segura',
               style: TextStyle(
@@ -306,10 +306,10 @@ class _Header extends StatelessWidget {
               ),
             ),
           ),
-          const Icon(Icons.verified_user_rounded,
+                 Icon(Icons.verified_user_rounded,
               color: AppColors.success, size: 18),
           const SizedBox(width: 6),
-          const Text(
+                 Text(
             'Encriptada',
             style: TextStyle(
               color: AppColors.success,
@@ -324,7 +324,7 @@ class _Header extends StatelessWidget {
 }
 
 class _BigAvatar extends StatelessWidget {
-  const _BigAvatar({
+         _BigAvatar({
     required this.name,
     required this.avatarUrl,
     required this.pulsing,
@@ -379,7 +379,7 @@ class _BigAvatar extends StatelessWidget {
 }
 
 class _RoomChip extends StatelessWidget {
-  const _RoomChip({required this.roomUrl});
+         _RoomChip({required this.roomUrl});
 
   final String roomUrl;
 
@@ -409,7 +409,7 @@ class _RoomChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.link_rounded,
+                   Icon(Icons.link_rounded,
                 size: 14, color: AppColors.accent),
             const SizedBox(width: 6),
             Text(
@@ -428,7 +428,7 @@ class _RoomChip extends StatelessWidget {
 }
 
 class _CallControls extends StatelessWidget {
-  const _CallControls({
+         _CallControls({
     required this.ui,
     required this.onToggleMic,
     required this.onToggleCam,
@@ -498,7 +498,7 @@ class _CallControls extends StatelessWidget {
 }
 
 class _RoundToggle extends StatelessWidget {
-  const _RoundToggle({
+         _RoundToggle({
     required this.icon,
     required this.active,
     required this.onTap,
@@ -535,7 +535,7 @@ class _RoundToggle extends StatelessWidget {
 }
 
 class _GlassAction extends StatelessWidget {
-  const _GlassAction({
+         _GlassAction({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -563,7 +563,7 @@ class _GlassAction extends StatelessWidget {
             Icon(icon, size: 19, color: AppColors.accent),
             const SizedBox(width: 8),
             Text(label,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 13.5,
@@ -576,7 +576,7 @@ class _GlassAction extends StatelessWidget {
 }
 
 class _EndButton extends StatelessWidget {
-  const _EndButton({required this.onTap});
+         _EndButton({required this.onTap});
 
   final VoidCallback onTap;
 
@@ -619,7 +619,7 @@ class _EndButton extends StatelessWidget {
 }
 
 class _ErrorPane extends StatelessWidget {
-  const _ErrorPane({required this.message, required this.onRetry});
+         _ErrorPane({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -632,19 +632,19 @@ class _ErrorPane extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.videocam_off_rounded,
+                   Icon(Icons.videocam_off_rounded,
                 size: 44, color: AppColors.textMuted),
             const SizedBox(height: 14),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 18),
             TextButton(
               onPressed: onRetry,
-              child: const Text('Tentar novamente',
+              child:        Text('Tentar novamente',
                   style: TextStyle(color: AppColors.accent)),
             ),
           ],

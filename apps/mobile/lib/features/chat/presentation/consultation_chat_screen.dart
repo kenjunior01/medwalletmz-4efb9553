@@ -144,7 +144,7 @@ class _ConsultationChatScreenState
   Widget build(BuildContext context) {
     final thread = _thread;
     if (thread == null) {
-      return const Scaffold(
+      return        Scaffold(
         body: AppBackground(
           child: Center(
             child: CircularProgressIndicator(color: AppColors.accent),
@@ -172,7 +172,7 @@ class _ConsultationChatScreenState
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
                     Container(
@@ -196,7 +196,7 @@ class _ConsultationChatScreenState
                               child: Text(
                                 thread.title.characters.first
                                     .toUpperCase(),
-                                style: const TextStyle(
+                                style:        TextStyle(
                                   color: AppColors.accent,
                                   fontWeight: FontWeight.w800,
                                   fontSize: 16,
@@ -214,7 +214,7 @@ class _ConsultationChatScreenState
                             thread.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w800,
                               fontSize: 15,
@@ -260,7 +260,7 @@ class _ConsultationChatScreenState
                       tooltip: 'Videochamada',
                       onPressed: () =>
                           context.push('/video-call', extra: thread),
-                      icon: const Icon(
+                      icon:        Icon(
                         Icons.videocam_rounded,
                         color: AppColors.accent,
                         size: 22,
@@ -293,7 +293,7 @@ class _ConsultationChatScreenState
               // ── Mensagens ────────────────────────────────────────
               Expanded(
                 child: messages.when(
-                  loading: () => const Center(
+                  loading: () =>        Center(
                     child: CircularProgressIndicator(color: AppColors.accent),
                   ),
                   error: (e, _) => EmptyState(
@@ -365,7 +365,7 @@ class _ConsultationChatScreenState
           ),
           child: Column(
             children: [
-              const Icon(Icons.medical_information_rounded,
+                     Icon(Icons.medical_information_rounded,
                   color: AppColors.accent, size: 34),
               const SizedBox(height: 10),
               Text(
@@ -373,7 +373,7 @@ class _ConsultationChatScreenState
                     ? 'Consulta com o teu paciente'
                     : 'Consulta com o teu especialista',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w800,
                   fontSize: 15,
@@ -397,7 +397,7 @@ class _ConsultationChatScreenState
             .fadeIn(duration: 300.ms)
             .slideY(begin: 0.1, curve: Curves.easeOutCubic),
         const SizedBox(height: 12),
-        const Align(
+               Align(
           alignment: Alignment.centerLeft,
           child: Text(
             'RESPOSTAS RÁPIDAS',
@@ -426,7 +426,7 @@ class _ConsultationChatScreenState
 // ── Bolha ───────────────────────────────────────────────────────────────
 
 class _MessageBubble extends ConsumerWidget {
-  const _MessageBubble({required this.message, required this.mine});
+         _MessageBubble({required this.message, required this.mine});
 
   final ConsultationMessage message;
   final bool mine;
@@ -463,7 +463,7 @@ class _MessageBubble extends ConsumerWidget {
                   EdgeInsets.only(top: message.hasAttachment ? 8 : 0),
               child: Text(
                 message.message,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 14,
                   height: 1.35,
@@ -489,7 +489,7 @@ class _MessageBubble extends ConsumerWidget {
 }
 
 class _Attachment extends ConsumerStatefulWidget {
-  const _Attachment({required this.path});
+         _Attachment({required this.path});
 
   final String path;
 
@@ -520,7 +520,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
               width: 190,
               height: 130,
               color: Colors.white.withOpacity(0.06),
-              child: const Center(
+              child:        Center(
                 child: SizedBox(
                   width: 20,
                   height: 20,
@@ -537,7 +537,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
               height: 80,
               color: Colors.white.withOpacity(0.06),
               alignment: Alignment.center,
-              child: const Text(
+              child:        Text(
                 'Anexo indisponível',
                 style: TextStyle(color: AppColors.textMuted, fontSize: 12),
               ),
@@ -565,7 +565,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
                 height: 80,
                 color: Colors.white.withOpacity(0.06),
                 alignment: Alignment.center,
-                child: const Text(
+                child:        Text(
                   'Anexo indisponível',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
@@ -579,7 +579,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
 }
 
 class _QuickChip extends StatelessWidget {
-  const _QuickChip({required this.label, required this.onTap});
+         _QuickChip({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
@@ -597,7 +597,7 @@ class _QuickChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: const TextStyle(
+          style:        TextStyle(
             color: AppColors.accent,
             fontSize: 12.5,
             fontWeight: FontWeight.w600,
@@ -609,7 +609,7 @@ class _QuickChip extends StatelessWidget {
 }
 
 class _Composer extends StatelessWidget {
-  const _Composer({
+         _Composer({
     required this.controller,
     required this.sending,
     required this.uploading,
@@ -649,12 +649,12 @@ class _Composer extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: uploading
-                  ? const Padding(
+                  ?        Padding(
                       padding: EdgeInsets.all(12),
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: AppColors.success),
                     )
-                  : const Icon(Icons.attach_file_rounded,
+                  :        Icon(Icons.attach_file_rounded,
                       color: AppColors.success, size: 20),
             ),
           ),
@@ -665,7 +665,7 @@ class _Composer extends StatelessWidget {
               maxLines: 4,
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => onSend(),
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary, fontSize: 14),
               decoration: const InputDecoration(
                 hintText: 'Escreve a tua mensagem…',
@@ -682,9 +682,9 @@ class _Composer extends StatelessWidget {
               height: 42,
               decoration: BoxDecoration(
                 gradient: busy
-                    ? const LinearGradient(
+                    ?        LinearGradient(
                         colors: [Color(0xFF22344A), Color(0xFF1A2939)])
-                    : const LinearGradient(
+                    :        LinearGradient(
                         colors: AppColors.buttonGradient),
                 shape: BoxShape.circle,
               ),

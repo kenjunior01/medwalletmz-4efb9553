@@ -14,7 +14,7 @@ import 'wallet_controller.dart';
 /// manual com referência e mostra as instruções + comprovativo
 /// opcional. O saldo entra quando a gestão confirma (realtime).
 class DepositSheet extends ConsumerStatefulWidget {
-  const DepositSheet({
+         DepositSheet({
     super.key,
     required this.userId,
     required this.payerName,
@@ -82,7 +82,7 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -121,11 +121,11 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
                   border: Border.all(
                       color: AppColors.success.withOpacity(0.4)),
                 ),
-                child: const Icon(Icons.phone_android_rounded,
+                child:        Icon(Icons.phone_android_rounded,
                     color: AppColors.success, size: 22),
               ),
               const SizedBox(width: 14),
-              const Expanded(
+                     Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -183,14 +183,14 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
             controller: _custom,
             keyboardType:
                 const TextInputType.numberWithOptions(decimal: true),
-            style: const TextStyle(
+            style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 22,
                 fontWeight: FontWeight.w800),
             decoration: InputDecoration(
               hintText: 'Outro valor',
               suffixText: 'MT',
-              suffixStyle: const TextStyle(
+              suffixStyle:        TextStyle(
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.w700),
               prefixIcon: const Icon(Icons.payments_rounded),
@@ -206,8 +206,8 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
           TextField(
             controller: _phone,
             keyboardType: TextInputType.phone,
-            style: const TextStyle(color: AppColors.textPrimary),
-            decoration: const InputDecoration(
+            style:        TextStyle(color: AppColors.textPrimary),
+            decoration:        InputDecoration(
               hintText: 'Teu número (84…)',
               prefixText: '+258 ',
               prefixStyle: TextStyle(
@@ -295,7 +295,7 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
         curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          gradient: selected ? const LinearGradient(colors: AppColors.buttonGradient) : null,
+          gradient: selected ?        LinearGradient(colors: AppColors.buttonGradient) : null,
           color: selected ? null : AppColors.glassFill,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
@@ -335,7 +335,7 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const LinearGradient(colors: AppColors.successGradient),
+              gradient:        LinearGradient(colors: AppColors.successGradient),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.success.withOpacity(0.4),
@@ -347,7 +347,7 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
             child: const Icon(Icons.check_rounded, color: Colors.white, size: 40),
           ).animate().scale(duration: 450.ms, curve: Curves.elasticOut),
           const SizedBox(height: 18),
-          const Text(
+                 Text(
             'Pedido criado!',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -431,10 +431,10 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.check_circle_rounded,
+                   Icon(Icons.check_circle_rounded,
                 color: AppColors.success, size: 20),
             const SizedBox(width: 10),
-            const Expanded(
+                   Expanded(
               child: Text(
                 'Comprovativo anexado ao pedido',
                 style: TextStyle(
@@ -461,10 +461,10 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.camera_alt_rounded,
+                :        Icon(Icons.camera_alt_rounded,
                     color: AppColors.accent, size: 20),
             const SizedBox(width: 10),
-            const Expanded(
+                   Expanded(
               child: Text(
                 'Anexar foto do comprovativo (opcional)',
                 style: TextStyle(
@@ -524,7 +524,7 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
               width: 22,
               height: 22,
               alignment: Alignment.center,
-              decoration: const BoxDecoration(
+              decoration:        BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppColors.primary,
               ),
@@ -541,7 +541,7 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
             Expanded(
               child: Text(
                 text,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13.5,
                   height: 1.4,
@@ -558,7 +558,7 @@ class _DepositSheetState extends ConsumerState<DepositSheet> {
           children: [
             Text(
               label,
-              style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+              style:        TextStyle(color: AppColors.textMuted, fontSize: 13),
             ),
             const Spacer(),
             Flexible(

@@ -139,7 +139,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
             ),
           ),
           const SizedBox(height: 16),
-          const Row(
+                 Row(
             children: [
               Icon(Icons.fingerprint_rounded, color: Color(0xFF38BDF8), size: 22),
               SizedBox(width: 10),
@@ -262,7 +262,7 @@ Future<void> _showUserTypePicker(
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setSheet) => Container(
         padding: const EdgeInsets.fromLTRB(22, 18, 22, 24),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient: LinearGradient(
               colors: [AppColors.bgHigh, AppColors.bgDeep]),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -271,7 +271,7 @@ Future<void> _showUserTypePicker(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+                   Text(
               'Tipo de perfil',
               style: TextStyle(
                   color: AppColors.textPrimary,
@@ -323,7 +323,7 @@ Future<void> _showUserTypePicker(
                             });
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                       SnackBar(
                                   backgroundColor: AppColors.danger,
                                   content: Text(
                                       'Não foi possível actualizar o tipo.'),
@@ -360,7 +360,7 @@ Future<void> _showUserTypePicker(
                             children: [
                               Text(
                                 label,
-                                style: const TextStyle(
+                                style:        TextStyle(
                                     color: AppColors.textPrimary,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700),
@@ -374,7 +374,9 @@ Future<void> _showUserTypePicker(
                           ),
                         ),
                         if (saving && key == pending)
-                          const SizedBox(
+                          // Tokens dinâmicos: sem const (contém
+                          // AppColors.accent).
+                          SizedBox(
                             width: 15,
                             height: 15,
                             child: CircularProgressIndicator(
@@ -411,7 +413,7 @@ class ProfileScreen extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
             children: [
-              const Text(
+                     Text(
                 'Perfil',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -423,7 +425,7 @@ class ProfileScreen extends ConsumerWidget {
 
               // ── Cartão de identidade ────────────────────────────────
               profile.when(
-                loading: () => const Padding(
+                loading: () =>        Padding(
                   padding: EdgeInsets.symmetric(vertical: 40),
                   child: Center(
                     child: CircularProgressIndicator(color: AppColors.accent),
@@ -437,7 +439,7 @@ class ProfileScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    gradient: const LinearGradient(
+                    gradient:        LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: AppColors.heroCardGradient,
@@ -771,6 +773,12 @@ class ProfileScreen extends ConsumerWidget {
                     label: 'Idioma',
                     onTap: () => _showLanguagePicker(context, ref),
                   ),
+                  // F33 — modos: tema claro/escuro + nível de efeitos.
+                  _MenuItem(
+                    icon: Icons.palette_outlined,
+                    label: 'Aparência & Efeitos',
+                    onTap: () => context.push('/appearance'),
+                  ),
                   _MenuItem(
                     icon: Icons.location_on_outlined,
                     label: 'As minhas moradas',
@@ -803,7 +811,7 @@ class ProfileScreen extends ConsumerWidget {
                     label: 'Sobre a app',
                     trailing: Text(
                       'v${AppConfig.appVersion}',
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 13),
                     ),
                     onTap: () {},
@@ -835,7 +843,7 @@ class ProfileScreen extends ConsumerWidget {
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(ctx).size.height * 0.7,
         ),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient: LinearGradient(
             colors: [AppColors.bgHigh, AppColors.bgDeep],
           ),
@@ -853,7 +861,7 @@ class ProfileScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const Padding(
+                   Padding(
               padding: EdgeInsets.all(16),
               child: Text(
                 'Escolhe o idioma',
@@ -915,13 +923,13 @@ class ProfileScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
         padding: const EdgeInsets.all(26),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient: LinearGradient(
             colors: [AppColors.bgHigh, AppColors.bgDeep],
           ),
           borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
         ),
-        child: const SafeArea(
+        child:        SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -967,12 +975,12 @@ class ProfileScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancelar',
+            child:        Text('Cancelar',
                 style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Sair',
+            child:        Text('Sair',
                 style: TextStyle(color: AppColors.danger)),
           ),
         ],
@@ -1024,7 +1032,7 @@ class EmptyProfile extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+            style:        TextStyle(color: AppColors.textMuted, fontSize: 13),
           ),
         ],
       ),
@@ -1033,7 +1041,7 @@ class EmptyProfile extends StatelessWidget {
 }
 
 class _MenuGroup extends StatelessWidget {
-  const _MenuGroup({required this.items});
+         _MenuGroup({required this.items});
 
   final List<_MenuItem> items;
 
@@ -1062,7 +1070,7 @@ class _MenuGroup extends StatelessWidget {
 }
 
 class _MenuItem extends StatelessWidget {
-  const _MenuItem({
+         _MenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -1090,7 +1098,7 @@ class _MenuItem extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14.5,
                     fontWeight: FontWeight.w600,
@@ -1098,7 +1106,7 @@ class _MenuItem extends StatelessWidget {
                 ),
               ),
               if (trailing != null) trailing!,
-              const Icon(Icons.chevron_right_rounded,
+                     Icon(Icons.chevron_right_rounded,
                   color: AppColors.textMuted, size: 20),
             ],
           ),
@@ -1134,12 +1142,12 @@ class _RolesStrip extends ConsumerWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.shield_outlined,
+                               Icon(Icons.shield_outlined,
                             size: 13, color: AppColors.accent),
                         const SizedBox(width: 6),
                         Text(
                           _roleLabel(r),
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
@@ -1183,7 +1191,7 @@ Future<void> _showAddresses(BuildContext context, WidgetRef ref) async {
 }
 
 class _AddressesSheet extends StatefulWidget {
-  const _AddressesSheet({required this.repo, required this.userId});
+         _AddressesSheet({required this.repo, required this.userId});
 
   final AddressRepository repo;
   final String userId;
@@ -1259,7 +1267,7 @@ class _AddressesSheetState extends State<_AddressesSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration:        BoxDecoration(
         gradient: LinearGradient(
           colors: [AppColors.bgHigh, AppColors.bgDeep],
         ),
@@ -1273,7 +1281,7 @@ class _AddressesSheetState extends State<_AddressesSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+                     Text(
                 'As minhas moradas',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -1283,7 +1291,7 @@ class _AddressesSheetState extends State<_AddressesSheet> {
               ),
               const SizedBox(height: 14),
               if (_loading)
-                const Padding(
+                       Padding(
                   padding: EdgeInsets.all(20),
                   child: Center(
                     child: CircularProgressIndicator(
@@ -1308,7 +1316,7 @@ class _AddressesSheetState extends State<_AddressesSheet> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.home_rounded,
+                                   Icon(Icons.home_rounded,
                                 color: AppColors.accent, size: 19),
                             const SizedBox(width: 11),
                             Expanded(
@@ -1318,7 +1326,7 @@ class _AddressesSheetState extends State<_AddressesSheet> {
                                 children: [
                                   Text(
                                     '${a['label'] ?? 'Morada'}${a['is_default'] == true ? ' · padrão' : ''}',
-                                    style: const TextStyle(
+                                    style:        TextStyle(
                                       color: AppColors.textPrimary,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 13,
@@ -1326,7 +1334,7 @@ class _AddressesSheetState extends State<_AddressesSheet> {
                                   ),
                                   Text(
                                     '${a['address_line'] ?? ''}, ${a['city'] ?? ''}',
-                                    style: const TextStyle(
+                                    style:        TextStyle(
                                         color: AppColors.textMuted,
                                         fontSize: 12),
                                   ),
@@ -1347,7 +1355,7 @@ class _AddressesSheetState extends State<_AddressesSheet> {
                                     await _load();
                                   } catch (_) {}
                                 },
-                                icon: const Icon(
+                                icon:        Icon(
                                     Icons.star_border_rounded,
                                     size: 19,
                                     color: AppColors.textMuted),
@@ -1371,10 +1379,10 @@ class _AddressesSheetState extends State<_AddressesSheet> {
                     },
                   ),
                 ),
-              const Divider(color: AppColors.glassBorder),
+                     Divider(color: AppColors.glassBorder),
               TextField(
                 controller: _label,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   hintText: 'Etiqueta (Casa, Trabalho…)',
                   isDense: true,
@@ -1383,7 +1391,7 @@ class _AddressesSheetState extends State<_AddressesSheet> {
               const SizedBox(height: 10),
               TextField(
                 controller: _line,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   hintText: 'Bairro, rua e número',
                   prefixIcon: Icon(Icons.location_on_outlined),
@@ -1392,7 +1400,7 @@ class _AddressesSheetState extends State<_AddressesSheet> {
               const SizedBox(height: 10),
               TextField(
                 controller: _city,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   hintText: 'Cidade',
                   prefixIcon: Icon(Icons.location_city_rounded),

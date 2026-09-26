@@ -15,7 +15,7 @@ import '../../emergency_card/data/emergency_card_repository.dart';
 /// Perfil de saúde do paciente (tabela `patient_profiles` — dados que
 /// alimentam o SOS, a triagem e a ficha de emergência).
 class PatientProfile {
-  const PatientProfile({
+         PatientProfile({
     this.dateOfBirth,
     this.gender,
     this.bloodType,
@@ -177,10 +177,10 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Text(
+                           Text(
                       'Perfil de saúde',
                       style: TextStyle(
                         color: AppColors.textPrimary,
@@ -262,7 +262,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                                 children: [
                                   TextField(
                                     controller: _ecName,
-                                    style: const TextStyle(
+                                    style:        TextStyle(
                                         color: AppColors.textPrimary),
                                     decoration: const InputDecoration(
                                       labelText: 'Nome',
@@ -274,7 +274,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                                   TextField(
                                     controller: _ecPhone,
                                     keyboardType: TextInputType.phone,
-                                    style: const TextStyle(
+                                    style:        TextStyle(
                                         color: AppColors.textPrimary),
                                     decoration: const InputDecoration(
                                       labelText: 'Telefone',
@@ -334,7 +334,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                 const SizedBox(width: 9),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14.5,
                     fontWeight: FontWeight.w800,
@@ -359,7 +359,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.cake_rounded,
+                     Icon(Icons.cake_rounded,
                   color: AppColors.textMuted, size: 20),
               const SizedBox(width: 12),
               Text(
@@ -387,7 +387,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
       lastDate: now,
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme:        ColorScheme.dark(
             primary: AppColors.primary,
             surface: AppColors.card,
           ),
@@ -498,7 +498,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
               Expanded(
                 child: TextField(
                   controller: tagCtrl,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style:        TextStyle(color: AppColors.textPrimary),
                   decoration: InputDecoration(
                     hintText: hint,
                     isDense: true,

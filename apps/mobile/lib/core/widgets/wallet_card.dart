@@ -7,7 +7,7 @@ import 'amount_counter.dart';
 /// de luz, chip NFC estilizado, saldo com contador animado e ações
 /// rápidas. Estilo cartão bancário premium (Revolut physical card).
 class WalletCard extends StatefulWidget {
-  const WalletCard({
+         WalletCard({
     super.key,
     required this.balance,
     required this.ownerName,
@@ -45,7 +45,7 @@ class _WalletCardState extends State<WalletCard> {
       height: widget.mini ? 120 : 196,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
-        gradient: const LinearGradient(
+        gradient:        LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: AppColors.heroCardGradient,

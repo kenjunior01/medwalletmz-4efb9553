@@ -75,7 +75,7 @@ class _MedsScreenState extends ConsumerState<MedsScreen> {
         child: SafeArea(
           bottom: false,
           child: _loading
-              ? const Center(
+              ?        Center(
                   child: CircularProgressIndicator(color: AppColors.accent))
               : _Body(
                   repo: _repo,
@@ -91,7 +91,7 @@ class _MedsScreenState extends ConsumerState<MedsScreen> {
 }
 
 class _Body extends StatelessWidget {
-  const _Body({
+         _Body({
     required this.repo,
     required this.planned,
     required this.today,
@@ -114,10 +114,10 @@ class _Body extends StatelessWidget {
           children: [
             IconButton(
               onPressed: () => context.pop(),
-              icon: const Icon(Icons.arrow_back_rounded,
+              icon:        Icon(Icons.arrow_back_rounded,
                   color: AppColors.textPrimary),
             ),
-            const Expanded(
+                   Expanded(
               child: Text(
                 'Medicação',
                 style: TextStyle(
@@ -131,7 +131,7 @@ class _Body extends StatelessWidget {
             IconButton(
               onPressed: () => context.push('/reminders'),
               tooltip: 'Lembretes e horários',
-              icon: const Icon(Icons.alarm_rounded,
+              icon:        Icon(Icons.alarm_rounded,
                   color: AppColors.accent),
             ),
           ],
@@ -141,7 +141,7 @@ class _Body extends StatelessWidget {
         const SizedBox(height: 14),
         _AdherenceHeatmap(recent: recent),
         const SizedBox(height: 16),
-        const Text(
+               Text(
           'HOJE',
           style: TextStyle(
             color: AppColors.textMuted,
@@ -160,7 +160,7 @@ class _Body extends StatelessWidget {
           onPressed: () => _addAdHoc(context),
         ),
         const SizedBox(height: 18),
-        const Text(
+               Text(
           'ÚLTIMOS 7 DIAS',
           style: TextStyle(
             color: AppColors.textMuted,
@@ -270,7 +270,7 @@ class _Body extends StatelessWidget {
       builder: (ctx) => Container(
         padding: EdgeInsets.fromLTRB(
             22, 18, 22, MediaQuery.of(ctx).viewInsets.bottom + 20),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient:
               LinearGradient(colors: [AppColors.bgHigh, AppColors.bgDeep]),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -279,7 +279,7 @@ class _Body extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+                   Text(
               'Medicação manual',
               style: TextStyle(
                   color: AppColors.textPrimary,
@@ -289,13 +289,13 @@ class _Body extends StatelessWidget {
             const SizedBox(height: 14),
             TextField(
               controller: nameCtrl,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style:        TextStyle(color: AppColors.textPrimary),
               decoration: const InputDecoration(labelText: 'Nome *'),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: dosageCtrl,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style:        TextStyle(color: AppColors.textPrimary),
               decoration: const InputDecoration(
                   labelText: 'Dose (ex.: 500 mg, 2x dia)'),
             ),
@@ -320,7 +320,7 @@ class _Body extends StatelessWidget {
 enum _CardState { pending, taken, skipped }
 
 class _TodayCard extends StatelessWidget {
-  const _TodayCard({
+         _TodayCard({
     required this.name,
     required this.state,
     required this.onToggle,
@@ -414,21 +414,21 @@ class _TodayCard extends StatelessWidget {
             ),
           ),
           if (skipped)
-            const Text(
+                   Text(
               'não tomado',
               style: TextStyle(color: AppColors.textMuted, fontSize: 11),
             )
           else if (onSkip != null)
             TextButton(
               onPressed: onSkip,
-              child: const Text('Não tomei',
+              child:        Text('Não tomei',
                   style:
                       TextStyle(color: AppColors.textMuted, fontSize: 11.5)),
             ),
           if (onDelete != null)
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(Icons.close_rounded,
+              icon:        Icon(Icons.close_rounded,
                   size: 18, color: AppColors.textMuted),
             ),
         ],
@@ -441,7 +441,7 @@ class _TodayCard extends StatelessWidget {
 }
 
 class _StreakCard extends StatelessWidget {
-  const _StreakCard({required this.recent});
+         _StreakCard({required this.recent});
 
   final List<MedicationLog> recent;
 
@@ -477,7 +477,7 @@ class _StreakCard extends StatelessWidget {
                   streak > 0
                       ? '$streak dia${streak == 1 ? '' : 's'} seguidos'
                       : 'Começa hoje',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 16,
@@ -487,7 +487,7 @@ class _StreakCard extends StatelessWidget {
                   takenToday
                       ? 'Tomas de hoje registadas. Continua assim.'
                       : 'Regista a primeira toma do dia na checklist.',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
@@ -505,7 +505,7 @@ class _StreakCard extends StatelessWidget {
 }
 
 class _WeekDots extends StatelessWidget {
-  const _WeekDots({required this.recent});
+         _WeekDots({required this.recent});
 
   final List<MedicationLog> recent;
 
@@ -578,7 +578,7 @@ class _WeekDots extends StatelessWidget {
 /// tomas registadas houve no dia, relativo ao dia mais forte da janela.
 /// Dias sem registos ficam neutros — o plano histórico pode ter sido outro.
 class _AdherenceHeatmap extends StatelessWidget {
-  const _AdherenceHeatmap({required this.recent});
+         _AdherenceHeatmap({required this.recent});
 
   final List<MedicationLog> recent;
 
@@ -661,7 +661,7 @@ class _AdherenceHeatmap extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+                 Text(
             'MAPA DE ADESÃO · 12 SEMANAS',
             style: TextStyle(
               color: AppColors.textMuted,
@@ -828,7 +828,7 @@ class _AdherenceHeatmap extends StatelessWidget {
 /// dias em pontos. Métrica honesta — só registos reais; o plano histórico
 /// pode ter sido diferente, por isso não acusamos falhas.
 class _MedTrends extends StatelessWidget {
-  const _MedTrends({required this.planned, required this.recent});
+         _MedTrends({required this.planned, required this.recent});
 
   final List<PlannedMedication> planned;
   final List<MedicationLog> recent;
@@ -899,7 +899,7 @@ class _MedTrends extends StatelessWidget {
                         med.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w700,
                           fontSize: 13.5,
@@ -1010,7 +1010,7 @@ class _MedTrends extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+               Text(
           'POR MEDICAMENTO',
           style: TextStyle(
             color: AppColors.textMuted,

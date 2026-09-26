@@ -43,7 +43,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
   final _picker = ImagePicker();
   final List<XFile> _photos = [];
 
-  List<(String, String)> _countries = const [('MZ', 'Moçambique')];
+  List<(String, String)> _countries =        [('MZ', 'Moçambique')];
   String _countryId = AppConfig.defaultCountry;
   bool _loadingCountries = true;
 
@@ -226,10 +226,10 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                 children: [
                   IconButton(
                     onPressed: () => context.pop(),
-                    icon: const Icon(Icons.arrow_back_rounded,
+                    icon:        Icon(Icons.arrow_back_rounded,
                         color: AppColors.textPrimary),
                   ),
-                  const Expanded(
+                         Expanded(
                     child: Text(
                       'Adicionar instituição',
                       style: TextStyle(
@@ -270,7 +270,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
               TextField(
                 controller: _name,
                 onChanged: (_) => setState(() {}),
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                     hintText: 'Nome da instituição *'),
               ),
@@ -281,7 +281,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                     child: TextField(
                       controller: _phone,
                       keyboardType: TextInputType.phone,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style:        TextStyle(color: AppColors.textPrimary),
                       decoration: const InputDecoration(
                           hintText: 'Celular (ex.: 84 123 4567)'),
                     ),
@@ -289,7 +289,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: _loadingCountries
-                        ? const SizedBox(
+                        ?        SizedBox(
                             height: 20,
                             child: Center(
                               child: SizedBox(
@@ -313,7 +313,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                                 value: _countryId,
                                 isExpanded: true,
                                 dropdownColor: const Color(0xFF0B1D31),
-                                style: const TextStyle(
+                                style:        TextStyle(
                                     color: AppColors.textPrimary,
                                     fontSize: 13),
                                 items: [
@@ -339,7 +339,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                     child: TextField(
                       controller: _city,
                       onChanged: (_) => setState(() {}),
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style:        TextStyle(color: AppColors.textPrimary),
                       decoration: const InputDecoration(hintText: 'Cidade *'),
                     ),
                   ),
@@ -347,7 +347,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                   Expanded(
                     child: TextField(
                       controller: _neighborhood,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style:        TextStyle(color: AppColors.textPrimary),
                       decoration:
                           const InputDecoration(hintText: 'Bairro'),
                     ),
@@ -357,7 +357,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
               const SizedBox(height: 10),
               TextField(
                 controller: _address,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                     hintText: 'Endereço (avenida, rua, número)'),
               ),
@@ -374,7 +374,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                           Row(
                       children: [
                         Icon(Icons.directions_bus_rounded,
                             color: AppColors.accent, size: 18),
@@ -392,7 +392,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _referencePoint,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style:        TextStyle(color: AppColors.textPrimary),
                       decoration: const InputDecoration(
                         hintText:
                             'Ex.: paragem do Mercado Central, junto ao posto…',
@@ -420,7 +420,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                     child: TextField(
                       controller: _latCtrl,
                       keyboardType: TextInputType.text,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style:        TextStyle(color: AppColors.textPrimary),
                       decoration:
                           const InputDecoration(hintText: 'Latitude'),
                     ),
@@ -430,7 +430,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                     child: TextField(
                       controller: _lngCtrl,
                       keyboardType: TextInputType.text,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style:        TextStyle(color: AppColors.textPrimary),
                       decoration:
                           const InputDecoration(hintText: 'Longitude'),
                     ),
@@ -488,7 +488,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                           top: -6,
                           child: IconButton(
                             onPressed: () => _removePhoto(i),
-                            icon: const Icon(Icons.cancel_rounded,
+                            icon:        Icon(Icons.cancel_rounded,
                                 color: AppColors.danger, size: 22),
                           ),
                         ),
@@ -506,7 +506,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                           border: Border.all(
                               color: Colors.white.withOpacity(0.15)),
                         ),
-                        child: const Icon(Icons.add_a_photo_rounded,
+                        child:        Icon(Icons.add_a_photo_rounded,
                             color: AppColors.textMuted, size: 24),
                       ),
                     ),
@@ -528,7 +528,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
               TextField(
                 controller: _description,
                 maxLines: 3,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   hintText:
                       'Descrição (ex.: aberta 24h, tem materno-infantil…)',
@@ -584,11 +584,11 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
                       shape: BoxShape.circle,
                       color: Color(0x1A22C55E),
                     ),
-                    child: const Icon(Icons.task_alt_rounded,
+                    child:        Icon(Icons.task_alt_rounded,
                         color: AppColors.success, size: 42),
                   ),
                   const SizedBox(height: 18),
-                  const Text(
+                         Text(
                     'Submissão enviada!',
                     style: TextStyle(
                       color: AppColors.textPrimary,
@@ -624,7 +624,7 @@ class _SubmitProposalScreenState extends ConsumerState<SubmitProposalScreen> {
   }
 }
 
-const _sectionLabel = TextStyle(
+final _sectionLabel = TextStyle(
   color: AppColors.textMuted,
   fontSize: 11,
   fontWeight: FontWeight.w800,
@@ -632,7 +632,7 @@ const _sectionLabel = TextStyle(
 );
 
 class _TypeChip extends StatelessWidget {
-  const _TypeChip({
+         _TypeChip({
     required this.label,
     required this.icon,
     required this.color,

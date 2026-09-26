@@ -9,6 +9,7 @@ import '../../../core/l10n/locale_provider.dart';
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/pressable.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../../../core/widgets/wallet_card.dart';
 import '../../auth/presentation/auth_controller.dart';
@@ -36,7 +37,7 @@ class HomeScreen extends ConsumerWidget {
     final consults = ref.watch(myConsultationsProvider);
     final locale = ref.watch(localeProvider);
     final roles =
-        ref.watch(userRolesProvider).valueOrNull ?? const <String>[];
+        ref.watch(userRolesProvider).valueOrNull ??        <String>[];
     final isManager = roles.any(managerRoles.contains);
 
     final upcoming = consults.value
@@ -72,7 +73,7 @@ class HomeScreen extends ConsumerWidget {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: const LinearGradient(
+                      gradient:        LinearGradient(
                           colors: AppColors.heroCardGradient),
                       border:
                           Border.all(color: Colors.white.withOpacity(0.2)),
@@ -101,7 +102,7 @@ class HomeScreen extends ConsumerWidget {
                         profile.when(
                           loading: () =>
                               const AppSkeleton(width: 120, height: 18),
-                          error: (_, __) => const Text(
+                          error: (_, __) =>        Text(
                             'Utilizador',
                             style: TextStyle(
                               color: AppColors.textPrimary,
@@ -111,7 +112,7 @@ class HomeScreen extends ConsumerWidget {
                           ),
                           data: (p) => Text(
                             firstName(p?.fullName),
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 17,
                               fontWeight: FontWeight.w800,
@@ -131,9 +132,9 @@ class HomeScreen extends ConsumerWidget {
                       height: 34,
                       decoration: BoxDecoration(
                         gradient:
-                            const LinearGradient(colors: AppColors.buttonGradient),
+                                   LinearGradient(colors: AppColors.buttonGradient),
                         borderRadius: BorderRadius.circular(10),
-                        boxShadow: const [
+                        boxShadow:        [
                           BoxShadow(color: AppColors.glowCyan, blurRadius: 10),
                         ],
                       ),
@@ -150,7 +151,7 @@ class HomeScreen extends ConsumerWidget {
                         isLabelVisible: unread > 0,
                         label: Text('$unread'),
                         backgroundColor: AppColors.danger,
-                        child: const Icon(Icons.notifications_rounded,
+                        child:        Icon(Icons.notifications_rounded,
                             color: AppColors.textSecondary),
                       );
                     }),
@@ -337,7 +338,7 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 24),
 
               // ── F32 — Saúde hoje: próxima dose + dica do dia ────────
-              const Text(
+                     Text(
                 'Saúde hoje',
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -375,7 +376,7 @@ class HomeScreen extends ConsumerWidget {
               // ── Médicos em destaque ─────────────────────────────────
               Row(
                 children: [
-                  const Text(
+                         Text(
                     'Cuidados em destaque',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -387,7 +388,7 @@ class HomeScreen extends ConsumerWidget {
                   const Spacer(),
                   TextButton(
                     onPressed: () => context.go('/services'),
-                    child: const Text(
+                    child:        Text(
                       'Ver todos',
                       style: TextStyle(
                           color: AppColors.accent,
@@ -437,7 +438,7 @@ class HomeScreen extends ConsumerWidget {
 // ══════════════════════════════════════════════════════════════════
 
 class _QuickAction extends StatelessWidget {
-  const _QuickAction({
+         _QuickAction({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -449,9 +450,11 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // F33 — micro-interação tátil (tap-bounce da web) nas ações.
     return Expanded(
-      child: GestureDetector(
+      child: Pressable(
         onTap: onTap,
+        scale: 0.90,
         child: Column(
           children: [
             Container(
@@ -466,7 +469,7 @@ class _QuickAction extends StatelessWidget {
             const SizedBox(height: 7),
             Text(
               label,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
@@ -480,7 +483,7 @@ class _QuickAction extends StatelessWidget {
 }
 
 class _NextConsultationCard extends StatelessWidget {
-  const _NextConsultationCard({required this.consultation});
+         _NextConsultationCard({required this.consultation});
 
   final Consultation consultation;
 
@@ -505,7 +508,7 @@ class _NextConsultationCard extends StatelessWidget {
                 color: AppColors.accent.withOpacity(0.14),
                 border: Border.all(color: AppColors.accent.withOpacity(0.35)),
               ),
-              child: const Icon(Icons.upcoming_rounded,
+              child:        Icon(Icons.upcoming_rounded,
                   color: AppColors.accent, size: 24),
             ),
             const SizedBox(width: 14),
@@ -528,7 +531,7 @@ class _NextConsultationCard extends StatelessWidget {
                         : 'Consulta médica',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 14.5,
                       fontWeight: FontWeight.w700,
@@ -537,13 +540,13 @@ class _NextConsultationCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     formatDateTime(consultation.scheduledAt),
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textSecondary, fontSize: 12),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
+                   Icon(Icons.chevron_right_rounded,
                 color: AppColors.textMuted),
           ],
         ),
@@ -553,7 +556,7 @@ class _NextConsultationCard extends StatelessWidget {
 }
 
 class _PromoBanner extends StatelessWidget {
-  const _PromoBanner({required this.onTap});
+         _PromoBanner({required this.onTap});
 
   final VoidCallback onTap;
 
@@ -565,7 +568,7 @@ class _PromoBanner extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
-          gradient: const LinearGradient(
+          gradient:        LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
@@ -580,7 +583,7 @@ class _PromoBanner extends StatelessWidget {
             Container(
               width: 46,
               height: 46,
-              decoration: const BoxDecoration(
+              decoration:        BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(colors: AppColors.successGradient),
               ),
@@ -588,7 +591,7 @@ class _PromoBanner extends StatelessWidget {
                   color: Colors.white, size: 22),
             ),
             const SizedBox(width: 14),
-            const Expanded(
+                   Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -609,7 +612,7 @@ class _PromoBanner extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_rounded,
+                   Icon(Icons.arrow_forward_rounded,
                 color: AppColors.accent, size: 20),
           ],
         ),
@@ -661,7 +664,7 @@ class _FeaturedDoctors extends ConsumerWidget {
                         d.specialtyName ?? 'Consulta geral',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -669,12 +672,12 @@ class _FeaturedDoctors extends ConsumerWidget {
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.star_rounded,
+                                 Icon(Icons.star_rounded,
                               color: AppColors.warning, size: 14),
                           const SizedBox(width: 3),
                           Text(
                             '${d.rating.toStringAsFixed(1)} · ${formatMZN(d.consultationFee)}',
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 color: AppColors.textMuted,
                                 fontSize: 12),
                           ),
@@ -683,7 +686,7 @@ class _FeaturedDoctors extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded,
+                       Icon(Icons.chevron_right_rounded,
                     color: AppColors.textMuted),
               ],
             ),
@@ -730,7 +733,7 @@ class _JoyCoinsChip extends ConsumerWidget {
                   )
                 : Text(
                     _formatCoins(value ?? 0),
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.warning,
                       fontSize: 12.5,
                       fontWeight: FontWeight.w800,
@@ -768,7 +771,7 @@ class _NextDoseCard extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              gradient: const LinearGradient(
+              gradient:        LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [Color(0x2E1E6B9C), Color(0x1414B8A6)],
@@ -786,7 +789,7 @@ class _NextDoseCard extends ConsumerWidget {
                     border:
                         Border.all(color: AppColors.accent.withOpacity(0.4)),
                   ),
-                  child: const Icon(Icons.alarm_rounded,
+                  child:        Icon(Icons.alarm_rounded,
                       color: AppColors.accent, size: 24),
                 ),
                 const SizedBox(width: 13),
@@ -808,7 +811,7 @@ class _NextDoseCard extends ConsumerWidget {
                         d.medName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 14.5,
                           fontWeight: FontWeight.w800,
@@ -819,13 +822,13 @@ class _NextDoseCard extends ConsumerWidget {
                         '$hh:$mm'
                         '${d.dosage != null && d.dosage!.isNotEmpty ? ' · ${d.dosage}' : ''}'
                         '${d.streak > 1 ? '  ·  🔥 ${d.streak} dias' : ''}',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textSecondary, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded,
+                       Icon(Icons.chevron_right_rounded,
                     color: AppColors.textMuted),
               ],
             ),
@@ -866,7 +869,7 @@ class _HealthTipCard extends StatelessWidget {
               height: 46,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
+                gradient:        LinearGradient(
                     colors: AppColors.successGradient),
                 boxShadow: [
                   BoxShadow(
@@ -897,7 +900,7 @@ class _HealthTipCard extends StatelessWidget {
                     article.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 14.5,
                       fontWeight: FontWeight.w800,
@@ -908,13 +911,13 @@ class _HealthTipCard extends StatelessWidget {
                     article.excerpt,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textSecondary, fontSize: 11.5),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
+                   Icon(Icons.chevron_right_rounded,
                 color: AppColors.textMuted),
           ],
         ),

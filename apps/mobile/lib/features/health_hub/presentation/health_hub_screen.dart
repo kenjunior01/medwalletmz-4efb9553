@@ -15,7 +15,7 @@ import '../data/offline_articles.dart';
 /// Artigo de educação em saúde (`health_articles` — leitura pública
 /// das linhas publicadas).
 class HealthArticle {
-  const HealthArticle({
+         HealthArticle({
     required this.id,
     required this.title,
     required this.excerpt,
@@ -163,7 +163,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
   /// Lista visível: artigos da BD (se houver rede) filtrados pela busca;
   /// em caso de falha/sem dados, os guias embutidos entram em cena.
   List<HealthArticle> get _dbVisible {
-    final list = _articles ?? const <HealthArticle>[];
+    final list = _articles ??        <HealthArticle>[];
     if (_search.isEmpty) return list;
     final q = _search.toLowerCase();
     return list
@@ -237,10 +237,10 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                   children: [
                     IconButton(
                       onPressed: () => Navigator.of(context).maybePop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Educação em saúde',
                         style: TextStyle(
@@ -252,7 +252,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                     ),
                     IconButton(
                       onPressed: _load,
-                      icon: const Icon(Icons.refresh_rounded,
+                      icon:        Icon(Icons.refresh_rounded,
                           color: AppColors.textSecondary),
                     ),
                   ],
@@ -262,24 +262,24 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
                 child: TextField(
                   onChanged: (v) => setState(() => _search = v.trim()),
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textPrimary, fontSize: 13.5),
                   decoration: InputDecoration(
                     hintText: 'Buscar artigos… (malária, gravidez, TB…)',
-                    hintStyle: const TextStyle(
+                    hintStyle:        TextStyle(
                         color: AppColors.textMuted, fontSize: 12.5),
-                    prefixIcon: const Icon(Icons.search_rounded,
+                    prefixIcon:        Icon(Icons.search_rounded,
                         color: AppColors.textMuted, size: 20),
                     isDense: true,
                     filled: true,
                     fillColor: AppColors.glassFill,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.glassBorder),
+                      borderSide:        BorderSide(color: AppColors.glassBorder),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.glassBorder),
+                      borderSide:        BorderSide(color: AppColors.glassBorder),
                     ),
                   ),
                 ),
@@ -327,7 +327,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
 
     if (db.isEmpty && offline.isEmpty) {
       return ListView(
-        children: const [
+        children:        [
           EmptyState(
             icon: Icons.menu_book_rounded,
             title: 'Ainda sem artigos',
@@ -378,12 +378,12 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
           padding: const EdgeInsets.fromLTRB(0, 14, 0, 4),
           child: Row(
             children: [
-              const Icon(Icons.download_for_offline_outlined,
+                     Icon(Icons.download_for_offline_outlined,
                   color: AppColors.accent, size: 18),
               const SizedBox(width: 8),
               Text(
                 'Guias essenciais · sempre disponíveis',
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 14.5,
                   fontWeight: FontWeight.w800,
@@ -455,13 +455,13 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                   children: [
                     IconButton(
                       onPressed: () => setState(() => _reading = null),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
                     Expanded(
                       child: Text(
                         a.categoryLabel,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -470,7 +470,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                     ),
                     IconButton(
                       onPressed: () => _shareArticle(a),
-                      icon: const Icon(Icons.ios_share_rounded,
+                      icon:        Icon(Icons.ios_share_rounded,
                           color: AppColors.textSecondary, size: 20),
                       tooltip: 'Partilhar',
                     ),
@@ -483,7 +483,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                   children: [
                     Text(
                       a.title,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 23,
                         fontWeight: FontWeight.w800,
@@ -512,7 +512,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                         const SizedBox(width: 10),
                         Text(
                           '${a.readMinutes} min de leitura',
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textMuted, fontSize: 11.5),
                         ),
                       ],
@@ -522,7 +522,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                       Text(
                         'Por ${a.authorName}'
                         '${a.authorCredentials != null ? ' · ${a.authorCredentials}' : ''}',
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textMuted, fontSize: 11.5),
                       ),
                     ],
@@ -561,7 +561,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
 }
 
 class _CatChip extends StatelessWidget {
-  const _CatChip({
+         _CatChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -580,7 +580,7 @@ class _CatChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
         decoration: BoxDecoration(
           gradient: selected
-              ? const LinearGradient(colors: AppColors.buttonGradient)
+              ?        LinearGradient(colors: AppColors.buttonGradient)
               : null,
           color: selected ? null : AppColors.glassFill,
           borderRadius: BorderRadius.circular(12),
@@ -602,7 +602,7 @@ class _CatChip extends StatelessWidget {
 }
 
 class _ArticleCard extends StatelessWidget {
-  const _ArticleCard({required this.article, required this.onTap});
+         _ArticleCard({required this.article, required this.onTap});
 
   final HealthArticle article;
   final VoidCallback onTap;
@@ -643,12 +643,12 @@ class _ArticleCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 if (a.isFeatured)
-                  const Icon(Icons.star_rounded,
+                         Icon(Icons.star_rounded,
                       color: AppColors.warning, size: 16),
                 const SizedBox(width: 6),
                 Text(
                   '${a.readMinutes} min',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textMuted, fontSize: 11),
                 ),
               ],
@@ -658,7 +658,7 @@ class _ArticleCard extends StatelessWidget {
               a.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style:        TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 15.5,
                 fontWeight: FontWeight.w800,

@@ -80,14 +80,14 @@ class _AdsScreenState extends ConsumerState<AdsScreen>
     try {
       await repo.removeAd(ad.id);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Anúncio removido'),
         backgroundColor: AppColors.info,
       ));
       await _loadMine();
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Não foi possível remover'),
         backgroundColor: AppColors.danger,
       ));
@@ -107,7 +107,7 @@ class _AdsScreenState extends ConsumerState<AdsScreen>
             indicatorColor: AppColors.accent,
             labelColor: AppColors.textPrimary,
             unselectedLabelColor: AppColors.textMuted,
-            tabs: const [
+            tabs:        [
               Tab(text: 'Explorar'),
               Tab(text: 'Os meus'),
             ],
@@ -169,7 +169,7 @@ class _AdsScreenState extends ConsumerState<AdsScreen>
 /* ------------------------------ EXPLORAR ------------------------------ */
 
 class _BrowseTab extends StatefulWidget {
-  const _BrowseTab({
+         _BrowseTab({
     required this.loading,
     required this.ads,
     required this.city,
@@ -217,11 +217,11 @@ class _BrowseTabState extends State<_BrowseTab> {
                   TextField(
                     controller: _searchController,
                     onSubmitted: widget.onSearch,
-                    style: const TextStyle(color: AppColors.textPrimary),
+                    style:        TextStyle(color: AppColors.textPrimary),
                     decoration: InputDecoration(
                       hintText: 'Procurar classificados…',
-                      hintStyle: const TextStyle(color: AppColors.textMuted),
-                      prefixIcon: const Icon(Icons.search_rounded,
+                      hintStyle:        TextStyle(color: AppColors.textMuted),
+                      prefixIcon:        Icon(Icons.search_rounded,
                           color: AppColors.textMuted),
                       filled: true,
                       fillColor: AppColors.glassFill,
@@ -231,7 +231,7 @@ class _BrowseTabState extends State<_BrowseTab> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(color: AppColors.accent),
+                        borderSide:        BorderSide(color: AppColors.accent),
                       ),
                     ),
                   ),
@@ -294,7 +294,7 @@ class _BrowseTabState extends State<_BrowseTab> {
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children:        [
                     Icon(Icons.storefront_rounded,
                         size: 46, color: AppColors.textMuted),
                     SizedBox(height: 10),
@@ -330,7 +330,7 @@ class _BrowseTabState extends State<_BrowseTab> {
 }
 
 class _CityChip extends StatelessWidget {
-  const _CityChip({
+         _CityChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -372,7 +372,7 @@ class _CityChip extends StatelessWidget {
 }
 
 class _AdCard extends StatelessWidget {
-  const _AdCard({required this.ad});
+         _AdCard({required this.ad});
   final ClassifiedAd ad;
 
   @override
@@ -436,7 +436,7 @@ class _AdCard extends StatelessWidget {
                     ad.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 13),
@@ -444,13 +444,13 @@ class _AdCard extends StatelessWidget {
                   const SizedBox(height: 3),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_rounded,
+                             Icon(Icons.location_on_rounded,
                           size: 12, color: AppColors.textMuted),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(
                           ad.city ?? 'Moçambique',
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textMuted, fontSize: 11),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -461,7 +461,7 @@ class _AdCard extends StatelessWidget {
                   const SizedBox(height: 5),
                   Text(
                     ad.priceMzn != null ? formatMZN(ad.priceMzn!) : 'Sob consulta',
-                    style: const TextStyle(
+                    style:        TextStyle(
                         color: AppColors.success,
                         fontWeight: FontWeight.w800,
                         fontSize: 13.5),
@@ -488,7 +488,7 @@ class _AdCard extends StatelessWidget {
 }
 
 class _AdDetailSheet extends StatelessWidget {
-  const _AdDetailSheet({required this.ad});
+         _AdDetailSheet({required this.ad});
   final ClassifiedAd ad;
 
   Future<void> _launch(BuildContext context, String? raw, String label) async {
@@ -501,7 +501,7 @@ class _AdDetailSheet extends StatelessWidget {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           content: Text('Não foi possível abrir'),
           backgroundColor: AppColors.danger,
         ));
@@ -523,7 +523,7 @@ class _AdDetailSheet extends StatelessWidget {
                 Text(
                   '${AdRepository.categoryEmoji(ad.category)} '
                   '${AdRepository.categoryLabel(ad.category)}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.accent,
                       fontSize: 12,
                       fontWeight: FontWeight.w800),
@@ -531,20 +531,20 @@ class _AdDetailSheet extends StatelessWidget {
                 const Spacer(),
                 if (ad.city != null)
                   Text(ad.city!,
-                      style: const TextStyle(
+                      style:        TextStyle(
                           color: AppColors.textMuted, fontSize: 12)),
               ],
             ),
             const SizedBox(height: 8),
             Text(ad.title,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 19,
                     fontWeight: FontWeight.w800)),
             if (ad.description != null && ad.description!.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(ad.description!,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textSecondary,
                       height: 1.5,
                       fontSize: 13.5)),
@@ -552,7 +552,7 @@ class _AdDetailSheet extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               ad.priceMzn != null ? formatMZN(ad.priceMzn!) : 'Sob consulta',
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.success,
                   fontSize: 22,
                   fontWeight: FontWeight.w800),
@@ -607,7 +607,7 @@ class _AdDetailSheet extends StatelessWidget {
 /* ------------------------------- OS MEUS ------------------------------ */
 
 class _MineTab extends ConsumerWidget {
-  const _MineTab({
+         _MineTab({
     required this.ads,
     required this.onRemove,
     required this.onReload,
@@ -623,7 +623,7 @@ class _MineTab extends ConsumerWidget {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children:        [
             Icon(Icons.campaign_rounded, size: 46, color: AppColors.textMuted),
             SizedBox(height: 10),
             Text(
@@ -678,7 +678,7 @@ class _MineTab extends ConsumerWidget {
                       Text(ad.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w800)),
                       const SizedBox(height: 3),
@@ -696,7 +696,7 @@ class _MineTab extends ConsumerWidget {
                                   TextStyle(color: color, fontSize: 11.5)),
                           const SizedBox(width: 8),
                           Text('👁 ${ad.views}',
-                              style: const TextStyle(
+                              style:        TextStyle(
                                   color: AppColors.textMuted, fontSize: 11)),
                         ],
                       ),
@@ -705,7 +705,7 @@ class _MineTab extends ConsumerWidget {
                 ),
                 IconButton(
                   onPressed: () => onRemove(ad),
-                  icon: const Icon(Icons.delete_outline_rounded,
+                  icon:        Icon(Icons.delete_outline_rounded,
                       color: AppColors.danger, size: 20),
                   tooltip: 'Remover',
                 ),
@@ -721,7 +721,7 @@ class _MineTab extends ConsumerWidget {
 /* ------------------------------- CRIAR -------------------------------- */
 
 class _CreateAdSheet extends ConsumerStatefulWidget {
-  const _CreateAdSheet({required this.onCreated});
+         _CreateAdSheet({required this.onCreated});
   final VoidCallback onCreated;
 
   @override
@@ -753,7 +753,7 @@ class _CreateAdSheetState extends ConsumerState<_CreateAdSheet> {
 
   Future<void> _submit() async {
     if (_title.text.trim().length < 4) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Dá um título ao anúncio (mín. 4 letras)'),
         backgroundColor: AppColors.danger,
       ));
@@ -780,7 +780,7 @@ class _CreateAdSheetState extends ConsumerState<_CreateAdSheet> {
       );
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
         content: Text('Anúncio enviado para aprovação ✅'),
         backgroundColor: AppColors.success,
       ));
@@ -807,13 +807,13 @@ class _CreateAdSheetState extends ConsumerState<_CreateAdSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Novo classificado',
+                     Text('Novo classificado',
                   style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 18,
                       fontWeight: FontWeight.w800)),
               const SizedBox(height: 4),
-              const Text(
+                     Text(
                 'O anúncio é revisto pelo admin antes de ficar visível.',
                 style: TextStyle(color: AppColors.textMuted, fontSize: 12),
               ),
@@ -939,7 +939,7 @@ class _CreateAdSheetState extends ConsumerState<_CreateAdSheet> {
 }
 
 class _SheetField extends StatelessWidget {
-  const _SheetField({
+         _SheetField({
     required this.controller,
     required this.label,
     this.maxLines = 1,
@@ -957,10 +957,10 @@ class _SheetField extends StatelessWidget {
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      style: const TextStyle(color: AppColors.textPrimary),
+      style:        TextStyle(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+        labelStyle:        TextStyle(color: AppColors.textSecondary, fontSize: 13),
         filled: true,
         fillColor: AppColors.glassFill,
         enabledBorder: OutlineInputBorder(
@@ -969,7 +969,7 @@ class _SheetField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.accent),
+          borderSide:        BorderSide(color: AppColors.accent),
         ),
       ),
     );

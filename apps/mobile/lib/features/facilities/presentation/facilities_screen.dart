@@ -56,7 +56,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
             children: [
               Row(
                 children: [
-                  const Expanded(
+                         Expanded(
                     child: Text(
                       'Instituições',
                       style: TextStyle(
@@ -69,7 +69,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                   IconButton(
                     tooltip: 'As minhas conversas',
                     onPressed: () => context.push('/chats'),
-                    icon: const Icon(
+                    icon:        Icon(
                       Icons.chat_bubble_outline_rounded,
                       color: AppColors.accent,
                     ),
@@ -97,7 +97,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.location_city_rounded,
+                           Icon(Icons.location_city_rounded,
                         size: 18, color: AppColors.accent),
                     const SizedBox(width: 10),
                     Expanded(
@@ -105,7 +105,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                         onlyMyCity
                             ? 'Só na minha cidade'
                             : 'Mostrar todas as cidades',
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w600,
                           fontSize: 13.5,
@@ -144,7 +144,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                     },
                   );
                 },
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   hintText: 'Pesquisar instituição, bairro ou cidade…',
                   prefixIcon: Icon(Icons.search_rounded),
@@ -181,7 +181,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    for (final s in const [
+                    for (final s in        [
                       (FacilitySort.rating, 'Melhor avaliadas'),
                       (FacilitySort.nearby, 'Mais próximas'),
                       (FacilitySort.name, 'A → Z'),
@@ -269,7 +269,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
 ///  - permissão negada / GPS off → aviso com acção;
 ///  - posição OK → confirmação discreta com a precisão aproximada.
 class _GpsBanner extends ConsumerWidget {
-  const _GpsBanner({required this.onRefresh});
+         _GpsBanner({required this.onRefresh});
 
   final VoidCallback onRefresh;
 
@@ -279,7 +279,7 @@ class _GpsBanner extends ConsumerWidget {
 
     return pos.when(
       loading: () => _shell(
-        const SizedBox(
+               SizedBox(
           width: 16,
           height: 16,
           child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent),
@@ -287,13 +287,13 @@ class _GpsBanner extends ConsumerWidget {
         'A obter a tua localização para ordenar por proximidade real…',
       ),
       error: (_, __) => _shell(
-        const Icon(Icons.error_outline_rounded, size: 18, color: AppColors.warning),
+               Icon(Icons.error_outline_rounded, size: 18, color: AppColors.warning),
         'Não foi possível usar o GPS — as distâncias ficam aproximadas.',
       ),
       data: (p) {
         if (p == null) {
           return _shell(
-            const Icon(Icons.location_off_rounded, size: 18, color: AppColors.warning),
+                   Icon(Icons.location_off_rounded, size: 18, color: AppColors.warning),
             'Localização indisponível — activa o GPS ou concede permissão '
                 'nas definições para veres as distâncias reais.',
             actionLabel: 'Tentar novamente',
@@ -343,7 +343,7 @@ class _GpsBanner extends ConsumerWidget {
               onTap: onAction,
               child: Text(
                 actionLabel,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.accent,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -359,7 +359,7 @@ class _GpsBanner extends ConsumerWidget {
 // ── Chips ───────────────────────────────────────────────────────────────
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({
+         _FilterChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -398,7 +398,7 @@ class _FilterChip extends StatelessWidget {
 }
 
 class _SortChip extends StatelessWidget {
-  const _SortChip({
+         _SortChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -452,7 +452,7 @@ class _SortChip extends StatelessWidget {
 // ── Cartão de instituição ───────────────────────────────────────────────
 
 class _FacilityCard extends StatelessWidget {
-  const _FacilityCard({required this.facility, required this.distance});
+         _FacilityCard({required this.facility, required this.distance});
 
   final HealthFacility facility;
   final double distance;
@@ -486,7 +486,7 @@ class _FacilityCard extends StatelessWidget {
                           facility.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: 14.5,
@@ -494,7 +494,7 @@ class _FacilityCard extends StatelessWidget {
                         ),
                       ),
                       if (facility.isVerified)
-                        const Icon(Icons.verified_rounded,
+                               Icon(Icons.verified_rounded,
                             size: 15, color: AppColors.accent),
                     ],
                   ),
@@ -513,14 +513,14 @@ class _FacilityCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded,
+                             Icon(Icons.star_rounded,
                           size: 14, color: AppColors.warning),
                       const SizedBox(width: 3),
                       Text(
                         facility.rating != null && facility.rating! > 0
                             ? facility.rating!.toStringAsFixed(1)
                             : 'Novo',
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -533,7 +533,7 @@ class _FacilityCard extends StatelessWidget {
                         const SizedBox(width: 3),
                         Text(
                           formatDistanceKm(distance),
-                          style: const TextStyle(
+                          style:        TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 12,
                           ),
@@ -541,7 +541,7 @@ class _FacilityCard extends StatelessWidget {
                       ],
                       if (facility.emergency24h) ...[
                         const SizedBox(width: 10),
-                        const Text(
+                               Text(
                           '24h',
                           style: TextStyle(
                             color: AppColors.danger,
@@ -556,7 +556,7 @@ class _FacilityCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            const Icon(Icons.chevron_right_rounded,
+                   Icon(Icons.chevron_right_rounded,
                 color: AppColors.textMuted),
           ],
         ),

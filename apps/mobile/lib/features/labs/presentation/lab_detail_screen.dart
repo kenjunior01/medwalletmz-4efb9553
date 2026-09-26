@@ -73,7 +73,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
       lastDate: now.add(const Duration(days: 90)),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(primary: AppColors.accent),
+          colorScheme:        ColorScheme.dark(primary: AppColors.accent),
         ),
         child: child!,
       ),
@@ -84,7 +84,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
       initialTime: const TimeOfDay(hour: 9, minute: 0),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.dark(primary: AppColors.accent),
+          colorScheme:        ColorScheme.dark(primary: AppColors.accent),
         ),
         child: child!,
       ),
@@ -150,7 +150,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
       ));
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
       content: Text('Pedido de exames criado! Podes acompanhar no histórico.'),
       backgroundColor: AppColors.success,
       behavior: SnackBarBehavior.floating,
@@ -189,7 +189,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
                     Expanded(
@@ -197,7 +197,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                         lab.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -207,7 +207,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                     IconButton(
                       tooltip: 'Histórico de pedidos',
                       onPressed: () => context.push('/lab-orders'),
-                      icon: const Icon(Icons.history_rounded,
+                      icon:        Icon(Icons.history_rounded,
                           color: AppColors.accent),
                     ),
                   ],
@@ -217,7 +217,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                 child: Row(
                   children: [
-                    const Icon(Icons.location_on_rounded,
+                           Icon(Icons.location_on_rounded,
                         size: 14, color: AppColors.accent),
                     const SizedBox(width: 4),
                     Expanded(
@@ -231,7 +231,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                         ].join(', '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textSecondary, fontSize: 12),
                       ),
                     ),
@@ -252,7 +252,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                             color: AppColors.success.withOpacity(0.14),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(Icons.phone_rounded,
+                          child:        Icon(Icons.phone_rounded,
                               size: 15, color: AppColors.success),
                         ),
                       ),
@@ -266,7 +266,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                 child: _loading
                     ? ListView(
                         padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                        children: const [
+                        children:        [
                           AppSkeleton(width: double.infinity, height: 54, radius: 16),
                           SizedBox(height: 10),
                           AppSkeleton(width: double.infinity, height: 54, radius: 16),
@@ -281,10 +281,10 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.science_outlined,
+                                         Icon(Icons.science_outlined,
                                       size: 44, color: AppColors.textMuted),
                                   const SizedBox(height: 14),
-                                  const Text(
+                                         Text(
                                     'Catálogo em preparação',
                                     style: TextStyle(
                                         color: AppColors.textPrimary,
@@ -292,7 +292,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                                         fontSize: 15),
                                   ),
                                   const SizedBox(height: 6),
-                                  const Text(
+                                         Text(
                                     'Este laboratório ainda não publicou o catálogo de exames. Liga para perguntar o que tem disponível.',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -311,7 +311,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                                   padding: const EdgeInsets.only(top: 12, bottom: 8),
                                   child: Text(
                                     _categoryLabel(entry.key),
-                                    style: const TextStyle(
+                                    style:        TextStyle(
                                       color: AppColors.accent,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w800,
@@ -342,7 +342,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                         children: [
                           Text(
                             '${_cart.length} exame${_cart.length > 1 ? 's' : ''}',
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w600),
@@ -350,7 +350,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                           const Spacer(),
                           Text(
                             formatMZN(_total),
-                            style: const TextStyle(
+                            style:        TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800),
@@ -445,7 +445,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                   children: [
                     Text(
                       exam.name,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w700,
                         fontSize: 13.5,
@@ -470,7 +470,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
               ),
               Text(
                 formatMZN(exam.price),
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w800,
                   fontSize: 13,
@@ -495,7 +495,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
             bottom: MediaQuery.of(sheetCtx).viewInsets.bottom,
           ),
           child: Container(
-            decoration: const BoxDecoration(
+            decoration:        BoxDecoration(
               color: AppColors.bgHigh,
               borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
@@ -516,7 +516,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const Text(
+                         Text(
                     'Agendar colheita',
                     style: TextStyle(
                         color: AppColors.textPrimary,
@@ -565,7 +565,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                             size: 20,
                           ),
                           const SizedBox(width: 10),
-                          const Expanded(
+                                 Expanded(
                             child: Text(
                               'Colheita ao domicílio (profissional vai a casa)',
                               style: TextStyle(
@@ -608,7 +608,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.event_rounded,
+                                 Icon(Icons.event_rounded,
                               color: AppColors.accent, size: 20),
                           const SizedBox(width: 10),
                           Expanded(
@@ -704,7 +704,7 @@ class _LabDetailScreenState extends ConsumerState<LabDetailScreen> {
 
 // ── Campo de formulário da folha ─────────────────────────────────────
 class _Field extends StatelessWidget {
-  const _Field({
+         _Field({
     required this.label,
     required this.controller,
     required this.hint,
@@ -725,7 +725,7 @@ class _Field extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style:        TextStyle(
               color: AppColors.textSecondary,
               fontSize: 11.5,
               fontWeight: FontWeight.w700),
@@ -735,13 +735,13 @@ class _Field extends StatelessWidget {
           controller: controller,
           maxLines: maxLines,
           keyboardType: keyboardType,
-          style: const TextStyle(
+          style:        TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13.5,
               fontWeight: FontWeight.w600),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(
+            hintStyle:        TextStyle(
                 color: AppColors.textMuted, fontSize: 12.5),
             filled: true,
             fillColor: Colors.white.withOpacity(0.05),
@@ -754,7 +754,7 @@ class _Field extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.accent),
+              borderSide:        BorderSide(color: AppColors.accent),
             ),
           ),
         ),

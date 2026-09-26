@@ -49,10 +49,10 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Text(
+                           Text(
                       'Segurança',
                       style: TextStyle(
                         color: AppColors.textPrimary,
@@ -79,7 +79,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.shield_rounded,
+                                   Icon(Icons.shield_rounded,
                                 color: AppColors.accent, size: 22),
                             const SizedBox(width: 12),
                             Expanded(
@@ -100,7 +100,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                         controller: _next,
                         obscureText: _obscure,
                         style:
-                            const TextStyle(color: AppColors.textPrimary),
+                                   TextStyle(color: AppColors.textPrimary),
                         decoration: InputDecoration(
                           labelText: 'Nova palavra-passe',
                           prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -121,7 +121,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                         controller: _confirm,
                         obscureText: _obscure,
                         style:
-                            const TextStyle(color: AppColors.textPrimary),
+                                   TextStyle(color: AppColors.textPrimary),
                         decoration: const InputDecoration(
                           labelText: 'Confirmar nova palavra-passe',
                           prefixIcon: Icon(Icons.lock_rounded),
@@ -145,7 +145,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                       const SizedBox(height: 14),
                       TextButton(
                         onPressed: _sendResetEmail,
-                        child: const Text(
+                        child:        Text(
                           'Esqueci-me da palavra-passe — enviar link por e-mail',
                           style: TextStyle(
                               color: AppColors.accent, fontSize: 13),

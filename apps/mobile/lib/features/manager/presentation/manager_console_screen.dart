@@ -64,7 +64,7 @@ class _ManagerConsoleScreenState extends ConsumerState<ManagerConsoleScreen> {
       _country = countries.value!.first.id;
     }
     CountryFull? country;
-    for (final c in countries.value ?? const <CountryFull>[]) {
+    for (final c in countries.value ??        <CountryFull>[]) {
       if (c.id == _country) country = c;
     }
 
@@ -81,7 +81,7 @@ class _ManagerConsoleScreenState extends ConsumerState<ManagerConsoleScreen> {
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
                     Expanded(
@@ -90,7 +90,7 @@ class _ManagerConsoleScreenState extends ConsumerState<ManagerConsoleScreen> {
                         children: [
                           Text(
                             country?.name ?? _country ?? 'Consola',
-                            style: const TextStyle(
+                            style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
@@ -242,7 +242,7 @@ class _ManagerConsoleScreenState extends ConsumerState<ManagerConsoleScreen> {
 // ═══════════════════════════════════════════════════════════════════
 
 class _OverviewPanel extends ConsumerWidget {
-  const _OverviewPanel({required this.countryId});
+         _OverviewPanel({required this.countryId});
 
   final String countryId;
 
@@ -321,7 +321,7 @@ class _OverviewPanel extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                       Text(
                   'Panorama do país',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -405,7 +405,7 @@ class _OverviewPanel extends ConsumerWidget {
 
 /// Barras comparativas simples (widgets puros, sem dependências).
 class _StatsBars extends StatelessWidget {
-  const _StatsBars({required this.data});
+         _StatsBars({required this.data});
 
   final List<(String, int, Color)> data;
 
@@ -469,7 +469,7 @@ class _StatsBars extends StatelessWidget {
 }
 
 class _ActionTile extends StatelessWidget {
-  const _ActionTile({
+         _ActionTile({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -510,7 +510,7 @@ class _ActionTile extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 12.8,
                   fontWeight: FontWeight.w700,
@@ -625,7 +625,7 @@ class _SubmissionsPanelState extends ConsumerState<_SubmissionsPanel> {
 
 /// Cartão de revisão de submissão — reutilizado pela consola.
 class ProposalReviewCard extends ConsumerWidget {
-  const ProposalReviewCard({
+         ProposalReviewCard({
     super.key,
     required this.p,
     required this.canReview,
@@ -650,7 +650,7 @@ class ProposalReviewCard extends ConsumerWidget {
         ),
       ));
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(
+      messenger.showSnackBar(       SnackBar(
         backgroundColor: AppColors.danger,
         content: Text('Falhou a aprovação — confirma o teu papel de '
             'gestor deste país.'),
@@ -667,7 +667,7 @@ class ProposalReviewCard extends ConsumerWidget {
       builder: (ctx) => Container(
         padding: EdgeInsets.fromLTRB(
             22, 18, 22, MediaQuery.of(ctx).viewInsets.bottom + 20),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient:
               LinearGradient(colors: [AppColors.bgHigh, AppColors.bgDeep]),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -676,7 +676,7 @@ class ProposalReviewCard extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+                   Text(
               'Rejeitar submissão',
               style: TextStyle(
                   color: AppColors.textPrimary,
@@ -694,7 +694,7 @@ class ProposalReviewCard extends ConsumerWidget {
             TextField(
               controller: notesCtrl,
               maxLines: 3,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style:        TextStyle(color: AppColors.textPrimary),
               decoration: const InputDecoration(
                   hintText:
                       'Ex.: telefone incompleto, já existe no directório…'),
@@ -737,7 +737,7 @@ class ProposalReviewCard extends ConsumerWidget {
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+                 SnackBar(
               backgroundColor: AppColors.danger,
               content: Text('Falhou a rejeição — confirma o teu papel.')),
         );
@@ -781,7 +781,7 @@ class ProposalReviewCard extends ConsumerWidget {
                       p.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 14.5,
@@ -861,7 +861,7 @@ class ProposalReviewCard extends ConsumerWidget {
                         width: 96,
                         height: 74,
                         color: AppColors.glassFill,
-                        child: const Icon(Icons.broken_image_rounded,
+                        child:        Icon(Icons.broken_image_rounded,
                             color: AppColors.textMuted, size: 20),
                       ),
                     ),

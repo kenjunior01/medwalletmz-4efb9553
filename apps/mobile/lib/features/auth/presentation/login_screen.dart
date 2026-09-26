@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
             height: 72,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(22),
-              gradient: const LinearGradient(
+              gradient:        LinearGradient(
                 colors: AppColors.heroCardGradient,
               ),
               border: Border.all(color: Colors.white.withOpacity(0.18)),
@@ -108,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 size: 36, color: Colors.white),
           ),
           const SizedBox(height: 20),
-          const Text(
+                 Text(
             'Bem-vindo de volta',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -131,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
         autocorrect: false,
         validator: (v) =>
             (v == null || !v.contains('@')) ? 'Email inválido' : null,
-        style: const TextStyle(color: AppColors.textPrimary),
+        style:        TextStyle(color: AppColors.textPrimary),
         decoration: const InputDecoration(
           hintText: 'Email',
           prefixIcon: Icon(Icons.alternate_email_rounded),
@@ -143,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
         obscureText: _hidePassword,
         validator: (v) =>
             (v == null || v.length < 6) ? 'Mínimo 6 caracteres' : null,
-        style: const TextStyle(color: AppColors.textPrimary),
+        style:        TextStyle(color: AppColors.textPrimary),
         decoration: InputDecoration(
           hintText: 'Password',
           prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -171,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.error_outline_rounded,
+                     Icon(Icons.error_outline_rounded,
                   color: AppColors.danger, size: 20),
               const SizedBox(width: 10),
               Expanded(
@@ -188,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _otpShortcut() => TextButton(
         onPressed: () => context.pushReplacement('/otp', extra: ''),
-        child: const Text.rich(
+        child:        Text.rich(
           TextSpan(
             text: 'Sem password? ',
             style: TextStyle(color: AppColors.textMuted, fontSize: 13.5),
@@ -218,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           TextButton(
             onPressed: () => context.push('/register'),
-            child: const Text(
+            child:        Text(
               'Criar conta',
               style: TextStyle(
                 color: AppColors.accent,

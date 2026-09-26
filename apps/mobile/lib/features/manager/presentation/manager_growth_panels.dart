@@ -63,7 +63,7 @@ class _KpisPanelState extends ConsumerState<KpisPanel> {
         builder: (ctx, setSheet) => Container(
           padding: EdgeInsets.fromLTRB(
               22, 18, 22, MediaQuery.of(ctx).viewInsets.bottom + 20),
-          decoration: const BoxDecoration(
+          decoration:        BoxDecoration(
             gradient: LinearGradient(
                 colors: [AppColors.bgHigh, AppColors.bgDeep]),
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -72,7 +72,7 @@ class _KpisPanelState extends ConsumerState<KpisPanel> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+                     Text(
                 'Actualizar KPI',
                 style: TextStyle(
                     color: AppColors.textPrimary,
@@ -90,7 +90,7 @@ class _KpisPanelState extends ConsumerState<KpisPanel> {
               DropdownButtonFormField<String>(
                 value: selectedKey,
                 dropdownColor: AppColors.bgHigh,
-                style: const TextStyle(
+                style:        TextStyle(
                     color: AppColors.textPrimary, fontSize: 13.5),
                 decoration:
                     const InputDecoration(labelText: 'Indicador'),
@@ -115,7 +115,7 @@ class _KpisPanelState extends ConsumerState<KpisPanel> {
               TextField(
                 controller: valueCtrl,
                 keyboardType: TextInputType.number,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                     labelText: 'Valor actual'),
               ),
@@ -123,7 +123,7 @@ class _KpisPanelState extends ConsumerState<KpisPanel> {
               TextField(
                 controller: targetCtrl,
                 keyboardType: TextInputType.number,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style:        TextStyle(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                     labelText: 'Meta (opcional)'),
               ),
@@ -164,7 +164,7 @@ class _KpisPanelState extends ConsumerState<KpisPanel> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text(
               'Sem permissão para escrever KPIs (admin/CEO/regional).'),
@@ -218,7 +218,7 @@ class _KpisPanelState extends ConsumerState<KpisPanel> {
 }
 
 class _KpiCard extends StatelessWidget {
-  const _KpiCard({required this.k});
+         _KpiCard({required this.k});
 
   final RegionalKpi k;
 
@@ -262,7 +262,7 @@ class _KpiCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   _label,
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,
@@ -295,7 +295,7 @@ class _KpiCard extends StatelessWidget {
             children: [
               Text(
                 _formatted,
-                style: const TextStyle(
+                style:        TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w800,
                   fontSize: 21,
@@ -362,7 +362,7 @@ class _GoalsPanelState extends ConsumerState<GoalsPanel> {
       builder: (ctx) => Container(
         padding: EdgeInsets.fromLTRB(
             22, 18, 22, MediaQuery.of(ctx).viewInsets.bottom + 20),
-        decoration: const BoxDecoration(
+        decoration:        BoxDecoration(
           gradient:
               LinearGradient(colors: [AppColors.bgHigh, AppColors.bgDeep]),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -371,7 +371,7 @@ class _GoalsPanelState extends ConsumerState<GoalsPanel> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+                   Text(
               'Definir meta trimestral',
               style: TextStyle(
                   color: AppColors.textPrimary,
@@ -381,7 +381,7 @@ class _GoalsPanelState extends ConsumerState<GoalsPanel> {
             const SizedBox(height: 14),
             TextField(
               controller: quarterCtrl,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style:        TextStyle(color: AppColors.textPrimary),
               decoration:
                   const InputDecoration(labelText: 'Trimestre (2026-Q3)'),
             ),
@@ -389,10 +389,10 @@ class _GoalsPanelState extends ConsumerState<GoalsPanel> {
             DropdownButtonFormField<String>(
               value: 'users_target',
               dropdownColor: AppColors.bgHigh,
-              style: const TextStyle(
+              style:        TextStyle(
                   color: AppColors.textPrimary, fontSize: 13.5),
               decoration: const InputDecoration(labelText: 'Tipo de meta'),
-              items: const [
+              items:        [
                 DropdownMenuItem(
                     value: 'users_target',
                     child: Text('Utilizadores (users_target)')),
@@ -409,7 +409,7 @@ class _GoalsPanelState extends ConsumerState<GoalsPanel> {
             TextField(
               controller: valueCtrl,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style:        TextStyle(color: AppColors.textPrimary),
               decoration:
                   const InputDecoration(labelText: 'Valor da meta'),
             ),
@@ -445,7 +445,7 @@ class _GoalsPanelState extends ConsumerState<GoalsPanel> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text(
               'Sem permissão para definir metas (admin/CEO regional).'),
@@ -499,7 +499,7 @@ class _GoalsPanelState extends ConsumerState<GoalsPanel> {
 }
 
 class _GoalCard extends StatelessWidget {
-  const _GoalCard({required this.g});
+         _GoalCard({required this.g});
 
   final RegionalGoal g;
 
@@ -545,7 +545,7 @@ class _GoalCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   '${_keyLabel} · ${g.quarter}',
-                  style: const TextStyle(
+                  style:        TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,
@@ -685,7 +685,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
               lastDate: DateTime(2030),
               builder: (bctx, child) => Theme(
                 data: Theme.of(bctx).copyWith(
-                  colorScheme: const ColorScheme.dark(
+                  colorScheme:        ColorScheme.dark(
                       primary: AppColors.accent,
                       surface: AppColors.bgHigh),
                 ),
@@ -812,7 +812,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
           return Container(
           padding: EdgeInsets.fromLTRB(
               22, 18, 22, MediaQuery.of(ctx).viewInsets.bottom + 20),
-          decoration: const BoxDecoration(
+          decoration:        BoxDecoration(
             gradient: LinearGradient(
                 colors: [AppColors.bgHigh, AppColors.bgDeep]),
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -822,7 +822,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                       Text(
                   'Banner Studio — publicar para o país',
                   style: TextStyle(
                       color: AppColors.textPrimary,
@@ -841,7 +841,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
                 DropdownButtonFormField<String>(
                   value: type,
                   dropdownColor: AppColors.bgHigh,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textPrimary, fontSize: 13.5),
                   decoration: const InputDecoration(labelText: 'Tipo'),
                   items: [
@@ -855,7 +855,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
                 TextField(
                   controller: titleCtrl,
                   onChanged: (_) => setSheet(() {}),
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style:        TextStyle(color: AppColors.textPrimary),
                   decoration: const InputDecoration(
                       labelText: 'Título *'),
                 ),
@@ -864,14 +864,14 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
                   controller: descCtrl,
                   maxLines: 3,
                   onChanged: (_) => setSheet(() {}),
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style:        TextStyle(color: AppColors.textPrimary),
                   decoration: const InputDecoration(
                       labelText: 'Descrição'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: imageCtrl,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style:        TextStyle(color: AppColors.textPrimary),
                   decoration: const InputDecoration(
                       labelText: 'URL da imagem (opcional)'),
                 ),
@@ -882,7 +882,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
                       child: TextField(
                         controller: ctaLabelCtrl,
                         onChanged: (_) => setSheet(() {}),
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary),
                         decoration: const InputDecoration(
                             labelText: 'Botão (opcional)'),
@@ -892,7 +892,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
                     Expanded(
                       child: TextField(
                         controller: ctaUrlCtrl,
-                        style: const TextStyle(
+                        style:        TextStyle(
                             color: AppColors.textPrimary),
                         decoration: const InputDecoration(
                             labelText: 'Link do botão'),
@@ -979,7 +979,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
                   activeColor: AppColors.accent,
                   contentPadding: EdgeInsets.zero,
                   dense: true,
-                  title: const Text(
+                  title:        Text(
                     'Fixar no topo da app',
                     style: TextStyle(
                         color: AppColors.textPrimary, fontSize: 13),
@@ -1111,7 +1111,7 @@ class _ContentPanelState extends ConsumerState<ContentPanel> {
 }
 
 class _ContentCard extends StatelessWidget {
-  const _ContentCard({required this.c, required this.onToggle});
+         _ContentCard({required this.c, required this.onToggle});
 
   final RegionalContentItem c;
   final VoidCallback onToggle;
@@ -1169,7 +1169,7 @@ class _ContentCard extends StatelessWidget {
                         c.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style:        TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w700,
                           fontSize: 13.5,
@@ -1276,7 +1276,7 @@ class _RankingPanelState extends ConsumerState<RankingPanel> {
   @override
   Widget build(BuildContext context) {
     final rows = _rows;
-    final latest = (rows ?? const <RegionalRankingRow>[])
+    final latest = (rows ??        <RegionalRankingRow>[])
         .where((r) =>
             rows == null ||
             rows.isEmpty ||
@@ -1330,7 +1330,7 @@ class _RankingPanelState extends ConsumerState<RankingPanel> {
                   Expanded(
                     child: Text(
                       r.countryCode,
-                      style: const TextStyle(
+                      style:        TextStyle(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
@@ -1461,7 +1461,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(       SnackBar(
           backgroundColor: AppColors.danger,
           content: Text(
               'Sem permissão para editar este país (só admin ou o '
@@ -1498,7 +1498,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                       Text(
                   'Comissões (%)',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -1515,7 +1515,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
                           controller: e.value,
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style:        TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 13),
                           decoration: InputDecoration(
@@ -1544,7 +1544,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                       Text(
                   'Branding (cores em HEX)',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -1625,7 +1625,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
                               const SizedBox(width: 2),
                               Text(
                                 name,
-                                style: const TextStyle(
+                                style:        TextStyle(
                                     color: AppColors.textPrimary,
                                     fontSize: 10.5,
                                     fontWeight: FontWeight.w700),
@@ -1640,7 +1640,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: _bannerCtrl,
-                  style: const TextStyle(
+                  style:        TextStyle(
                       color: AppColors.textPrimary, fontSize: 12.5),
                   decoration: const InputDecoration(
                     labelText: 'Banner da Home (URL da imagem)',
@@ -1680,7 +1680,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
 }
 
 class _ColorSwatch extends StatelessWidget {
-  const _ColorSwatch(
+         _ColorSwatch(
       {required this.ctrl, required this.label, this.onChanged});
 
   final TextEditingController ctrl;
@@ -1712,7 +1712,7 @@ class _ColorSwatch extends StatelessWidget {
             onChanged: (_) => onChanged?.call(),
             textAlign: TextAlign.center,
             style:
-                const TextStyle(color: AppColors.textPrimary, fontSize: 11),
+                       TextStyle(color: AppColors.textPrimary, fontSize: 11),
             decoration: InputDecoration(
               labelText: label,
               labelStyle: TextStyle(
@@ -1729,7 +1729,7 @@ class _ColorSwatch extends StatelessWidget {
 
 /// Faixa de pré-visualização ao vivo do branding do país.
 class _BrandingPreview extends StatelessWidget {
-  const _BrandingPreview({
+         _BrandingPreview({
     required this.name,
     required this.primaryHex,
     required this.secondaryHex,

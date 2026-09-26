@@ -55,7 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
+                             Text(
                         'Criar conta',
                         style: TextStyle(
                           color: AppColors.textPrimary,
@@ -135,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Center(
                         child: TextButton(
                           onPressed: () => context.pop(),
-                          child: const Text(
+                          child:        Text(
                             'Já tenho conta — Entrar',
                             style: TextStyle(
                               color: AppColors.accent,
@@ -177,11 +177,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         obscureText: obscure,
         autocorrect: false,
         validator: validator,
-        style: const TextStyle(color: AppColors.textPrimary),
+        style:        TextStyle(color: AppColors.textPrimary),
         decoration: InputDecoration(
           hintText: hint,
           prefixText: prefix,
-          prefixStyle: const TextStyle(
+          prefixStyle:        TextStyle(
               color: AppColors.textSecondary, fontWeight: FontWeight.w600),
           prefixIcon: Icon(icon),
         ),
@@ -199,11 +199,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(7),
               ),
-              side: const BorderSide(color: AppColors.glassBorder),
+              side:        BorderSide(color: AppColors.glassBorder),
             ),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+                 Expanded(
             child: Text(
               'Aceito os Termos e a Política de Privacidade da MedWallet',
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12.5),

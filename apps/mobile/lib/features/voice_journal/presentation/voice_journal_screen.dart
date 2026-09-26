@@ -217,11 +217,11 @@ class _VoiceJournalScreenState extends ConsumerState<VoiceJournalScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: _recording
-                              ? const LinearGradient(colors: [
+                              ?        LinearGradient(colors: [
                                   AppColors.danger,
                                   Color(0xFFB91C1C),
                                 ])
-                              : const LinearGradient(
+                              :        LinearGradient(
                                   colors: AppColors.buttonGradient),
                           boxShadow: [
                             BoxShadow(
@@ -259,7 +259,7 @@ class _VoiceJournalScreenState extends ConsumerState<VoiceJournalScreen> {
                           duration: 900.ms,
                         ),
                     const SizedBox(height: 12),
-                    const Text(
+                           Text(
                       'A IA transcreve, detecta o humor e devolve um '
                       'insight empático. Nada é partilhado.',
                       textAlign: TextAlign.center,
@@ -299,7 +299,7 @@ class _VoiceJournalScreenState extends ConsumerState<VoiceJournalScreen> {
       );
     }
     if (entries.isEmpty) {
-      return const Center(
+      return        Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -355,13 +355,13 @@ class _VoiceJournalScreenState extends ConsumerState<VoiceJournalScreen> {
                           '${formatDateTime(e.recordedAt)} · '
                           '${e.durationSeconds}s'
                           '${e.isDone ? '' : ' · pendente'}',
-                          style: const TextStyle(
+                          style:        TextStyle(
                               fontSize: 11.5, color: AppColors.textMuted),
                         ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.chevron_right_rounded,
+                         Icon(Icons.chevron_right_rounded,
                       color: AppColors.textMuted),
                 ],
               ),
@@ -374,7 +374,7 @@ class _VoiceJournalScreenState extends ConsumerState<VoiceJournalScreen> {
 }
 
 class _DetailSheet extends ConsumerStatefulWidget {
-  const _DetailSheet({required this.entry});
+         _DetailSheet({required this.entry});
   final VoiceEntry entry;
 
   @override
@@ -447,7 +447,7 @@ class _DetailSheetState extends ConsumerState<_DetailSheet> {
     return Container(
       constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.84),
-      decoration: const BoxDecoration(
+      decoration:        BoxDecoration(
         color: AppColors.bgMid,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -472,12 +472,12 @@ class _DetailSheetState extends ConsumerState<_DetailSheet> {
                 Expanded(
                   child: Text(
                     '${formatDateTime(e.recordedAt)} · ${e.durationSeconds}s',
-                    style: const TextStyle(
+                    style:        TextStyle(
                         fontSize: 13.5, color: AppColors.textSecondary),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline_rounded,
+                  icon:        Icon(Icons.delete_outline_rounded,
                       color: AppColors.danger),
                   onPressed: _delete,
                 ),
@@ -522,7 +522,7 @@ class _DetailSheetState extends ConsumerState<_DetailSheet> {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
+                        gradient:        LinearGradient(
                             colors: AppColors.buttonGradient),
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -539,7 +539,7 @@ class _DetailSheetState extends ConsumerState<_DetailSheet> {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: AppColors.glassBorder),
                     ),
-                    child: const Text(
+                    child:        Text(
                       'Análise IA pendente. Podes escrever o que sentiste '
                       'na nota abaixo enquanto isso.',
                       style: TextStyle(
@@ -556,7 +556,7 @@ class _DetailSheetState extends ConsumerState<_DetailSheet> {
                   style: const TextStyle(fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Nota escrita (opcional)…',
-                    hintStyle: const TextStyle(color: AppColors.textMuted),
+                    hintStyle:        TextStyle(color: AppColors.textMuted),
                     filled: true,
                     fillColor: AppColors.glassFill,
                     border: OutlineInputBorder(
@@ -587,7 +587,7 @@ class _DetailSheetState extends ConsumerState<_DetailSheet> {
 }
 
 class _ChipSection extends StatelessWidget {
-  const _ChipSection({required this.title, required this.items});
+         _ChipSection({required this.title, required this.items});
   final String title;
   final List<String> items;
 
@@ -608,7 +608,7 @@ class _ChipSection extends StatelessWidget {
               .map((s) => Chip(
                     label: Text(s, style: const TextStyle(fontSize: 12)),
                     backgroundColor: AppColors.glassFillStrong,
-                    side: const BorderSide(color: AppColors.glassBorder),
+                    side:        BorderSide(color: AppColors.glassBorder),
                   ))
               .toList(),
         ),

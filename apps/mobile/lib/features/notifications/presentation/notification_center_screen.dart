@@ -44,10 +44,10 @@ class _NotificationCenterScreenState
                   children: [
                     IconButton(
                       onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon:        Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                    const Expanded(
+                           Expanded(
                       child: Text(
                         'Notificações',
                         style: TextStyle(
@@ -74,7 +74,7 @@ class _NotificationCenterScreenState
                               color: const Color(0x1A38BDF8),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Text(
+                            child:        Text(
                               'Marcar lidas',
                               style: TextStyle(
                                 color: AppColors.accent,
@@ -91,7 +91,7 @@ class _NotificationCenterScreenState
                 ),
               ),
               const SizedBox(height: 4),
-              const Padding(
+                     Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
                   'Tudo o que importa em tempo real — consultas, saúde, '
@@ -208,7 +208,7 @@ class _NotificationCenterScreenState
 // ── Cartão de notificação ───────────────────────────────────────────────
 
 class _NotificationCard extends ConsumerWidget {
-  const _NotificationCard({required this.notification, required this.onTap});
+         _NotificationCard({required this.notification, required this.onTap});
 
   final AppNotification notification;
   final VoidCallback onTap;
@@ -309,7 +309,7 @@ class _NotificationCard extends ConsumerWidget {
                     ),
                   ),
                   if (notification.channel == 'sms')
-                    const Padding(
+                           Padding(
                       padding: EdgeInsets.only(top: 6),
                       child: Text(
                         'Também enviada por SMS',
@@ -335,7 +335,7 @@ class _NotificationCard extends ConsumerWidget {
 // ── Filtro ──────────────────────────────────────────────────────────────
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({
+         _FilterChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -380,7 +380,7 @@ class _FilterChip extends StatelessWidget {
 // ── Faixa de comunicados globais ────────────────────────────────────────
 
 class _BroadcastStrip extends StatelessWidget {
-  const _BroadcastStrip({required this.tips});
+         _BroadcastStrip({required this.tips});
 
   final List<AppNotification> tips;
 
@@ -402,7 +402,7 @@ class _BroadcastStrip extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+                 Row(
             children: [
               Icon(Icons.campaign_rounded,
                   color: AppColors.accent, size: 17),
@@ -425,7 +425,7 @@ class _BroadcastStrip extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('• ',
+                             Text('• ',
                           style: TextStyle(color: AppColors.accent)),
                       Expanded(
                         child: Text(
