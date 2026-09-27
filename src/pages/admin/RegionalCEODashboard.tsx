@@ -382,7 +382,7 @@ export default function RegionalCEODashboard() {
             <Button
               variant="outline"
               className="min-h-[80px] flex flex-col items-center justify-center gap-1 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              onClick={() => navigate('/admin/regional-goals')}
+              onClick={() => navigate('/admin/regional-metrics')}
             >
               <Target className="h-5 w-5" aria-hidden="true" />
               <span className="text-xs font-bold">{t('regionalCEO.action_goals')}</span>
@@ -398,7 +398,7 @@ export default function RegionalCEODashboard() {
             <Button
               variant="outline"
               className="min-h-[80px] flex flex-col items-center justify-center gap-1 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              onClick={() => navigate('/admin/onboarding')}
+              onClick={() => navigate('/admin/country-onboarding')}
             >
               <Flag className="h-5 w-5" aria-hidden="true" />
               <span className="text-xs font-bold">{t('regionalCEO.action_onboard_country')}</span>

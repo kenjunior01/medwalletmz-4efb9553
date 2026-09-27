@@ -51,16 +51,44 @@ export default function AdminHome() {
         return q;
       };
 
+      // consultations/prescriptions não têm country_id — filtra via médicos do país
+      let consultsPromise: Promise<any>;
+      let prescsPromise: Promise<any>;
+      if (countryId) {
+        consultsPromise = (async () => {
+          const { data: docs } = await (supabase as any).from('doctor_profiles').select('user_id');
+          if (!docs?.length) return { count: 0, data: [] };
+          const { data: dprofs } = await (supabase as any).from('profiles')
+            .select('user_id, country_id').in('user_id', docs.map((d: any) => d.user_id));
+          const ids = (dprofs || []).filter((p: any) => p.country_id === countryId).map((p: any) => p.user_id);
+          if (!ids.length) return { count: 0, data: [] };
+          return (supabase as any).from('consultations').select('id, status', { count: 'exact' })
+            .in('doctor_id', ids).limit(2000);
+        })();
+        prescsPromise = (async () => {
+          const { data: docs } = await (supabase as any).from('doctor_profiles').select('user_id');
+          if (!docs?.length) return { count: 0, data: [] };
+          const { data: dprofs } = await (supabase as any).from('profiles')
+            .select('user_id, country_id').in('user_id', docs.map((d: any) => d.user_id));
+          const ids = (dprofs || []).filter((p: any) => p.country_id === countryId).map((p: any) => p.user_id);
+          if (!ids.length) return { count: 0, data: [] };
+          return (supabase as any).from('prescriptions').select('id', { count: 'exact', head: true })
+            .in('doctor_id', ids);
+        })();
+      } else {
+        consultsPromise = (supabase as any).from('consultations').select('id, status', { count: 'exact' }).limit(2000);
+        prescsPromise = (supabase as any).from('prescriptions').select('id', { count: 'exact', head: true });
+      }
+
       const [stores, products, drivers, consults, prescs, referrals] = await Promise.all([
         buildQuery('stores'),
         buildQuery('products'),
         (supabase as any).from('profiles').select('id', { count: 'exact', head: true })
           .not('vehicle_type', 'is', null)
           .eq(countryId ? 'country_id' : 'id', countryId || 'id'), // simplistic filter for profiles
-        (supabase as any).from('consultations').select('id, status', { count: 'exact' })
-          .eq(countryId ? 'country_id' : 'id', countryId || 'id'),
-        buildQuery('prescriptions'),
-        (supabase as any).from('user_referrals').select('id, status', { count: 'exact' })
+        consultsPromise,
+        prescsPromise,
+        (supabase as any).from('user_referrals').select('id, status', { count: 'exact', head: true })
       ]);
 
       // Specialized queries for complex stats

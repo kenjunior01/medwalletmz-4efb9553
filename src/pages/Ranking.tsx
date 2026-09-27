@@ -26,6 +26,14 @@ export default function Ranking() {
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const navigateDetail = (
+    cfg: { id: Tab; table: string },
+    r: { id: string }
+  ) => {
+    if (cfg.id === 'doctors') navigate(`/health/doctors?focus=${r.id}`);
+    else navigate(`/store/${r.id}`);
+  };
+
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -87,28 +95,74 @@ export default function Ranking() {
                 [1,2,3,4].map(i => <Skeleton key={i} className="h-16 rounded-xl" />)
               ) : rows.length === 0 ? (
                 <p className="text-center text-sm text-muted-foreground py-8">{t('ranking.no_data')}</p>
-              ) : rows.map((r, i) => (
-                <Card key={r.id} className="p-3 flex items-center gap-3">
-                  <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
-                    {i + 1}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">{r.name}</p>
-                    {r.subtitle && (
-                      <p className="text-xs text-muted-foreground flex items-center gap-1 truncate">
-                        <MapPin className="h-3 w-3" /> {r.subtitle}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="flex items-center gap-1 font-bold text-sm">
-                      <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                      {r.rating.toFixed(1)}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">{t('ranking.reviews_count', { count: r.reviews })}</p>
-                  </div>
-                </Card>
-              ))}
+              ) : (
+                <>
+                  {/* Pódio top-3 */}
+                  {rows.length >= 2 && (
+                    <div className="grid grid-cols-3 gap-2 mb-4 items-end" aria-hidden="true">
+                      {[1, 0, 2].map((rankIdx, slot) => {
+                        const r = rows[rankIdx];
+                        if (!r) return null;
+                        const medals = [
+                          'from-yellow-400/25 to-yellow-100/10 border-yellow-400/50 text-yellow-600',
+                          'from-slate-300/25 to-slate-100/10 border-slate-300/50 text-slate-500',
+                          'from-amber-600/25 to-amber-100/10 border-amber-600/50 text-amber-700',
+                        ];
+                        const heights = ['pt-4', 'pt-2', 'pt-5'];
+                        return (
+                          <button
+                            key={r.id}
+                            onClick={() => navigateDetail(tabCfg, r)}
+                            className={`rounded-2xl border bg-gradient-to-b ${medals[slot]} ${heights[slot]} p-3 text-center transition hover:shadow-md`}
+                          >
+                            <div className="text-xl leading-none mb-1">{['🥇', '🥈', '🥉'][slot]}</div>
+                            <p className="font-bold text-xs truncate">{r.name}</p>
+                            <p className="flex items-center justify-center gap-0.5 text-[11px] mt-0.5">
+                              <Star className="h-3 w-3 fill-current" /> {r.rating.toFixed(1)}
+                            </p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {rows.map((r, i) => (
+                    <Card
+                      key={r.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => navigateDetail(tabCfg, r)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') navigateDetail(tabCfg, r); }}
+                      className={`p-3 flex items-center gap-3 cursor-pointer transition hover:shadow-md ${
+                        i < 3 ? 'border-gold/30' : ''
+                      }`}
+                    >
+                      <div className={`h-11 w-11 rounded-full flex items-center justify-center font-bold ${
+                        i === 0 ? 'bg-yellow-400/20 text-yellow-600' :
+                        i === 1 ? 'bg-slate-300/20 text-slate-500' :
+                        i === 2 ? 'bg-amber-600/20 text-amber-700' :
+                        'bg-primary/10 text-primary'
+                      }`}>
+                        {i + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm truncate">{r.name}</p>
+                        {r.subtitle && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 truncate">
+                            <MapPin className="h-3 w-3" /> {r.subtitle}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="flex items-center gap-1 font-bold text-sm">
+                          <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                          {r.rating.toFixed(1)}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">{t('ranking.reviews_count', { count: r.reviews })}</p>
+                      </div>
+                    </Card>
+                  ))}
+                </>
+              )}
             </TabsContent>
           ))}
         </Tabs>

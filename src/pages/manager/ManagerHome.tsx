@@ -39,6 +39,9 @@ interface PendingVerification {
   country_code: string;
 }
 
+type AnyDoc = { user_id: string; full_name: string | null; created_at: string; is_verified: boolean };
+type AnyRec = Record<string, any>;
+
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return 'Bom dia';
@@ -71,6 +74,7 @@ export default function ManagerHome() {
     monthlyRevenue: 0, pendingVerifications: 0, growthRate: 0,
   });
   const [pendingVerifications, setPendingVerifications] = useState<PendingVerification[]>([]);
+  const [pendingDoctors, setPendingDoctors] = useState<AnyDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastSession, setLastSession] = useState<string | null>(null);
@@ -103,7 +107,6 @@ export default function ManagerHome() {
   useEffect(() => {
     if (!user) return;
     loadStats();
-    loadPendingVerifications();
     loadRestrictions();
     loadLastSession();
     loadApprovalsToday();
@@ -139,15 +142,35 @@ export default function ManagerHome() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     try {
+      // doctor_profiles não tem coluna de país — junção em 2 passos via profiles
+      const doctorsPromise = (async () => {
+        const { data: docs, error } = await supabase
+          .from('doctor_profiles')
+          .select('user_id, full_name, created_at, is_verified');
+        if (error) throw error;
+        if (!docs?.length) return { total: 0, pending: [] as AnyDoc[] };
+        const { data: dprofs } = await supabase
+          .from('profiles')
+          .select('user_id, country_id')
+          .in('user_id', docs.map((d: any) => d.user_id));
+        const inCountry = new Set(
+          (dprofs || []).filter((p: any) => p.country_id === managedCountryId).map((p: any) => p.user_id)
+        );
+        return {
+          total: inCountry.size,
+          pending: docs.filter((d: any) => !d.is_verified && inCountry.has(d.user_id)) as AnyDoc[],
+        };
+      })();
+
       const [usersRes, doctorsRes, storesRes, clinicsRes, ordersRes, ordersPrevRes, activeUsersRes, revenueRes] = await Promise.all([
         (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId),
-        (supabase as any).from('doctor_profiles').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-        (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-        (supabase as any).from('clinics').select('id', { count: 'exact', head: true }).eq('country_code', countryCode),
-        (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startMonth.toISOString()),
-        (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_code', countryCode).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
+        doctorsPromise,
+        (supabase as any).from('stores').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId),
+        (supabase as any).from('clinics').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId),
+        (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId).gte('created_at', startMonth.toISOString()),
+        (supabase as any).from('orders').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId).gte('created_at', startPrevMonth.toISOString()).lt('created_at', startMonth.toISOString()),
         (supabase as any).from('profiles').select('id', { count: 'exact', head: true }).eq('country_id', managedCountryId).gte('last_sign_in_at', thirtyDaysAgo.toISOString()),
-        (supabase as any).from('orders').select('total').eq('country_code', countryCode).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
+        (supabase as any).from('orders').select('total').eq('country_id', managedCountryId).gte('created_at', startMonth.toISOString()).eq('status', 'delivered'),
       ]);
 
       const totalRevenue = (revenueRes.data || []).reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
@@ -158,7 +181,7 @@ export default function ManagerHome() {
       setStats({
         totalUsers: usersRes.count || 0,
         activeUsers: activeUsersRes.count || 0,
-        totalDoctors: doctorsRes.count || 0,
+        totalDoctors: doctorsRes.total,
         totalPharmacies: storesRes.count || 0,
         totalInstitutions: clinicsRes.count || 0,
         totalOrders: currOrders,
@@ -166,6 +189,8 @@ export default function ManagerHome() {
         pendingVerifications: pendingVerifications.length,
         growthRate: Number(growthRate),
       });
+      setPendingDoctors(doctorsRes.pending);
+      loadPendingVerifications(doctorsRes.pending);
     } catch (err: any) {
       setError(err?.message || 'Erro ao carregar estatísticas');
     } finally {
@@ -173,30 +198,24 @@ export default function ManagerHome() {
     }
   };
 
-  const loadPendingVerifications = async () => {
+  const loadPendingVerifications = async (docs: AnyDoc[] = []) => {
     if (!managedCountryId) return;
     try {
-      const [doctorsRes, storesRes] = await Promise.all([
-        (supabase as any)
-          .from('doctor_profiles')
-          .select('id, full_name, created_at')
-          .eq('country_code', countryCode)
-          .eq('is_verified', false)
-          .limit(10),
-        (supabase as any)
-          .from('stores')
-          .select('id, name, created_at')
-          .eq('country_code', countryCode)
-          .eq('is_verified', false)
-          .limit(10),
-      ]);
+      // Farmácias pendentes no país (stores tem country_id)
+      const { data: storesRes } = await (supabase as any)
+        .from('stores')
+        .select('id, name, created_at')
+        .eq('country_id', managedCountryId)
+        .eq('is_verified', false)
+        .limit(10);
 
+      // Médicos pendentes calculados em loadStats (doctor_profiles ↔ profiles)
       const items: PendingVerification[] = [
-        ...(doctorsRes.data || []).map((d: any) => ({
-          id: d.id, type: 'doctor' as const, name: d.full_name,
+        ...(docs || []).map((d: AnyDoc) => ({
+          id: d.user_id, type: 'doctor' as const, name: d.full_name,
           submitted_at: d.created_at, country_code: countryCode,
         })),
-        ...(storesRes.data || []).map((s: any) => ({
+        ...(storesRes || []).map((s: any) => ({
           id: s.id, type: 'pharmacy' as const, name: s.name,
           submitted_at: s.created_at, country_code: countryCode,
         })),

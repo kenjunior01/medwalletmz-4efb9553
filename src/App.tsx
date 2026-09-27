@@ -391,7 +391,7 @@ const App = () => {
                     <Route path="/health/insurance" element={<Insurance />} />
                     <Route path="/insurance/:id" element={<InsuranceDetail />} />
                     <Route path="/insurance/register" element={<RegistrationWizard />} />
-                    <Route path="/insurance/dashboard" element={<InsuranceDashboard />} />
+                    <Route path="/insurance/dashboard" element={<ProtectedRoute allowedRoles={['insurance']}><InsuranceDashboard /></ProtectedRoute>} />
                     <Route path="/ads" element={<Ads />} />
                     <Route path="/ads/new" element={<AdForm />} />
                     <Route path="/ads/mine" element={<MyAds />} />
