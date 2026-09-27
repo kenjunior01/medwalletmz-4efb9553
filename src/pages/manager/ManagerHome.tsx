@@ -142,24 +142,30 @@ export default function ManagerHome() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     try {
-      // doctor_profiles não tem coluna de país — junção em 2 passos via profiles
+      // doctor_profiles não tem full_name — nomes vêm de profiles (junção em 2 passos)
       const doctorsPromise = (async () => {
         const { data: docs, error } = await supabase
           .from('doctor_profiles')
-          .select('user_id, full_name, created_at, is_verified');
+          .select('user_id, created_at, is_verified');
         if (error) throw error;
         if (!docs?.length) return { total: 0, pending: [] as AnyDoc[] };
         const { data: dprofs } = await supabase
           .from('profiles')
-          .select('user_id, country_id')
+          .select('user_id, full_name, country_id')
           .in('user_id', docs.map((d: any) => d.user_id));
-        const inCountry = new Set(
-          (dprofs || []).filter((p: any) => p.country_id === managedCountryId).map((p: any) => p.user_id)
+        const profMap = new Map(
+          (dprofs || []).filter((p: any) => p.country_id === managedCountryId)
+            .map((p: any) => [p.user_id, p.full_name as string | null])
         );
-        return {
-          total: inCountry.size,
-          pending: docs.filter((d: any) => !d.is_verified && inCountry.has(d.user_id)) as AnyDoc[],
-        };
+        const pending = docs
+          .filter((d: any) => !d.is_verified && profMap.has(d.user_id))
+          .map((d: any) => ({
+            user_id: d.user_id,
+            full_name: profMap.get(d.user_id) || 'Médico',
+            created_at: d.created_at,
+            is_verified: false,
+          })) as AnyDoc[];
+        return { total: profMap.size, pending };
       })();
 
       const [usersRes, doctorsRes, storesRes, clinicsRes, ordersRes, ordersPrevRes, activeUsersRes, revenueRes] = await Promise.all([
@@ -310,11 +316,16 @@ export default function ManagerHome() {
   };
 
   const handleApprove = async (item: PendingVerification, approve: boolean) => {
-    const table = item.type === 'doctor' ? 'doctor_profiles' : 'stores';
-    const { error } = await (supabase as any)
-      .from(table)
-      .update({ is_verified: approve })
-      .eq('id', item.id);
+    // doctor_profiles: item.id é o user_id do perfil (PK é outro) — filtrar por user_id
+    const { error } = item.type === 'doctor'
+      ? await (supabase as any)
+          .from('doctor_profiles')
+          .update({ is_verified: approve })
+          .eq('user_id', item.id)
+      : await (supabase as any)
+          .from('stores')
+          .update({ is_verified: approve })
+          .eq('id', item.id);
 
     if (error) {
       toast.error(approve ? 'Erro ao aprovar' : 'Erro ao rejeitar');
@@ -322,6 +333,7 @@ export default function ManagerHome() {
     }
 
     setPendingVerifications(prev => prev.filter(p => p.id !== item.id));
+    setPendingDoctors(prev => prev.filter(p => p.user_id !== item.id));
     toast.success(approve ? 'Aprovado com sucesso' : 'Rejeitado');
   };
 

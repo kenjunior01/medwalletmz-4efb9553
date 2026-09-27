@@ -69,7 +69,7 @@ export function MeddyFloating({ context = 'default', position = 'bottom-left' }:
           .from('orders')
           .select('id', { count: 'exact', head: true })
           .eq('user_id', user!.id)
-          .in('status', ['pending', 'confirmed', 'preparing', 'out_for_delivery']);
+          .in('status', ['pending', 'confirmed', 'preparing', 'delivering']);
         return count ?? 0;
       }
       return 0;

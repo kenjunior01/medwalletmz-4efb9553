@@ -99,7 +99,7 @@ export default function StoreHome() {
 
       const todayOrders = todayOrdersData?.length || 0;
       const pendingOrders = todayOrdersData?.filter(o => 
-        ['pending', 'accepted', 'preparing'].includes(o.status)
+        ['pending', 'confirmed', 'preparing'].includes(o.status)
       ).length || 0;
 
       // Calculate revenue
@@ -186,10 +186,9 @@ export default function StoreHome() {
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline'; label: string }> = {
       pending: { variant: 'outline', label: 'Pendente' },
-      accepted: { variant: 'secondary', label: 'Aceite' },
+      confirmed: { variant: 'secondary', label: 'Confirmado' },
       preparing: { variant: 'default', label: 'Preparando' },
-      ready: { variant: 'default', label: 'Pronto' },
-      out_for_delivery: { variant: 'default', label: 'Em Entrega' },
+      delivering: { variant: 'default', label: 'Em Entrega' },
       delivered: { variant: 'secondary', label: 'Entregue' },
       cancelled: { variant: 'destructive', label: 'Cancelado' }
     };
@@ -305,7 +304,6 @@ export default function StoreHome() {
           value={`${(stats?.totalRevenue || 0).toLocaleString(locale)} ${currencySymbol}`}
           subtitle={`Semana: ${(stats?.weeklyRevenue || 0).toLocaleString(locale)} ${currencySymbol}`}
           icon={TrendingUp}
-          trend={{ value: 12, isPositive: true }}
           colorClass="text-secondary"
         />
         <StatWidget 

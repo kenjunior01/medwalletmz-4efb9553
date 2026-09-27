@@ -245,9 +245,7 @@ class _OrderCard extends StatelessWidget {
         return const Color(0xFF3B82F6);
       case 'preparing':
         return const Color(0xFFF97316);
-      case 'ready':
-        return const Color(0xFFA855F7);
-      case 'in_transit':
+      case 'delivering':
         return const Color(0xFF06B6D4);
       case 'delivered':
         return const Color(0xFF22C55E);

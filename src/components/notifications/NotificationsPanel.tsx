@@ -3,7 +3,7 @@
  * ---------------------------------------------------------------
  * Combina 4 fontes em tempo real (Supabase Realtime):
  *   - Consultas (status: confirmed / in_progress / completed)
- *   - Pedidos (status: out_for_delivery / delivered / ready)
+ *   - Pedidos (status: preparing / delivering / delivered)
  *   - Receitas (INSERT)
  *   - Consultation reminders (sent_at)
  *
@@ -94,7 +94,7 @@ export function NotificationsPanel() {
           .from("orders")
           .select("id, status, updated_at, items")
           .eq("customer_id", user.id)
-          .in("status", ["out_for_delivery", "in_transit", "ready", "delivered"])
+          .in("status", ["preparing", "delivering", "delivered"])
           .order("updated_at", { ascending: false })
           .limit(20),
         // Consultas (confirmadas / in_progress / completed)
@@ -132,9 +132,8 @@ export function NotificationsPanel() {
       // Orders
       (orders.data || []).forEach((o: any) => {
         const map: Record<string, string> = {
-          out_for_delivery: "O teu pedido está a caminho 🚴",
-          in_transit: "Pedido em trânsito 📦",
-          ready: "Pedido pronto para levantamento ✅",
+          preparing: "A preparar o teu pedido 👨‍⚕️",
+          delivering: "O teu pedido está a caminho 🚴",
           delivered: "Pedido entregue 🎉",
         };
         all.push({

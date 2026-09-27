@@ -47,6 +47,7 @@ import '../../features/rewards/presentation/rewards_screen.dart';
 import '../../features/riders/presentation/rider_screen.dart';
 import '../../features/veterinary/presentation/veterinary_screen.dart';
 import '../../features/chat/presentation/facility_inbox_screen.dart';
+import '../../features/shop/presentation/facility_orders_screen.dart';
 import '../../features/family/presentation/family_hub_screen.dart';
 import '../../features/insurance/presentation/insurance_screen.dart';
 import '../../features/journal/presentation/journal_screen.dart';
@@ -334,6 +335,11 @@ final router = GoRouter(
     GoRoute(
         path: '/facility-inbox',
         builder: (_, __) => const FacilityInboxScreen()),
+
+    // F36 — Encomendas das lojas do dono (confirmar/preparar/entregar).
+    GoRoute(
+        path: '/facility-orders',
+        builder: (_, __) => const FacilityOrdersScreen()),
 
     // F9 — Perfil: edição, segurança, ficha de saúde, ajuda.
     GoRoute(

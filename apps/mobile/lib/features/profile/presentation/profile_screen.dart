@@ -754,6 +754,15 @@ class ProfileScreen extends ConsumerWidget {
                       label: 'Inbox das minhas instituições',
                       onTap: () => context.push('/facility-inbox'),
                     ),
+                  // F36 — Encomendas das lojas: donos de farmácias/lojas
+                  // gerem pedidos (confirmar/preparar/entregar) na app.
+                  if ((ref.watch(myFacilitiesProvider).value ?? const [])
+                      .any((f) => f.source == 'store'))
+                    _MenuItem(
+                      icon: Icons.receipt_long_rounded,
+                      label: 'Encomendas das lojas',
+                      onTap: () => context.push('/facility-orders'),
+                    ),
                   // Gestão — visível apenas a gestores/admin.
                   if (ref.watch(userRolesProvider).value
                           ?.any(managerRoles.contains) ??

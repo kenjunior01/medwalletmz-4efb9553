@@ -65,9 +65,7 @@ class PharmacyOrder {
         return 'Confirmado';
       case 'preparing':
         return 'A Preparar';
-      case 'ready':
-        return 'Pronto';
-      case 'in_transit':
+      case 'delivering':
         return 'A Caminho';
       case 'delivered':
         return 'Entregue';

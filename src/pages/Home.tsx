@@ -213,7 +213,7 @@ export default function Home() {
 
         {/* ============ HERO SECTION ============ */}
         {showRoleHero ? (
-          <RoleHero roles={roles as any} name={firstName !== 'visitante' ? firstName : undefined} />
+          <RoleHero roles={roles as any} name={profile?.full_name?.split(' ')[0] || undefined} />
         ) : (
           <section className="relative px-4 pt-3">
             <div

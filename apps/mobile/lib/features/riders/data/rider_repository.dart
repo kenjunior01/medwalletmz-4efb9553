@@ -448,7 +448,10 @@ class RiderRepository {
   }
 
   Future<HealthRider> createRider(HealthRider rider) async {
-    final uid = _client.auth.currentUser!.id;
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) {
+      throw StateError('Sessão expirada — volta a entrar para candidatares-te.');
+    }
     final res = await _client
         .from('health_riders')
         .insert(rider.toInsert(userId: uid))

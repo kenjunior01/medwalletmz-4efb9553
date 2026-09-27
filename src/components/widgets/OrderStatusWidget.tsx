@@ -41,11 +41,23 @@ const statusConfig: Record<string, {
     bgColor: 'bg-blue-100',
     label: 'Aceitos'
   },
+  confirmed: { 
+    icon: CheckCircle, 
+    color: 'text-blue-600', 
+    bgColor: 'bg-blue-100',
+    label: 'Confirmados'
+  },
   preparing: { 
     icon: ChefHat, 
     color: 'text-orange-600', 
     bgColor: 'bg-orange-100',
     label: 'Preparando'
+  },
+  delivering: { 
+    icon: Truck, 
+    color: 'text-indigo-600', 
+    bgColor: 'bg-indigo-100',
+    label: 'Em Entrega'
   },
   ready: { 
     icon: Package, 

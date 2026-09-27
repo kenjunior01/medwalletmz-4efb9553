@@ -108,7 +108,7 @@ export default function NotificationsPage() {
           .from("orders")
           .select("id, status, updated_at")
           .eq("customer_id", user.id)
-          .in("status", ["out_for_delivery", "in_transit", "ready", "delivered"])
+          .in("status", ["preparing", "delivering", "delivered"])
           .order("updated_at", { ascending: false })
           .limit(50),
         (supabase as any)
@@ -151,9 +151,8 @@ export default function NotificationsPage() {
 
       (orders.data || []).forEach((o: any) => {
         const map: Record<string, string> = {
-          out_for_delivery: "O teu pedido está a caminho 🚴",
-          in_transit: "Pedido em trânsito 📦",
-          ready: "Pedido pronto para levantamento ✅",
+          preparing: "A preparar o teu pedido 👨‍⚕️",
+          delivering: "O teu pedido está a caminho 🚴",
           delivered: "Pedido entregue 🎉",
         };
         all.push({

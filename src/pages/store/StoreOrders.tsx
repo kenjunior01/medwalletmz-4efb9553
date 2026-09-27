@@ -50,7 +50,9 @@ interface StoreContext {
   } | null;
 }
 
-const statusFlow = ['pending', 'accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'];
+// Valores EXACTOS do CHECK constraint de orders.status no BD:
+// ('pending','confirmed','preparing','delivering','delivered','cancelled')
+const statusFlow = ['pending', 'confirmed', 'preparing', 'delivering', 'delivered'];
 
 export default function StoreOrders() {
   const { selectedStore } = useOutletContext<StoreContext>();
@@ -137,10 +139,9 @@ export default function StoreOrders() {
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
       pending: 'Pendente',
-      accepted: 'Aceite',
+      confirmed: 'Confirmado',
       preparing: 'Preparando',
-      ready: 'Pronto',
-      out_for_delivery: 'Em Entrega',
+      delivering: 'Em Entrega',
       delivered: 'Entregue',
       cancelled: 'Cancelado'
     };
@@ -150,10 +151,9 @@ export default function StoreOrders() {
   const getStatusIcon = (status: string) => {
     const icons: Record<string, any> = {
       pending: Clock,
-      accepted: CheckCircle,
+      confirmed: CheckCircle,
       preparing: ChefHat,
-      ready: Package,
-      out_for_delivery: Truck,
+      delivering: Truck,
       delivered: CheckCircle,
       cancelled: XCircle
     };
@@ -163,10 +163,9 @@ export default function StoreOrders() {
   const getStatusVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
     const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
       pending: 'outline',
-      accepted: 'secondary',
+      confirmed: 'secondary',
       preparing: 'default',
-      ready: 'default',
-      out_for_delivery: 'default',
+      delivering: 'default',
       delivered: 'secondary',
       cancelled: 'destructive'
     };
@@ -183,13 +182,13 @@ export default function StoreOrders() {
 
   const filteredOrders = orders.filter(order => {
     if (tab === 'pending') return order.status === 'pending';
-    if (tab === 'active') return ['accepted', 'preparing', 'ready', 'out_for_delivery'].includes(order.status);
+    if (tab === 'active') return ['confirmed', 'preparing', 'delivering'].includes(order.status);
     if (tab === 'completed') return ['delivered', 'cancelled'].includes(order.status);
     return true;
   });
 
   const pendingCount = orders.filter(o => o.status === 'pending').length;
-  const activeCount = orders.filter(o => ['accepted', 'preparing', 'ready', 'out_for_delivery'].includes(o.status)).length;
+  const activeCount = orders.filter(o => ['confirmed', 'preparing', 'delivering'].includes(o.status)).length;
 
   if (loading) {
     return (
@@ -326,7 +325,7 @@ export default function StoreOrders() {
                               <>
                                 <Button 
                                   className="flex-1"
-                                  onClick={() => updateOrderStatus(order.id, 'accepted')}
+                                  onClick={() => updateOrderStatus(order.id, 'confirmed')}
                                 >
                                   <CheckCircle className="h-4 w-4 mr-2" />
                                   Aceitar

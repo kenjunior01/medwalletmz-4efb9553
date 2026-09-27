@@ -165,7 +165,10 @@ class AdRepository {
     required String city,
     String? neighborhood,
   }) async {
-    final uid = _client.auth.currentUser!.id;
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) {
+      throw StateError('Sessão expirada — volta a entrar para publicar o anúncio.');
+    }
     await _client.from('advertisements').insert({
       'user_id': uid,
       'title': title,

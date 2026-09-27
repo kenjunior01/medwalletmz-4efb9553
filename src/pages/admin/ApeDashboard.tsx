@@ -1,8 +1,8 @@
 /**
  * ApeDashboard — Community Health Worker dashboard
  * Moçambique: 12.000+ APEs em zonas rurais
- * Triagem offline-first: malaria, TB, HIV, ANC, vacinação
- * Dados 100% locais (Supabase) — sem integrações externas
+ * Triagem em campo: malaria, TB, HIV, ANC, vacinação
+ * Dados locais sincronizados (Supabase) — sem integrações externas
  *
  * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp + M-Pesa + Gemini AI):
  * - Google Maps JS API: Geolocation do APE no campo (loadGoogleMaps + navigator.geolocation)
@@ -13,6 +13,7 @@
  */
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -89,6 +90,8 @@ export default function ApeDashboard() {
     try {
       const data = await fetchEnvironmentalHealth(geoResult.lat, geoResult.lng);
       setEnvData(data);
+    } catch (e: unknown) {
+      setGeoError(e instanceof Error ? e.message : 'Falha ao obter dados ambientais');
     } finally {
       setEnvLoading(false);
     }
@@ -117,6 +120,8 @@ export default function ApeDashboard() {
         metadata: { bonus_type: 'ape_performance', visits_threshold: 50 },
       });
       setMpesaPayment(payment);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : 'Erro ao gerar referência M-Pesa');
     } finally {
       setMpesaLoading(false);
     }
@@ -126,13 +131,20 @@ export default function ApeDashboard() {
   const createVisit = useCreateApeVisit();
 
   const { data: stats } = useQuery({
-    queryKey: ['ape-stats'],
+    queryKey: ['ape-stats', provinceFilter],
     queryFn: async () => {
-      const { count: total } = await supabase.from('ape_visits').select('id', { count: 'exact', head: true });
-      const { count: malaria } = await supabase.from('ape_visits').select('id', { count: 'exact', head: true }).eq('visit_type','malaria');
-      const { count: anc } = await supabase.from('ape_visits').select('id', { count: 'exact', head: true }).eq('visit_type','anc');
-      const { count: vacc } = await supabase.from('ape_visits').select('id', { count: 'exact', head: true }).eq('visit_type','vaccination');
-      return { total: total || 0, malaria: malaria || 0, anc: anc || 0, vacc: vacc || 0 };
+      const base = () => {
+        let q = supabase.from('ape_visits').select('id', { count: 'exact', head: true });
+        if (provinceFilter) q = q.eq('province', provinceFilter);
+        return q;
+      };
+      const [total, malaria, anc, vacc] = await Promise.all([
+        base(),
+        base().eq('visit_type', 'malaria'),
+        base().eq('visit_type', 'anc'),
+        base().eq('visit_type', 'vaccination'),
+      ]);
+      return { total: total.count || 0, malaria: malaria.count || 0, anc: anc.count || 0, vacc: vacc.count || 0 };
     },
   });
 
@@ -174,7 +186,7 @@ export default function ApeDashboard() {
                 APE Digital — Agentes Polivalentes Elementares
               </h1>
               <p className="text-sm text-slate-400 mt-1">
-                12.000+ APEs em zonas rurais de Moçambique · Triagem offline-first · Dados 100% locais
+                12.000+ APEs em zonas rurais de Moçambique · Triagem em campo · Dados sincronizados (Supabase)
               </p>
             </div>
             <div className="flex flex-col items-end gap-2">
