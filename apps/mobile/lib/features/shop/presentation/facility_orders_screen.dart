@@ -155,7 +155,7 @@ class _FacilityOrdersRepo {
         .from('orders')
         .select('*, items:order_items(id, quantity, unit_price, '
             'product:products(name))')
-        .in('store_id', storeNames.keys.toList())
+        .inFilter('store_id', storeNames.keys.toList())
         .order('created_at', ascending: false)
         .limit(100);
 
@@ -566,6 +566,7 @@ class _FacilityOrdersScreenState extends ConsumerState<FacilityOrdersScreen> {
                   label: 'Rejeitar',
                   icon: Icons.close_rounded,
                   color: AppColors.danger,
+                  busy: busy,
                   onTap: busy ? null : () => _changeStatus(order, 'cancelled'),
                 ),
                 const SizedBox(width: 8),
@@ -575,6 +576,7 @@ class _FacilityOrdersScreenState extends ConsumerState<FacilityOrdersScreen> {
                   label: _nextLabel(next),
                   icon: Icons.arrow_forward_rounded,
                   color: AppColors.primary,
+                  busy: busy,
                   onTap: busy ? null : () => _changeStatus(order, next),
                 ),
             ],
@@ -596,6 +598,7 @@ class _FacilityOrdersScreenState extends ConsumerState<FacilityOrdersScreen> {
     required String label,
     required IconData icon,
     required Color color,
+    required bool busy,
     VoidCallback? onTap,
   }) {
     return Material(
