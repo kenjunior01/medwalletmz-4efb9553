@@ -750,7 +750,7 @@ class _Field extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  BorderSide(color: Colors.white.withOpacity(0.1)),
+                  BorderSide(color: AppColors.textMuted),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

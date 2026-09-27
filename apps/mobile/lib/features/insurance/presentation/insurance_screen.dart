@@ -65,7 +65,7 @@ class InsuranceScreen extends ConsumerWidget {
                 'seguradoras parceiras. Subscreve e a apólice fica na '
                 'tua carteira de saúde.',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.55),
+                  color: AppColors.textSecondary,
                   fontSize: 12.5,
                   height: 1.45,
                 ),
@@ -419,7 +419,7 @@ class _PolicyCard extends ConsumerWidget {
                 Text(
                   formatRelative(p.createdAt),
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.45),
+                    color: AppColors.textSecondary,
                     fontSize: 11,
                   ),
                 ),

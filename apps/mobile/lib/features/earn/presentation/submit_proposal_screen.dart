@@ -656,7 +656,7 @@ class _TypeChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? color.withOpacity(0.18)
-              : Colors.white.withOpacity(0.04),
+              : AppColors.glassFill,
           borderRadius: BorderRadius.circular(13),
           border: Border.all(
             color: selected

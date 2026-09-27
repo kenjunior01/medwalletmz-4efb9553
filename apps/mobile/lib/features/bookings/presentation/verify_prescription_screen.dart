@@ -402,7 +402,7 @@ class _StatusCard extends StatelessWidget {
                 Text(
                   message,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.62),
+                    color: AppColors.textSecondary,
                     fontSize: 12.5,
                     height: 1.45,
                   ),

@@ -359,7 +359,7 @@ class RewardsRepository {
           .limit(limit);
       return [
         for (final r in (rows as List))
-          LeaderboardEntry.fromMap(Map<String, dynamic>.from(r)),
+          LeaderboardEntry.fromMap(Map<String, dynamic>.from(r as Map)),
       ];
     } catch (_) {
       return const [];
@@ -377,7 +377,7 @@ class RewardsRepository {
           .limit(limit);
       return [
         for (final r in (rows as List))
-          PointsEntry.fromMap(Map<String, dynamic>.from(r)),
+          PointsEntry.fromMap(Map<String, dynamic>.from(r as Map)),
       ];
     } catch (_) {
       return const [];
@@ -413,7 +413,7 @@ class RewardsRepository {
             .select()
             .eq('user_id', uid);
         for (final r in (uc as List)) {
-          final m = Map<String, dynamic>.from(r);
+          final m = Map<String, dynamic>.from(r as Map);
           mine[m['challenge_id']?.toString() ?? ''] = m;
         }
       } catch (_) {}

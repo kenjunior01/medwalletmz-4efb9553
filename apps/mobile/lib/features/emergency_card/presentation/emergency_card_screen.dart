@@ -423,7 +423,7 @@ class _SectionCard extends StatelessWidget {
             Text(
               emptyText,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
+                color: AppColors.textMuted,
                 fontSize: 13,
               ),
             )
@@ -601,7 +601,7 @@ class _EmptyCard extends StatelessWidget {
               'a app bloqueada ou sem internet.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.55),
+                color: AppColors.textSecondary,
                 fontSize: 13,
                 height: 1.5,
               ),

@@ -790,7 +790,7 @@ class ProposalReviewCard extends ConsumerWidget {
                     Text(
                       '$label · ${p.city}${p.countryId != 'MZ' ? ' (${p.countryId})' : ''}',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: AppColors.textSecondary,
                         fontSize: 11.5,
                       ),
                     ),
@@ -876,7 +876,7 @@ class ProposalReviewCard extends ConsumerWidget {
               Text(
                 formatRelative(p.createdAt),
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.4),
+                  color: AppColors.textMuted,
                   fontSize: 11,
                 ),
               ),

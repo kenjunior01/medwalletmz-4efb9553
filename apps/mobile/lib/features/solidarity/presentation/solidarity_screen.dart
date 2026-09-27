@@ -597,7 +597,7 @@ class _DonateSheetState extends ConsumerState<_DonateSheet> {
                           formatMZN(a, withSymbol: false),
                           style: TextStyle(
                             color: _amount == a
-                                ? Colors.white
+                                ? AppColors.textPrimary
                                 : AppColors.textSecondary,
                             fontWeight: FontWeight.w900,
                             fontSize: 13,
@@ -652,7 +652,7 @@ class _DonateSheetState extends ConsumerState<_DonateSheet> {
                                   m.$2,
                                   style: TextStyle(
                                     color: _method == m.$1
-                                        ? Colors.white
+                                        ? AppColors.textPrimary
                                         : AppColors.textSecondary,
                                     fontSize: 11.5,
                                     fontWeight: FontWeight.w800,
@@ -701,11 +701,11 @@ class _DonateSheetState extends ConsumerState<_DonateSheet> {
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   child: _saving
-                      ? const SizedBox(
+                      ?  SizedBox(
                           width: 18,
                           height: 18,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white))
+                              strokeWidth: 2, color: AppColors.textPrimary))
                       : Text(
                           _method == 'wallet'
                               ? 'Doar ${formatMZN(_amount)} da carteira'
@@ -886,7 +886,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
                           fontSize: 11.5,
                           fontWeight: FontWeight.w800,
                           color: _urgency == u.$1
-                              ? Colors.white
+                              ? AppColors.textPrimary
                               : AppColors.textSecondary,
                         ),
                         side: BorderSide(
@@ -912,11 +912,11 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   child: _saving
-                      ? const SizedBox(
+                      ?  SizedBox(
                           width: 18,
                           height: 18,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white))
+                              strokeWidth: 2, color: AppColors.textPrimary))
                       : const Text('Submeter pedido',
                           style: TextStyle(fontWeight: FontWeight.w800)),
                 ),

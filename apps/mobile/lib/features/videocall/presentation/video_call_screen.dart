@@ -402,7 +402,7 @@ class _RoomChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.06),
+          color: AppColors.glassFill,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(color: Colors.white.withOpacity(0.12)),
         ),
@@ -519,8 +519,8 @@ class _RoundToggle extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: active
-              ? Colors.white.withOpacity(0.10)
-              : Colors.white.withOpacity(0.05),
+              ? AppColors.glassFill
+              : AppColors.glassFill,
           border: Border.all(
             color: active
                 ? AppColors.accent.withOpacity(0.5)
@@ -554,7 +554,7 @@ class _GlassAction extends StatelessWidget {
         height: 52,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
-          color: Colors.white.withOpacity(0.08),
+          color: AppColors.glassFill,
           border: Border.all(color: Colors.white.withOpacity(0.14)),
         ),
         child: Row(

@@ -468,7 +468,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                         Text(
                           desc,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.55),
+                            color: AppColors.textSecondary,
                             fontSize: 12,
                           ),
                         ),
@@ -574,7 +574,7 @@ class _StepTitle extends StatelessWidget {
         Text(
           subtitle,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.55),
+            color: AppColors.textSecondary,
             fontSize: 13,
             height: 1.45,
           ),

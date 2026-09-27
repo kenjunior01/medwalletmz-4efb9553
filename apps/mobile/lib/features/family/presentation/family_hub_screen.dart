@@ -447,7 +447,7 @@ class _MedRowState extends ConsumerState<_MedRow> {
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: AppColors.glassFill,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(

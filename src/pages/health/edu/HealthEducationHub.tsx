@@ -15,7 +15,7 @@
  * ====================================================================
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Seo } from '@/components/Seo';
@@ -23,8 +23,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen, Bug, Baby, HeartPulse, Pill, Droplet, Brain,
   Stethoscope, AlertTriangle, Sparkles, Clock, ArrowRight,
-  Languages, PlayCircle, Award, CheckCircle2, Search
+  Languages, PlayCircle, Award, CheckCircle2, Search,
+  Zap, XCircle, RotateCcw, Flame
 } from "@/components/icons/lucide-compat";
+import {
+  quizFor, markRead, recordQuiz, loadPulse,
+  POINTS_PER_CORRECT, type ArticleQuiz, type PulseState,
+} from './quizzes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -414,6 +419,116 @@ const CATEGORIES = [
   { key: 'cronico', label: 'Doenças Crónicas', icon: Brain },
 ];
 
+/* ── F35 — Quiz inline “Pulse points” (no fim da leitura) ────────── */
+function QuizInline({
+  quiz,
+  onDone,
+}: {
+  quiz: ArticleQuiz;
+  onDone: (correct: number) => void;
+}) {
+  const [index, setIndex] = useState(0);
+  const [picked, setPicked] = useState<number | null>(null);
+  const [correct, setCorrect] = useState(0);
+  const [finished, setFinished] = useState(false);
+  const [recorded, setRecorded] = useState(false);
+
+  const q = quiz.questions[index];
+
+  const pick = (i: number) => {
+    if (picked !== null) return;
+    setPicked(i);
+    if (i === q.correct) setCorrect((c) => c + 1);
+  };
+
+  const next = () => {
+    if (index + 1 < quiz.questions.length) {
+      setIndex((v) => v + 1);
+      setPicked(null);
+    } else {
+      setFinished(true);
+    }
+  };
+
+  // gravação numa effect (nunca durante o render)
+  useEffect(() => {
+    if (finished && !recorded) {
+      setRecorded(true);
+      onDone(correct);
+    }
+  }, [finished, recorded, correct, onDone]);
+
+  if (finished) {
+    const best = loadPulse().quizBest[quiz.articleId] ?? 0;
+    return (
+      <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-5 text-center">
+        <Zap className="mx-auto h-8 w-8 text-emerald-600" />
+        <p className="mt-2 text-lg font-bold text-emerald-900">
+          {correct}/{quiz.questions.length} certas · +{correct * POINTS_PER_CORRECT} Pulse points
+        </p>
+        {best > 0 && best >= correct && (
+          <p className="mt-1 text-xs text-muted-foreground">Melhor pontuação: {best}/{quiz.questions.length}</p>
+        )}
+        <Button
+          size="sm"
+          variant="outline"
+          className="mt-3 border-emerald-300 text-emerald-700"
+          onClick={() => {
+            setIndex(0);
+            setPicked(null);
+            setCorrect(0);
+            setFinished(false);
+            setRecorded(false);
+          }}
+        >
+          <RotateCcw className="mr-1 h-3 w-3" /> Tentar outra vez
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border bg-card p-4">
+      <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
+        <Zap className="h-3.5 w-3.5" /> Quiz · Pulse points ({index + 1}/{quiz.questions.length})
+      </div>
+      <p className="mt-3 text-sm font-semibold leading-snug">{q.prompt}</p>
+      <div className="mt-3 space-y-2">
+        {q.options.map((opt, i) => {
+          const isCorrect = picked !== null && i === q.correct;
+          const isWrong = picked === i && i !== q.correct;
+          const dim = picked !== null && !isCorrect && !isWrong;
+          return (
+            <button
+              key={i}
+              onClick={() => pick(i)}
+              className={cn(
+                'flex w-full items-center justify-between gap-2 rounded-xl border px-3.5 py-2.5 text-left text-sm transition',
+                isCorrect && 'border-emerald-500 bg-emerald-50 text-emerald-900',
+                isWrong && 'border-red-400 bg-red-50 text-red-900',
+                dim && 'opacity-50',
+                picked === null && 'hover:bg-muted'
+              )}
+            >
+              <span>{opt}</span>
+              {isCorrect && <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />}
+              {isWrong && <XCircle className="h-4 w-4 shrink-0 text-red-500" />}
+            </button>
+          );
+        })}
+      </div>
+      {picked !== null && (
+        <>
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{q.explain}</p>
+          <Button size="sm" className="mt-3 w-full bg-emerald-600 hover:bg-emerald-700" onClick={next}>
+            {index + 1 < quiz.questions.length ? 'Próxima pergunta' : 'Ver resultado'}
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function HealthEducationHub() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -421,6 +536,7 @@ export default function HealthEducationHub() {
   const [category, setCategory] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Article | null>(null);
+  const [pulse, setPulse] = useState<PulseState>(() => loadPulse());
 
   const filtered = useMemo(() => {
     return ARTICLES.filter((a) => {
@@ -432,6 +548,7 @@ export default function HealthEducationHub() {
 
   const handleReadMore = (article: Article) => {
     setSelected(article);
+    setPulse(markRead(article.id));
     if (!user) {
       toast.info('Crie conta grátis para guardar progresso e receber lembretes', {
         description: 'Leva 30 segundos — sem cartão.',
@@ -461,6 +578,20 @@ export default function HealthEducationHub() {
             <div className="hidden md:flex items-center gap-2 text-xs bg-white/20 rounded-full px-3 py-1">
               <Languages className="h-3 w-3" /> {ARTICLES.length} artigos
             </div>
+          </div>
+          {/* F35 — progresso Pulse points (persistido no aparelho) */}
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+            <span className="inline-flex items-center gap-1 bg-white/20 rounded-full px-2.5 py-1 font-semibold">
+              <Zap className="h-3 w-3" /> {pulse.points} Pulse points
+            </span>
+            <span className="inline-flex items-center gap-1 bg-white/20 rounded-full px-2.5 py-1">
+              <CheckCircle2 className="h-3 w-3" /> {pulse.readIds.length}/{ARTICLES.length} lidos
+            </span>
+            {pulse.streakDays > 0 && (
+              <span className="inline-flex items-center gap-1 bg-white/20 rounded-full px-2.5 py-1">
+                <Flame className="h-3 w-3" /> streak {pulse.streakDays}d
+              </span>
+            )}
           </div>
         </div>
 
@@ -543,7 +674,20 @@ export default function HealthEducationHub() {
                     {article.excerpt[lang]}
                   </p>
                   <div className="mt-2 flex items-center gap-1 text-xs text-emerald-700">
-                    Ler mais <ArrowRight className="h-3 w-3" />
+                    {pulse.readIds.includes(article.id) ? (
+                      <>
+                        <CheckCircle2 className="h-3 w-3 text-emerald-600" /> Lido
+                      </>
+                    ) : (
+                      <>
+                        Ler mais <ArrowRight className="h-3 w-3" />
+                      </>
+                    )}
+                    {quizFor(article.id) && (
+                      <span className="ml-auto inline-flex items-center gap-0.5 text-emerald-600 font-medium">
+                        <Zap className="h-3 w-3" /> quiz
+                      </span>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -558,7 +702,7 @@ export default function HealthEducationHub() {
           </div>
         )}
 
-        {/* Quiz CTA */}
+        {/* Quiz CTA — F35: agora real, com stats do utilizador */}
         <Card className="mt-8 border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
           <CardContent className="p-5">
             <div className="flex items-center gap-3">
@@ -566,7 +710,9 @@ export default function HealthEducationHub() {
               <div className="flex-1">
                 <h3 className="font-semibold text-emerald-900">Teste os seus conhecimentos</h3>
                 <p className="text-xs text-emerald-800">
-                  Faça quizzes de saúde e ganhe Pulse points (em breve disponível).
+                  {pulse.points > 0
+                    ? `${pulse.points} Pulse points acumulados em ${pulse.readIds.length} guia(s) lido(s) — continue assim!`
+                    : 'Abra um guia e faça o quiz no fim da leitura para ganhar Pulse points.'}
                 </p>
               </div>
               <Button
@@ -630,6 +776,17 @@ export default function HealthEducationHub() {
                       </p>
                     ))}
                   </div>
+                  {quizFor(selected.id) && (
+                    <div className="mt-6">
+                      <QuizInline
+                        quiz={quizFor(selected.id)!}
+                        onDone={(correct) => {
+                          const { state } = recordQuiz(selected.id, correct);
+                          setPulse(state);
+                        }}
+                      />
+                    </div>
+                )}
                   <div className="mt-6 rounded-xl bg-amber-50 border border-amber-200 p-3 flex items-start gap-2">
                     <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                     <p className="text-xs text-amber-900">

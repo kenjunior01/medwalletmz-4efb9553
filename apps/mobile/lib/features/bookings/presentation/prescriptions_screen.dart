@@ -61,7 +61,7 @@ class PrescriptionsScreen extends ConsumerWidget {
                       : 'Receitas emitidas pelos teus especialistas — envia '
                           'a qualquer instituição pelo chat.',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.55),
+                    color: AppColors.textSecondary,
                     fontSize: 13,
                     height: 1.45,
                   ),
@@ -334,7 +334,7 @@ class _ItemRow extends StatelessWidget {
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(11),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: AppColors.glassFill,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -357,7 +357,7 @@ class _ItemRow extends StatelessWidget {
                 'durante ${item.duration}',
             ].join(' · '),
             style: TextStyle(
-              color: Colors.white.withOpacity(0.55),
+              color: AppColors.textSecondary,
               fontSize: 11.8,
             ),
           ),

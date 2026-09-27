@@ -215,8 +215,8 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           fit: BoxFit.cover,
           width: 94,
           height: 94,
-          errorBuilder: (_, __, ___) => const Icon(Icons.person_rounded,
-              color: Colors.white, size: 40),
+          errorBuilder: (_, __, ___) =>  Icon(Icons.person_rounded,
+              color: AppColors.textPrimary, size: 40),
         ),
       );
     }
@@ -226,8 +226,8 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     return Center(
       child: Text(
         initial,
-        style: const TextStyle(
-            color: Colors.white, fontSize: 34, fontWeight: FontWeight.w800),
+        style:  TextStyle(
+            color: AppColors.textPrimary, fontSize: 34, fontWeight: FontWeight.w800),
       ),
     );
   }

@@ -111,7 +111,7 @@ class HelpLegalScreen extends StatelessWidget {
                       'MedWallet MZ — carteira de saúde para Moçambique e 21 outros países. Conteúdo informativo; em emergências liga sempre ao 117 (ISEM).',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.35),
+                        color: AppColors.textMuted,
                         fontSize: 11.5,
                         height: 1.5,
                       ),
@@ -259,7 +259,7 @@ class _FaqCard extends StatelessWidget {
               child: Text(
                 answer,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.62),
+                  color: AppColors.textSecondary,
                   fontSize: 12.8,
                   height: 1.55,
                 ),
@@ -349,7 +349,7 @@ class _ContactChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.07),
+          color: AppColors.glassFill,
           borderRadius: BorderRadius.circular(11),
           border: Border.all(color: Colors.white.withOpacity(0.16)),
         ),

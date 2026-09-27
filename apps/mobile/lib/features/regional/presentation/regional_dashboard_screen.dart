@@ -167,7 +167,7 @@ class _Dashboard extends ConsumerWidget {
           'Crescimento da rede institucional, validação da comunidade e '
           'desempenho do país.',
           style: TextStyle(
-            color: Colors.white.withOpacity(0.55),
+            color: AppColors.textSecondary,
             fontSize: 12.5,
             height: 1.4,
           ),
@@ -439,7 +439,7 @@ class _ReviewCard extends ConsumerWidget {
                     Text(
                       '$label · ${p.city}${p.countryId != 'MZ' ? ' (${p.countryId})' : ''}',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: AppColors.textSecondary,
                         fontSize: 11.5,
                       ),
                     ),
@@ -468,7 +468,7 @@ class _ReviewCard extends ConsumerWidget {
                     errorBuilder: (_, __, ___) => Container(
                       width: 92,
                       height: 86,
-                      color: Colors.white.withOpacity(0.05),
+                      color: AppColors.textMuted,
                       alignment: Alignment.center,
                       child:        Icon(Icons.broken_image_rounded,
                           color: AppColors.textMuted, size: 20),
@@ -509,7 +509,7 @@ class _ReviewCard extends ConsumerWidget {
               child: Text(
                 p.description!,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.55),
+                  color: AppColors.textSecondary,
                   fontSize: 12,
                   height: 1.45,
                 ),
@@ -574,7 +574,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.66),
+                color: AppColors.textPrimary,
                 fontSize: 12.3,
               ),
             ),
@@ -669,7 +669,7 @@ class _KpiPanelState extends ConsumerState<_KpiPanel> {
                             '${formatDateShort(k.recordedAt)}'
                             '${k.previousValue != null ? ' · anterior ${_num(k.previousValue!)}' : ''}',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.45),
+                              color: AppColors.textSecondary,
                               fontSize: 11,
                             ),
                           ),
@@ -802,7 +802,7 @@ class _GoalsPanelState extends ConsumerState<_GoalsPanel> {
                       '${g.goalUnit != null ? ' ${g.goalUnit}' : ''} '
                       '(${g.progress.toStringAsFixed(0)}%)',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: AppColors.textSecondary,
                         fontSize: 11.5,
                       ),
                     ),

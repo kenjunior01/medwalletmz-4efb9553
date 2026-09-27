@@ -767,11 +767,11 @@ class _DonorFormCardState extends ConsumerState<_DonorFormCard> {
                     borderRadius: BorderRadius.circular(12)),
               ),
               child: _saving
-                  ? const SizedBox(
+                  ?  SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white))
+                          strokeWidth: 2, color: AppColors.textPrimary))
                   : const Text('Guardar registo de dador',
                       style: TextStyle(fontWeight: FontWeight.w800)),
             ),
@@ -1123,7 +1123,7 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
                           fontSize: 11.5,
                           fontWeight: FontWeight.w800,
                           color: _urgency == u.$1
-                              ? Colors.white
+                              ? AppColors.textPrimary
                               : AppColors.textSecondary,
                         ),
                         side: BorderSide(
@@ -1179,11 +1179,11 @@ class _CreateRequestSheetState extends ConsumerState<_CreateRequestSheet> {
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   child: _saving
-                      ? const SizedBox(
+                      ?  SizedBox(
                           width: 18,
                           height: 18,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white))
+                              strokeWidth: 2, color: AppColors.textPrimary))
                       : const Text('Publicar pedido',
                           style: TextStyle(fontWeight: FontWeight.w800)),
                 ),

@@ -297,7 +297,7 @@ class _StatCard extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
+                color: AppColors.textSecondary,
                 fontSize: 11,
               ),
             ),
@@ -404,7 +404,7 @@ class _ProposalCard extends StatelessWidget {
                 Text(
                   '$label · ${p.city}',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
+                    color: AppColors.textSecondary,
                     fontSize: 11.5,
                   ),
                 ),
@@ -438,7 +438,7 @@ class _ProposalCard extends StatelessWidget {
                 style: TextStyle(
                   color: p.rewardPaid
                       ? AppColors.success
-                      : Colors.white.withOpacity(0.45),
+                      : AppColors.textSecondary,
                   fontSize: 10.5,
                   fontWeight:
                       p.rewardPaid ? FontWeight.w800 : FontWeight.w400,

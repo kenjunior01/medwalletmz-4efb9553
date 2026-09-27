@@ -245,7 +245,7 @@ class _InstitutionCard extends StatelessWidget {
                   '$typeLabel · ${r.city ?? '—'}'
                   '${r.isActive ? '' : ' · INACTIVA'}',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
+                    color: AppColors.textSecondary,
                     fontSize: 11.3,
                   ),
                 ),
@@ -523,7 +523,7 @@ class _PaymentCard extends StatelessWidget {
                       '${p.payerName ?? 'Pagador desconhecido'} · '
                       '${p.payerPhone ?? '—'}',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: AppColors.textSecondary,
                         fontSize: 11.3,
                       ),
                     ),
@@ -533,7 +533,7 @@ class _PaymentCard extends StatelessWidget {
               Text(
                 formatRelative(p.createdAt),
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.4),
+                  color: AppColors.textMuted,
                   fontSize: 10.5,
                 ),
               ),

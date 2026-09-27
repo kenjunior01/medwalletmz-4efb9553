@@ -358,8 +358,8 @@ class _ContentView extends ConsumerWidget {
                               ),
                               child: Text(
                                 '-${p.discountPercent}% hoje',
-                                style: const TextStyle(
-                                    color: Colors.white,
+                                style:  TextStyle(
+                                    color: AppColors.textPrimary,
                                     fontSize: 11.5,
                                     fontWeight: FontWeight.w900),
                               ),

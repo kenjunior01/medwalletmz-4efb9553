@@ -355,7 +355,7 @@ class _UrgencyTile extends StatelessWidget {
                   Text(
                     label,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.55),
+                      color: AppColors.textSecondary,
                       fontSize: 11,
                     ),
                   ),

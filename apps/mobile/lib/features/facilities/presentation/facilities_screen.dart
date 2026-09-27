@@ -81,7 +81,7 @@ class _FacilitiesScreenState extends ConsumerState<FacilitiesScreen> {
                 'Farmácias, clínicas, hospitais, laboratórios e veterinárias '
                 'perto de ti — pergunta e envia a tua receita pelo chat.',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.55),
+                  color: AppColors.textSecondary,
                   fontSize: 13.5,
                 ),
               ),

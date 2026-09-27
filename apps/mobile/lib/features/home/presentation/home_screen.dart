@@ -519,7 +519,7 @@ class _NextConsultationCard extends StatelessWidget {
                   Text(
                     'Próxima consulta',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+                      color: AppColors.textSecondary,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
                     ),
@@ -889,7 +889,7 @@ class _HealthTipCard extends StatelessWidget {
                   Text(
                     'Dica de saúde · ${article.minutesRead} min de leitura',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.55),
+                      color: AppColors.textSecondary,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.3,
@@ -897,7 +897,7 @@ class _HealthTipCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    article.title,
+                    article.titleIn('pt'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style:        TextStyle(
@@ -908,7 +908,7 @@ class _HealthTipCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    article.excerpt,
+                    article.excerptIn('pt'),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style:        TextStyle(

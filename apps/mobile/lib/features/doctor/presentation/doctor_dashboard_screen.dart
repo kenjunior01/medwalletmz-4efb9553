@@ -586,7 +586,7 @@ class _MiniButton extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: filled ? Colors.white : color,
+            color: filled ? AppColors.textPrimary : color,
             fontSize: 12,
             fontWeight: FontWeight.w800,
           ),

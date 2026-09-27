@@ -230,7 +230,7 @@ class _WalletCardState extends State<WalletCard> {
                     Text(
                       'Saldo',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.75),
+                        color: AppColors.textPrimary,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -241,8 +241,8 @@ class _WalletCardState extends State<WalletCard> {
                 AmountCounter(
                   value: widget.balance,
                   hidden: widget.hidden,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style:  TextStyle(
+                    color: AppColors.textPrimary,
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
                   ),
@@ -250,7 +250,7 @@ class _WalletCardState extends State<WalletCard> {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right_rounded, color: Colors.white70),
+           Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
         ],
       );
 
@@ -267,20 +267,20 @@ class _BrandBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
+        color: AppColors.glassFillStrong,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.white.withOpacity(0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.health_and_safety_rounded,
-              size: 14, color: Colors.white),
+           Icon(Icons.health_and_safety_rounded,
+              size: 14, color: AppColors.textPrimary),
           const SizedBox(width: 6),
           Text(
             'MedWallet',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.textPrimary,
               fontSize: compact ? 11 : 12.5,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.3,
@@ -307,10 +307,10 @@ class _IconPill extends StatelessWidget {
         height: 36,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withOpacity(0.12),
+          color: AppColors.glassFillStrong,
           border: Border.all(color: Colors.white.withOpacity(0.18)),
         ),
-        child: Icon(icon, size: 18, color: Colors.white),
+        child: Icon(icon, size: 18, color: AppColors.textPrimary),
       ),
     );
   }

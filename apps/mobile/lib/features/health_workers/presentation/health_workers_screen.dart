@@ -408,7 +408,7 @@ class _Avatar extends StatelessWidget {
           style: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: size * 0.36,
-            color: Colors.white,
+            color: AppColors.textPrimary,
           ),
         ),
       );

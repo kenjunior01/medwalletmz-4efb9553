@@ -132,7 +132,7 @@ class _BannerView extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.72),
+                        color: AppColors.textPrimary,
                         fontSize: 12.5,
                         height: 1.3,
                       ),
@@ -143,7 +143,7 @@ class _BannerView extends StatelessWidget {
               IconButton(
                 onPressed: onDismiss,
                 icon: Icon(Icons.close_rounded,
-                    size: 18, color: Colors.white.withOpacity(0.5)),
+                    size: 18, color: AppColors.textSecondary),
               ),
             ],
           ),

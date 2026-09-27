@@ -140,7 +140,7 @@ class TriageResultScreen extends ConsumerWidget {
                                 'Analisado pelo motor local (IA offline '
                                 'indisponível)',
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.45),
+                                  color: AppColors.textSecondary,
                                   fontSize: 10.5,
                                 ),
                               ),
@@ -234,7 +234,7 @@ class TriageResultScreen extends ConsumerWidget {
                 'Orientação informativa — não substitui consulta médica.\n'
                 'Emergências: 117 ou 84 146 (INAS).',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.4),
+                  color: AppColors.textMuted,
                   fontSize: 11,
                   height: 1.5,
                 ),
@@ -266,7 +266,7 @@ class TriageResultScreen extends ConsumerWidget {
                     return Text(
                       'As tuas triagens anteriores aparecem aqui.',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.45),
+                        color: AppColors.textSecondary,
                         fontSize: 12.5,
                       ),
                     );
@@ -478,7 +478,7 @@ class _HistoryCard extends StatelessWidget {
                   '${formatDateShort(log.createdAt)} · '
                   '${log.suggestedSpecialty ?? 'sem especialidade'}',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.45),
+                    color: AppColors.textSecondary,
                     fontSize: 11,
                   ),
                 ),

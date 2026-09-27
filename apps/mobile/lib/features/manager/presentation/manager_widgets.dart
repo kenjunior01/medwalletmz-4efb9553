@@ -48,7 +48,7 @@ class StatCard extends StatelessWidget {
                 Text(
                   sub!,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: AppColors.textMuted,
                     fontSize: 10,
                   ),
                 ),
@@ -69,7 +69,7 @@ class StatCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: AppColors.textSecondary,
               fontSize: 11,
             ),
           ),
@@ -98,13 +98,13 @@ class KeyValueRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 14, color: Colors.white.withOpacity(0.45)),
+            Icon(icon, size: 14, color: AppColors.textSecondary),
             const SizedBox(width: 7),
           ],
           Text(
             key_,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.45),
+              color: AppColors.textSecondary,
               fontSize: 12,
             ),
           ),
@@ -153,7 +153,7 @@ class SectionTitle extends StatelessWidget {
             Text(
               subtitle!,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
+                color: AppColors.textSecondary,
                 fontSize: 12,
                 height: 1.4,
               ),
@@ -198,8 +198,8 @@ class FilterChip2 extends StatelessWidget {
           label,
           style: TextStyle(
             color: selected
-                ? Colors.white
-                : Colors.white.withOpacity(0.55),
+                ? AppColors.textPrimary
+                : AppColors.textSecondary,
             fontSize: 12,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
           ),

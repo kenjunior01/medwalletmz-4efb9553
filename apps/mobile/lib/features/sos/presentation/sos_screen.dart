@@ -648,7 +648,7 @@ class _ActiveAlertCard extends StatelessWidget {
       ),
     ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(
           duration: 1600.ms,
-          color: Colors.white.withOpacity(0.06),
+          color: AppColors.textMuted,
         );
   }
 }

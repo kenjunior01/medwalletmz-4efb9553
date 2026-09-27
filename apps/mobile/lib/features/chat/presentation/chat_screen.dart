@@ -341,7 +341,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 'foto da tua receita — sem expor produtos, sem catálogos.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: AppColors.textSecondary,
                   fontSize: 12.5,
                   height: 1.5,
                 ),
@@ -510,7 +510,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
             return Container(
               width: 190,
               height: 130,
-              color: Colors.white.withOpacity(0.06),
+              color: AppColors.textMuted,
               child:        Center(
                 child: SizedBox(
                   width: 20,
@@ -526,7 +526,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
             return Container(
               width: 190,
               height: 80,
-              color: Colors.white.withOpacity(0.06),
+              color: AppColors.textMuted,
               alignment: Alignment.center,
               child:        Text(
                 'Anexo indisponível',
@@ -543,7 +543,7 @@ class _AttachmentState extends ConsumerState<_Attachment> {
               errorBuilder: (_, __, ___) => Container(
                 width: 190,
                 height: 80,
-                color: Colors.white.withOpacity(0.06),
+                color: AppColors.textMuted,
                 alignment: Alignment.center,
                 child:        Text(
                   'Anexo indisponível',

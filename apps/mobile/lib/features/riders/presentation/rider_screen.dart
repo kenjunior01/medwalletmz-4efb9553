@@ -628,12 +628,12 @@ class _HeroChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
+        color: AppColors.glassFillStrong,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(text,
-          style: const TextStyle(
-              color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+          style:  TextStyle(
+              color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.w600)),
     );
   }
 }
@@ -1056,19 +1056,19 @@ class _EarnStat extends StatelessWidget {
         children: [
           Text(label.toUpperCase(),
               style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: AppColors.textSecondary,
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.6)),
           const SizedBox(height: 3),
           Text(value,
-              style: const TextStyle(
-                  color: Colors.white,
+              style:  TextStyle(
+                  color: AppColors.textPrimary,
                   fontSize: 16.5,
                   fontWeight: FontWeight.w800)),
           Text(sub,
               style: TextStyle(
-                  color: Colors.white.withOpacity(0.55), fontSize: 10.5)),
+                  color: AppColors.textSecondary, fontSize: 10.5)),
         ],
       ),
     );

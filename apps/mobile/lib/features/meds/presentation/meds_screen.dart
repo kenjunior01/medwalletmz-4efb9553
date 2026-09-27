@@ -377,7 +377,7 @@ class _TodayCard extends StatelessWidget {
               ),
               child: Icon(
                 done ? Icons.check_rounded : Icons.radio_button_unchecked,
-                color: done ? Colors.white : AppColors.textMuted,
+                color: done ? AppColors.textPrimary : AppColors.textMuted,
                 size: done ? 20 : 22,
               ),
             ),
@@ -391,7 +391,7 @@ class _TodayCard extends StatelessWidget {
                   name,
                   style: TextStyle(
                     color: skipped
-                        ? Colors.white.withOpacity(0.4)
+                        ? AppColors.textMuted
                         : AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
                     fontSize: 13.5,
@@ -406,7 +406,7 @@ class _TodayCard extends StatelessWidget {
                       if (frequency?.isNotEmpty == true) frequency!,
                     ].join(' · '),
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.45),
+                      color: AppColors.textSecondary,
                       fontSize: 11.5,
                     ),
                   ),
@@ -524,7 +524,7 @@ class _WeekDots extends StatelessWidget {
               Text(
                 weekLetters[d.weekday % 7],
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.4),
+                  color: AppColors.textMuted,
                   fontSize: 10.5,
                 ),
               ),
@@ -543,7 +543,7 @@ class _WeekDots extends StatelessWidget {
               Text(
                 '${d.day}',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.4),
+                  color: AppColors.textMuted,
                   fontSize: 9.5,
                 ),
               ),
@@ -683,7 +683,7 @@ class _AdherenceHeatmap extends StatelessWidget {
                         ? Text(
                             monthLabels[w]!,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.35),
+                              color: AppColors.textMuted,
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
                             ),
@@ -711,7 +711,7 @@ class _AdherenceHeatmap extends StatelessWidget {
                         child: Text(
                           dowLetters[d],
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.28),
+                            color: AppColors.textMuted,
                             fontSize: 8,
                           ),
                         ),
@@ -769,7 +769,7 @@ class _AdherenceHeatmap extends StatelessWidget {
               Text(
                 'Tomas registadas por dia',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.35),
+                  color: AppColors.textMuted,
                   fontSize: 10,
                 ),
               ),
@@ -777,7 +777,7 @@ class _AdherenceHeatmap extends StatelessWidget {
               Text(
                 'menos',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.28),
+                  color: AppColors.textMuted,
                   fontSize: 9,
                 ),
               ),
@@ -796,7 +796,7 @@ class _AdherenceHeatmap extends StatelessWidget {
               Text(
                 'mais',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.28),
+                  color: AppColors.textMuted,
                   fontSize: 9,
                 ),
               ),
@@ -809,7 +809,7 @@ class _AdherenceHeatmap extends StatelessWidget {
                 'Sem tomas registadas nesta janela — marca a primeira '
                 'toma para ver o mapa ganhar cor.',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
+                  color: AppColors.textMuted,
                   fontSize: 10,
                 ),
               ),
@@ -914,7 +914,7 @@ class _MedTrends extends StatelessWidget {
                               med.frequency!,
                           ].join(' · '),
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.45),
+                            color: AppColors.textSecondary,
                             fontSize: 11.5,
                           ),
                         ),
@@ -937,7 +937,7 @@ class _MedTrends extends StatelessWidget {
                       Text(
                         'consistência',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.35),
+                          color: AppColors.textMuted,
                           fontSize: 9,
                         ),
                       ),
@@ -952,7 +952,7 @@ class _MedTrends extends StatelessWidget {
               '${takenLogs.length == 1 ? '' : 's'} '
               'registada${takenLogs.length == 1 ? '' : 's'} · $lastLabel',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.45),
+                color: AppColors.textSecondary,
                 fontSize: 11,
               ),
             ),
@@ -975,7 +975,7 @@ class _MedTrends extends StatelessWidget {
                             color: taken
                                 ? AppColors.success
                                     .withOpacity(0.85)
-                                : Colors.white.withOpacity(0.05),
+                                : AppColors.glassFill,
                             borderRadius:
                                 BorderRadius.circular(4),
                             border: i == 0
@@ -994,7 +994,7 @@ class _MedTrends extends StatelessWidget {
                 Text(
                   '14 dias',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.3),
+                    color: AppColors.textMuted,
                     fontSize: 9,
                   ),
                 ),

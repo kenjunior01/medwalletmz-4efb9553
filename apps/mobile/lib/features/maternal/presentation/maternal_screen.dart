@@ -200,13 +200,13 @@ class _Stat extends StatelessWidget {
       child: Column(
         children: [
           Text(value,
-              style: const TextStyle(
+              style:  TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white)),
+                  color: AppColors.textPrimary)),
           Text(label,
               style: TextStyle(
-                  fontSize: 11, color: Colors.white.withOpacity(0.75))),
+                  fontSize: 11, color: AppColors.textPrimary)),
         ],
       ),
     );

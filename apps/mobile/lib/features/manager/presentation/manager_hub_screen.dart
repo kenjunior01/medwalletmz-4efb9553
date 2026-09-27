@@ -189,7 +189,7 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       text.toUpperCase(),
       style: TextStyle(
-        color: Colors.white.withOpacity(0.45),
+        color: AppColors.textSecondary,
         fontSize: 11,
         fontWeight: FontWeight.w800,
         letterSpacing: 1.2,

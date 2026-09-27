@@ -191,8 +191,8 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
             ),
             child: Text(
               n,
-              style: const TextStyle(
-                color: Colors.white,
+              style:  TextStyle(
+                color: AppColors.textPrimary,
                 fontSize: 10,
                 fontWeight: FontWeight.w900,
               ),

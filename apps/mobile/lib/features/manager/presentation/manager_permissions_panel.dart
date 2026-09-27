@@ -326,7 +326,7 @@ class _LimitCard extends StatelessWidget {
               Text(
                 unlimited ? '$value · sem limite' : '$value / $limit',
                 style: TextStyle(
-                  color: nearLimit ? color : Colors.white.withOpacity(0.6),
+                  color: nearLimit ? color : AppColors.textSecondary,
                   fontSize: 11.5,
                   fontWeight: FontWeight.w800,
                 ),

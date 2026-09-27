@@ -200,7 +200,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                   '(falta a chave MAPS_API_KEY). Introduz as coordenadas '
                   'manualmente — podes copiá-las do Google Maps.',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.55),
+                    color: AppColors.textSecondary,
                     fontSize: 13,
                     height: 1.5,
                   ),

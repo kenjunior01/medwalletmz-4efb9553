@@ -602,7 +602,7 @@ class _CheckInSheetState extends ConsumerState<_CheckInSheet> {
                       labelStyle: TextStyle(
                         fontSize: 11.5,
                         color: _symptoms.contains(s)
-                            ? Colors.white
+                            ? AppColors.textPrimary
                             : AppColors.textSecondary,
                       ),
                       side: BorderSide(
@@ -645,11 +645,11 @@ class _CheckInSheetState extends ConsumerState<_CheckInSheet> {
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   child: _saving
-                      ? const SizedBox(
+                      ?  SizedBox(
                           width: 18,
                           height: 18,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white))
+                              strokeWidth: 2, color: AppColors.textPrimary))
                       : const Text('Guardar check-in',
                           style: TextStyle(fontWeight: FontWeight.w800)),
                 ),

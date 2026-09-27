@@ -291,7 +291,7 @@ class _LiveMapCard extends StatelessWidget {
                           fontSize: 10.5,
                           fontWeight: FontWeight.w700,
                           color: live
-                              ? Colors.white
+                              ? AppColors.textPrimary
                               : AppColors.textSecondary),
                     ),
                   ],

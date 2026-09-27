@@ -490,7 +490,7 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
             Text(
               'Nenhum registado — adiciona abaixo',
               style: TextStyle(
-                  color: Colors.white.withOpacity(0.35), fontSize: 12.5),
+                  color: AppColors.textMuted, fontSize: 12.5),
             ),
           const SizedBox(height: 10),
           Row(

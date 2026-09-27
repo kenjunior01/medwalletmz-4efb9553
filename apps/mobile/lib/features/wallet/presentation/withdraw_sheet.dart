@@ -288,7 +288,7 @@ class _WithdrawSheetState extends ConsumerState<WithdrawSheet> {
           width: 44,
           height: 5,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.18),
+            color: AppColors.glassHighlight,
             borderRadius: BorderRadius.circular(3),
           ),
         ),

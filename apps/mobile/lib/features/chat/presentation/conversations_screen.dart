@@ -75,7 +75,7 @@ class ConversationsScreen extends ConsumerWidget {
                     'Tudo o que é conversa na MedWallet num só lugar — em '
                     'tempo real.',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.55),
+                      color: AppColors.textSecondary,
                       fontSize: 13,
                     ),
                   ),
@@ -239,8 +239,8 @@ class _MiniBadge extends StatelessWidget {
       ),
       child: Text(
         '$count',
-        style: const TextStyle(
-          color: Colors.white,
+        style:  TextStyle(
+          color: AppColors.textPrimary,
           fontSize: 10,
           fontWeight: FontWeight.w800,
         ),

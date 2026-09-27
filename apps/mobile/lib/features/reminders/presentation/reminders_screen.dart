@@ -258,7 +258,7 @@ class _MasterToggle extends StatelessWidget {
                 Text(
                   'Avisos no telemóvel, mesmo sem internet',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.55),
+                    color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -469,7 +469,7 @@ class _AdherenceCard extends StatelessWidget {
               Text(
                 'Última semana: ',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: AppColors.textSecondary,
                   fontSize: 12,
                 ),
               ),
@@ -687,7 +687,7 @@ class _SlotRow extends StatelessWidget {
                     ? AppColors.success.withOpacity(0.14)
                     : isNext
                         ? AppColors.accent.withOpacity(0.16)
-                        : Colors.white.withOpacity(0.05),
+                        : AppColors.glassFill,
               ),
               child: Text(
                 '$hh:00',
@@ -713,7 +713,7 @@ class _SlotRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: taken
-                          ? Colors.white.withOpacity(0.55)
+                          ? AppColors.textSecondary
                           : AppColors.textPrimary,
                       fontSize: 14.5,
                       fontWeight: FontWeight.w700,
@@ -725,7 +725,7 @@ class _SlotRow extends StatelessWidget {
                     Text(
                       med.dosage!,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.45),
+                        color: AppColors.textSecondary,
                         fontSize: 12,
                       ),
                     ),
@@ -759,7 +759,7 @@ class _SlotRow extends StatelessWidget {
               icon: Icon(
                 Icons.volume_off_rounded,
                 size: 20,
-                color: Colors.white.withOpacity(0.35),
+                color: AppColors.textMuted,
               ),
             ),
             // Estado
@@ -772,7 +772,7 @@ class _SlotRow extends StatelessWidget {
                     ? AppColors.success.withOpacity(0.2)
                     : skipped
                         ? AppColors.danger.withOpacity(0.15)
-                        : Colors.white.withOpacity(0.06),
+                        : AppColors.glassFill,
                 border: Border.all(
                   color: taken
                       ? AppColors.success
@@ -791,7 +791,7 @@ class _SlotRow extends StatelessWidget {
                     ? AppColors.success
                     : skipped
                         ? AppColors.danger
-                        : Colors.white.withOpacity(0.5),
+                        : AppColors.textSecondary,
                 size: 19,
               ),
             ),

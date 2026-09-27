@@ -306,7 +306,7 @@ class _KpiCard extends StatelessWidget {
                 Text(
                   'meta ${k.targetValue!.toStringAsFixed(0)}',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.45),
+                    color: AppColors.textSecondary,
                     fontSize: 11.5,
                   ),
                 ),
@@ -589,7 +589,7 @@ class _GoalCard extends StatelessWidget {
                 '${g.goalValue.toStringAsFixed(0)}'
                 '${g.goalUnit == null ? '' : ' ${g.goalUnit}'}',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.55),
+                  color: AppColors.textSecondary,
                   fontSize: 11.5,
                 ),
               ),
@@ -1521,7 +1521,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
                           decoration: InputDecoration(
                             labelText: e.key,
                             labelStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.45),
+                                color: AppColors.textSecondary,
                                 fontSize: 10.5),
                           ),
                         ),
@@ -1575,7 +1575,7 @@ class _ConfigPanelState extends ConsumerState<ConfigPanel> {
                 Text(
                   'Paletas rápidas',
                   style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
+                      color: AppColors.textSecondary,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w700),
                 ),
@@ -1716,7 +1716,7 @@ class _ColorSwatch extends StatelessWidget {
             decoration: InputDecoration(
               labelText: label,
               labelStyle: TextStyle(
-                  color: Colors.white.withOpacity(0.45), fontSize: 10),
+                  color: AppColors.textSecondary, fontSize: 10),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             ),

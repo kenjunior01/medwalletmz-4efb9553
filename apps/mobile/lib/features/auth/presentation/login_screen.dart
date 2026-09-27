@@ -212,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Text(
             'Ainda não tens conta?',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.55),
+              color: AppColors.textSecondary,
               fontSize: 13.5,
             ),
           ),

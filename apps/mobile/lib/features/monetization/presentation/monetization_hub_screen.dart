@@ -337,13 +337,13 @@ class _RefStat extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(value,
-              style: const TextStyle(
-                  color: Colors.white,
+              style:  TextStyle(
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w900,
                   fontSize: 16)),
           Text(label,
               style: TextStyle(
-                  color: Colors.white.withOpacity(0.65), fontSize: 10)),
+                  color: AppColors.textPrimary, fontSize: 10)),
         ],
       ),
     );

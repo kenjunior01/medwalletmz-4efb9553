@@ -397,13 +397,13 @@ class _Stat extends StatelessWidget {
     return Column(
       children: [
         Text(value,
-            style: const TextStyle(
-                color: Colors.white,
+            style:  TextStyle(
+                color: AppColors.textPrimary,
                 fontSize: 19,
                 fontWeight: FontWeight.w800)),
         const SizedBox(height: 2),
         Text(label,
-            style: const TextStyle(color: Colors.white70, fontSize: 10.5)),
+            style:  TextStyle(color: AppColors.textSecondary, fontSize: 10.5)),
       ],
     );
   }
@@ -428,7 +428,7 @@ class _InviteRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.055),
+        color: AppColors.glassFill,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withOpacity(0.09)),
       ),

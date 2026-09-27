@@ -209,7 +209,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.18),
+                  color: AppColors.glassHighlight,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -241,7 +241,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                       decoration: BoxDecoration(
                         color: m.iReacted(emoji, _myId)
                             ? AppColors.accent.withOpacity(0.22)
-                            : Colors.white.withOpacity(0.06),
+                            : AppColors.glassFill,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                           color: m.iReacted(emoji, _myId)
@@ -309,7 +309,7 @@ class _CircleChatScreenState extends ConsumerState<CircleChatScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.18),
+                  color: AppColors.glassHighlight,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),

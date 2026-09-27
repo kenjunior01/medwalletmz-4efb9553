@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/skeleton.dart';
+import '../data/education_quizzes.dart';
 import '../data/offline_articles.dart';
 
 /// ── Modelos ──────────────────────────────────────────────────────────
@@ -15,7 +16,7 @@ import '../data/offline_articles.dart';
 /// Artigo de educação em saúde (`health_articles` — leitura pública
 /// das linhas publicadas).
 class HealthArticle {
-   const HealthArticle({
+  const HealthArticle({
     required this.id,
     required this.title,
     required this.excerpt,
@@ -27,6 +28,7 @@ class HealthArticle {
     this.readMinutes = 3,
     this.isFeatured = false,
     this.viewsCount = 0,
+    this.isOffline = false,
   });
 
   final String id;
@@ -40,6 +42,9 @@ class HealthArticle {
   final int readMinutes;
   final bool isFeatured;
   final int viewsCount;
+
+  /// F35: guia embutido multilingue (renderiza na língua escolhida).
+  final bool isOffline;
 
   static const _cats = {
     'prevention': 'Prevenção',
@@ -70,11 +75,12 @@ class HealthArticle {
   /// para o leitor tratar as duas origens da mesma forma.
   factory HealthArticle.fromOffline(OfflineArticle o) => HealthArticle(
         id: o.id,
-        title: o.title,
-        excerpt: o.excerpt,
+        title: o.titleIn('pt'),
+        excerpt: o.excerptIn('pt'),
         category: o.category,
-        bodyMd: o.paragraphs.join('\n\n'),
+        bodyMd: o.paragraphsIn('pt').join('\n\n'),
         readMinutes: o.minutesRead,
+        isOffline: true,
       );
 
   factory HealthArticle.fromJson(Map<String, dynamic> j) => HealthArticle(
@@ -95,8 +101,9 @@ class HealthArticle {
 /// ── Ecrã ─────────────────────────────────────────────────────────────
 
 /// Educação em saúde: artigos publicados pela plataforma (paridade com
-/// a página /educacao da web). Cada leitura é contabilizada em
-/// `article_views`.
+/// a página /educacao da web) + guias essenciais multilingues embutidos
+/// (pt, emakhuwa, tsonga, changana, sena) + quizzes Pulse points.
+/// Cada leitura é contabilizada em `article_views`.
 class HealthHubScreen extends ConsumerStatefulWidget {
   const HealthHubScreen({super.key});
 
@@ -111,6 +118,13 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
   String? _error;
   HealthArticle? _reading;
   String _search = '';
+
+  // F35: língua dos guias offline + progresso Pulse
+  String _lang = 'pt';
+  final PulseProgress _progress = PulseProgress();
+  bool _progressReady = false;
+
+  static const _kLangPref = 'edu.lang';
 
   static const _categories = <(String?, String)>[
     (null, 'Todas'),
@@ -128,6 +142,23 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
   void initState() {
     super.initState();
     _load();
+    _loadPrefs();
+  }
+
+  Future<void> _loadPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    await _progress.load();
+    if (!mounted) return;
+    setState(() {
+      _lang = prefs.getString(_kLangPref) ?? 'pt';
+      _progressReady = true;
+    });
+  }
+
+  Future<void> _setLang(String lang) async {
+    setState(() => _lang = lang);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kLangPref, lang);
   }
 
   Future<void> _load() async {
@@ -163,7 +194,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
   /// Lista visível: artigos da BD (se houver rede) filtrados pela busca;
   /// em caso de falha/sem dados, os guias embutidos entram em cena.
   List<HealthArticle> get _dbVisible {
-    final list = _articles ??        <HealthArticle>[];
+    final list = _articles ?? <HealthArticle>[];
     if (_search.isEmpty) return list;
     final q = _search.toLowerCase();
     return list
@@ -181,22 +212,26 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
     if (_search.isNotEmpty) {
       final q = _search.toLowerCase();
       list = list.where((a) =>
-          a.title.toLowerCase().contains(q) ||
-          a.excerpt.toLowerCase().contains(q));
+          a.titleIn(_lang).toLowerCase().contains(q) ||
+          a.titleIn('pt').toLowerCase().contains(q) ||
+          a.excerptIn(_lang).toLowerCase().contains(q));
     }
     return list.map(HealthArticle.fromOffline).toList();
   }
 
-  bool get _showOfflineSection {
-    if (_loading) return false;
-    if (_error != null) return true; // sem rede → só os guias embutidos
-    if (_dbVisible.isEmpty) return true;
-    return false;
+  /// Título/resumo na língua escolhida (guias offline) ou original (BD).
+  String _titleOf(HealthArticle a) {
+    if (!a.isOffline) return a.title;
+    final o = kOfflineArticles.firstWhere(
+      (x) => x.id == a.id,
+      orElse: () => kOfflineArticles.first,
+    );
+    return o.titleIn(_lang);
   }
 
   Future<void> _shareArticle(HealthArticle a) async {
     final link = 'https://medwalletmz.online/health/education/${a.id}';
-    final text = '${a.title}\n\n${a.excerpt}\n\n$link';
+    final text = '${_titleOf(a)}\n\n${a.excerpt}\n\n$link';
     try {
       await Clipboard.setData(ClipboardData(text: text));
       if (!mounted) return;
@@ -237,10 +272,10 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                   children: [
                     IconButton(
                       onPressed: () => Navigator.of(context).maybePop(),
-                      icon:        Icon(Icons.arrow_back_rounded,
+                      icon: Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
-                           Expanded(
+                    Expanded(
                       child: Text(
                         'Educação em saúde',
                         style: TextStyle(
@@ -250,36 +285,54 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                         ),
                       ),
                     ),
+                    if (_progressReady) _PulseBadge(progress: _progress),
+                    const SizedBox(width: 4),
                     IconButton(
                       onPressed: _load,
-                      icon:        Icon(Icons.refresh_rounded,
+                      icon: Icon(Icons.refresh_rounded,
                           color: AppColors.textSecondary),
                     ),
                   ],
                 ),
               ),
+              // F35: selector de língua dos guias (paridade web: 5 línguas)
+              SizedBox(
+                height: 40,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: [
+                    for (final (code, label) in kEducationLanguages)
+                      _LangChip(
+                        label: label,
+                        selected: _lang == code,
+                        onTap: () => _setLang(code),
+                      ),
+                  ],
+                ),
+              ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
                 child: TextField(
                   onChanged: (v) => setState(() => _search = v.trim()),
-                  style:        TextStyle(
+                  style: TextStyle(
                       color: AppColors.textPrimary, fontSize: 13.5),
                   decoration: InputDecoration(
                     hintText: 'Buscar artigos… (malária, gravidez, TB…)',
-                    hintStyle:        TextStyle(
+                    hintStyle: TextStyle(
                         color: AppColors.textMuted, fontSize: 12.5),
-                    prefixIcon:        Icon(Icons.search_rounded,
+                    prefixIcon: Icon(Icons.search_rounded,
                         color: AppColors.textMuted, size: 20),
                     isDense: true,
                     filled: true,
                     fillColor: AppColors.glassFill,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide:        BorderSide(color: AppColors.glassBorder),
+                      borderSide: BorderSide(color: AppColors.glassBorder),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide:        BorderSide(color: AppColors.glassBorder),
+                      borderSide: BorderSide(color: AppColors.glassBorder),
                     ),
                   ),
                 ),
@@ -327,7 +380,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
 
     if (db.isEmpty && offline.isEmpty) {
       return ListView(
-        children:        [
+        children: [
           EmptyState(
             icon: Icons.menu_book_rounded,
             title: 'Ainda sem artigos',
@@ -344,20 +397,20 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
         margin: const EdgeInsets.fromLTRB(20, 12, 20, 4),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFFF59E0B).withOpacity(0.12),
+          color: AppColors.warning.withOpacity(0.12),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.4)),
+          border:
+              Border.all(color: AppColors.warning.withOpacity(0.4)),
         ),
         child: Row(
           children: [
-            const Icon(Icons.wifi_off_rounded,
-                color: Color(0xFFF59E0B), size: 18),
+            Icon(Icons.wifi_off_rounded, color: AppColors.warning, size: 18),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 'Sem internet — a mostrar os guias essenciais incluídos na app.',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
+                  color: AppColors.textSecondary,
                   fontSize: 12,
                   height: 1.4,
                 ),
@@ -369,7 +422,12 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
     }
     children.addAll([
       for (final a in db)
-        _ArticleCard(article: a, onTap: () => _open(a)),
+        _ArticleCard(
+          article: a,
+          lang: _lang,
+          read: _progress.readIds.contains(a.id),
+          onTap: () => _open(a),
+        ),
     ]);
     if (offline.isNotEmpty &&
         (onlyOffline || (_search.isEmpty && _category == null))) {
@@ -378,15 +436,19 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
           padding: const EdgeInsets.fromLTRB(0, 14, 0, 4),
           child: Row(
             children: [
-                     Icon(Icons.download_for_offline_outlined,
+              Icon(Icons.download_for_offline_outlined,
                   color: AppColors.accent, size: 18),
               const SizedBox(width: 8),
-              Text(
-                'Guias essenciais · sempre disponíveis',
-                style:        TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w800,
+              Expanded(
+                child: Text(
+                  'Guias essenciais · sempre disponíveis · ${kEducationLanguages.map((e) => e.$2).join(' · ')}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ],
@@ -394,7 +456,13 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
         ));
       }
       children.addAll([
-        for (final a in offline) _ArticleCard(article: a, onTap: () => _open(a)),
+        for (final a in offline)
+          _ArticleCard(
+            article: a,
+            lang: _lang,
+            read: _progress.readIds.contains(a.id),
+            onTap: () => _open(a),
+          ),
       ]);
     }
     return RefreshIndicator(
@@ -410,8 +478,12 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
   Future<void> _open(HealthArticle a) async {
     setState(() => _reading = a);
     _trackView(a.id);
+    if (_progressReady) {
+      await _progress.markRead(a.id);
+      if (mounted) setState(() {});
+    }
     // Corpo completo (a lista traz só o excerpt se a BD limitar campos).
-    if (a.bodyMd == null || a.bodyMd!.isEmpty) {
+    if (!a.isOffline && (a.bodyMd == null || a.bodyMd!.isEmpty)) {
       try {
         final rows = await Supabase.instance.client
             .from('health_articles')
@@ -440,8 +512,8 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
   }
 
   Widget _reader(HealthArticle a) {
-    final paragraphs =
-        (a.bodyMd ?? a.excerpt).split(RegExp(r'\n{2,}'));
+    final paragraphs = _readerParagraphs(a);
+    final quiz = quizFor(a.id);
     return Scaffold(
       body: AppBackground(
         child: SafeArea(
@@ -455,13 +527,13 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                   children: [
                     IconButton(
                       onPressed: () => setState(() => _reading = null),
-                      icon:        Icon(Icons.arrow_back_rounded,
+                      icon: Icon(Icons.arrow_back_rounded,
                           color: AppColors.textPrimary),
                     ),
                     Expanded(
                       child: Text(
                         a.categoryLabel,
-                        style:        TextStyle(
+                        style: TextStyle(
                           color: AppColors.textMuted,
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -470,7 +542,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                     ),
                     IconButton(
                       onPressed: () => _shareArticle(a),
-                      icon:        Icon(Icons.ios_share_rounded,
+                      icon: Icon(Icons.ios_share_rounded,
                           color: AppColors.textSecondary, size: 20),
                       tooltip: 'Partilhar',
                     ),
@@ -482,8 +554,8 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                   padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
                   children: [
                     Text(
-                      a.title,
-                      style:        TextStyle(
+                      _titleOf(a),
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 23,
                         fontWeight: FontWeight.w800,
@@ -512,9 +584,14 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                         const SizedBox(width: 10),
                         Text(
                           '${a.readMinutes} min de leitura',
-                          style:        TextStyle(
+                          style: TextStyle(
                               color: AppColors.textMuted, fontSize: 11.5),
                         ),
+                        if (a.isOffline) ...[
+                          const SizedBox(width: 10),
+                          Icon(Icons.wifi_off_rounded,
+                              color: AppColors.textMuted, size: 13),
+                        ],
                       ],
                     ),
                     if (a.authorName != null) ...[
@@ -522,7 +599,7 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                       Text(
                         'Por ${a.authorName}'
                         '${a.authorCredentials != null ? ' · ${a.authorCredentials}' : ''}',
-                        style:        TextStyle(
+                        style: TextStyle(
                             color: AppColors.textMuted, fontSize: 11.5),
                       ),
                     ],
@@ -534,17 +611,25 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
                           child: Text(
                             p.trim().replaceAll(RegExp(r'^#+\s*'), ''),
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.78),
+                              color: AppColors.textSecondary,
                               fontSize: 14.5,
                               height: 1.65,
                             ),
                           ),
                         ),
+                    if (quiz != null) ...[
+                      const SizedBox(height: 8),
+                      _QuizCard(
+                        quiz: quiz,
+                        progress: _progress,
+                        onScored: () => setState(() {}),
+                      ),
+                    ],
                     const SizedBox(height: 10),
                     Text(
                       'Conteúdo informativo — não substitui a consulta médica. Em emergência, usa o SOS da app ou liga 117.',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.38),
+                        color: AppColors.textMuted,
                         fontSize: 11.5,
                         height: 1.5,
                       ),
@@ -558,10 +643,105 @@ class _HealthHubScreenState extends ConsumerState<HealthHubScreen> {
       ),
     );
   }
+
+  /// Parágrafos na língua escolhida para guias offline; conteúdo BD original.
+  List<String> _readerParagraphs(HealthArticle a) {
+    if (!a.isOffline) return (a.bodyMd ?? a.excerpt).split(RegExp(r'\n{2,}'));
+    final o = kOfflineArticles.firstWhere(
+      (x) => x.id == a.id,
+      orElse: () => kOfflineArticles.first,
+    );
+    return o.paragraphsIn(_lang);
+  }
+}
+
+/// ── Widgets privados ─────────────────────────────────────────────────
+
+/// Chip de língua (selector F35).
+class _LangChip extends StatelessWidget {
+  const _LangChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          gradient: selected
+              ? LinearGradient(colors: AppColors.buttonGradient)
+              : null,
+          color: selected ? null : AppColors.glassFill,
+          borderRadius: BorderRadius.circular(11),
+          border: Border.all(
+            color: selected ? Colors.white24 : AppColors.glassBorder,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.white : AppColors.textSecondary,
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Badge de pontos Pulse no cabeçalho.
+class _PulseBadge extends StatelessWidget {
+  const _PulseBadge({required this.progress});
+
+  final PulseProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: AppColors.accent.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.accent.withOpacity(0.35)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.bolt_rounded, color: AppColors.accent, size: 15),
+          const SizedBox(width: 3),
+          Text(
+            '${progress.points}',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 12.5,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          if (progress.streakDays > 1) ...[
+            const SizedBox(width: 6),
+            Text(
+              '🔥${progress.streakDays}',
+              style: const TextStyle(fontSize: 11),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 class _CatChip extends StatelessWidget {
-   const _CatChip({
+  const _CatChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -580,7 +760,7 @@ class _CatChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
         decoration: BoxDecoration(
           gradient: selected
-              ?        LinearGradient(colors: AppColors.buttonGradient)
+              ? LinearGradient(colors: AppColors.buttonGradient)
               : null,
           color: selected ? null : AppColors.glassFill,
           borderRadius: BorderRadius.circular(12),
@@ -602,14 +782,32 @@ class _CatChip extends StatelessWidget {
 }
 
 class _ArticleCard extends StatelessWidget {
-   const _ArticleCard({required this.article, required this.onTap});
+  const _ArticleCard({
+    required this.article,
+    required this.lang,
+    required this.read,
+    required this.onTap,
+  });
 
   final HealthArticle article;
+  final String lang;
+  final bool read;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final a = article;
+    // Guias offline: localizar título/resumo na língua escolhida.
+    String title = a.title;
+    String excerpt = a.excerpt;
+    if (a.isOffline) {
+      final o = kOfflineArticles.firstWhere(
+        (x) => x.id == a.id,
+        orElse: () => kOfflineArticles.first,
+      );
+      title = o.titleIn(lang);
+      excerpt = o.excerptIn(lang);
+    }
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -642,23 +840,31 @@ class _ArticleCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                if (a.isFeatured)
-                         Icon(Icons.star_rounded,
+                if (quizFor(a.id) != null) ...[
+                  Icon(Icons.bolt_rounded,
+                      color: AppColors.accent, size: 15),
+                  const SizedBox(width: 4),
+                ],
+                if (read)
+                  Icon(Icons.check_circle_rounded,
+                      color: AppColors.success, size: 16)
+                else if (a.isFeatured)
+                  Icon(Icons.star_rounded,
                       color: AppColors.warning, size: 16),
                 const SizedBox(width: 6),
                 Text(
                   '${a.readMinutes} min',
-                  style:        TextStyle(
+                  style: TextStyle(
                       color: AppColors.textMuted, fontSize: 11),
                 ),
               ],
             ),
             const SizedBox(height: 10),
             Text(
-              a.title,
+              title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style:        TextStyle(
+              style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 15.5,
                 fontWeight: FontWeight.w800,
@@ -667,11 +873,11 @@ class _ArticleCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              a.excerpt,
+              excerpt,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.58),
+                color: AppColors.textSecondary,
                 fontSize: 12.8,
                 height: 1.45,
               ),
@@ -680,5 +886,259 @@ class _ArticleCard extends StatelessWidget {
         ),
       ),
     ).animate(delay: 45.ms).fadeIn(duration: 300.ms);
+  }
+}
+
+/// F35 — Quiz "Pulse points" no fim do leitor.
+class _QuizCard extends StatefulWidget {
+  const _QuizCard({
+    required this.quiz,
+    required this.progress,
+    required this.onScored,
+  });
+
+  final ArticleQuiz quiz;
+  final PulseProgress progress;
+  final VoidCallback onScored;
+
+  @override
+  State<_QuizCard> createState() => _QuizCardState();
+}
+
+class _QuizCardState extends State<_QuizCard> {
+  int _index = 0;
+  int _correct = 0;
+  int? _picked;
+  bool _finished = false;
+  bool _recorded = false;
+
+  void _pick(int i) {
+    if (_picked != null) return;
+    setState(() => _picked = i);
+    if (i == widget.quiz.questions[_index].correct) _correct++;
+  }
+
+  void _next() {
+    if (_index + 1 < widget.quiz.questions.length) {
+      setState(() {
+        _index++;
+        _picked = null;
+      });
+    } else {
+      setState(() => _finished = true);
+    }
+  }
+
+  Future<void> _record() async {
+    if (_recorded) return;
+    _recorded = true;
+    await widget.progress.recordQuiz(widget.quiz.articleId, _correct);
+    widget.onScored();
+  }
+
+  void _restart() {
+    setState(() {
+      _index = 0;
+      _correct = 0;
+      _picked = null;
+      _finished = false;
+      _recorded = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = AppColors.accent;
+    if (_finished) {
+      _record();
+      final total = widget.quiz.questions.length;
+      final best = widget.progress.quizBest[widget.quiz.articleId] ?? 0;
+      return Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppColors.glassFill,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: accent.withOpacity(0.4)),
+        ),
+        child: Column(
+          children: [
+            Icon(Icons.bolt_rounded, color: accent, size: 34),
+            const SizedBox(height: 6),
+            Text(
+              '$_correct/$total certas · +${_correct * kPointsPerCorrect} Pulse points',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            if (best >= _correct && best > 0) ...[
+              const SizedBox(height: 4),
+              Text(
+                'Melhor pontuação: $best/$total',
+                style: TextStyle(
+                    color: AppColors.textMuted, fontSize: 12),
+              ),
+            ],
+            const SizedBox(height: 14),
+            OutlinedButton.icon(
+              onPressed: _restart,
+              icon: Icon(Icons.refresh_rounded, size: 17, color: accent),
+              label: Text('Tentar outra vez',
+                  style: TextStyle(color: accent)),
+            ),
+          ],
+        ),
+      ).animate().fadeIn(duration: 300.ms);
+    }
+
+    final q = widget.quiz.questions[_index];
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.glassFill,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.glassBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.bolt_rounded, color: accent, size: 17),
+              const SizedBox(width: 6),
+              Text(
+                'Quiz · Pulse points  (${_index + 1}/${widget.quiz.questions.length})',
+                style: TextStyle(
+                  color: accent,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            q.prompt,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 12),
+          for (var i = 0; i < q.options.length; i++)
+            _OptionTile(
+              label: q.options[i],
+              state: _picked == null
+                  ? _OptionState.idle
+                  : i == q.correct
+                      ? _OptionState.correct
+                      : i == _picked
+                          ? _OptionState.wrong
+                          : _OptionState.dim,
+              onTap: () => _pick(i),
+            ),
+          if (_picked != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              q.explain,
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12.5,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _next,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text(
+                  _index + 1 < widget.quiz.questions.length
+                      ? 'Próxima pergunta'
+                      : 'Ver resultado',
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+enum _OptionState { idle, correct, wrong, dim }
+
+class _OptionTile extends StatelessWidget {
+  const _OptionTile({
+    required this.label,
+    required this.state,
+    required this.onTap,
+  });
+
+  final String label;
+  final _OptionState state;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    Color border = AppColors.glassBorder;
+    Color? fill = AppColors.glassFill;
+    Color text = AppColors.textSecondary;
+    IconData? icon;
+    Color? iconColor;
+    switch (state) {
+      case _OptionState.idle:
+        break;
+      case _OptionState.correct:
+        border = AppColors.success;
+        text = AppColors.textPrimary;
+        icon = Icons.check_circle_rounded;
+        iconColor = AppColors.success;
+        break;
+      case _OptionState.wrong:
+        border = AppColors.danger;
+        text = AppColors.textPrimary;
+        icon = Icons.cancel_rounded;
+        iconColor = AppColors.danger;
+        break;
+      case _OptionState.dim:
+        text = AppColors.textMuted;
+        fill = null;
+        break;
+    }
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: border),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(color: text, fontSize: 13.5, height: 1.35),
+              ),
+            ),
+            if (icon != null) ...[
+              const SizedBox(width: 8),
+              Icon(icon, color: iconColor, size: 17),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -82,11 +82,11 @@ class _QrScanScreenState extends State<QrScanScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
+        iconTheme:  IconThemeData(color: AppColors.textPrimary),
+        title:  Text(
           'Escanear código',
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.textPrimary,
             fontSize: 17,
             fontWeight: FontWeight.w800,
           ),
@@ -105,7 +105,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
             },
             icon: Icon(
               _torchOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-              color: Colors.white,
+              color: AppColors.textPrimary,
             ),
           ),
         ],
@@ -146,12 +146,12 @@ class _QrScanScreenState extends State<QrScanScreen> {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: Colors.white.withOpacity(0.12)),
               ),
-              child: const Text(
+              child:  Text(
                 'Aponta para o QR da receita ou do cartão MedWallet. '
                 'A leitura é automática.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white70,
+                  color: AppColors.textSecondary,
                   fontSize: 12.5,
                   height: 1.4,
                 ),
