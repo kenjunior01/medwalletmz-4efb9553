@@ -1133,6 +1133,10 @@ String? _rolePanelRoute(String r) => switch (r) {
       'doctor' => '/doctor-hub',
       'driver' => '/riders',
       'country_manager' || 'provincial_manager' || 'regional_manager' || 'regional_ceo' || 'admin' => '/manager-hub',
+      'clinic' || 'hospital' => '/clinic-panel',
+      'lab' => '/lab-panel',
+      'insurance' => '/insurance-panel',
+      'store_owner' => '/facility-orders',
       _ => null,
     };
 

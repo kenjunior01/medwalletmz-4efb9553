@@ -48,6 +48,9 @@ import '../../features/riders/presentation/rider_screen.dart';
 import '../../features/veterinary/presentation/veterinary_screen.dart';
 import '../../features/chat/presentation/facility_inbox_screen.dart';
 import '../../features/shop/presentation/facility_orders_screen.dart';
+import '../../features/facility_panels/presentation/clinic_panel_screen.dart';
+import '../../features/facility_panels/presentation/insurance_panel_screen.dart';
+import '../../features/facility_panels/presentation/lab_panel_screen.dart';
 import '../../features/family/presentation/family_hub_screen.dart';
 import '../../features/insurance/presentation/insurance_screen.dart';
 import '../../features/journal/presentation/journal_screen.dart';
@@ -340,6 +343,16 @@ final router = GoRouter(
     GoRoute(
         path: '/facility-orders',
         builder: (_, __) => const FacilityOrdersScreen()),
+
+    // F37 — Painéis das instituições do dono (paridade web F34).
+    GoRoute(
+        path: '/clinic-panel',
+        builder: (_, __) => const ClinicPanelScreen()),
+    GoRoute(
+        path: '/lab-panel', builder: (_, __) => const LabPanelScreen()),
+    GoRoute(
+        path: '/insurance-panel',
+        builder: (_, __) => const InsurancePanelScreen()),
 
     // F9 — Perfil: edição, segurança, ficha de saúde, ajuda.
     GoRoute(

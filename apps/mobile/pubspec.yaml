@@ -36,6 +36,9 @@ dependencies:
   # Chat: envio de receitas por fotografia
   image_picker: ^1.1.2
 
+  # Painéis de laboratório: upload do resultado (PDF)
+  file_picker: ^8.1.2
+
   # Ganhe (crowdsourcing): GPS para capturar a localização da instituição
   geolocator: ^13.0.1
 
