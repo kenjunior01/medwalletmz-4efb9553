@@ -104,7 +104,7 @@ class LabPanelData {
     final monthStart = DateTime(start.year, start.month, 1);
     return orders
         .where((o) => o.isCompleted && !o.createdAt.isBefore(monthStart))
-        .fold(0, (s, o) => s + o.totalAmount);
+        .fold<num>(0, (s, o) => s + o.totalAmount);
   }
 }
 
@@ -176,7 +176,7 @@ class InsurancePanelData {
   int get avgCoverage {
     if (plans.isEmpty) return 0;
     final total =
-        plans.fold(0.0, (s, p) => s + p.coveragePercent) / plans.length;
+        plans.fold<num>(0.0, (s, p) => s + p.coveragePercent) / plans.length;
     return total.round();
   }
 }
@@ -329,7 +329,7 @@ class FacilityPanelsRepository {
     final monthPatients = monthRows.map((c) => c['patient_id']).toSet().length;
     final monthRevenue = monthRows
         .where((c) => c['status'] == 'completed')
-        .fold(0, (s, c) => s + ((c['fee'] ?? 0) as num));
+        .fold<num>(0, (s, c) => s + ((c['fee'] ?? 0) as num));
 
     return ClinicPanelData(
       clinic: clinicMap,

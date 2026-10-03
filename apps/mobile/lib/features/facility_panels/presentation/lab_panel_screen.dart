@@ -302,7 +302,7 @@ class _LabKpis extends StatelessWidget {
         AppColors.accent,
       ),
       (
-        Icons.activity_rounded,
+        Icons.bar_chart_rounded,
         '${panel.total}',
         'Total',
         AppColors.primary,
