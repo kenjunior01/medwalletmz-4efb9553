@@ -933,6 +933,22 @@ class _QuizCardState extends State<_QuizCard> {
     if (_recorded) return;
     _recorded = true;
     await widget.progress.recordQuiz(widget.quiz.articleId, _correct);
+    // F39 — sincroniza os Pulse points no servidor (melhor score por quiz,
+    // tecto diário; silencioso se offline/anónimo — o progresso local já
+    // está guardado acima).
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid != null) {
+      try {
+        await Supabase.instance.client.rpc('award_pulse_points', params: {
+          'p_article_id': widget.quiz.articleId,
+          'p_correct': _correct,
+          'p_points_per_correct': kPointsPerCorrect,
+        });
+      } catch (_) {
+        // falha de rede: ignora — a sincronização do melhor score ocorre
+        // da próxima vez que o utilizador melhorar a pontuação.
+      }
+    }
     widget.onScored();
   }
 

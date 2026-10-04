@@ -233,8 +233,9 @@ export function useGamification() {
   const claimReward = useMutation({
     mutationFn: async (challengeId: string) => {
       if (!user) throw new Error('Not authenticated');
+      // F39 — o servidor deriva o utilizador de auth.uid(); nunca enviamos
+      // p_user_id pelo cliente (o RPC não o aceita — anti-manipulação).
       const { data, error } = await (supabase as any).rpc('claim_challenge_reward', {
-        p_user_id: user.id,
         p_challenge_id: challengeId,
       });
       if (error) throw error;

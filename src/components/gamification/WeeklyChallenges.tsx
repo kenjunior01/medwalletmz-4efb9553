@@ -55,6 +55,35 @@ export function WeeklyChallenges() {
     }
   });
 
+  // F39 — levantamento da recompensa validado no servidor (RPC deduz
+  // auth.uid(), verifica meta/janela e credita Joy Coins + XP atomicamente).
+  const claimReward = useMutation({
+    mutationFn: async (challengeId: string) => {
+      if (!user) throw new Error('Not authenticated');
+      const { data, error } = await (supabase as any)
+        .rpc('claim_challenge_reward', { p_challenge_id: challengeId });
+      if (error) throw error;
+      return data as {
+        success: boolean;
+        error?: string;
+        joy_coins_awarded?: number;
+        total_joy_coins?: number;
+      } | null;
+    },
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ['user-challenges'] });
+      queryClient.invalidateQueries({ queryKey: ['user-gamification'] });
+      if (res?.success) {
+        toast.success(`+${res.joy_coins_awarded ?? 0} Joy Coins! 🪙 Saldo: ${res.total_joy_coins ?? 0}`);
+      } else {
+        toast.info(res?.error === 'already_claimed'
+          ? 'Recompensa já levantada'
+          : 'Não foi possível levantar a recompensa');
+      }
+    },
+    onError: () => toast.error('Erro ao levantar a recompensa. Tenta novamente.'),
+  });
+
   if (!challenges?.length) return null;
 
   return (
@@ -99,6 +128,20 @@ export function WeeklyChallenges() {
                     <span className="font-medium text-gold">+{challenge.joy_coins_reward} 🪙</span>
                   </div>
                   <Progress value={pct} className="h-1.5" />
+                  {isCompleted ? (
+                    <p className="mt-2 text-[10px] font-medium text-primary flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> Recompensa levantada
+                    </p>
+                  ) : pct >= 100 ? (
+                    <Button
+                      size="sm"
+                      className="w-full text-xs h-7 mt-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white hover:opacity-90"
+                      onClick={() => claimReward.mutate(challenge.id)}
+                      disabled={claimReward.isPending}
+                    >
+                      {claimReward.isPending ? 'A levantar…' : `Levantar +${challenge.joy_coins_reward} 🪙`}
+                    </Button>
+                  ) : null}
                 </div>
               ) : (
                 <Button

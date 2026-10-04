@@ -18,6 +18,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Seo } from '@/components/Seo';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -783,6 +784,25 @@ export default function HealthEducationHub() {
                         onDone={(correct) => {
                           const { state } = recordQuiz(selected.id, correct);
                           setPulse(state);
+                          // F39 — sincroniza os Pulse points no servidor (melhor
+                          // score por quiz, tecto diário; silencioso se offline/anónimo).
+                          if (user) {
+                            (supabase as any)
+                              .rpc('award_pulse_points', {
+                                p_article_id: selected.id,
+                                p_correct: correct,
+                                p_points_per_correct: POINTS_PER_CORRECT,
+                              })
+                              .then(({ data }: { data: unknown }) => {
+                                const r = data as { success?: boolean; points_awarded?: number } | null;
+                                if (r?.success && (r.points_awarded ?? 0) > 0) {
+                                  toast.success(`+${r.points_awarded} Pulse points sincronizados`);
+                                }
+                              })
+                              .catch(() => {
+                                /* progresso local já guardado — ignora falha de rede */
+                              });
+                          }
                         }}
                       />
                     </div>
