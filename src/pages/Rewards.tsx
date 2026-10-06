@@ -177,6 +177,35 @@ export default function Rewards() {
         </div>
       </div>
 
+      {/* F41 — SaúdeCraft: entrada do jogo */}
+      <div className="px-4 mt-4">
+        <button
+          onClick={() => navigate("/game")}
+          className="w-full relative overflow-hidden rounded-2xl border-2 border-yellow-400/60 bg-gradient-to-b from-[#2a2118] via-[#1a1410] to-[#14100c] p-4 text-left group hover:border-yellow-400 transition-colors"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-b from-orange-400 to-orange-600 flex items-center justify-center text-3xl shadow-lg shadow-orange-900/40 group-active:scale-95 transition-transform">
+              ⛏️
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-black text-lg text-yellow-300 tracking-wide flex items-center gap-2 flex-wrap">
+                SAÚDECRAFT
+                <span className="text-[10px] font-bold bg-yellow-400/20 text-yellow-200 rounded-full px-2 py-0.5 border border-yellow-400/40">
+                  NOVO 🎮
+                </span>
+              </h3>
+              <p className="text-xs text-white/70 mt-0.5">
+                Minera blocos de saúde, apanha cristais raros e ganha Joy Coins!
+              </p>
+              <div className="flex items-center gap-1.5 mt-1.5 text-[11px] text-yellow-200/80 flex-wrap">
+                <span>💎 Cristais</span><span>•</span><span>⚡ Combos</span><span>•</span><span>🪙 Joy Coins reais</span>
+              </div>
+            </div>
+            <div className="text-yellow-300 text-2xl group-hover:translate-x-1 transition-transform shrink-0">→</div>
+          </div>
+        </button>
+      </div>
+
       {/* Tabs */}
       <PullToRefresh onRefresh={refreshRewards}>
       <div className="px-4 mt-6">

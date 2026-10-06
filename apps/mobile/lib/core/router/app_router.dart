@@ -44,6 +44,7 @@ import '../../features/ape_network/presentation/ape_network_screen.dart';
 import '../../features/impact/presentation/impact_screen.dart';
 import '../../features/monetization/presentation/monetization_hub_screen.dart';
 import '../../features/rewards/presentation/rewards_screen.dart';
+import '../../features/game/presentation/game_screen.dart';
 import '../../features/riders/presentation/rider_screen.dart';
 import '../../features/veterinary/presentation/veterinary_screen.dart';
 import '../../features/chat/presentation/facility_inbox_screen.dart';
@@ -412,6 +413,8 @@ final router = GoRouter(
     GoRoute(path: '/riders', builder: (_, __) => const RiderScreen()),
     GoRoute(path: '/ads', builder: (_, __) => const AdsScreen()),
     GoRoute(path: '/rewards', builder: (_, __) => const RewardsScreen()),
+    // F41 — SaúdeCraft: jogo de mineração estilo Minecraft (paridade web).
+    GoRoute(path: '/game', builder: (_, __) => const GameScreen()),
     GoRoute(path: '/impact', builder: (_, __) => const ImpactScreen()),
     GoRoute(
         path: '/veterinary', builder: (_, __) => const VeterinaryScreen()),

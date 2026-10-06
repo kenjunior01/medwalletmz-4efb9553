@@ -49,6 +49,7 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const Addresses = lazy(() => import("./pages/Addresses"));
 const Help = lazy(() => import("./pages/Help"));
 const Rewards = lazy(() => import("./pages/Rewards"));
+const SaudeCraftGame = lazy(() => import("./pages/game/SaudeCraftGame"));
 const OrderTracking = lazy(() => import("./pages/OrderTracking"));
 const Settings = lazy(() => import("./pages/Settings"));
 
@@ -340,6 +341,7 @@ const App = () => {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/help" element={<Help />} />
                     <Route path="/rewards" element={<Rewards />} />
+                    <Route path="/game" element={<SaudeCraftGame />} />
                     <Route path="/order/:id" element={<OrderTracking />} />
                     <Route path="/health/doctors" element={<Doctors />} />
                     <Route path="/health/book/:doctorId" element={<BookConsultation />} />
