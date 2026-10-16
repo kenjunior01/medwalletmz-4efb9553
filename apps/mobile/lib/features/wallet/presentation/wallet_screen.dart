@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/theme/app_background.dart';
@@ -122,6 +123,27 @@ class WalletScreen extends ConsumerWidget {
                                           availableBalance: wallet.balance,
                                         ),
                                       ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      // F42 — Vouchers familiares + Poupança de saúde
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GlassGhostButton(
+                              label: 'Voucher Saúde',
+                              icon: Icons.confirmation_number_rounded,
+                              onPressed: () => context.push('/vouchers'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: GlassGhostButton(
+                              label: 'Poupança',
+                              icon: Icons.savings_rounded,
+                              onPressed: () => context.push('/savings'),
                             ),
                           ),
                         ],

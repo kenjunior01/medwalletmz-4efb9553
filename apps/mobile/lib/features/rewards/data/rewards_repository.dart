@@ -434,6 +434,19 @@ class RewardsRepository {
       'challenge_id': challengeId,
     });
   }
+
+  /// F42 — check-in diário via RPC (streak + coins + XP no servidor).
+  /// Devolve null em falha (offline-safe).
+  Future<Map<String, dynamic>?> dailyCheckIn() async {
+    if (_client.auth.currentUser == null) return null;
+    try {
+      final data = await _client.rpc('daily_check_in');
+      if (data is Map<String, dynamic>) return data;
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 final rewardsRepositoryProvider = Provider<RewardsRepository>(

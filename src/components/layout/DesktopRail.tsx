@@ -2,7 +2,7 @@ import {
   Wallet, MessageCircle, Gift, Sparkles, Calendar, ChevronRight,
   Heart, Mic, MapPin, Camera, Users, Bike, Trophy, Briefcase,
   Package, TrendingUp, Stethoscope, Home, Megaphone, UserCircle,
-  Pill,
+  Pill, Ticket, PiggyBank,
 } from '@/components/icons/lucide-compat';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,6 +29,8 @@ const PATIENT_ITEMS: QuickItem[] = [
   { icon: Users, label: "Círculos de Apoio", to: "/health/circles" },
   { icon: Briefcase, label: "Profissionais", to: "/health/workers" },
   { icon: Gift, label: "Convidar amigos", to: "/referrals" },
+  { icon: Ticket, label: "Voucher de Saúde", to: "/vouchers" },
+  { icon: PiggyBank, label: "Poupança de Saúde", to: "/savings" },
 ];
 
 const RIDER_ITEMS: QuickItem[] = [
@@ -52,6 +54,8 @@ const PROMOTER_ITEMS: QuickItem[] = [
   { icon: Megaphone, label: "Meu Link de Convite", to: "/referrals" },
   { icon: Users, label: "Círculos de Apoio", to: "/health/circles" },
   { icon: Gift, label: "Recompensas", to: "/rewards" },
+  { icon: Ticket, label: "Voucher de Saúde", to: "/vouchers" },
+  { icon: PiggyBank, label: "Poupança de Saúde", to: "/savings" },
   { icon: TrendingUp, label: "Minhas Conversões", to: "/referrals" },
   { icon: Wallet, label: "Carteira", to: "/wallet" },
   { icon: Camera, label: "Scanner IA", to: "/health/scanner" },

@@ -247,25 +247,18 @@ export function useGamification() {
     },
   });
 
-  const checkStreak = useCallback(async () => {
-    if (!user) return false;
-    const today = new Date().toISOString().split('T')[0];
-    const { data: todayRecord } = await (supabase as any)
-      .from('streak_log')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('activity_date', today)
-      .single();
-    if (todayRecord) return true;
-    const { error: insertError } = await (supabase as any)
-      .from('streak_log')
-      .insert({ user_id: user.id, activity_date: today });
-    if (insertError) {
-      logger.error('Failed to record streak:', insertError.message);
-      return false;
+  /** F42 — check-in diário via RPC (streak + coins + XP no servidor). */
+  const checkStreak = useCallback(async (): Promise<{
+    already: boolean; streak_days: number; coins?: number; xp?: number; leveled_up?: boolean; level?: number;
+  } | null> => {
+    if (!user) return null;
+    const { data, error } = await (supabase as any).rpc('daily_check_in');
+    if (error) {
+      logger.error('daily_check_in failed:', error.message);
+      return null;
     }
     queryClient.invalidateQueries({ queryKey: ['user-gamification'] });
-    return true;
+    return data;
   }, [user, queryClient]);
 
   return {

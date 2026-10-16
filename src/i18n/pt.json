@@ -1266,7 +1266,10 @@
     "streak_days": "{{days}} dias seguidos",
     "keep_going": "Continua assim!",
     "earned_badge": "Badge conquistado!",
-    "share_achievement": "Partilhar conquista"
+    "share_achievement": "Partilhar conquista",
+    "checkin": "Fazer check-in (+5 🪙 +15 XP)",
+    "checkin_done": "Check-in feito hoje",
+    "level_up": "Subiste de nível!"
   },
   "a11y": {
     "skip_to_content": "Saltar para o conteúdo",
@@ -2983,5 +2986,28 @@
       "no_name": "Paciente",
       "rating_label": "Avaliação"
     }
+  },
+  "vouchers": {
+    "title": "Voucher de Saúde",
+    "subtitle": "Envia cuidado à tua família, mesmo à distância",
+    "guest": "Envia ajuda médica à tua família: vouchers de farmácia, consulta ou exames.",
+    "cta": "Criar conta",
+    "redeem": "Resgatar voucher",
+    "create": "Criar voucher para a família",
+    "createHint": "O valor sai da tua carteira e vira um código que a família resgata.",
+    "emptySent": "Ainda não enviaste vouchers.",
+    "emptyReceived": "Ainda não recebeste vouchers. Partilha o teu código com a família!",
+    "security": "Vouchers protegidos por código único e validação no servidor. O valor só sai da carteira quando emites; cancelamento devolve 100%."
+  },
+  "savings": {
+    "title": "Poupança de Saúde",
+    "subtitle": "Constrói a tua torre de saúde, bloco a bloco",
+    "guest": "Cria metas de poupança para parto, cirurgia ou medicação — bloco a bloco.",
+    "cta": "Criar conta",
+    "create": "Nova meta de poupança",
+    "createHint": "Define o objetivo; cada depósito coloca um bloco na tua torre.",
+    "emptyTitle": "A tua primeira torre começa com um bloco",
+    "emptyBody": "Poupa para um parto, cirurgia ou medicação. Cada depósito adiciona um bloco e dá XP.",
+    "security": "O dinheiro fica na tua carteira MedWallet — os depósitos só saem quando tu mandas. Meta concluída desbloqueia +50 XP."
   }
 }

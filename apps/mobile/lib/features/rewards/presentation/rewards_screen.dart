@@ -173,6 +173,9 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen>
         children: [
           _LevelCard(g: _gamification),
           const SizedBox(height: 16),
+          // F42 — check-in diário (RPC `daily_check_in` no servidor)
+          _CheckInCard(onChecked: _load),
+          const SizedBox(height: 16),
           if (_challenges.isEmpty)
             const _EmptyCard(
               icon: Icons.flag_rounded,
@@ -970,6 +973,126 @@ class _EmptyCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style:        TextStyle(
                   color: AppColors.textMuted, height: 1.5, fontSize: 12.5)),
+        ],
+      ),
+    );
+  }
+}
+
+/// F42 — cartão de check-in diário (RPC `daily_check_in`):
+/// streak +5 Pulse coins +15 XP, idempotente no servidor.
+class _CheckInCard extends ConsumerStatefulWidget {
+  const _CheckInCard({this.onChecked});
+
+  final VoidCallback? onChecked;
+
+  @override
+  ConsumerState<_CheckInCard> createState() => _CheckInCardState();
+}
+
+class _CheckInCardState extends ConsumerState<_CheckInCard> {
+  bool _busy = false;
+  bool _done = false;
+
+  Future<void> _checkIn() async {
+    if (_busy || _done) return;
+    setState(() => _busy = true);
+    final data = await ref.read(rewardsRepositoryProvider).dailyCheckIn();
+    if (!mounted) return;
+    setState(() {
+      _busy = false;
+      if (data != null) _done = true;
+    });
+    final messenger = ScaffoldMessenger.of(context);
+    if (data == null) {
+      messenger.showSnackBar(const SnackBar(
+        content: Text('Falha de rede — tenta novamente mais tarde'),
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
+    final streak = (data['streak_days'] as num?)?.toInt() ?? 0;
+    if (data['already'] == true) {
+      messenger.showSnackBar(SnackBar(
+        content: Text('Check-in já feito hoje ($streak dias seguidos 🔥)'),
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
+    showConfetti(context,
+        message: '+5 Pulse · +15 XP · $streak dias seguidos 🔥');
+    widget.onChecked?.call();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF059669).withOpacity(0.14),
+            const Color(0xFF0D9488).withOpacity(0.10),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF10B981).withOpacity(0.35)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: const Color(0xFF10B981).withOpacity(0.16),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text('📅', style: TextStyle(fontSize: 22)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Presença cuidada',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                const SizedBox(height: 2),
+                Text(
+                  'Faz check-in todos os dias: +5 Pulse, +15 XP e a tua chama cresce 🔥',
+                  style: TextStyle(
+                      fontSize: 11.5,
+                      color: AppColors.textMuted,
+                      height: 1.4),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: _done
+                  ? const Color(0xFF10B981).withOpacity(0.18)
+                  : const Color(0xFF059669),
+              foregroundColor:
+                  _done ? const Color(0xFF047857) : Colors.white,
+              minimumSize: const Size(0, 40),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+            ),
+            onPressed: _busy ? null : _checkIn,
+            child: _busy
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white))
+                : Text(_done ? 'Feito ✓' : 'Check-in',
+                    style: const TextStyle(fontWeight: FontWeight.w800)),
+          ),
         ],
       ),
     );

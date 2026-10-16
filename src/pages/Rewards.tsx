@@ -2,14 +2,15 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Coins, Trophy, Flame, Star, Gift, Lock, Target } from "@/components/icons/lucide-compat";
+import { ArrowLeft, Coins, Trophy, Flame, Star, Gift, Lock, Target, Ticket, PiggyBank } from "@/components/icons/lucide-compat";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { WeeklyLeaderboard } from "@/components/gamification/WeeklyLeaderboard";
 import { WeeklyChallenges } from "@/components/gamification/WeeklyChallenges";
 import StreakTracker from "@/components/gamification/StreakTracker";
+import XpBlockBar from "@/components/gamification/XpBlockBar";
+import LevelUpOverlay from "@/components/gamification/LevelUpOverlay";
 
 export default function Rewards() {
   const { user } = useAuth();
@@ -81,7 +82,6 @@ export default function Rewards() {
 
   const level = gamification?.current_level || 1;
   const xp = gamification?.experience_points || 0;
-  const progress = Math.min((xp % 500) / 5, 100);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -167,13 +167,9 @@ export default function Rewards() {
           </div>
         </div>
 
-        {/* Level Progress */}
+        {/* Level Progress — F42 barra em blocos */}
         <div className="mt-4 glass rounded-xl p-4 border border-border/50">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Nível {level}</span>
-            <span className="text-xs text-muted-foreground">{xp % 500}/500 XP para Nível {level + 1}</span>
-          </div>
-          <Progress value={progress} className="h-3" />
+          <XpBlockBar level={level} xp={xp} />
         </div>
       </div>
 
@@ -203,6 +199,30 @@ export default function Rewards() {
             </div>
             <div className="text-yellow-300 text-2xl group-hover:translate-x-1 transition-transform shrink-0">→</div>
           </div>
+        </button>
+      </div>
+
+      {/* F42 — Vouchers familiares + Poupança de saúde (REA) */}
+      <div className="px-4 mt-4 grid grid-cols-2 gap-3">
+        <button
+          onClick={() => navigate("/vouchers")}
+          className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 p-3.5 text-left hover:border-emerald-500/60 transition-colors group active:scale-[0.98]"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-emerald-500 to-teal-600 flex items-center justify-center mb-2 shadow-md shadow-emerald-500/20 group-active:scale-95 transition-transform">
+            <Ticket className="h-5 w-5 text-white" />
+          </div>
+          <h3 className="font-bold text-sm">Voucher Saúde</h3>
+          <p className="text-[11px] text-muted-foreground mt-0.5">Envia cuidado à família por código</p>
+        </button>
+        <button
+          onClick={() => navigate("/savings")}
+          className="rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/10 p-3.5 text-left hover:border-amber-500/60 transition-colors group active:scale-[0.98]"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-amber-500 to-orange-600 flex items-center justify-center mb-2 shadow-md shadow-amber-500/20 group-active:scale-95 transition-transform">
+            <PiggyBank className="h-5 w-5 text-white" />
+          </div>
+          <h3 className="font-bold text-sm">Poupança</h3>
+          <p className="text-[11px] text-muted-foreground mt-0.5">Metas de saúde, bloco a bloco 🧱</p>
         </button>
       </div>
 
@@ -295,6 +315,9 @@ export default function Rewards() {
         </Tabs>
       </div>
       </PullToRefresh>
+
+      {/* F42 — celebração de subida de nível */}
+      <LevelUpOverlay level={level} />
     </div>
   );
 }

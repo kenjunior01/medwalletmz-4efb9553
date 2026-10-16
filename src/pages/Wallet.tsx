@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getCurrencySymbol } from '@/lib/currency';
-import { ArrowLeft, Wallet as WalletIcon, ArrowDownCircle, ArrowUpCircle, Gift, RefreshCw, Plus, Loader2 } from "@/components/icons/lucide-compat";
+import { ArrowLeft, Wallet as WalletIcon, ArrowDownCircle, ArrowUpCircle, Gift, RefreshCw, Plus, Loader2, Ticket, PiggyBank } from "@/components/icons/lucide-compat";
 import { toast } from 'sonner';
 import NumberFlow from '@number-flow/react';
 import {
@@ -262,6 +262,24 @@ export default function Wallet() {
               onClick={() => setOpen(true)}
             >
               <Plus className="h-5 w-5 mr-1" aria-hidden="true" /> {t('wallet.deposit')}
+            </Button>
+          </div>
+
+          {/* F42 — Vouchers familiares + Poupança de saúde */}
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <Button
+              variant="outline"
+              className="h-11 gap-2 border-emerald-500/40 text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700"
+              onClick={() => navigate('/vouchers')}
+            >
+              <Ticket className="h-4 w-4" aria-hidden="true" /> Voucher Saúde
+            </Button>
+            <Button
+              variant="outline"
+              className="h-11 gap-2 border-amber-500/40 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"
+              onClick={() => navigate('/savings')}
+            >
+              <PiggyBank className="h-4 w-4" aria-hidden="true" /> Poupança
             </Button>
           </div>
         </PanelShell>
