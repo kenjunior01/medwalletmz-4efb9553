@@ -122,7 +122,7 @@ export default function LevelUpOverlay({ level, enabled = true }: LevelUpOverlay
               animate={{ y: [0, -3, 0] }}
               transition={{ repeat: Infinity, duration: 1.2 }}
             >
-              CONTINUAR ⛏️
+              CONTINUAR
             </motion.button>
           </motion.div>
         </motion.div>

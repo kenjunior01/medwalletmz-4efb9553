@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart'; // F41 — context.push('/game')
 
 import '../../../core/theme/app_background.dart';
 import '../../../core/theme/app_colors.dart';
@@ -110,12 +109,6 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen>
           backgroundColor: Colors.transparent,
           title: const Text('Recompensas 🏆'),
           actions: [
-            // F41 — SaúdeCraft: entrada do jogo da mina.
-            IconButton(
-              onPressed: () => context.push('/game'),
-              tooltip: 'SaúdeCraft ⛏️',
-              icon: const Text('⛏️', style: TextStyle(fontSize: 20)),
-            ),
             IconButton(
               onPressed: _load,
               icon: const Icon(Icons.refresh_rounded),

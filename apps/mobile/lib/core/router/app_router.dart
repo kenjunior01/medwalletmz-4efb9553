@@ -44,7 +44,6 @@ import '../../features/ape_network/presentation/ape_network_screen.dart';
 import '../../features/impact/presentation/impact_screen.dart';
 import '../../features/monetization/presentation/monetization_hub_screen.dart';
 import '../../features/rewards/presentation/rewards_screen.dart';
-import '../../features/game/presentation/game_screen.dart';
 import '../../features/vouchers/presentation/vouchers_screen.dart';
 import '../../features/savings/presentation/savings_screen.dart';
 import '../../features/riders/presentation/rider_screen.dart';
@@ -415,8 +414,6 @@ final router = GoRouter(
     GoRoute(path: '/riders', builder: (_, __) => const RiderScreen()),
     GoRoute(path: '/ads', builder: (_, __) => const AdsScreen()),
     GoRoute(path: '/rewards', builder: (_, __) => const RewardsScreen()),
-    // F41 — SaúdeCraft: jogo de mineração estilo Minecraft (paridade web).
-    GoRoute(path: '/game', builder: (_, __) => const GameScreen()),
     // F42 — REA: vouchers familiares + poupança de saúde (paridade web).
     GoRoute(path: '/vouchers', builder: (_, __) => const VouchersScreen()),
     GoRoute(path: '/savings', builder: (_, __) => const SavingsScreen()),

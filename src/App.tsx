@@ -49,7 +49,6 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const Addresses = lazy(() => import("./pages/Addresses"));
 const Help = lazy(() => import("./pages/Help"));
 const Rewards = lazy(() => import("./pages/Rewards"));
-const SaudeCraftGame = lazy(() => import("./pages/game/SaudeCraftGame"));
 const Vouchers = lazy(() => import("./pages/Vouchers"));
 const Savings = lazy(() => import("./pages/Savings"));
 const OrderTracking = lazy(() => import("./pages/OrderTracking"));
@@ -343,7 +342,6 @@ const App = () => {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/help" element={<Help />} />
                     <Route path="/rewards" element={<Rewards />} />
-                    <Route path="/game" element={<SaudeCraftGame />} />
                     <Route path="/vouchers" element={<Vouchers />} />
                     <Route path="/savings" element={<Savings />} />
                     <Route path="/order/:id" element={<OrderTracking />} />
