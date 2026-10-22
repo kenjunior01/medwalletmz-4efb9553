@@ -142,6 +142,7 @@ const AdminInstitutions = lazy(() => import("./pages/admin/AdminInstitutions"));
 const AdminMzImporter = lazy(() => import("./pages/admin/AdminMzImporter"));
 const GlobalMetrics = lazy(() => import("./pages/admin/GlobalMetrics"));
 const GlobalCommandCenter = lazy(() => import("./pages/admin/GlobalCommandCenter"));
+const OpsCenter = lazy(() => import("./pages/admin/OpsCenter")); // F45 — Torre de Controlo Global
 const FinancialDashboard = lazy(() => import("./pages/admin/FinancialDashboard"));
 const CountrySettings = lazy(() => import("./pages/admin/CountrySettings"));
 const CountryDashboard = lazy(() => import("./pages/admin/CountryDashboard"));
@@ -475,6 +476,7 @@ const App = () => {
                     <Route path="labs" element={<AdminLabs />} />
                     <Route path="mpesa-confirmations" element={<AdminMpesaConfirmations />} />
                     <Route path="global-metrics" element={<GlobalMetrics />} />
+                    <Route path="ops-center" element={<OpsCenter />} />
                     <Route path="global-command" element={<GlobalCommandCenter />} />
                     <Route path="financial" element={<FinancialDashboard />} />
                     <Route path="country-settings" element={<CountrySettings />} />

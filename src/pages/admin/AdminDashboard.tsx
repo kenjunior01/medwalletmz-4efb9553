@@ -28,6 +28,7 @@ import {
   Palette,
   IdCard,
   UserPlus,
+  Radio,
 } from "@/components/icons/lucide-compat";
 import { Skeleton } from '@/components/ui/skeleton';
 import { DashboardShell, type DashboardMenuItem } from '@/components/layout/DashboardShell';
@@ -35,6 +36,7 @@ import { DashboardShell, type DashboardMenuItem } from '@/components/layout/Dash
 const menuItems: DashboardMenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard Global', path: '/admin' },
   { icon: Globe, label: 'Métricas Mundiais', path: '/admin/global-metrics', highlight: true },
+  { icon: Radio, label: 'Torre de Controlo Global', path: '/admin/ops-center', highlight: true },
   { icon: Globe, label: 'Painel do País', path: '/admin/country-dashboard', highlight: true },
   { icon: Sparkles, label: 'Curadoria', path: '/admin/curation', highlight: true },
   { icon: Globe, label: '☁️ Google Cloud Hub', path: '/admin/google-cloud', highlight: true },
