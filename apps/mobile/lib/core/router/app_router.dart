@@ -46,6 +46,7 @@ import '../../features/monetization/presentation/monetization_hub_screen.dart';
 import '../../features/rewards/presentation/rewards_screen.dart';
 import '../../features/vouchers/presentation/vouchers_screen.dart';
 import '../../features/savings/presentation/savings_screen.dart';
+import '../../features/health_score/presentation/health_score_screen.dart';
 import '../../features/riders/presentation/rider_screen.dart';
 import '../../features/veterinary/presentation/veterinary_screen.dart';
 import '../../features/chat/presentation/facility_inbox_screen.dart';
@@ -254,6 +255,9 @@ final router = GoRouter(
         path: '/emergency-card',
         builder: (_, __) => const EmergencyCardScreen()),
     GoRoute(path: '/meds', builder: (_, __) => const MedsScreen()),
+    // F44 — Índice de Saúde (RPC health_index; paridade web /health/score).
+    GoRoute(
+        path: '/health-score', builder: (_, __) => const HealthScoreScreen()),
     // F32 — Lembretes de medicação (notificações locais, offline).
     GoRoute(path: '/reminders', builder: (_, __) => const RemindersScreen()),
     GoRoute(

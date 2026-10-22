@@ -188,6 +188,13 @@ class _HealthProfileScreenState extends ConsumerState<HealthProfileScreen> {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
+                    const Spacer(),
+                    // F44 — Índice de Saúde (índice 0-100 calculado no servidor).
+                    IconButton(
+                      onPressed: () => context.push('/health-score'),
+                      tooltip: 'Índice de Saúde 🫀',
+                      icon: const Text('🫀', style: TextStyle(fontSize: 20)),
+                    ),
                   ],
                 ),
               ),

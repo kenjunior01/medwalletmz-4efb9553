@@ -53,6 +53,8 @@ import {
   X,
   Plus,
   Stethoscope,
+  HeartPulse,
+  ChevronRight,
 } from '@/components/icons/lucide-compat';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -555,6 +557,29 @@ export function HealthWallet({ isDoctorView = false, patientId }: HealthWalletPr
           <Lock className="h-3.5 w-3.5" aria-hidden="true" />
           {t('healthWallet.encrypted_data')}
         </Badge>
+      </motion.div>
+
+      {/* ── F44 Índice de Saúde — hero de entrada ─────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+      >
+        <button
+          onClick={() => navigate('/health/score')}
+          className="w-full text-left rounded-2xl border-0 bg-gradient-to-r from-[#5B6CFF] to-[#7C5CFF] p-4 flex items-center gap-3.5 shadow-lg shadow-[#5B6CFF]/20 hover:shadow-xl hover:shadow-[#5B6CFF]/30 active:scale-[0.99] transition-all"
+        >
+          <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+            <HeartPulse className="h-6 w-6 text-white" aria-hidden="true" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-white">Índice de Saúde</p>
+            <p className="text-xs text-white/75 mt-0.5">
+              O seu estado geral em 4 pilares — perfil, medicação, hábitos e cuidado
+            </p>
+          </div>
+          <ChevronRight className="h-5 w-5 text-white/80 shrink-0" aria-hidden="true" />
+        </button>
       </motion.div>
 
       {/* ── MISAU Integration Section ─────────────────────────────────── */}
