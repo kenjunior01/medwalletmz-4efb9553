@@ -291,7 +291,9 @@
     "dashboard": "Painel da Farmácia",
     "email": "Email",
     "compare_prices_title": "Comparar preços de medicamentos",
-    "compare_prices_desc": "O mesmo medicamento pode custar menos noutra farmácia. Veja e poupe."
+    "compare_prices_desc": "O mesmo medicamento pode custar menos noutra farmácia. Veja e poupe.",
+    "stock_title": "Onde há stock? Reserve e levante",
+    "stock_desc": "Veja em que farmácias o medicamento existe agora e reserve com código por 24h."
   },
   "profile": {
     "visitor": "Visitante",

@@ -111,6 +111,7 @@ const MedsTracker = lazy(() => import("./pages/health/MedsTracker"));
 const HealthScore = lazy(() => import("./pages/health/HealthScore"));
 const MedsCompare = lazy(() => import("./pages/health/MedsCompare"));
 const HealthTimeline = lazy(() => import("./pages/health/HealthTimeline"));
+const MedsAvailability = lazy(() => import("./pages/health/MedsAvailability"));
 const HealthWorkerMarketplace = lazy(() => import("./pages/health/HealthWorkerMarketplace"));
 const HealthWorkerProfile = lazy(() => import("./pages/health/HealthWorkerProfile"));
 const HealthPlans = lazy(() => import("./pages/health/HealthPlans"));
@@ -378,6 +379,7 @@ const App = () => {
                     <Route path="/health/score" element={<HealthScore />} />
                     <Route path="/health/meds-compare" element={<MedsCompare />} />
                     <Route path="/health/timeline" element={<HealthTimeline />} />
+                    <Route path="/health/meds-availability" element={<MedsAvailability />} />
                     <Route path="/health/records" element={<MedicalRecords />} />
                     <Route path="/health/exams" element={<Exams />} />
                     <Route path="/health/exams/lab/:id" element={<LabDetail />} />

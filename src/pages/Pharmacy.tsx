@@ -1,7 +1,7 @@
 import { Seo } from "@/components/Seo";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation as useRouterLocation } from "react-router-dom";
-import { Search, Pill, Star, Clock, FileText, X, Zap, Globe, TrendingDown } from "@/components/icons/lucide-compat";
+import { Search, Pill, Star, Clock, FileText, X, Zap, Globe, TrendingDown, Package } from "@/components/icons/lucide-compat";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -187,6 +187,21 @@ export default function Pharmacy() {
           <p className="text-xs text-muted-foreground">{t('pharmacy.compare_prices_desc')}</p>
         </div>
         <Badge className="bg-emerald-500 text-white">GoodRx</Badge>
+      </button>
+
+      {/* F47 — Onde há stock? (padrão mPharma) */}
+      <button
+        onClick={() => navigate('/health/meds-availability')}
+        className="w-full rounded-xl border border-primary/30 bg-primary/10 p-4 flex items-center gap-3 hover:border-primary/60 transition-colors text-left"
+      >
+        <div className="p-2 bg-primary/20 rounded-lg">
+          <Package className="h-6 w-6 text-primary" />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-semibold text-sm">{t('pharmacy.stock_title')}</h3>
+          <p className="text-xs text-muted-foreground">{t('pharmacy.stock_desc')}</p>
+        </div>
+        <Badge className="bg-amber-500 text-white">mPharma</Badge>
       </button>
 
       {/* Search */}
