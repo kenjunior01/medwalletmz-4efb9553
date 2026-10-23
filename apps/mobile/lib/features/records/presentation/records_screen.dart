@@ -351,6 +351,13 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                         ),
                       ),
                     ),
+                    // F46 — Linha Temporal de Saúde (padrão MyChart).
+                    IconButton(
+                      tooltip: 'Linha temporal de saúde',
+                      onPressed: () => context.push('/health-timeline'),
+                      icon:        Icon(Icons.history_rounded,
+                          color: AppColors.accent),
+                    ),
                     IconButton(
                       tooltip: 'Novo registo',
                       onPressed: _addRecord,

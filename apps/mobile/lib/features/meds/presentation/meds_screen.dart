@@ -127,6 +127,13 @@ class _Body extends StatelessWidget {
                 ),
               ),
             ),
+            // F46 — Comparador de Preços (padrão GoodRx).
+            IconButton(
+              onPressed: () => context.push('/meds-compare'),
+              tooltip: 'Comparar preços de medicamentos',
+              icon:        Icon(Icons.trending_down_rounded,
+                  color: AppColors.accent),
+            ),
             // F32 — atalho para Lembretes (horários + notificações).
             IconButton(
               onPressed: () => context.push('/reminders'),

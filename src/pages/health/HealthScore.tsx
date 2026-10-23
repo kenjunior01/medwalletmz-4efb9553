@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   ShieldCheck, HeartPulse, Pill, ClipboardList,
-  ChevronRight, CheckCircle2, RefreshCw, LogIn, Info, Activity,
+  ChevronRight, CheckCircle2, RefreshCw, LogIn, Info, Activity, History,
 } from '@/components/icons/lucide-compat';
 
 /* ─────────────────────────────── Tipos ─────────────────────────────────── */
@@ -240,6 +240,21 @@ export default function HealthScore() {
                 );
               })}
             </div>
+
+            {/* F46 — Linha Temporal (padrão MyChart) */}
+            <button
+              onClick={() => navigate('/health/timeline')}
+              className="mt-6 w-full rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex items-center gap-3 hover:border-[#5B6CFF]/40 transition-colors text-left"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5B6CFF]/30 to-[#7C5CFF]/20 flex items-center justify-center shrink-0">
+                <History className="h-5 w-5 text-[#8B9CFF]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-white text-sm">Linha Temporal de Saúde</h3>
+                <p className="text-xs text-white/50">Consultas, análises, prescrições e diário num só lugar</p>
+              </div>
+              <ChevronRight className="h-5 w-5 text-white/40" />
+            </button>
 
             {/* Nota */}
             <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex items-start gap-3">

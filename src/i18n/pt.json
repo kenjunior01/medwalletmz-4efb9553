@@ -289,7 +289,9 @@
     "payment_methods": "Métodos de Pagamento",
     "license": "Licença",
     "dashboard": "Painel da Farmácia",
-    "email": "Email"
+    "email": "Email",
+    "compare_prices_title": "Comparar preços de medicamentos",
+    "compare_prices_desc": "O mesmo medicamento pode custar menos noutra farmácia. Veja e poupe."
   },
   "profile": {
     "visitor": "Visitante",

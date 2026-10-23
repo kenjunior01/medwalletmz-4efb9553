@@ -67,6 +67,7 @@ import '../../features/manager/presentation/manager_hub_screen.dart';
 import '../../features/maternal/presentation/maternal_screen.dart';
 import '../../features/meddy/presentation/meddy_chat_screen.dart';
 import '../../features/meds/presentation/meds_screen.dart';
+import '../../features/meds/presentation/med_price_compare_screen.dart';
 import '../../features/notifications/data/notification_models.dart';
 import '../../features/notifications/presentation/notification_center_screen.dart';
 import '../../features/notifications/presentation/notification_prefs_screen.dart';
@@ -81,6 +82,7 @@ import '../../features/profile/presentation/help_legal_screen.dart';
 import '../../features/ranking/presentation/ranking_screen.dart';
 import '../../features/referrals/presentation/referrals_screen.dart';
 import '../../features/records/presentation/records_screen.dart';
+import '../../features/records/presentation/health_timeline_screen.dart';
 import '../../features/services/presentation/services_screen.dart';
 import '../../features/services/presentation/specialists_screen.dart';
 import '../../features/shop/presentation/shop_cart_screen.dart';
@@ -255,6 +257,10 @@ final router = GoRouter(
         path: '/emergency-card',
         builder: (_, __) => const EmergencyCardScreen()),
     GoRoute(path: '/meds', builder: (_, __) => const MedsScreen()),
+    // F46 — Comparador de Preços (RPC compare_med_prices; paridade web /health/meds-compare).
+    GoRoute(
+        path: '/meds-compare',
+        builder: (_, __) => const MedPriceCompareScreen()),
     // F44 — Índice de Saúde (RPC health_index; paridade web /health/score).
     GoRoute(
         path: '/health-score', builder: (_, __) => const HealthScoreScreen()),
@@ -303,6 +309,10 @@ final router = GoRouter(
 
     // F7 — Registos médicos (bucket medical-records + partilhas).
     GoRoute(path: '/records', builder: (_, __) => const RecordsScreen()),
+    // F46 — Linha Temporal de Saúde (RPC health_timeline; paridade web /health/timeline).
+    GoRoute(
+        path: '/health-timeline',
+        builder: (_, __) => const HealthTimelineScreen()),
 
     // F7 — Convites e recompensas (dinheiro real, sem coins).
     GoRoute(
