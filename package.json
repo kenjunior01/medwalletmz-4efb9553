@@ -62,6 +62,7 @@
     "framer-motion": "^11.11.11",
     "gsap": "^3.15.0",
     "input-otp": "^1.2.4",
+    "leaflet": "^1.9.4",
     "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
