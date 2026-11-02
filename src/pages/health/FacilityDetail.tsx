@@ -7,18 +7,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SafeImage } from '@/components/ui/safe-image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, CheckCircle2, MapPin, Phone, Navigation, Star, Clock, Calendar, Activity, ShieldCheck, Stethoscope } from "@/components/icons/lucide-compat";
-import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from '@/lib/healthRoutes';
+import { buildExternalDirectionsUrl, getSafeImageUrl } from '@/lib/healthRoutes';
 import { UniversalReviews } from '@/components/reviews/UniversalReviews';
-import { GoogleMapEmbed } from '@/components/maps/GoogleMapEmbed';
+import { MapEmbed } from '@/components/maps/MapEmbed';
 import { useLocation } from '@/contexts/LocationContext';
-import {
-  usePlaceDetailsForFacility,
-  OpenNowBadge,
-  PlacePhotosCarousel,
-  PopularTimesChart,
-  PlaceReviewsList,
-  PlaceDetailsLoadingInline,
-} from '@/components/maps/PlaceDetailsWidgets';
 import { useQuery } from '@tanstack/react-query';
 import { useCountry } from '@/contexts/CountryContext';
 
@@ -65,15 +57,6 @@ export default function FacilityDetail() {
         enabled: !!facility && (facility.type === 'clinic' || facility.type === 'hospital')
     });
 
-    // Google Places API — enriquece com fotos, horário, reviews, popular times
-    const { data: placeDetails, isLoading: placeLoading } = usePlaceDetailsForFacility({
-        google_place_id: facility?.google_place_id,
-        latitude: facility?.latitude,
-        longitude: facility?.longitude,
-        type: facility?.type,
-        name: facility?.name,
-    });
-
     if (loading) {
         return <div className="p-4 space-y-3"><Skeleton className="h-48 w-full rounded-2xl" /><Skeleton className="h-8 w-3/4" /><Skeleton className="h-4 w-1/2" /></div>;
     }
@@ -84,7 +67,7 @@ export default function FacilityDetail() {
 
     const openDirections = () => {
         if (!facility.latitude || !facility.longitude) return;
-        const url = buildGoogleMapsDirectionsUrl(null, { lat: facility.latitude, lng: facility.longitude }, 'driving');
+        const url = buildExternalDirectionsUrl(userOrigin, { lat: facility.latitude, lng: facility.longitude }, 'driving');
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
@@ -134,17 +117,11 @@ export default function FacilityDetail() {
                                 {facility.description || `${facility.name} é uma referência de saúde em ${facility.city}, oferecendo cuidados de qualidade para toda a comunidade.`}
                             </p>
 
-                            {/* Badge "Aberto agora" em tempo real (Google Places API) */}
-                            {placeLoading && <PlaceDetailsLoadingInline />}
-                            {placeDetails && (
+                            {facility.is_verified && (
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <OpenNowBadge details={placeDetails} />
-                                    {placeDetails.rating && (
-                                        <Badge variant="outline" className="gap-1 text-xs">
-                                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                            {placeDetails.rating.toFixed(1)} · {placeDetails.userRatingCount || 0} avaliações Google
-                                        </Badge>
-                                    )}
+                                    <Badge variant="outline" className="gap-1 text-xs text-emerald-600 border-emerald-200">
+                                        <CheckCircle2 className="h-3 w-3" /> Verificada pela plataforma
+                                    </Badge>
                                 </div>
                             )}
 
@@ -153,8 +130,8 @@ export default function FacilityDetail() {
                                     <Clock className="h-4 w-4 text-primary mb-1" />
                                     <p className="text-[10px] uppercase font-bold text-muted-foreground">Horário</p>
                                     <p className="text-xs font-bold">
-                                        {placeDetails?.currentOpeningHours
-                                            ? (placeDetails.currentOpeningHours.weekdayDescriptions?.[0] ?? 'Consultar horário')
+                                        {facility.opening_hours
+                                            ? facility.opening_hours
                                             : facility.type === 'hospital' ? 'Aberto 24h' : '08:00 - 18:00'}
                                     </p>
                                 </div>
@@ -162,22 +139,11 @@ export default function FacilityDetail() {
                                     <Star className="h-4 w-4 text-secondary mb-1" />
                                     <p className="text-[10px] uppercase font-bold text-muted-foreground">Avaliação</p>
                                     <p className="text-xs font-bold">
-                                        {placeDetails?.rating?.toFixed(1) || facility.rating?.toFixed(1) || '4.8'} / 5.0
+                                        {facility.rating?.toFixed(1) || '4.8'} / 5.0
                                     </p>
                                 </div>
                             </div>
                         </section>
-
-                        {/* Carrossel de fotos reais do Google Places */}
-                        {placeDetails?.photos && placeDetails.photos.length > 0 && (
-                            <section className="space-y-3">
-                                <h2 className="text-lg font-black">Fotos do Local</h2>
-                                <PlacePhotosCarousel photos={placeDetails.photos} placeName={facility.name} />
-                            </section>
-                        )}
-
-                        {/* Gráfico de horas de pico (Popular Times) */}
-                        {/* PopularTimes requer array de 24h; API não fornece por defeito */}
 
                         <section className="space-y-3">
                             <h2 className="text-lg font-black">Localização e Contacto</h2>
@@ -196,7 +162,7 @@ export default function FacilityDetail() {
                                 </div>
 
                                 {facility.latitude && facility.longitude && (
-                                    <GoogleMapEmbed
+                                    <MapEmbed
                                         lat={facility.latitude}
                                         lng={facility.longitude}
                                         title={facility.name}
@@ -281,17 +247,6 @@ export default function FacilityDetail() {
                     </TabsContent>
 
                     <TabsContent value="reviews" className="mt-6 space-y-6">
-                        {/* Reviews reais do Google Places */}
-                        {placeDetails?.reviews && placeDetails.reviews.length > 0 && (
-                            <section className="space-y-3">
-                                <h2 className="text-lg font-black flex items-center gap-2">
-                                    <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
-                                    Avaliações do Google
-                                </h2>
-                                <PlaceReviewsList reviews={placeDetails.reviews} />
-                            </section>
-                        )}
-
                         {/* Reviews da plataforma MedWallet */}
                         <UniversalReviews clinicId={facility.id} entityName={facility.name} />
                     </TabsContent>

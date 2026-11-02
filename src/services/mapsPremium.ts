@@ -1,21 +1,13 @@
-import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/lib/logger';
 /**
- * Maps Premium Service
- * Google Maps routing with real-time traffic for health facilities.
- *
- * Strategy:
- *  1. If VITE_GOOGLE_MAPS_API_KEY is configured:
- *     - Use Routes API (routes.googleapis.com) for ETA with traffic
- *     - Use Directions API for step-by-step navigation
- *     - Use Places API for facility details
- *     - Use Static Maps API for thumbnail previews
- *  2. Fallback: OpenStreetMap embed (free, no key) + haversine ETA
- *
- * All distances in km, durations in minutes.
+ * Maps Premium Service — rotas e distâncias reais para unidades de saúde,
+ * agora 100% gratuito: OSRM (rotas/ETA) + Nominatim (geocoding) + OpenStreetMap.
+ * Sem chaves de API. Fallback: Haversine.
  */
 
-const API_KEY = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY) as string | undefined;
+import { fetchRouteMatrix, fetchFullRoute, haversineKm } from '@/lib/openRoutes';
+import { reverseGeocodePoint } from '@/lib/openGeo';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 export interface GeoPoint {
   lat: number;
@@ -58,15 +50,16 @@ export interface RouteResult {
   static_map_url?: string;
 }
 
+/** O serviço de mapas está sempre ativo (stack gratuita, sem chave). */
 export function isMapsConfigured(): boolean {
-  return Boolean(API_KEY && !API_KEY.includes('your_') && API_KEY.length > 20);
+  return true;
 }
 
 /* ---------- Distance & ETA ---------- */
 
 /**
- * Compute distances + ETAs for a list of facilities from the user's location.
- * Uses Google Routes API if configured, falls back to haversine.
+ * Distâncias + ETAs para uma lista de unidades a partir da localização do
+ * utilizador. Usa a tabela do OSRM (batch) com fallback Haversine.
  */
 export async function computeDistances(
   origin: GeoPoint,
@@ -74,49 +67,33 @@ export async function computeDistances(
 ): Promise<FacilityWithDistance[]> {
   if (facilities.length === 0) return [];
 
-  if (isMapsConfigured()) {
-    try {
-      return await computeDistancesGoogle(origin, facilities);
-    } catch (e) {
-      logger.warn('[mapsPremium] Google Routes failed, falling back:', { error: e });
+  try {
+    const results = await fetchRouteMatrix(origin, facilities.map((f) => f.geo));
+    if (results.some(Boolean)) {
+      return facilities
+        .map((f, i) => {
+          const r = results[i];
+          if (!r) return { ...f, ...haversineMetrics(origin, f.geo) };
+          return {
+            ...f,
+            distance_km: Math.round((r.distanceMeters / 1000) * 10) / 10,
+            duration_min: Math.max(1, Math.round(r.durationSeconds / 60)),
+            duration_with_traffic_min: Math.max(1, Math.round(r.durationSeconds / 60)),
+            traffic_level: 'light' as const,
+          };
+        })
+        .sort((a, b) => (a.distance_km ?? 0) - (b.distance_km ?? 0));
     }
+  } catch (e) {
+    logger.warn('[mapsPremium] matriz OSRM falhou, fallback Haversine:', { error: e });
   }
   return computeDistancesHaversine(origin, facilities);
 }
 
-async function computeDistancesGoogle(
-  origin: GeoPoint,
-  facilities: FacilityWithDistance[],
-): Promise<FacilityWithDistance[]> {
-  // Use Distance Matrix API for batch ETA
-  const destinations = facilities.map((f) => `${f.geo.lat},${f.geo.lng}`).join('|');
-  const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.lat},${origin.lng}&destinations=${destinations}&departure_time=now&traffic_model=best_guess&key=${API_KEY}`;
-
-  // Note: Direct fetch to Google Maps API from browser requires CORS, which Google
-  // does NOT support for Distance Matrix. In production, this goes through a
-  // Supabase Edge Function. Here we try a proxy-style call that may work in dev.
-  const proxyUrl = `/api/maps/distancematrix?origins=${origin.lat},${origin.lng}&destinations=${destinations}`;
-
-  try {
-    const res = await fetch(proxyUrl);
-    if (!res.ok) throw new Error(`proxy ${res.status}`);
-    const data = await res.json();
-    if (data.rows?.[0]?.elements) {
-      return facilities.map((f, i) => {
-        const el = data.rows[0].elements[i];
-        return {
-          ...f,
-          distance_km: el.distance?.value ? el.distance.value / 1000 : undefined,
-          duration_min: el.duration?.value ? Math.round(el.duration.value / 60) : undefined,
-          duration_with_traffic_min: el.duration_in_traffic?.value ? Math.round(el.duration_in_traffic.value / 60) : undefined,
-          traffic_level: classifyTraffic(el.duration?.value, el.duration_in_traffic?.value),
-        };
-      });
-    }
-    throw new Error('Invalid response');
-  } catch {
-    return computeDistancesHaversine(origin, facilities);
-  }
+function haversineMetrics(origin: GeoPoint, geo: GeoPoint) {
+  const distance_km = Math.round(haversine(origin, geo) * 10) / 10;
+  const duration_min = Math.max(1, Math.round((distance_km / 30) * 60));
+  return { distance_km, duration_min, duration_with_traffic_min: duration_min, traffic_level: 'light' as const };
 }
 
 function computeDistancesHaversine(
@@ -124,99 +101,66 @@ function computeDistancesHaversine(
   facilities: FacilityWithDistance[]
 ): FacilityWithDistance[] {
   return facilities
-    .map((f) => {
-      const distance_km = haversine(origin, f.geo);
-      // Average urban speed 30 km/h → time = distance / 0.5 km/min
-      const duration_min = Math.round((distance_km / 30) * 60);
-      return {
-        ...f,
-        distance_km: Math.round(distance_km * 10) / 10,
-        duration_min,
-        duration_with_traffic_min: duration_min,
-        traffic_level: 'light' as const,
-      };
-    })
+    .map((f) => ({ ...f, ...haversineMetrics(origin, f.geo) }))
     .sort((a, b) => (a.distance_km ?? 0) - (b.distance_km ?? 0));
 }
 
 /* ---------- Step-by-step route ---------- */
 
 export async function getRoute(origin: GeoPoint, destination: GeoPoint): Promise<RouteResult | null> {
-  if (isMapsConfigured()) {
-    try {
-      const url = `/api/maps/directions?origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}&departure_time=now&traffic_model=best_guess`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        const route = data.routes?.[0];
-        const leg = route?.legs?.[0];
-        if (leg) {
-          const steps: RouteStep[] = (leg.steps ?? []).map((s: any) => ({
-            instruction: s.html_instructions ? stripHtml(s.html_instructions) : s.distance.text,
-            distance_km: s.distance?.value ? s.distance.value / 1000 : 0,
-            duration_min: s.duration?.value ? Math.round(s.duration.value / 60) : 0,
-            maneuver: s.maneuver,
-          }));
-          return {
-            total_distance_km: leg.distance?.value ? leg.distance.value / 1000 : 0,
-            total_duration_min: leg.duration?.value ? Math.round(leg.duration.value / 60) : 0,
-            total_duration_with_traffic_min: leg.duration_in_traffic?.value ? Math.round(leg.duration_in_traffic.value / 60) : Math.round((leg.duration?.value ?? 0) / 60),
-            traffic_level: classifyTraffic(leg.duration?.value, leg.duration_in_traffic?.value),
-            steps,
-            polyline: route?.overview_polyline?.points,
-            static_map_url: getStaticMapUrl(origin, destination, route?.overview_polyline?.points),
-          };
-        }
-      }
-    } catch (e) {
-      logger.warn('[mapsPremium] Google Directions failed:', { error: e });
+  try {
+    const r = await fetchFullRoute(origin, destination);
+    if (r) {
+      return {
+        total_distance_km: Math.round((r.distanceMeters / 1000) * 10) / 10,
+        total_duration_min: Math.max(1, Math.round(r.durationSeconds / 60)),
+        total_duration_with_traffic_min: Math.max(1, Math.round(r.durationSeconds / 60)),
+        traffic_level: 'light',
+        steps: r.steps.map((s) => ({
+          instruction: s.instruction,
+          distance_km: Math.round((s.distanceMeters / 1000) * 10) / 10,
+          duration_min: Math.max(1, Math.round(s.durationSeconds / 60)),
+        })),
+        polyline: r.polyline,
+        static_map_url: undefined,
+      };
     }
+  } catch (e) {
+    logger.warn('[mapsPremium] rota OSRM falhou:', { error: e });
   }
 
-  // Fallback: haversine + straight-line route
-  const distance_km = haversine(origin, destination);
-  const duration_min = Math.round((distance_km / 30) * 60);
+  // Fallback: linha reta
+  const distance_km = Math.round(haversine(origin, destination) * 10) / 10;
+  const duration_min = Math.max(1, Math.round((distance_km / 30) * 60));
   return {
-    total_distance_km: Math.round(distance_km * 10) / 10,
+    total_distance_km: distance_km,
     total_duration_min: duration_min,
     total_duration_with_traffic_min: duration_min,
     traffic_level: 'light',
     steps: [{
       instruction: `Seguir em linha recta até ${destination.label ?? 'destino'}`,
-      distance_km: Math.round(distance_km * 10) / 10,
+      distance_km,
       duration_min,
     }],
     static_map_url: getOSMStaticMapUrl(origin, destination),
   };
 }
 
-/* ---------- Static map ---------- */
-
-export function getStaticMapUrl(origin: GeoPoint, destination: GeoPoint, polyline?: string): string {
-  if (isMapsConfigured() && polyline) {
-    return `https://maps.googleapis.com/maps/api/staticmap?size=600x300&path=weight:3|color:0x3B82F6|enc:${polyline}&markers=color:green|label:A|${origin.lat},${origin.lng}&markers=color:red|label:B|${destination.lat},${destination.lng}&key=${API_KEY}`;
-  }
-  return getOSMStaticMapUrl(origin, destination);
-}
+/* ---------- Static / embed map URLs ---------- */
 
 function getOSMStaticMapUrl(origin: GeoPoint, destination: GeoPoint): string {
-  // OpenStreetMap static map (no key needed)
   const minLat = Math.min(origin.lat, destination.lat) - 0.01;
   const maxLat = Math.max(origin.lat, destination.lat) + 0.01;
   const minLng = Math.min(origin.lng, destination.lng) - 0.01;
   const maxLng = Math.max(origin.lng, destination.lng) + 0.01;
   const bbox = `${minLng},${minLat},${maxLng},${maxLat}`;
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&marker=${origin.lat},${origin.lng}`;
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${origin.lat},${origin.lng}`;
 }
 
-/* ---------- Embed map URL ---------- */
-
 export function getEmbedMapUrl(center: GeoPoint, zoom = 13): string {
-  if (isMapsConfigured()) {
-    return `https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${center.lat},${center.lng}&zoom=${zoom}`;
-  }
-  const bbox = `${center.lng - 0.02},${center.lat - 0.02},${center.lng + 0.02},${center.lat + 0.02}`;
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&marker=${center.lat},${center.lng}`;
+  const delta = 0.02 * Math.pow(2, 13 - zoom);
+  const bbox = `${center.lng - delta},${center.lat - delta},${center.lng + delta},${center.lat + delta}`;
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${center.lat},${center.lng}`;
 }
 
 /* ---------- Open in external maps app ---------- */
@@ -231,7 +175,7 @@ export function openInExternalMaps(destination: GeoPoint, label?: string): void 
   } else if (isAndroid) {
     url = `geo:${destination.lat},${destination.lng}?q=${query}`;
   } else {
-    url = `https://www.google.com/maps/search/?api=1&query=${destination.lat},${destination.lng}`;
+    url = `https://www.openstreetmap.org/?mlat=${destination.lat}&mlon=${destination.lng}#map=17/${destination.lat}/${destination.lng}`;
   }
   window.open(url, '_blank', 'noopener');
 }
@@ -255,56 +199,16 @@ export function getCurrentLocation(): Promise<GeoPoint> {
 /* ---------- Reverse geocode (city/country name) ---------- */
 
 export async function reverseGeocode(point: GeoPoint): Promise<{ city?: string; country?: string; address?: string }> {
-  if (!isMapsConfigured()) {
-    return { address: `${point.lat.toFixed(3)}, ${point.lng.toFixed(3)}` };
-  }
-  try {
-    const url = `/api/maps/geocode?latlng=${point.lat},${point.lng}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`geocode ${res.status}`);
-    const data = await res.json();
-    const addr = data.results?.[0];
-    const components = addr?.address_components ?? [];
-    return {
-      address: addr?.formatted_address,
-      city: components.find((c: any) => c.types.includes('locality'))?.long_name,
-      country: components.find((c: any) => c.types.includes('country'))?.long_name,
-    };
-  } catch {
-    return { address: `${point.lat.toFixed(3)}, ${point.lng.toFixed(3)}` };
-  }
-}
-
-/* ---------- Helpers ---------- */
-
-function haversine(a: GeoPoint, b: GeoPoint): number {
-  const R = 6371; // km
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const dLat = toRad(b.lat - a.lat);
-  const dLng = toRad(b.lng - a.lng);
-  const lat1 = toRad(a.lat);
-  const lat2 = toRad(b.lat);
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
-}
-
-function classifyTraffic(baseDurationSec?: number, trafficDurationSec?: number): 'light' | 'moderate' | 'heavy' {
-  if (!baseDurationSec || !trafficDurationSec) return 'light';
-  const ratio = trafficDurationSec / baseDurationSec;
-  if (ratio < 1.1) return 'light';
-  if (ratio < 1.3) return 'moderate';
-  return 'heavy';
-}
-
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, '');
+  const r = await reverseGeocodePoint(point.lat, point.lng);
+  if (!r) return { address: `${point.lat.toFixed(3)}, ${point.lng.toFixed(3)}` };
+  return { city: r.city, country: r.country, address: r.label };
 }
 
 /* ---------- Dados reais de instituições (Supabase) ---------- */
 
 /**
  * Carrega instituições de saúde REAIS (com coordenadas) das tabelas
- * clinics / stores / laboratories da base Supabase da plataforma.
+ * clinics / stores / laboratories da base da plataforma.
  */
 export async function fetchRealFacilities(): Promise<FacilityWithDistance[]> {
   const facilities: FacilityWithDistance[] = [];
