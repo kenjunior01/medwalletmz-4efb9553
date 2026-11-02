@@ -67,7 +67,7 @@ export default function FacilityDetail() {
 
     const openDirections = () => {
         if (!facility.latitude || !facility.longitude) return;
-        const url = buildGoogleMapsDirectionsUrl(null, { lat: facility.latitude, lng: facility.longitude }, 'driving');
+        const url = buildExternalDirectionsUrl(userOrigin, { lat: facility.latitude, lng: facility.longitude }, 'driving');
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
@@ -117,17 +117,11 @@ export default function FacilityDetail() {
                                 {facility.description || `${facility.name} é uma referência de saúde em ${facility.city}, oferecendo cuidados de qualidade para toda a comunidade.`}
                             </p>
 
-                            {/* Badge "Aberto agora" em tempo real (Google Places API) */}
-                            {placeLoading && <PlaceDetailsLoadingInline />}
-                            {placeDetails && (
+                            {facility.is_verified && (
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <OpenNowBadge details={placeDetails} />
-                                    {placeDetails.rating && (
-                                        <Badge variant="outline" className="gap-1 text-xs">
-                                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                            {placeDetails.rating.toFixed(1)} · {placeDetails.userRatingCount || 0} avaliações Google
-                                        </Badge>
-                                    )}
+                                    <Badge variant="outline" className="gap-1 text-xs text-emerald-600 border-emerald-200">
+                                        <CheckCircle2 className="h-3 w-3" /> Verificada pela plataforma
+                                    </Badge>
                                 </div>
                             )}
 
@@ -136,8 +130,8 @@ export default function FacilityDetail() {
                                     <Clock className="h-4 w-4 text-primary mb-1" />
                                     <p className="text-[10px] uppercase font-bold text-muted-foreground">Horário</p>
                                     <p className="text-xs font-bold">
-                                        {placeDetails?.currentOpeningHours
-                                            ? (placeDetails.currentOpeningHours.weekdayDescriptions?.[0] ?? 'Consultar horário')
+                                        {facility.opening_hours
+                                            ? facility.opening_hours
                                             : facility.type === 'hospital' ? 'Aberto 24h' : '08:00 - 18:00'}
                                     </p>
                                 </div>
@@ -145,22 +139,11 @@ export default function FacilityDetail() {
                                     <Star className="h-4 w-4 text-secondary mb-1" />
                                     <p className="text-[10px] uppercase font-bold text-muted-foreground">Avaliação</p>
                                     <p className="text-xs font-bold">
-                                        {placeDetails?.rating?.toFixed(1) || facility.rating?.toFixed(1) || '4.8'} / 5.0
+                                        {facility.rating?.toFixed(1) || '4.8'} / 5.0
                                     </p>
                                 </div>
                             </div>
                         </section>
-
-                        {/* Carrossel de fotos reais do Google Places */}
-                        {placeDetails?.photos && placeDetails.photos.length > 0 && (
-                            <section className="space-y-3">
-                                <h2 className="text-lg font-black">Fotos do Local</h2>
-                                <PlacePhotosCarousel photos={placeDetails.photos} placeName={facility.name} />
-                            </section>
-                        )}
-
-                        {/* Gráfico de horas de pico (Popular Times) */}
-                        {/* PopularTimes requer array de 24h; API não fornece por defeito */}
 
                         <section className="space-y-3">
                             <h2 className="text-lg font-black">Localização e Contacto</h2>
