@@ -7,18 +7,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SafeImage } from '@/components/ui/safe-image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, CheckCircle2, MapPin, Phone, Navigation, Star, Clock, Calendar, Activity, ShieldCheck, Stethoscope } from "@/components/icons/lucide-compat";
-import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from '@/lib/healthRoutes';
+import { buildExternalDirectionsUrl, getSafeImageUrl } from '@/lib/healthRoutes';
 import { UniversalReviews } from '@/components/reviews/UniversalReviews';
-import { GoogleMapEmbed } from '@/components/maps/GoogleMapEmbed';
+import { MapEmbed } from '@/components/maps/MapEmbed';
 import { useLocation } from '@/contexts/LocationContext';
-import {
-  usePlaceDetailsForFacility,
-  OpenNowBadge,
-  PlacePhotosCarousel,
-  PopularTimesChart,
-  PlaceReviewsList,
-  PlaceDetailsLoadingInline,
-} from '@/components/maps/PlaceDetailsWidgets';
 import { useQuery } from '@tanstack/react-query';
 import { useCountry } from '@/contexts/CountryContext';
 
@@ -65,16 +57,7 @@ export default function FacilityDetail() {
         enabled: !!facility && (facility.type === 'clinic' || facility.type === 'hospital')
     });
 
-    // Google Places API — enriquece com fotos, horário, reviews, popular times
-    const { data: placeDetails, isLoading: placeLoading } = usePlaceDetailsForFacility({
-        google_place_id: facility?.google_place_id,
-        latitude: facility?.latitude,
-        longitude: facility?.longitude,
-        type: facility?.type,
-        name: facility?.name,
-    });
-
-    if (loading) {
+    const openDirections = () => {
         return <div className="p-4 space-y-3"><Skeleton className="h-48 w-full rounded-2xl" /><Skeleton className="h-8 w-3/4" /><Skeleton className="h-4 w-1/2" /></div>;
     }
 
