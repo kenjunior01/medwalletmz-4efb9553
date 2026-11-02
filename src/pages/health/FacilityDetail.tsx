@@ -162,7 +162,7 @@ export default function FacilityDetail() {
                                 </div>
 
                                 {facility.latitude && facility.longitude && (
-                                    <GoogleMapEmbed
+                                    <MapEmbed
                                         lat={facility.latitude}
                                         lng={facility.longitude}
                                         title={facility.name}
