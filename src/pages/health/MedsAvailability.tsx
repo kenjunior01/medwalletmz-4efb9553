@@ -21,6 +21,7 @@ import {
   Search, Pill, Package, Star, MapPin, Truck, Info, RefreshCw, ChevronRight,
   X, Clock, Zap, BellRing, Trash2, Copy, Check, Phone, ShoppingBag,
 } from '@/components/icons/lucide-compat';
+import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { toast } from 'sonner';
 
 /* ─────────────────────────────── Tipos ─────────────────────────────────── */
@@ -149,6 +150,13 @@ export default function MedsAvailability() {
   const [watchQuery, setWatchQuery] = useState('');
   const [watchTarget, setWatchTarget] = useState('');
 
+  /* Contagem decrescente viva — re-render a cada 30s para "Xh restantes" */
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 30_000);
+    return () => clearInterval(id);
+  }, []);
+
   const fmt = (v?: number | null) =>
     v == null ? '—' : `${Number(v).toLocaleString('pt-PT', { maximumFractionDigits: 0 })} MT`;
 
@@ -175,11 +183,12 @@ export default function MedsAvailability() {
     }
   }, [city, country?.id]);
 
-  /* ── Minhas reservas ── */
+  /* ── Minhas reservas ── (corre o motor de alertas lazy F48 antes: lembretes de expiração) */
   const loadReservations = useCallback(async () => {
     if (!user) return;
     setResLoading(true);
     try {
+      try { await (supabase as any).rpc('run_watch_checks'); } catch { /* best-effort — migração F48 ainda não aplicada */ }
       const { data: res, error: rpcError } = await (supabase as any)
         .rpc('my_med_reservations');
       if (rpcError) throw rpcError;
@@ -191,11 +200,12 @@ export default function MedsAvailability() {
     }
   }, [user]);
 
-  /* ── Vigiadores de preço ── */
+  /* ── Vigiadores de preço ── (corre o motor de alertas lazy F48 antes: alertas de preço com anti-spam 12h) */
   const loadWatches = useCallback(async () => {
     if (!user) return;
     setWatchLoading(true);
     try {
+      try { await (supabase as any).rpc('run_watch_checks'); } catch { /* best-effort — migração F48 ainda não aplicada */ }
       const { data: res, error: rpcError } = await (supabase as any)
         .rpc('my_price_watches');
       if (rpcError) throw rpcError;
@@ -312,6 +322,21 @@ export default function MedsAvailability() {
   const reference = data?.reference ?? null;
   const alternatives = data?.alternatives ?? [];
 
+  /* ── Refresh do tab actual (pull-to-refresh) ── */
+  const refreshCurrent = useCallback(async () => {
+    if (tab === 'reservations') await loadReservations();
+    else if (tab === 'watch') await loadWatches();
+    else if (searched) await search(term);
+  }, [tab, loadReservations, loadWatches, searched, search, term]);
+
+  /* ── Atalho: vigiar o medicamento pesquisado (alvo sugerido = −10% do melhor preço) ── */
+  const startWatchFromResults = () => {
+    setWatchQuery(term);
+    const low = stats?.lowest_available;
+    setWatchTarget(low != null ? String(Math.round(Number(low) * 0.9)) : '');
+    setTab('watch');
+  };
+
   return (
     <div className="min-h-screen bg-[#1A1D2B] pb-24">
       {/* Header */}
@@ -350,6 +375,7 @@ export default function MedsAvailability() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4">
+        <PullToRefresh onRefresh={refreshCurrent}>
         {/* ══════════ TAB: DISPONIBILIDADE ══════════ */}
         {tab === 'availability' && (
           <>
@@ -461,6 +487,16 @@ export default function MedsAvailability() {
                         <p className="text-lg font-black text-[#8B9CFF] tabular-nums">{stats?.count ?? 0}</p>
                       </div>
                     </div>
+
+                    {/* Atalho — vigiar este medicamento (padrão GoodRx) */}
+                    <button
+                      onClick={startWatchFromResults}
+                      className="mt-3 w-full rounded-2xl border border-[#5B6CFF]/30 bg-[#5B6CFF]/[0.07] px-4 py-3 flex items-center gap-2 text-sm font-semibold text-[#8B9CFF] hover:bg-[#5B6CFF]/[0.12] transition-colors"
+                    >
+                      <BellRing className="h-4 w-4 shrink-0" />
+                      <span className="flex-1 text-left truncate">Avisar-me quando «{data.query}» baixar de preço</span>
+                      <ChevronRight className="h-4 w-4 shrink-0" />
+                    </button>
 
                     {/* Referência MISAU/WHO */}
                     {reference && reference.generic_name && (
@@ -768,6 +804,7 @@ export default function MedsAvailability() {
             )}
           </div>
         )}
+        </PullToRefresh>
       </div>
     </div>
   );

@@ -30,6 +30,7 @@ const MorningGreeting = lazy(() => import("@/components/health/MorningGreeting")
 const HealthProfileOnboarding = lazy(() => import("@/components/health/HealthProfileOnboarding").then(m => ({ default: m.HealthProfileOnboarding })));
 const PillTracker = lazy(() => import("@/components/health/PillTracker").then(m => ({ default: m.PillTracker })));
 const JoyRewardsCard = lazy(() => import("@/components/gamification/JoyRewardsCard").then(m => ({ default: m.JoyRewardsCard })));
+const MedsAlertsWidget = lazy(() => import("@/components/health/MedsAlertsWidget"));
 const EmergencySOS = lazy(() => import("@/components/health/EmergencySOS").then(m => ({ default: m.EmergencySOS })));
 
 /** IntersectionObserver-based lazy mount — defers chunk fetch until near viewport */
@@ -463,6 +464,9 @@ export default function Home() {
                   ))}
                 </div>
               </section>
+
+              {/* F48 — alertas de medicação: reservas activas + vigias de preço (renderiza null quando vazio) */}
+              <LazyMount><LazySuspense><MedsAlertsWidget /></LazySuspense></LazyMount>
 
               <LazyMount><LazySuspense><NearbyProvidersWidget /></LazySuspense></LazyMount>
 
