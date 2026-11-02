@@ -247,17 +247,6 @@ export default function FacilityDetail() {
                     </TabsContent>
 
                     <TabsContent value="reviews" className="mt-6 space-y-6">
-                        {/* Reviews reais do Google Places */}
-                        {placeDetails?.reviews && placeDetails.reviews.length > 0 && (
-                            <section className="space-y-3">
-                                <h2 className="text-lg font-black flex items-center gap-2">
-                                    <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
-                                    Avaliações do Google
-                                </h2>
-                                <PlaceReviewsList reviews={placeDetails.reviews} />
-                            </section>
-                        )}
-
                         {/* Reviews da plataforma MedWallet */}
                         <UniversalReviews clinicId={facility.id} entityName={facility.name} />
                     </TabsContent>
