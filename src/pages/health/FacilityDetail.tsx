@@ -57,7 +57,7 @@ export default function FacilityDetail() {
         enabled: !!facility && (facility.type === 'clinic' || facility.type === 'hospital')
     });
 
-    const openDirections = () => {
+    if (loading) {
         return <div className="p-4 space-y-3"><Skeleton className="h-48 w-full rounded-2xl" /><Skeleton className="h-8 w-3/4" /><Skeleton className="h-4 w-1/2" /></div>;
     }
 
