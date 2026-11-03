@@ -23,8 +23,8 @@ import {
   Map, Navigation, MapPin, Search, Eye, Volume2, Languages, Wind,
   Truck, Sparkles, CheckCircle, XCircle, AlertCircle, RefreshCw,
 } from "@/components/icons/lucide-compat";
-import { loadGoogleMaps } from '@/lib/googleMapsLoader';
-import { fetchRouteDistance, haversineKm } from '@/lib/googleRoutes';
+import { fetchRouteDistance, haversineKm } from '@/lib/openRoutes';
+import { searchAddresses, reverseGeocodePoint } from '@/lib/openGeo';
 import { detectText } from '@/lib/googleVision';
 import { speakText } from '@/lib/googleTTS';
 import { fetchEnvironmentalHealth } from '@/lib/googleEnvironmental';
@@ -41,8 +41,8 @@ interface ServiceResult {
 const GOOGLE_SERVICES = [
   {
     id: 'maps',
-    name: 'Google Maps JS API',
-    description: 'Mapas interativos, geolocalização, Places autocomplete, geocoding.',
+    name: 'Leaflet + OpenStreetMap',
+    description: 'Mapas interativos, geolocalização, autocompletar de moradas — gratuito, sem chave.',
     icon: Map,
     color: '#10b981',
     usedIn: ['/manager/mz-verticals/ape', '/manager/mz-verticals/malaria', '/manager/mz-verticals/maternal', '/health/facilities', '/'],
@@ -50,8 +50,8 @@ const GOOGLE_SERVICES = [
   },
   {
     id: 'routes',
-    name: 'Google Maps Routes API v2',
-    description: 'Distância e tempo real com trânsito. Otimização de rotas de entrega.',
+    name: 'OSRM Routes',
+    description: 'Distância e tempo real de rota. Otimização de rotas de entrega — gratuito, sem chave.',
     icon: Navigation,
     color: '#0ea5e9',
     usedIn: ['/manager/mz-verticals/malaria', '/order/:id', '/health/facilities'],
@@ -304,13 +304,13 @@ function StatusBadge({ status }: { status: ServiceStatus }) {
 // =================== TEST FUNCTIONS ===================
 async function testMaps(): Promise<ServiceResult> {
   try {
-    const google = await loadGoogleMaps();
-    if (google?.maps?.Map) {
-      return { status: 'active', message: 'Google Maps JS API carregado com sucesso. Pronto para renderizar mapas.' };
+    const res = await fetch('https://tile.openstreetmap.org/13/9580/9746.png', { method: 'GET' });
+    if (res.ok) {
+      return { status: 'active', message: 'Tiles do OpenStreetMap acessíveis. Mapas Leaflet prontos para renderizar.' };
     }
-    return { status: 'failed', message: 'Google Maps carregou mas objecto Map não disponível.' };
+    return { status: 'failed', message: `Tiles OSM responderam ${res.status}.` };
   } catch (e: any) {
-    return { status: 'failed', message: e.message || 'Erro ao carregar Google Maps' };
+    return { status: 'failed', message: e.message || 'Erro ao aceder aos tiles do OpenStreetMap' };
   }
 }
 
@@ -324,21 +324,20 @@ async function testRoutes(): Promise<ServiceResult> {
       'test-beira',
       'driving'
     );
-    if (result?.via === 'google_routes') {
+    if (result?.via === 'osrm') {
       const km = Math.round(result.distanceMeters / 1000);
       const hours = Math.round(result.durationSeconds / 3600);
       return {
         status: 'active',
-        message: `Rota Maputo→Beira calculada: ${km} km em ~${hours}h (Google Routes API).`,
+        message: `Rota Maputo→Beira calculada: ${km} km em ~${hours}h (OSRM).`,
         detail: `via=${result.via}, polyline=${result.polyline ? 'sim' : 'não'}`,
       };
     }
     if (result) {
-      return { status: 'simulated', message: 'Rota calculada via fallback (Mapbox/Haversine).', detail: `via=${result.via}` };
+      return { status: 'simulated', message: 'Rota calculada via estimativa (Haversine).', detail: `via=${result.via}` };
     }
-    // Haversine como último recurso
     const km = haversineKm({ lat: -25.9692, lng: 32.5732 }, { lat: -19.8436, lng: 34.8389 });
-    return { status: 'simulated', message: `Rota calculada via Haversine (geometria). ${Math.round(km)} km em linha recta.`, detail: 'Google Routes indisponível, usando fallback.' };
+    return { status: 'simulated', message: `Rota calculada via Haversine (geometria). ${Math.round(km)} km em linha recta.`, detail: 'OSRM indisponível, usando fallback.' };
   } catch (e: any) {
     return { status: 'failed', message: e.message || 'Erro ao calcular rota' };
   }
@@ -346,11 +345,11 @@ async function testRoutes(): Promise<ServiceResult> {
 
 async function testPlaces(): Promise<ServiceResult> {
   try {
-    const google = await loadGoogleMaps();
-    if (google?.maps?.places?.Autocomplete) {
-      return { status: 'active', message: 'Places Autocomplete disponível. Pesquisa de farmácias/hospitais funcional.' };
+    const results = await searchAddresses('farmácia Maputo', { countryCodes: ['MZ'], limit: 3 });
+    if (results.length > 0) {
+      return { status: 'active', message: `Pesquisa de moradas encontrou ${results.length} resultados (Nominatim/OpenStreetMap).` };
     }
-    return { status: 'simulated', message: 'Places API parcialmente disponível. Algumas funcionalidades podem usar fallback.' };
+    return { status: 'simulated', message: 'Nominatim respondeu sem resultados neste momento.' };
   } catch (e: any) {
     return { status: 'failed', message: e.message };
   }
@@ -358,18 +357,15 @@ async function testPlaces(): Promise<ServiceResult> {
 
 async function testGeocoding(): Promise<ServiceResult> {
   try {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=Maputo,Mozambique&key=${(import.meta.env.VITE_GOOGLE_MAPS_API_KEY)}`;
-    const res = await fetch(url);
-    const json = await res.json();
-    if (json.status === 'OK' && json.results?.[0]) {
-      const loc = json.results[0].geometry.location;
+    const r = await reverseGeocodePoint(-25.9692, 32.5732);
+    if (r) {
       return {
         status: 'active',
-        message: `Geocoding "Maputo" → ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}.`,
-        detail: `address=${json.results[0].formatted_address}`,
+        message: `Geocoding inverso → ${r.city ?? '—'}, ${r.country ?? '—'}.`,
+        detail: r.label,
       };
     }
-    return { status: 'failed', message: `Geocoding respondeu: ${json.status}` };
+    return { status: 'failed', message: 'Nominatim não devolveu morada.' };
   } catch (e: any) {
     return { status: 'failed', message: e.message };
   }
