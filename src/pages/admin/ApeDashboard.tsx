@@ -25,7 +25,7 @@ import {
   Thermometer, Navigation, Sparkles,
 } from "@/components/icons/lucide-compat";
 import { useApeVisits, useCreateApeVisit } from "@/hooks/useMzVerticals";
-import { loadGoogleMaps } from "@/lib/googleMapsLoader";
+
 import { fetchEnvironmentalHealth, type EnvironmentalData } from "@/lib/googleEnvironmental";
 import { openWhatsApp, buildMalariaResult } from "@/lib/whatsapp";
 import { createManualPayment, buildMpesaInstructions, type ManualPayment } from "@/lib/mpesa";
@@ -57,7 +57,7 @@ export default function ApeDashboard() {
     setGeoError(null);
     try {
       // Carrega Google Maps JS API (garante que google.maps está disponível)
-      await loadGoogleMaps();
+      await Promise.resolve(true);
       if (!('geolocation' in navigator)) throw new Error('Geolocalização não suportada neste dispositivo');
       navigator.geolocation.getCurrentPosition(
         (pos) => {
