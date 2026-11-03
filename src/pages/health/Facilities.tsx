@@ -383,7 +383,7 @@ export default function Facilities() {
                 transition={{ duration: 0.3 }}
                 className="rounded-2xl overflow-hidden border"
               >
-                <GoogleMap
+                <OpenMap
                   center={userLoc ?? { lat: markers[0].lat, lng: markers[0].lng }}
                   markers={markers}
                   zoom={12}
