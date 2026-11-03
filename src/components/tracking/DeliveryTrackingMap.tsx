@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Navigation, Clock, MapPin, Truck } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
-import { fetchRouteDistance, fmtDuration } from '@/lib/openRoutes';
+import { fetchRouteDistance, fmtDuration, buildExternalDirectionsUrl } from '@/lib/openRoutes';
 
 import { logger } from '@/lib/logger';
 interface DriverLocation {
@@ -286,9 +286,9 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
               size="sm"
               variant="secondary"
               className="absolute bottom-2 right-2 h-8 text-[10px] gap-1 shadow-lg border-primary/20"
-              onClick={() => window.open(`PLACEHOLDER_URL`, '_blank')}
+              onClick={() => userLocation && window.open(buildExternalDirectionsUrl({ lat: driverLocation.lat, lng: driverLocation.lng }, userLocation, 'driving'), '_blank')}
             >
-              <Navigation className="h-3 w-3" /> Abrir no Google Maps
+              <Navigation className="h-3 w-3" /> Abrir no Maps
             </Button>
           )}
         </div>
