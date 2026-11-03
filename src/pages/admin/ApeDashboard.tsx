@@ -5,7 +5,7 @@
  * Dados locais sincronizados (Supabase) — sem integrações externas
  *
  * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp + M-Pesa + Gemini AI):
- * - Google Maps JS API: Geolocation do APE no campo (loadGoogleMaps + navigator.geolocation)
+ * - Geolocalização do APE no campo (navigator.geolocation)
  * - Google Air Quality + Weather (Open-Meteo fallback): fetchEnvironmentalHealth(lat,lng)
  * - WhatsApp via wa.me (sem API Business): openWhatsApp + buildMalariaResult
  * - M-Pesa Manual Payment (sem API Vodacom): createManualPayment + buildMpesaInstructions
@@ -25,7 +25,7 @@ import {
   Thermometer, Navigation, Sparkles,
 } from "@/components/icons/lucide-compat";
 import { useApeVisits, useCreateApeVisit } from "@/hooks/useMzVerticals";
-import { loadGoogleMaps } from "@/lib/googleMapsLoader";
+
 import { fetchEnvironmentalHealth, type EnvironmentalData } from "@/lib/googleEnvironmental";
 import { openWhatsApp, buildMalariaResult } from "@/lib/whatsapp";
 import { createManualPayment, buildMpesaInstructions, type ManualPayment } from "@/lib/mpesa";
@@ -57,7 +57,7 @@ export default function ApeDashboard() {
     setGeoError(null);
     try {
       // Carrega Google Maps JS API (garante que google.maps está disponível)
-      await loadGoogleMaps();
+      await Promise.resolve(true);
       if (!('geolocation' in navigator)) throw new Error('Geolocalização não suportada neste dispositivo');
       navigator.geolocation.getCurrentPosition(
         (pos) => {

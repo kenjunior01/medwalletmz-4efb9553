@@ -18,8 +18,8 @@ import {
   Clock, Route, Sparkles,
 } from "@/components/icons/lucide-compat";
 import { useMalariaCases, useCreateMalariaCase } from "@/hooks/useMzVerticals";
-import { loadGoogleMaps } from "@/lib/googleMapsLoader";
-import { fetchRouteDistance, haversineKm, fmtDuration, type DistanceResult } from "@/lib/googleRoutes";
+
+import { fetchRouteDistance, haversineKm, fmtDuration, type DistanceResult } from "@/lib/openRoutes";
 import { openWhatsApp, buildMalariaResult } from "@/lib/whatsapp";
 import { GeminiAssistantCard, GeminiImageAnalyzer } from "@/components/gemini";
 
@@ -48,7 +48,7 @@ export default function MalariaWorkflowPage() {
     setGeoLoading(true);
     setGeoError(null);
     try {
-      await loadGoogleMaps();
+      await Promise.resolve(true);
       if (!('geolocation' in navigator)) throw new Error('Geolocalização não suportada');
       navigator.geolocation.getCurrentPosition(
         (pos) => {

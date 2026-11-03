@@ -16,8 +16,8 @@
 import { useState } from "react";
 import { Seo } from "@/components/Seo";
 import { useLocation } from "@/contexts/LocationContext";
-import { NearbyHealthList } from "@/components/maps/PlaceDetailsWidgets";
-import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
+import { NearbyHealthList } from "@/components/health/NearbyHealthList";
+import { MapEmbed } from "@/components/maps/MapEmbed";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin, Locate, Building2, Hospital, Store, FlaskConical, Navigation } from '@/components/icons/lucide-compat';
@@ -91,7 +91,7 @@ export default function NearbyHealth() {
 
         {/* Mapa com localização atual */}
         {coordinates && (
-          <GoogleMapEmbed
+          <MapEmbed
             lat={coordinates.latitude}
             lng={coordinates.longitude}
             title={t('nearbyHealth.your_location')}

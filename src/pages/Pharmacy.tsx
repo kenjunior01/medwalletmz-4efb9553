@@ -12,7 +12,7 @@ import { useCountry } from "@/contexts/CountryContext";
 import { Tables } from "@/integrations/supabase/types";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { haversineKm } from "@/lib/googleRoutes";
+import { haversineKm } from "@/lib/openRoutes";
 import { MapPin } from "@/components/icons/lucide-compat";
 import { SafeImage } from "@/components/ui/safe-image";
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';

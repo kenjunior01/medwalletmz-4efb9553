@@ -1,0 +1,2 @@
+ALTER TABLE public.place_proposals DROP CONSTRAINT place_proposals_source_check;
+ALTER TABLE public.place_proposals ADD CONSTRAINT place_proposals_source_check CHECK (source = ANY (ARRAY['google_places'::text, 'openstreetmap'::text, 'user_submit'::text]));

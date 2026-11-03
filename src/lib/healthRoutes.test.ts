@@ -1,18 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { buildGoogleMapsDirectionsUrl, getSafeImageUrl, normalizeImageUrl } from './healthRoutes';
+import { buildExternalDirectionsUrl, getSafeImageUrl, normalizeImageUrl } from './healthRoutes';
 
-describe('buildGoogleMapsDirectionsUrl', () => {
-    it('builds a Google Maps directions URL with origin and destination', () => {
-        const url = buildGoogleMapsDirectionsUrl(
+describe('buildExternalDirectionsUrl', () => {
+    it('builds an OpenStreetMap directions URL on desktop (no mobile UA)', () => {
+        const url = buildExternalDirectionsUrl(
             { lat: -25.9692, lng: 32.5732 },
             { lat: -25.9701, lng: 32.5799 },
             'driving',
         );
 
-        expect(url).toContain('https://www.google.com/maps/dir/');
-        expect(url).toContain('destination=-25.9701%2C32.5799');
-        expect(url).toContain('origin=-25.9692%2C32.5732');
-        expect(url).toContain('travelmode=driving');
+        expect(url).toContain('https://www.openstreetmap.org/directions');
+        expect(url).toContain('route=-25.9692%2C32.5732%3B-25.9701%2C32.5799');
     });
 });
 

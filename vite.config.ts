@@ -19,15 +19,6 @@ export default defineConfig(({ mode }) => {
   define['import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY'] = JSON.stringify(supabasePublishableKey);
   define['import.meta.env.VITE_SUPABASE_PROJECT_ID'] = JSON.stringify(supabaseProjectId);
 
-  // Google Maps: aceita a variável canónica e, para compatibilidade com deploys
-  // antigos, cai para a variável legada caso a nova não esteja definida.
-  const mapsKey = process.env.VITE_GOOGLE_MAPS_API_KEY
-    ?? process.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY
-    ?? "";
-  define['import.meta.env.VITE_GOOGLE_MAPS_API_KEY'] = JSON.stringify(mapsKey);
-  const mapsChannel = process.env.VITE_GOOGLE_MAPS_CHANNEL ?? "";
-  define['import.meta.env.VITE_GOOGLE_MAPS_CHANNEL'] = JSON.stringify(mapsChannel);
-
   return {
   define,
   server: {
