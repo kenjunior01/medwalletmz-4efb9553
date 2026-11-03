@@ -14,9 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Hospital, Building2, FlaskConical, MapPin, CheckCircle2, Globe, Clock, Filter, Navigation, Search, ChevronDown, ChevronRight, Phone, PhoneCall, X, Star, Shield, Map, List, RotateCcw, SlidersHorizontal, Clock3, TrendingUp, Zap } from '@/components/icons/lucide-compat';
 import { SafeImage } from "@/components/ui/safe-image";
-import { GoogleMap, type GMarker } from "@/components/maps/GoogleMap";
-import { haversineKm } from "@/lib/googleRoutes";
-import { buildGoogleMapsDirectionsUrl, getSafeImageUrl } from "@/lib/healthRoutes";
+import { OpenMap, type GMarker } from "@/components/maps/OpenMap";
+import { haversineKm } from "@/lib/openRoutes";
+import { buildExternalDirectionsUrl, getSafeImageUrl } from "@/lib/healthRoutes";
 import { motion, AnimatePresence } from "framer-motion";
 
 const cardVariants = {
@@ -166,7 +166,7 @@ export default function Facilities() {
     if (!c.latitude || !c.longitude) return;
     const origin = userLoc ? { lat: userLoc.lat, lng: userLoc.lng } : null;
     const destination = { lat: c.latitude, lng: c.longitude };
-    const url = buildGoogleMapsDirectionsUrl(origin, destination, "driving");
+    const url = buildExternalDirectionsUrl(origin, destination, "driving");
     window.open(url, "_blank", "noopener,noreferrer");
   };
 

@@ -61,7 +61,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { GoogleMapEmbed } from '@/components/maps/GoogleMapEmbed';
+import { MapEmbed } from '@/components/maps/MapEmbed';
 
 type EntityType = 'pharmacy' | 'clinic' | 'hospital' | 'doctor' | 'lab' | 'laboratory' | 'veterinary' | 'other';
 type TypeFilter = 'all' | 'pharmacy' | 'clinic' | 'hospital' | 'lab' | 'veterinary';
@@ -872,7 +872,7 @@ function MapPreview({ proposal }: { proposal: Proposal }) {
         <a href={googleMapsUrl(lat, lng)} target="_blank" rel="noreferrer" className="text-xs text-primary underline inline-flex items-center gap-1">Google Maps <ExternalLink className="h-3 w-3" /></a>
       </div>
       <div className="p-3">
-        <GoogleMapEmbed
+        <MapEmbed
           lat={lat}
           lng={lng}
           title={proposal.name}

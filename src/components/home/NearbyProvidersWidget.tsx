@@ -6,7 +6,7 @@ import { useLocation } from '@/contexts/LocationContext';
 import { MapPin, Stethoscope, Pill, Navigation, Loader2, Clock, Sparkles, Building2, Hospital } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
-import { fetchRouteDistance, fmtDuration, haversineKm } from '@/lib/googleRoutes';
+import { fetchRouteDistance, fmtDuration, haversineKm } from '@/lib/openRoutes';
 import { useCountry, useTranslation } from '@/contexts/CountryContext';
 
 export function NearbyProvidersWidget() {

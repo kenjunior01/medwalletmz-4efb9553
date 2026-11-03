@@ -27,8 +27,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getNeighborhoodsForCity } from '@/lib/regional-neighborhoods';
 
-import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
-import { GoogleMapEmbed } from '@/components/maps/GoogleMapEmbed';
+import { AddressAutocomplete } from '@/components/maps/AddressAutocomplete';
+import { MapEmbed } from '@/components/maps/MapEmbed';
 
 const labelIcons: Record<string, any> = {
   'Casa': Home,
@@ -243,7 +243,7 @@ export default function Addresses() {
                 </Select>
               </div>
 
-              <GoogleAddressInput
+              <AddressAutocomplete
                 label="Endereço Completo"
                 value={form.address_line}
                 onChange={(val, info) => {
@@ -261,7 +261,7 @@ export default function Addresses() {
               />
 
               {form.latitude && form.longitude && (
-                <GoogleMapEmbed
+                <MapEmbed
                   lat={form.latitude}
                   lng={form.longitude}
                   title={form.label}
@@ -388,7 +388,7 @@ export default function Addresses() {
                 </p>
 
                 {address.latitude && address.longitude && (
-                  <GoogleMapEmbed
+                  <MapEmbed
                     lat={address.latitude}
                     lng={address.longitude}
                     title={address.label}

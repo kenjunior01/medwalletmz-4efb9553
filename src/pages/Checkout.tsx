@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
+import { AddressAutocomplete } from '@/components/maps/AddressAutocomplete';
 import { CouponInput } from '@/components/checkout/CouponInput';
 import { useCountry } from '@/contexts/CountryContext';
 import { ArrowLeft, Smartphone, Loader2, Apple, Wallet, Zap, FileText, Snowflake, Globe, Copy, ExternalLink, CheckCircle2, Receipt, CreditCard } from "@/components/icons/lucide-compat";
@@ -418,7 +418,7 @@ export default function Checkout() {
           onRemoveCoupon={() => setAppliedCoupon(null)}
         />
         {/* Delivery Address */}
-        <GoogleAddressInput
+        <AddressAutocomplete
           value={address}
           onChange={(val) => setAddress(val)}
           placeholder="Rua, número, bairro, referência..."

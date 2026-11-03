@@ -13,7 +13,7 @@ import WaitlistDialog from '@/components/providers/WaitlistDialog';
 import { MeddyEmptyState } from '@/components/mascot/MeddyEmptyState';
 import { useLocation } from '@/contexts/LocationContext';
 import { useCountry } from '@/contexts/CountryContext';
-import { haversineKm } from '@/lib/googleRoutes';
+import { haversineKm } from '@/lib/openRoutes';
 
 interface Specialty { id: string; name: string; slug: string; icon: string }
 interface Doctor {

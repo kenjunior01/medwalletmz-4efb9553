@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { GoogleMap } from '@/components/maps/GoogleMap';
+import { GoogleMap } from '@/components/maps/OpenMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Navigation, Clock, MapPin, Truck } from "@/components/icons/lucide-compat";
 import { Button } from '@/components/ui/button';
-import { fetchRouteDistance, fmtDuration } from '@/lib/googleRoutes';
+import { fetchRouteDistance, fmtDuration } from '@/lib/openRoutes';
 
 import { logger } from '@/lib/logger';
 interface DriverLocation {
