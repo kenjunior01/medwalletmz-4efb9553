@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { GoogleMap } from '@/components/maps/OpenMap';
+import { OpenMap } from '@/components/maps/OpenMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -268,7 +268,7 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
 
         {/* Map */}
         <div className="h-64 rounded-lg overflow-hidden border border-border relative">
-          <GoogleMap
+          <OpenMap
             center={getMapCenter()}
             zoom={14}
             height="100%"
@@ -286,7 +286,7 @@ export function DeliveryTrackingMap({ orderId, deliveryAddress, storeLocation, u
               size="sm"
               variant="secondary"
               className="absolute bottom-2 right-2 h-8 text-[10px] gap-1 shadow-lg border-primary/20"
-              onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${userLocation.lat},${userLocation.lng}&travelmode=driving`, '_blank')}
+              onClick={() => window.open(`PLACEHOLDER_URL`, '_blank')}
             >
               <Navigation className="h-3 w-3" /> Abrir no Google Maps
             </Button>
