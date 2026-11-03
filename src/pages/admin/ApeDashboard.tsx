@@ -5,7 +5,7 @@
  * Dados locais sincronizados (Supabase) — sem integrações externas
  *
  * INTEGRAÇÕES ATIVAS (Google Cloud + WhatsApp + M-Pesa + Gemini AI):
- * - Google Maps JS API: Geolocation do APE no campo (loadGoogleMaps + navigator.geolocation)
+ * - Geolocalização do APE no campo (navigator.geolocation)
  * - Google Air Quality + Weather (Open-Meteo fallback): fetchEnvironmentalHealth(lat,lng)
  * - WhatsApp via wa.me (sem API Business): openWhatsApp + buildMalariaResult
  * - M-Pesa Manual Payment (sem API Vodacom): createManualPayment + buildMpesaInstructions
