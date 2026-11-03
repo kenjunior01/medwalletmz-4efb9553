@@ -1008,7 +1008,7 @@ function formatCoords(proposal: Proposal) {
 }
 
 function googleMapsUrl(lat: number, lng: number) {
-  return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`;
 }
 
 function GeocodeButton({ draft, onResolved }: { draft: any; onResolved: (lat: number, lng: number, formatted?: string | null) => void }) {
@@ -1023,16 +1023,13 @@ function GeocodeButton({ draft, onResolved }: { draft: any; onResolved: (lat: nu
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('geocode-address', {
-        body: { address, city, name },
-      });
-      if (error) throw error;
-      if (!data?.latitude || !data?.longitude) {
+      const result = await geocodeOne({ name, address, city, countryCode: 'MZ' });
+      if (!result) {
         toast.error('Não foi possível encontrar coordenadas para este endereço.');
         return;
       }
-      onResolved(Number(data.latitude), Number(data.longitude), data.formatted_address ?? null);
-      toast.success(`Coordenadas preenchidas via ${data.source === 'places' ? 'Google Places' : 'Geocoding'}.`);
+      onResolved(result.lat, result.lng, result.label);
+      toast.success('Coordenadas preenchidas via OpenStreetMap.');
     } catch (e: any) {
       toast.error(e?.message || 'Erro ao geocodificar.');
     } finally {
@@ -1042,7 +1039,7 @@ function GeocodeButton({ draft, onResolved }: { draft: any; onResolved: (lat: nu
   return (
     <Button type="button" size="sm" variant="outline" onClick={run} disabled={loading}>
       {loading ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Locate className="h-4 w-4 mr-1" />}
-      Geocodificar via Google
+      Geocodificar
     </Button>
   );
 }
