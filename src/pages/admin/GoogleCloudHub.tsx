@@ -2,15 +2,14 @@
  * GoogleCloudHub — Central de serviços Google Cloud integrados
  *
  * Mostra o estado de cada serviço Google Cloud configurado no MedWallet:
- *   - Google Maps JS API (geolocalização, mapas, places)
- *   - Google Maps Routes API (distância/tempo real com trânsito)
- *   - Google Maps Places API (search de farmácias/hospitais)
- *   - Google Maps Geocoding API (endereço → coords)
+ *   - Leaflet + OpenStreetMap (geolocalização, mapas, places)
+ *   - OSRM (distância/tempo real de rota)
+ *   - Nominatim (search de farmácias/hospitais, endereço → coords)
  *   - Google Cloud Vision API (OCR de receitas, RDTs, medicamentos)
  *   - Google Cloud Text-to-Speech (lembretes em voz pt-PT/pt-BR)
  *   - Google Cloud Translation API (multilingual)
- *   - Google Maps Air Quality API (qualidade do ar para APEs)
- *   - Google Routes API (otimização de rotas de entrega)
+ *   - Air Quality (qualidade do ar para APEs)
+ *   - OSRM (otimização de rotas de entrega)
  *
  * Cada cartão mostra: estado (ativo/simulado/falhou), última chamada,
  * botão "Testar" para validar, link para a página que usa o serviço.
@@ -59,8 +58,8 @@ const GOOGLE_SERVICES = [
   },
   {
     id: 'places',
-    name: 'Google Places API',
-    description: 'Pesquisa de farmácias, hospitais, clínicas por nome/localização.',
+    name: 'Nominatim (OpenStreetMap)',
+    description: 'Pesquisa de moradas, farmácias e clínicas por nome/localização — gratuito.',
     icon: Search,
     color: '#7c3aed',
     usedIn: ['/suggest-place', '/health/facilities', '/manager/curation'],
@@ -68,8 +67,8 @@ const GOOGLE_SERVICES = [
   },
   {
     id: 'geocoding',
-    name: 'Google Geocoding API',
-    description: 'Converte endereços em coordenadas GPS (via supabase function geocode-address).',
+    name: 'Geocoding (Nominatim)',
+    description: 'Converte endereços em coordenadas GPS — gratuito, sem chave.',
     icon: MapPin,
     color: '#f59e0b',
     usedIn: ['/addresses', '/suggest-place', '/manager/mz-verticals/ape'],
@@ -189,7 +188,7 @@ export default function GoogleCloudHub() {
                 Google Cloud Hub — Serviços Integrados
               </h1>
               <p className="text-sm text-slate-400 mt-1">
-                9 serviços Google Cloud activos · Maps, Routes, Places, Geocoding, Vision, TTS, Translation, Air Quality, Delivery Routes
+                Serviços de mapas, AI e ambiente · Maps (OSM), Routes (OSRM), Geocoding (Nominatim), Vision, TTS, Translation, Air Quality
               </p>
             </div>
             <Button onClick={testAll} className="bg-sky-500 hover:bg-sky-600 text-white">
@@ -206,7 +205,7 @@ export default function GoogleCloudHub() {
           <CardContent className="p-4 flex items-center gap-4 flex-wrap">
             <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
               <CheckCircle className="h-3 w-3 mr-1" />
-              API Key configurada
+              Stack de mapas gratuita activa
             </Badge>
             <span className="text-xs text-slate-400">
               {Object.keys(results).length}/{GOOGLE_SERVICES.length} serviços testados
