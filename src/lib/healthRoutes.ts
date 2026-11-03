@@ -1,18 +1,20 @@
+import { buildExternalDirectionsUrl } from '@/lib/openRoutes';
+
 export interface CoordinateLike {
     lat: number;
     lng: number;
 }
 
-export function buildGoogleMapsDirectionsUrl(
+/**
+ * Link "abrir no app de mapas" — abre a app nativa no telemóvel
+ * (Google Maps no Android/iOS) e o OpenStreetMap no desktop.
+ */
+export function buildExternalDirectionsUrl(
     origin: CoordinateLike | null | undefined,
     destination: CoordinateLike,
     travelMode: 'driving' | 'walking' | 'transit' | 'bicycling' = 'driving',
 ) {
-    const params = new URLSearchParams({ api: '1' });
-    params.set('destination', `${destination.lat},${destination.lng}`);
-    if (origin) params.set('origin', `${origin.lat},${origin.lng}`);
-    params.set('travelmode', travelMode);
-    return `https://www.google.com/maps/dir/?${params.toString()}`;
+    return buildExternalDirectionsUrl(origin, destination, travelMode);
 }
 
 function isLikelyImageUrl(value: string) {
