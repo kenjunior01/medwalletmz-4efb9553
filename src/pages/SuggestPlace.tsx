@@ -19,7 +19,7 @@ import {
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 
-import { GoogleAddressInput } from '@/components/maps/GoogleAddressInput';
+import { AddressAutocomplete } from '@/components/maps/AddressAutocomplete';
 import { OpenMap } from '@/components/maps/OpenMap';
 
 import { useCountry } from '@/contexts/CountryContext';
@@ -306,7 +306,7 @@ export default function SuggestPlace() {
 
             <div>
               <Label>{t('health.address_label')}</Label>
-              <GoogleAddressInput
+              <AddressAutocomplete
                 value={address}
                 onChange={(val, info) => {
                   setAddress(val);

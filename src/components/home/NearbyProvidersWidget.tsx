@@ -17,7 +17,7 @@ export function NearbyProvidersWidget() {
   const { settings } = usePlatformSettings();
   const radiusKm = Number(settings.nearby_radius_km) || 25;
   const ranking = (settings.nearby_ranking as string) || 'distance';
-  const preferRoutes = settings.prefer_google_routes !== false; // default true
+  const preferRoutes = settings.prefer_google_routes !== false; // default true (OSRM)
   const [onlyMyCity, setOnlyMyCity] = useState<boolean>(() => localStorage.getItem('filter_only_my_city') !== '0');
 
   useEffect(() => {
@@ -109,7 +109,7 @@ export function NearbyProvidersWidget() {
     return all.filter(it => it.distance == null || it.distance <= radiusKm);
   }, [pharmacies, doctors, clinics, hospitals, coordinates, radiusKm]);
 
-  // Top 5 — enriquecido com Google Routes (ETA + distância real)
+  // Top 5 — enriquecido com OSRM (ETA + distância real)
   const top = useMemo(() => rankedBase.slice(0, 5), [rankedBase]);
 
   useEffect(() => {

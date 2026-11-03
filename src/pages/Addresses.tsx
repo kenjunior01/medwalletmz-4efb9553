@@ -184,7 +184,7 @@ export default function Addresses() {
     }
 
     setIsValidating(true);
-    toast.info("A validar morada...", { description: "Google Address Validation API em execução." });
+    toast.info("A validar morada...", { description: "A confirmar a morada junto do OpenStreetMap." });
 
     // Simulação da API
     await new Promise(r => setTimeout(r, 1500));
