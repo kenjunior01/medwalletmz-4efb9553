@@ -130,7 +130,7 @@ export async function getRoute(origin: GeoPoint, destination: GeoPoint): Promise
   }
 
   // Fallback: linha reta
-  const distance_km = Math.round(haversine(origin, destination) * 10) / 10;
+  const distance_km = Math.round(haversineKm(origin, destination) * 10) / 10;
   const duration_min = Math.max(1, Math.round((distance_km / 30) * 60));
   return {
     total_distance_km: distance_km,
