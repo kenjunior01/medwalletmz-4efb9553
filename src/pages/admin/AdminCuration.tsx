@@ -68,7 +68,7 @@ type TypeFilter = 'all' | 'pharmacy' | 'clinic' | 'hospital' | 'lab' | 'veterina
 
 type Proposal = {
   id: string;
-  source: 'google_places' | 'user_submit' | 'legacy';
+  source: 'google_places' | 'openstreetmap' | 'user_submit' | 'legacy';
   entity_type: EntityType;
   name: string;
   address: string | null;
@@ -132,7 +132,7 @@ export default function AdminCuration() {
   const isAdmin = hasRole('admin');
   const isManager = hasRole('country_manager');
   const [tab, setTab] = useState<'pending' | 'in_review' | 'approved' | 'rejected' | 'all'>('pending');
-  const [sourceFilter, setSourceFilter] = useState<'all' | 'google_places' | 'user_submit' | 'legacy'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'google_places' | 'openstreetmap' | 'user_submit' | 'legacy'>('all');
   const [cityFilter, setCityFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [search, setSearch] = useState('');
