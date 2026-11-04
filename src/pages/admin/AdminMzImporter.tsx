@@ -78,7 +78,7 @@ export default function AdminMzImporter() {
             <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
             <div>
               Vai buscar farmácias, hospitais, clínicas, laboratórios e veterinárias
-              via Google Places em <strong>{cities.length} cidades</strong> das 11 províncias de Moçambique.
+              via OpenStreetMap em <strong>{cities.length} cidades</strong> das 11 províncias de Moçambique.
               Estimativa: 5–10 minutos, ~2000–4000 instituições.
             </div>
           </div>
