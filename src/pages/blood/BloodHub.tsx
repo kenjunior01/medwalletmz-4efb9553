@@ -13,7 +13,7 @@ import {
   Gift, Star, CheckCircle2
 } from "@/components/icons/lucide-compat";
 import { toast } from "sonner";
-import { GoogleMap } from "@/components/maps/GoogleMap";
+import { OpenMap } from "@/components/maps/OpenMap";
 import { useLocation } from "@/contexts/LocationContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -267,7 +267,7 @@ export default function BloodHub() {
 
         <TabsContent value="campaigns" className="mt-6 space-y-6">
           <Card className="h-64 rounded-3xl overflow-hidden shadow-premium border-none">
-            <GoogleMap
+            <OpenMap
               center={coordinates ? { lat: coordinates.latitude, lng: coordinates.longitude } : undefined}
               zoom={11}
               height="100%"

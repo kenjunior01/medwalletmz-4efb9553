@@ -66,7 +66,7 @@ export default function IndiaInstitutionsPage() {
   // Force-lock the country context to India on this page
   if (country?.id !== 'IN') setCountryById('IN');
 
-  // Localização do utilizador (para o modo "Direções" do GoogleMapEmbed)
+  // Localização do utilizador (para o modo "Direções" do MapEmbed)
   const { coordinates } = useLocation();
   const userOrigin = coordinates
     ? { lat: coordinates.latitude, lng: coordinates.longitude }

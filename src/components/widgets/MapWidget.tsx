@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { MapPin } from "@/components/icons/lucide-compat";
-import { GoogleMap } from '@/components/maps/GoogleMap';
+import { OpenMap } from '@/components/maps/OpenMap';
 
 interface MapLocation {
   id: string;
@@ -55,7 +55,7 @@ export function MapWidget({
       </CardHeader>
       <CardContent className="p-0">
         <div style={{ height }} className="relative">
-          <GoogleMap
+          <OpenMap
             center={center}
             zoom={zoom}
             height={height}
