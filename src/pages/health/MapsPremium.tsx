@@ -151,7 +151,7 @@ export default function MapsPremium() {
               <h1 className="text-lg font-bold text-slate-900 leading-tight">{t('mapsPremium.title') ?? 'Mapas de Saúde'}</h1>
               <p className="text-xs text-slate-500 leading-tight">
                 {mapsConfigured
-                  ? (t('mapsPremium.subtitlePremium') ?? 'Com trânsito em tempo real')
+                  ? (t('mapsPremium.subtitlePremium') ?? 'Rotas reais e distâncias')
                   : (t('mapsPremium.subtitleBasic') ?? 'Localização e distâncias')}
               </p>
             </div>
