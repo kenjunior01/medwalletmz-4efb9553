@@ -215,12 +215,12 @@ export default function AdminImport() {
       <Card className="border-primary/30 bg-primary/5 shadow-premium">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" /> Auto-importar via Google Maps (API)
+            <Sparkles className="h-5 w-5 text-primary" /> Auto-importar via OpenStreetMap (gratuito)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Esta ferramenta utiliza a Google Places API para encontrar estabelecimentos de saúde reais em <strong>{country?.name}</strong>.
+            Esta ferramenta utiliza a base aberta do OpenStreetMap para encontrar estabelecimentos de saúde reais em <strong>{country?.name}</strong>.
             Tudo o que for encontrado será enviado para a tua fila de curadoria em <Link to="/admin/curation" className="text-primary underline font-bold">/admin/curation</Link>.
           </p>
 
@@ -271,7 +271,7 @@ export default function AdminImport() {
             </div>
             <Button onClick={handleAutoImport} disabled={busy === 'auto'} className="font-bold">
               <MapPin className="h-4 w-4 mr-2" />
-              {busy === 'auto' ? 'A contactar Google API...' : 'Importar Estabelecimentos'}
+              {busy === 'auto' ? 'A consultar o OpenStreetMap...' : 'Importar Estabelecimentos'}
             </Button>
           </div>
 

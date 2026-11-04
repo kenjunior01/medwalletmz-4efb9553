@@ -36,7 +36,7 @@ export default function AdminMzImporter() {
 
   const run = async () => {
     if (running) return;
-    if (!confirm(`Confirmar? ${reset ? 'Isto vai APAGAR todas as instituições MZ existentes.' : ''} Vai importar ~${cities.length} cidades × 5 tipos do Google Maps. Pode demorar 5-10 min.`)) return;
+    if (!confirm(`Confirmar? ${reset ? 'Isto vai APAGAR todas as instituições MZ existentes.' : ''} Vai importar ~${cities.length} cidades × 5 tipos do OpenStreetMap. Pode demorar 5-10 min.`)) return;
     setRunning(true);
     setLog([]);
     let doneCities = 0;
@@ -70,7 +70,7 @@ export default function AdminMzImporter() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Download className="h-5 w-5" />
-            Importador Moçambique (Google Maps)
+            Importador Moçambique (OpenStreetMap)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
