@@ -166,8 +166,9 @@ export function getEmbedMapUrl(center: GeoPoint, zoom = 13): string {
 /* ---------- Open in external maps app ---------- */
 
 export function openInExternalMaps(destination: GeoPoint, label?: string): void {
-  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-  const isAndroid = /Android/.test(navigator.userAgent);
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+  const isIOS = /iPhone|iPad|iPod/.test(ua);
+  const isAndroid = /Android/.test(ua);
   const query = label ? encodeURIComponent(label) : `${destination.lat},${destination.lng}`;
   let url: string;
   if (isIOS) {

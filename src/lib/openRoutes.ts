@@ -282,7 +282,7 @@ export function buildExternalDirectionsUrl(
   destination: { lat: number; lng: number },
   travelMode: 'driving' | 'walking' | 'transit' | 'bicycling' = 'driving',
 ) {
-  const ua = navigator.userAgent;
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const isIOS = /iPhone|iPad|iPod/.test(ua);
   const isAndroid = /Android/.test(ua);
   const dest = `${destination.lat},${destination.lng}`;
@@ -308,7 +308,7 @@ export function buildExternalDirectionsUrl(
 
 /** Abre a app de mapas do dispositivo com o destino escolhido. */
 export function openInExternalMaps(destination: { lat: number; lng: number }, label?: string): void {
-  const ua = navigator.userAgent;
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const query = label ? encodeURIComponent(label) : `${destination.lat},${destination.lng}`;
   let url: string;
   if (/iPhone|iPad|iPod/.test(ua)) {
