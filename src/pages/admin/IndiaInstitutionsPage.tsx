@@ -21,8 +21,8 @@ import {
   Star, ShieldCheck, Search, Navigation, Activity, TrendingUp, Users,
   Heart, Pill, Microscope,
 } from "@/components/icons/lucide-compat";
-import { GoogleMap, type GMarker } from "@/components/maps/GoogleMap";
-import { GoogleMapEmbed } from "@/components/maps/GoogleMapEmbed";
+import { OpenMap, type GMarker } from "@/components/maps/OpenMap";
+import { MapEmbed } from "@/components/maps/MapEmbed";
 import { useLocation } from "@/contexts/LocationContext";
 
 import { logger } from '@/lib/logger';
@@ -417,7 +417,7 @@ export default function IndiaInstitutionsPage() {
               </div>
 
               {selected.latitude && selected.longitude ? (
-                <GoogleMapEmbed
+                <MapEmbed
                   lat={selected.latitude}
                   lng={selected.longitude}
                   title={selected.name}
