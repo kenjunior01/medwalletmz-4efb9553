@@ -1,4 +1,6 @@
-import { buildExternalDirectionsUrl } from '@/lib/openRoutes';
+import {
+    buildExternalDirectionsUrl as buildDirectionsUrl,
+} from '@/lib/openRoutes';
 
 export interface CoordinateLike {
     lat: number;
@@ -14,7 +16,7 @@ export function buildExternalDirectionsUrl(
     destination: CoordinateLike,
     travelMode: 'driving' | 'walking' | 'transit' | 'bicycling' = 'driving',
 ) {
-    return buildExternalDirectionsUrl(origin, destination, travelMode);
+    return buildDirectionsUrl(origin, destination, travelMode);
 }
 
 function isLikelyImageUrl(value: string) {
