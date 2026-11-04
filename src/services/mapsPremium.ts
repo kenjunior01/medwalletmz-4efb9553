@@ -91,7 +91,7 @@ export async function computeDistances(
 }
 
 function haversineMetrics(origin: GeoPoint, geo: GeoPoint) {
-  const distance_km = Math.round(haversine(origin, geo) * 10) / 10;
+  const distance_km = Math.round(haversineKm(origin, geo) * 10) / 10;
   const duration_min = Math.max(1, Math.round((distance_km / 30) * 60));
   return { distance_km, duration_min, duration_with_traffic_min: duration_min, traffic_level: 'light' as const };
 }
@@ -130,7 +130,7 @@ export async function getRoute(origin: GeoPoint, destination: GeoPoint): Promise
   }
 
   // Fallback: linha reta
-  const distance_km = Math.round(haversine(origin, destination) * 10) / 10;
+  const distance_km = Math.round(haversineKm(origin, destination) * 10) / 10;
   const duration_min = Math.max(1, Math.round((distance_km / 30) * 60));
   return {
     total_distance_km: distance_km,
@@ -166,8 +166,9 @@ export function getEmbedMapUrl(center: GeoPoint, zoom = 13): string {
 /* ---------- Open in external maps app ---------- */
 
 export function openInExternalMaps(destination: GeoPoint, label?: string): void {
-  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-  const isAndroid = /Android/.test(navigator.userAgent);
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+  const isIOS = /iPhone|iPad|iPod/.test(ua);
+  const isAndroid = /Android/.test(ua);
   const query = label ? encodeURIComponent(label) : `${destination.lat},${destination.lng}`;
   let url: string;
   if (isIOS) {

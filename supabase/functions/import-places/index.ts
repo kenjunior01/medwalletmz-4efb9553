@@ -1,3 +1,7 @@
+// Importa estabelecimentos de saúde via OpenStreetMap (Overpass API) — gratuito, sem chave.
+// Body: { cities: string[], country_id: string, entities: Entity[], mode: 'draft'|'commit' }
+// types: 'pharmacy' | 'hospital' | 'clinic' | 'laboratory' | 'veterinary'
+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.0';
 
 const corsHeaders = {
@@ -6,101 +10,63 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-type Entity = 'pharmacy' | 'clinic' | 'hospital' | 'laboratory' | 'veterinary';
+type Entity = 'pharmacy' | 'hospital' | 'clinic' | 'laboratory' | 'veterinary';
 
-// Localized search queries per country. Falls back to Portuguese-BR defaults.
-const QUERIES_BY_COUNTRY: Record<string, Record<Entity, string>> = {
-  MZ: {
-    pharmacy: 'farmácia',
-    clinic: 'clínica médica',
-    hospital: 'hospital',
-    laboratory: 'laboratório de análises clínicas',
-    veterinary: 'clínica veterinária',
-  },
-  BR: {
-    pharmacy: 'farmácia drogaria',
-    clinic: 'clínica médica',
-    hospital: 'hospital',
-    laboratory: 'laboratório de análises clínicas',
-    veterinary: 'clínica veterinária pet',
-  },
-  PT: {
-    pharmacy: 'farmácia',
-    clinic: 'clínica médica',
-    hospital: 'hospital',
-    laboratory: 'análises clínicas',
-    veterinary: 'clínica veterinária',
-  },
-  AO: {
-    pharmacy: 'farmácia',
-    clinic: 'clínica médica',
-    hospital: 'hospital',
-    laboratory: 'laboratório de análises',
-    veterinary: 'clínica veterinária',
-  },
-  ZA: {
-    pharmacy: 'pharmacy',
-    clinic: 'medical clinic',
-    hospital: 'hospital',
-    laboratory: 'medical laboratory',
-    veterinary: 'veterinary clinic',
-  },
-  IN: {
-    pharmacy: 'pharmacy',
-    clinic: 'medical clinic',
-    hospital: 'hospital',
-    laboratory: 'diagnostic laboratory',
-    veterinary: 'veterinary hospital',
-  },
+const OVERPASS_ENDPOINTS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+];
+
+const USER_AGENT = 'MedWalletMZ/1.0 (contact: admin@medwalletmz.online)';
+
+// Filtros Overpass por categoria (tags do OpenStreetMap)
+const OSM_FILTERS: Record<Entity, string> = {
+  pharmacy: '["amenity"="pharmacy"]',
+  hospital: '["amenity"="hospital"]',
+  clinic: '["amenity"~"^(clinic|doctors)$"]',
+  laboratory: '["healthcare"="laboratory"]',
+  veterinary: '["amenity"="veterinary"]',
 };
 
-function queriesFor(countryId: string): Record<Entity, string> {
-  return QUERIES_BY_COUNTRY[countryId?.toUpperCase()] ?? QUERIES_BY_COUNTRY.BR;
+// Nome do país para geocodificar a cidade via Nominatim
+const COUNTRY_NAMES: Record<string, string> = {
+  MZ: 'Moçambique', BR: 'Brasil', PT: 'Portugal', AO: 'Angola', ZA: 'South Africa', IN: 'India',
+};
+
+interface OsmPlace {
+  type: string;
+  id: number;
+  lat?: number;
+  lon?: number;
+  center?: { lat: number; lon: number };
+  tags?: Record<string, string>;
 }
 
-// Mapbox Search Box — devolve POIs. Normaliza para o mesmo shape usado abaixo.
-async function searchText(query: string, city: string, countryCode: string = 'mz') {
-  const MAPBOX_TOKEN = Deno.env.get('MAPBOX_TOKEN');
-  if (!MAPBOX_TOKEN) throw new Error('Missing MAPBOX_TOKEN');
-
-  // Ajustar query com o nome do país se disponível
-  const countryNames: Record<string, string> = {
-    'mz': 'Moçambique',
-    'ao': 'Angola',
-    'br': 'Brasil',
-    'pt': 'Portugal',
-    'za': 'South Africa',
-    'in': 'India',
-    'us': 'USA',
-    'gb': 'United Kingdom'
-  };
-
-  const countryName = countryNames[countryCode.toLowerCase()] || '';
-  const q = `${query} ${city} ${countryName}`;
-  const url = `https://api.mapbox.com/search/searchbox/v1/forward`
-    + `?q=${encodeURIComponent(q)}&country=${countryCode.toLowerCase()}&language=pt&limit=10`
-    + `&access_token=${encodeURIComponent(MAPBOX_TOKEN)}`;
-
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Mapbox Search ${res.status}: ${await res.text()}`);
-  const json = await res.json();
-  const feats = json.features ?? [];
-  return feats.map((f: any) => ({
-    id: f.properties?.mapbox_id ?? null,
-    displayName: { text: f.properties?.name ?? f.properties?.name_preferred ?? 'Sem nome' },
-    formattedAddress: f.properties?.full_address ?? f.properties?.place_formatted ?? null,
-    location: f.geometry?.coordinates
-      ? { latitude: f.geometry.coordinates[1], longitude: f.geometry.coordinates[0] }
-      : null,
-    internationalPhoneNumber: f.properties?.metadata?.phone ?? null,
-    nationalPhoneNumber: null,
-    rating: null,
-    websiteUri: f.properties?.metadata?.website ?? null,
-    photos: [],
-  }));
+async function geocodeCity(city: string, countryId: string) {
+  const q = `${city}, ${COUNTRY_NAMES[countryId.toUpperCase()] ?? ''}`.trim();
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`;
+  const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
+  if (!res.ok) throw new Error(`Nominatim ${res.status}`);
+  const data = await res.json();
+  if (!Array.isArray(data) || data.length === 0) return null;
+  return { lat: Number(data[0].lat), lng: Number(data[0].lon) };
 }
 
-function photoUrl(_: any) { return null; }
+async function overpassQuery(query: string): Promise<OsmPlace[] | null> {
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': USER_AGENT },
+        body: `data=${encodeURIComponent(query)}`,
+      });
+      if (!res.ok) continue;
+      const json = await res.json();
+      return json.elements ?? [];
+    } catch (_) { /* tenta o próximo mirror */ }
+  }
+  return null;
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
@@ -123,7 +89,6 @@ Deno.serve(async (req) => {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    // Verify admin role via service-role client
     const adminCheckClient = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -143,11 +108,8 @@ Deno.serve(async (req) => {
       country_id = 'MZ',
     } = await req.json();
 
-    const QUERIES = queriesFor(country_id);
-
     const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
-    // Procurar admin existente para clinics.owner_id (legacy mode)
     const { data: adminRow } = await sb.from('user_roles').select('user_id').eq('role', 'admin').limit(1).maybeSingle();
     const ownerId = adminRow?.user_id;
 
@@ -156,32 +118,52 @@ Deno.serve(async (req) => {
     const errors: string[] = [];
 
     for (const city of cities as string[]) {
-      for (const entity of entities as Entity[]) {
-        const places = await searchText(QUERIES[entity], city, country_id);
-        for (const p of places) {
-          const name = p.displayName?.text ?? 'Sem nome';
-          const address = p.formattedAddress ?? null;
-          const lat = p.location?.latitude ?? null;
-          const lng = p.location?.longitude ?? null;
-          const phone = p.internationalPhoneNumber ?? p.nationalPhoneNumber ?? null;
-          const website = p.websiteUri ?? null;
-          const image = photoUrl(p.photos?.[0]?.name);
-          const externalId = p.id ?? null;
+      const center = await geocodeCity(city, country_id);
+      if (!center) {
+        errors.push(`Cidade não encontrada no OpenStreetMap: ${city}`);
+        continue;
+      }
 
-          // Deduplicação: procurar por (external_id OR name+city+entity_type) já existente
+      for (const entity of entities as Entity[]) {
+        const radius = 25000; // 25 km à volta do centro da cidade
+        const q = [
+          '[out:json][timeout:50];(',
+          `node${OSM_FILTERS[entity]}(around:${radius},${center.lat},${center.lng});`,
+          `way${OSM_FILTERS[entity]}(around:${radius},${center.lat},${center.lng});`,
+          ');out center tags 400;',
+        ].join('');
+        const places = await overpassQuery(q);
+        if (places === null) {
+          errors.push(`Overpass indisponível: ${city}/${entity}`);
+          continue;
+        }
+
+        for (const p of places) {
+          const lat = p.lat ?? p.center?.lat ?? null;
+          const lng = p.lon ?? p.center?.lon ?? null;
+          if (lat == null || lng == null) { skipped++; continue; }
+
+          const tags = p.tags ?? {};
+          const name = tags.name || tags['name:pt'] || tags['name:en'] || 'Sem nome';
+          if (name === 'Sem nome') { skipped++; continue; }
+
+          const address = [tags['addr:street'], tags['addr:housenumber']].filter(Boolean).join(' ') || null;
+          const phone = tags.phone || tags['contact:phone'] || null;
+          const website = tags.website || tags['contact:website'] || null;
+          const opening = tags.opening_hours || null;
+          const externalId = `osm:${p.type}/${p.id}`;
+
+          // Deduplicação: por external_id, nome+cidade, ou já publicado
           let existingProposal: any = null;
-          if (externalId) {
-            const { data } = await sb.from('place_proposals')
-              .select('id').eq('external_id', externalId).eq('source', 'google_places').maybeSingle();
-            existingProposal = data;
-          }
+          const { data: dup1 } = await sb.from('place_proposals')
+            .select('id').eq('external_id', externalId).maybeSingle();
+          existingProposal = dup1;
           if (!existingProposal) {
-            const { data } = await sb.from('place_proposals')
+            const { data: dup2 } = await sb.from('place_proposals')
               .select('id').eq('name', name).eq('city', city).eq('entity_type', entity)
               .maybeSingle();
-            existingProposal = data;
+            existingProposal = dup2;
           }
-          // Também verifica se já está publicado (stores/clinics)
           const { data: existingStore } = await sb.from('stores')
             .select('id').eq('name', name).eq('city', city).maybeSingle();
           const { data: existingClinic } = await sb.from('clinics')
@@ -194,45 +176,42 @@ Deno.serve(async (req) => {
           }
 
           if (mode === 'commit') {
-            // LEGACY: publicar direto (mantido para retro-compat)
             if (entity === 'pharmacy') {
               const { error } = await sb.from('stores').insert({
-                name, type: 'pharmacy', city, address, image_url: image,
+                name, type: 'pharmacy', city, address, image_url: null,
                 latitude: lat, longitude: lng, is_active: true,
-                description: phone ? `Tel: ${phone}` : null,
-                delivery_fee: 50, delivery_time: '30-45 min', rating: p.rating ?? 0,
+                description: opening ? `Aberto: ${opening}` : (phone ? `Tel: ${phone}` : null),
+                delivery_fee: 50, delivery_time: '30-45 min', rating: 0,
+                country_id, google_place_id: externalId,
               });
               if (error) { errors.push(`stores ${name}: ${error.message}`); skipped++; }
               else createdStores++;
             } else {
               if (!ownerId) { skipped++; continue; }
               const { error } = await sb.from('clinics').insert({
-                owner_id: ownerId, name, city, address, phone, logo_url: image,
+                owner_id: ownerId, name, city, address, phone, website,
                 latitude: lat, longitude: lng, is_active: true, is_verified: false,
-                description: entity === 'hospital' ? 'Hospital' : 'Clínica',
+                description: entity === 'hospital' ? 'Hospital' : entity === 'veterinary' ? 'Clínica veterinária' : entity === 'laboratory' ? 'Laboratório' : 'Clínica',
+                country_id, google_place_id: externalId,
               });
               if (error) { errors.push(`clinics ${name}: ${error.message}`); skipped++; }
               else createdClinics++;
             }
           } else {
-            // DEFAULT: gravar como proposta pendente para curadoria
-            // Guardar o tipo real (laboratory / veterinary) — a função approve_proposal
-            // faz o routing para clinics.type = laboratory|veterinary|hospital|clinic.
-            const proposalEntity = entity;
             const descLabel =
               entity === 'laboratory' ? `Laboratório de análises clínicas${phone ? ' · Tel: ' + phone : ''}`
               : entity === 'veterinary' ? `Clínica veterinária${phone ? ' · Tel: ' + phone : ''}`
               : (phone ? `Tel: ${phone}` : null);
             const { error } = await sb.from('place_proposals').insert({
-              source: 'google_places',
-              entity_type: proposalEntity,
+              source: 'openstreetmap',
+              entity_type: entity,
               external_id: externalId,
               name, address, city, country_id,
-              phone, website, image_url: image,
+              phone, website, image_url: null,
               latitude: lat, longitude: lng,
               description: descLabel,
-              raw_payload: p,
-              search_meta: { city, country_id, query: QUERIES[entity], original_entity: entity, imported_at: new Date().toISOString() },
+              raw_payload: { osm: { type: p.type, id: p.id, tags }, opening_hours: opening },
+              search_meta: { city, country_id, provider: 'openstreetmap', original_entity: entity, imported_at: new Date().toISOString() },
               status: 'pending',
             });
             if (error) { errors.push(`proposal ${name}: ${error.message}`); skipped++; }

@@ -28,44 +28,29 @@ Deno.serve(async (req) => {
     }
 
     const { address, city, name } = await req.json();
-    const MAPBOX_TOKEN = Deno.env.get('MAPBOX_TOKEN');
-    if (!MAPBOX_TOKEN) {
-      return new Response(JSON.stringify({ error: 'missing_mapbox_token' }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-    const parts = [name, address, city, 'Moçambique'].filter(Boolean).join(', ');
-    if (!parts.trim()) {
-      return new Response(JSON.stringify({ error: 'empty_query' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Mapbox Geocoding v6 — enviesado para Moçambique
-    const url = `https://api.mapbox.com/search/geocode/v6/forward`
-      + `?q=${encodeURIComponent(parts)}&country=mz&limit=1&language=pt`
-      + `&access_token=${encodeURIComponent(MAPBOX_TOKEN)}`;
-
-    const res = await fetch(url);
+    // Nominatim (OpenStreetMap) — geocoding gratuito, sem chave
+    const url = `https://nominatim.openstreetmap.org/search`
+      + `?q=${encodeURIComponent(parts)}&format=jsonv2&addressdetails=1&limit=1`
+      + `&countrycodes=mz`;
+    const res = await fetch(url, { headers: { 'User-Agent': 'MedWalletMZ/1.0 (contact: admin@medwalletmz.online)' } });
     if (!res.ok) {
-      return new Response(JSON.stringify({ error: `mapbox_${res.status}` }), {
+      return new Response(JSON.stringify({ error: `nominatim_${res.status}` }), {
         status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    const g = await res.json();
-    const hit = g.features?.[0];
-    const coords = hit?.geometry?.coordinates;
-    if (!coords || coords.length < 2) {
+    const results = await res.json();
+    const hit = Array.isArray(results) ? results[0] : null;
+    if (!hit) {
       return new Response(JSON.stringify({ error: 'no_results' }), {
         status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
     return new Response(JSON.stringify({
-      source: 'mapbox',
-      latitude: coords[1],
-      longitude: coords[0],
-      formatted_address: hit.properties?.full_address ?? hit.properties?.place_formatted ?? null,
-      matched_name: hit.properties?.name ?? null,
+      source: 'openstreetmap',
+      latitude: Number(hit.lat),
+      longitude: Number(hit.lon),
+      formatted_address: hit.display_name ?? null,
+      matched_name: hit.name ?? null,
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e) {
     return new Response(JSON.stringify({ error: (e as Error).message }), {
