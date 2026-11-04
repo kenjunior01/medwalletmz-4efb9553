@@ -91,7 +91,7 @@ export async function computeDistances(
 }
 
 function haversineMetrics(origin: GeoPoint, geo: GeoPoint) {
-  const distance_km = Math.round(haversine(origin, geo) * 10) / 10;
+  const distance_km = Math.round(haversineKm(origin, geo) * 10) / 10;
   const duration_min = Math.max(1, Math.round((distance_km / 30) * 60));
   return { distance_km, duration_min, duration_with_traffic_min: duration_min, traffic_level: 'light' as const };
 }
