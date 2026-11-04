@@ -10,7 +10,7 @@ describe('buildExternalDirectionsUrl', () => {
         );
 
         expect(url).toContain('https://www.openstreetmap.org/directions');
-        expect(url).toContain('route=-25.9692%2C32.5732%3B-25.9701%2C32.5799');
+        expect(url).toContain('route=-25.9692,32.5732;-25.9701,32.5799');
     });
 });
 
