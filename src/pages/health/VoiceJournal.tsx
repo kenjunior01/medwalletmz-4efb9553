@@ -23,7 +23,7 @@ import { logger } from '@/lib/logger';
 import {
   VoiceJournalEntry, DetectedMood, ProcessingStatus,
   createRecordingController, RecordingController,
-  uploadVoiceAudio, analyzeAudioWithGemini,
+  analyzeAudioSmart,
   saveVoiceJournal, getVoiceJournals, deleteVoiceJournal,
   getPublicAudioUrl, formatDuration, MOOD_LABELS,
 } from '@/services/voiceJournal';
@@ -116,12 +116,10 @@ export default function VoiceJournal() {
     }
 
     try {
-      // 1. Upload audio
-      const audioPath = await uploadVoiceAudio(user.id, blob);
-
-      // 2. Analyze with Gemini (or fallback to Web Speech transcript)
+      // 1+2. F51: converte → upload → Nemotron omni (primário) → Gemini (fallback)
       setStage('analyzing');
-      let analysis = await analyzeAudioWithGemini(blob);
+      const { analysis: nvAnalysis, audioPath } = await analyzeAudioSmart(blob, user.id);
+      let analysis = nvAnalysis;
 
       // If Gemini failed and we have a Web Speech transcript, save that
       if (!analysis && finalTranscript) {

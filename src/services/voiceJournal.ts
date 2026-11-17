@@ -17,6 +17,7 @@ import { supabase as typedSupabase } from '@/integrations/supabase/client';
 // Cast para acesso a tabelas ainda não presentes nos tipos gerados
 const supabase = typedSupabase as any;
 import { isGeminiConfigured } from '@/lib/gemini';
+import { nemotronChat, isNemotronAvailable } from '@/lib/nemotron';
 
 import { logger } from '@/lib/logger';
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
@@ -155,7 +156,9 @@ function pickMimeType(): string | undefined {
 /* ---------- Upload ---------- */
 
 export async function uploadVoiceAudio(userId: string, blob: Blob): Promise<string> {
-  const ext = blob.type.includes('webm') ? 'webm' : blob.type.includes('ogg') ? 'ogg' : 'm4a';
+  const ext = blob.type.includes('wav') ? 'wav'
+    : blob.type.includes('webm') ? 'webm'
+    : blob.type.includes('ogg') ? 'ogg' : 'm4a';
   const path = `${userId}/${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from('voice-journals').upload(path, blob, {
     contentType: blob.type,
@@ -167,15 +170,7 @@ export async function uploadVoiceAudio(userId: string, blob: Blob): Promise<stri
 
 /* ---------- AI Analysis (audio → text + mood + insight) ---------- */
 
-/**
- * Send audio to Gemini for transcription + analysis.
- * Returns null if Gemini is not configured (caller should fall back to Web Speech API).
- */
-export async function analyzeAudioWithGemini(blob: Blob): Promise<AudioAnalysisResult | null> {
-  if (!isGeminiConfigured()) return null;
-
-  const base64 = await blobToBase64(blob);
-  const prompt = `Estás a ouvir um diário de voz pessoal sobre saúde e bem-estar.
+const AUDIO_ANALYSIS_PROMPT = `Estás a ouvir um diário de voz pessoal sobre saúde e bem-estar.
 Analisa o áudio e responde APENAS com JSON válido (sem markdown) neste formato:
 {
   "transcript": "transcrição completa palavra-a-palavra na língua falada",
@@ -188,6 +183,128 @@ Analisa o áudio e responde APENAS com JSON válido (sem markdown) neste formato
   "insight": "insight empático e prático em 2-3 frases. NÃO dês conselho médico. Valida os sentimentos, sugere 1 pequeno passo de bem-estar."
 }
 Se não conseguires ouvir claramente, define confidence baixo e transcribe o que entenderes.`;
+
+/**
+ * F51 — Análise com NVIDIA Nemotron omni (motor principal).
+ * Recebe o PATH do áudio WAV no storage (o gateway descarrega via signed URL).
+ */
+export async function analyzeAudioWithNemotron(audioPath: string): Promise<AudioAnalysisResult | null> {
+  if (!isNemotronAvailable()) return null;
+  try {
+    const signedUrl = await getPublicAudioUrl(audioPath);
+    if (!signedUrl) return null;
+    const res = await nemotronChat({
+      mode: 'raw',
+      systemPrompt: AUDIO_ANALYSIS_PROMPT,
+      userMessage: 'Analisa o áudio do diário de voz.',
+      audio: { url: signedUrl, format: 'wav' },
+      reasoning_budget: 512,
+      max_tokens: 1500,
+    });
+    const jsonMatch = res.text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return null;
+    const parsed = JSON.parse(jsonMatch[0]) as Partial<AudioAnalysisResult>;
+    if (!parsed.transcript) return null;
+    const MOODS: DetectedMood[] = ['happy', 'calm', 'sad', 'anxious', 'angry', 'neutral', 'tired'];
+    return {
+      transcript: String(parsed.transcript),
+      language: String(parsed.language ?? 'pt'),
+      confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.7,
+      mood: MOODS.includes(parsed.mood as DetectedMood) ? (parsed.mood as DetectedMood) : 'neutral',
+      symptoms: Array.isArray(parsed.symptoms) ? parsed.symptoms.map(String) : [],
+      keywords: Array.isArray(parsed.keywords) ? parsed.keywords.map(String) : [],
+      summary: String(parsed.summary ?? ''),
+      insight: String(parsed.insight ?? ''),
+    };
+  } catch (err) {
+    logger.warn('[voiceJournal] Nemotron omni indisponível — cai para Gemini:', { error: err });
+    return null;
+  }
+}
+
+/**
+ * F51 — Orquestração: converte o webm do MediaRecorder para WAV 16kHz mono
+ * (o omni só aceita wav/mp3), faz upload e corre Nemotron → Gemini.
+ */
+export async function analyzeAudioSmart(
+  blob: Blob,
+  userId: string,
+): Promise<{ analysis: AudioAnalysisResult | null; audioPath: string }> {
+  let wavBlob: Blob | null = null;
+  try {
+    wavBlob = await convertBlobToWav16k(blob);
+  } catch (err) {
+    logger.warn('[voiceJournal] conversão WAV falhou — usa o original:', { error: err });
+  }
+  const audioPath = await uploadVoiceAudio(userId, wavBlob ?? blob);
+
+  // 1. Nemotron omni (motor principal F51)
+  if (wavBlob) {
+    const nv = await analyzeAudioWithNemotron(audioPath);
+    if (nv) return { analysis: nv, audioPath };
+  }
+  // 2. Gemini (fallback, formato original já suportado)
+  const gemini = await analyzeAudioWithGemini(blob);
+  return { analysis: gemini, audioPath };
+}
+
+/** webm/opus → WAV 16kHz mono 16-bit (via decodeAudioData + OfflineAudioContext). */
+export async function convertBlobToWav16k(blob: Blob, maxSeconds = 90): Promise<Blob> {
+  const arrayBuf = await blob.arrayBuffer();
+  const ac = new AudioContext();
+  let decoded: AudioBuffer;
+  try {
+    decoded = await ac.decodeAudioData(arrayBuf);
+  } finally {
+    await ac.close().catch(() => { /* noop */ });
+  }
+
+  const rate = 16000;
+  const seconds = Math.min(decoded.duration, maxSeconds);
+  const frames = Math.max(1, Math.ceil(seconds * rate));
+  const offline = new OfflineAudioContext(1, frames, rate);
+  const src = offline.createBufferSource();
+  src.buffer = decoded;
+  src.connect(offline.destination);
+  src.start(0, 0, seconds);
+  const rendered = await offline.startRendering();
+
+  const samples = rendered.getChannelData(0);
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+  const writeStr = (off: number, s: string) => {
+    for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i));
+  };
+  writeStr(0, 'RIFF');
+  view.setUint32(4, 36 + samples.length * 2, true);
+  writeStr(8, 'WAVE');
+  writeStr(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // mono
+  view.setUint32(24, rate, true);
+  view.setUint32(28, rate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeStr(36, 'data');
+  view.setUint32(40, samples.length * 2, true);
+  let off = 44;
+  for (let i = 0; i < samples.length; i++, off += 2) {
+    const s = Math.max(-1, Math.min(1, samples[i]));
+    view.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+  }
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
+/**
+ * Send audio to Gemini for transcription + analysis (fallback F51 — o Nemotron omni é o primário).
+ * Returns null if Gemini is not configured (caller should fall back to Web Speech API).
+ */
+export async function analyzeAudioWithGemini(blob: Blob): Promise<AudioAnalysisResult | null> {
+  if (!isGeminiConfigured()) return null;
+
+  const base64 = await blobToBase64(blob);
+  const prompt = AUDIO_ANALYSIS_PROMPT;
 
   const inlineData = {
     mimeType: blob.type || 'audio/webm',

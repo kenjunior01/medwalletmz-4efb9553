@@ -19,8 +19,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCountry } from '@/contexts/CountryContext';
 import {
   Search, Pill, Package, Star, MapPin, Truck, Info, RefreshCw, ChevronRight,
-  X, Clock, Zap, BellRing, Trash2, Copy, Check, Phone, ShoppingBag,
+  X, Clock, Zap, BellRing, Trash2, Copy, Check, Phone, ShoppingBag, Sparkles,
 } from '@/components/icons/lucide-compat';
+import { nemotronChat, nemotronEmbed, isNemotronAvailable } from '@/lib/nemotron';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { toast } from 'sonner';
 
@@ -136,6 +137,12 @@ export default function MedsAvailability() {
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /* F49.2/F50 — IA de ofertas + sugestões semânticas «Quiseste dizer…?» */
+  const [aiInsight, setAiInsight] = useState('');
+  const [analyzingAI, setAnalyzingAI] = useState(false);
+  const [simQ, setSimQ] = useState<Array<{ product_name: string; price: number | null }>>([]);
+  const [simLoading, setSimLoading] = useState(false);
+
   /* Reserva em curso (código de levantamento) */
   const [lastReservation, setLastReservation] = useState<Reservation | null>(null);
 
@@ -160,6 +167,13 @@ export default function MedsAvailability() {
   const fmt = (v?: number | null) =>
     v == null ? '—' : `${Number(v).toLocaleString('pt-PT', { maximumFractionDigits: 0 })} MT`;
 
+  // F52 deep-link ?q= — os chips «Onde comprar» do scanner e links externos pesquisam à entrada
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get('q');
+    if (q && q.trim().length >= 2) void search(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /* ── Pesquisa de disponibilidade ── */
   const search = useCallback(async (q: string) => {
     const query = q.trim();
@@ -182,6 +196,65 @@ export default function MedsAvailability() {
       setLoading(false);
     }
   }, [city, country?.id]);
+
+  /* ── F49.2: «Analisar ofertas com IA» — análise das ofertas reais (Nemotron, budget F52) ── */
+  const analyzeOffers = useCallback(async () => {
+    if (!data?.offers?.length || analyzingAI) return;
+    setAnalyzingAI(true);
+    setAiInsight('');
+    try {
+      const offers = data.offers as AvailabilityOffer[];
+      const stats = data.stats;
+      const topOffers = offers.slice(0, 10).map((o, i) => {
+        const store = o.store_name + (o.city ? ` (${o.city})` : '');
+        const price = o.price != null ? `${o.price} MT` : 'preço n/d';
+        const dist = o.delivery_time ? `, entrega ${o.delivery_time}` : '';
+        const stock = o.stock_quantity != null ? `, stock ${o.stock_quantity}` : '';
+        const del = o.delivery_fee != null && o.delivery_fee > 0 ? `, entrega ${o.delivery_fee} MT` : '';
+        return `${i + 1}. ${store}: ${price}${dist}${stock}${del}`;
+      }).join('\n');
+      const res = await nemotronChat({
+        mode: 'price_insights',
+        userMessage: `Medicamento: «${data.query ?? term}». Melhor preço: ${stats?.lowest_available ?? 'n/d'} MT em ${stats?.count ?? offers.length} farmácias.\nOfertas:\n${topOffers}`,
+        max_tokens: 350,
+        temperature: 0.6,
+        reasoning_budget: 512,
+      });
+      if (res.text) setAiInsight(res.text);
+      else toast.error('A IA não devolveu análise.');
+    } catch {
+      toast.error('IA temporariamente indisponível — tenta mais tarde.');
+    } finally {
+      setAnalyzingAI(false);
+    }
+  }, [data, analyzingAI, term]);
+
+  /* ── F50: quando 0 ofertas, sugere produtos semanticamente próximos do catálogo ── */
+  useEffect(() => {
+    const offers = data?.offers ?? [];
+    setAiInsight('');
+    if (offers.length > 0 || !isNemotronAvailable() || !searched) { setSimQ([]); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        setSimLoading(true);
+        const [vec] = await nemotronEmbed({ input: [term], input_type: 'query' });
+        if (!vec || cancelled) return;
+        const { data: hits, error } = await (supabase as any).rpc('match_products_semantic', {
+          query_embedding: JSON.stringify(vec), p_max_results: 5,
+        });
+        if (cancelled) return;
+        const seen = new Set<string>();
+        setSimQ(((hits ?? []) as Array<Record<string, unknown>>)
+          .filter((r) => Number(r.similarity) >= 0.55)
+          .filter((r) => { const k = String(r.product_name).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; })
+          .slice(0, 4)
+          .map((r) => ({ product_name: String(r.product_name), price: r.price != null ? Number(r.price) : null })));
+      } catch { setSimQ([]); }
+      finally { if (!cancelled) setSimLoading(false); }
+    })();
+    return () => { cancelled = true; };
+  }, [data, searched, term]);
 
   /* ── Minhas reservas ── (corre o motor de alertas lazy F48 antes: lembretes de expiração) */
   const loadReservations = useCallback(async () => {
@@ -469,6 +542,25 @@ export default function MedsAvailability() {
                     <Package className="h-10 w-10 text-white/30 mx-auto mb-3" />
                     <p className="text-white/70 font-semibold">Nenhuma farmácia registada tem «{data.query}»</p>
                     <p className="text-sm text-white/40 mt-1">Tente o nome genérico, outra grafia, ou remova o filtro de cidade.</p>
+                    {/* F50 — «Quiseste dizer…?» semântico sobre o catálogo */}
+                    {(simLoading || simQ.length > 0) && (
+                      <div className="mt-5 rounded-2xl border border-[#5B6CFF]/30 bg-[#5B6CFF]/[0.07] p-4 text-left">
+                        <p className="text-xs font-bold text-[#8B9CFF] flex items-center gap-1.5">
+                          <Sparkles className="h-3.5 w-3.5" /> {simLoading ? 'A procurar semelhantes…' : 'Quiseste dizer…?'}
+                        </p>
+                        {!simLoading && simQ.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {simQ.map((s) => (
+                              <button key={s.product_name}
+                                onClick={() => { setTerm(s.product_name); void search(s.product_name); }}
+                                className="rounded-full border border-[#5B6CFF]/40 bg-[#5B6CFF]/10 px-3 py-1.5 text-xs font-bold text-[#8B9CFF] hover:bg-[#5B6CFF]/20 transition-colors">
+                                {s.product_name}{s.price != null ? ` · ${fmt(s.price)}` : ''}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <>
@@ -486,6 +578,32 @@ export default function MedsAvailability() {
                         <p className="text-[11px] text-[#8B9CFF] font-medium">Farmácias</p>
                         <p className="text-lg font-black text-[#8B9CFF] tabular-nums">{stats?.count ?? 0}</p>
                       </div>
+                    </div>
+
+                    {/* F49.2 — Analisar ofertas com IA (Nemotron) */}
+                    <div className="mt-3">
+                      {!aiInsight && (
+                        <button
+                          onClick={() => void analyzeOffers()}
+                          disabled={analyzingAI}
+                          className="w-full rounded-2xl border border-[#5B6CFF]/30 bg-[#5B6CFF]/[0.07] px-4 py-3 flex items-center gap-2 text-sm font-semibold text-[#8B9CFF] hover:bg-[#5B6CFF]/[0.12] transition-colors disabled:opacity-60"
+                        >
+                          <Sparkles className={`h-4 w-4 shrink-0 ${analyzingAI ? 'animate-pulse' : ''}`} />
+                          <span className="flex-1 text-left">{analyzingAI ? 'A analisar ofertas…' : 'Analisar ofertas com IA'}</span>
+                          <ChevronRight className="h-4 w-4 shrink-0" />
+                        </button>
+                      )}
+                      {aiInsight && (
+                        <div className="rounded-2xl border border-[#5B6CFF]/30 bg-[#5B6CFF]/[0.07] p-4">
+                          <p className="text-xs font-bold text-[#8B9CFF] flex items-center gap-1.5 mb-1.5">
+                            <Sparkles className="h-3.5 w-3.5" /> Análise da IA sobre as ofertas
+                          </p>
+                          <p className="text-sm text-white/80 whitespace-pre-line">{aiInsight}</p>
+                          <button onClick={() => { setAiInsight(''); }} className="mt-2 text-xs text-white/40 hover:text-white/70 underline">
+                            Analisar outra vez
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     {/* Atalho — vigiar este medicamento (padrão GoodRx) */}

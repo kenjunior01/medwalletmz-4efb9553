@@ -8,6 +8,7 @@ import { supabase as typedSupabase } from '@/integrations/supabase/client';
 // Cast para acesso a tabelas ainda não presentes nos tipos gerados
 const supabase = typedSupabase as any;
 import { geminiChat, geminiStructured, isGeminiConfigured } from '@/lib/gemini';
+import { nemotronChat, isNemotronAvailable } from '@/lib/nemotron';
 import { useCountry } from '@/contexts/CountryContext';
 
 import { logger } from '@/lib/logger';
@@ -276,11 +277,33 @@ export async function sendMessage(
     ? `${systemPrompt}\n\nIMPORTANTE: O utilizador pode estar em crise emocional. Sê especialmente calmo, validante, e oferece imediatamente recursos de apoio. NUNCA ignores um pedido de ajuda.`
     : systemPrompt;
 
-  // 4. Call Gemini
+  // 4. Call AI — Nemotron (NVIDIA NIM) é o motor principal; Gemini é fallback
   let meddyReply: string;
   const suggestedActions: Array<{ type: string; label: string; url?: string }> = [];
 
-  if (isGeminiConfigured()) {
+  if (isNemotronAvailable()) {
+    try {
+      const res = await nemotronChat({
+        mode: 'chat',
+        systemPrompt: finalSystemPrompt,
+        userMessage,
+        history: history.slice(-10).map(m => ({ role: m.role, content: m.content })),
+        language,
+        temperature: 0.8,
+        max_tokens: 400,
+        // F52: respostas curtas do coach — budget evita cadeias longas de reasoning
+        reasoning_budget: 512,
+      });
+      if (res.text) meddyReply = res.text;
+    } catch (err) {
+      logger.warn('Meddy Nemotron indisponível — tenta Gemini:', { error: err });
+      meddyReply = '';
+    }
+  } else {
+    meddyReply = '';
+  }
+
+  if (!meddyReply && isGeminiConfigured()) {
     try {
       meddyReply = await geminiChat(userMessage, {
         systemPrompt: finalSystemPrompt,
@@ -292,7 +315,7 @@ export async function sendMessage(
       logger.error('Meddy Gemini error:', { error: err });
       meddyReply = getFallbackReply(language, crisisCheck.is_crisis);
     }
-  } else {
+  } else if (!meddyReply) {
     meddyReply = getFallbackReply(language, crisisCheck.is_crisis);
   }
 

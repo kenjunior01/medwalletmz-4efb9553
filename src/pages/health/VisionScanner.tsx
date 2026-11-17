@@ -3,7 +3,7 @@
  * Task #26
  */
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -22,7 +22,9 @@ import { useCountry } from '@/contexts/CountryContext';
 import {
   uploadScanImage, scanPrescription, scanLabResult, scanMedicineLabel,
   saveScan, getScans, updateScanReview,
-  type ScanType, type VisionScan, type DetectedMedication, type DetectedLabResult,
+  findSimilarProducts, embedAndSaveScan, buildScanText,
+  searchScansSemantic, backfillScanEmbeddings,
+  type ScanType, type VisionScan, type DetectedMedication, type DetectedLabResult, type SemanticScanHit,
 } from '@/services/visionScanner';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -64,6 +66,25 @@ export default function VisionScanner() {
 
   // Load on mount
   useState(() => { void loadRecentScans(); });
+
+  /* ── F52 · Semântica: indexação + busca nas digitalizações ── */
+  const [similarMeds, setSimilarMeds] = useState<Array<{ product_name: string; price: number | null }>>([]);
+  const [scanQuery, setScanQuery] = useState('');
+  const [scanHits, setScanHits] = useState<SemanticScanHit[]>([]);
+  const [scanSearchLoading, setScanSearchLoading] = useState(false);
+  useState(() => { if (user?.id) void backfillScanEmbeddings(user.id); });
+
+  useEffect(() => {
+    setScanHits([]);
+    if (scanQuery.trim().length < 3) return;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setScanSearchLoading(true);
+      const hits = await searchScansSemantic(scanQuery.trim());
+      if (!cancelled) { setScanHits(hits); setScanSearchLoading(false); }
+    }, 600);
+    return () => { clearTimeout(timer); cancelled = true; };
+  }, [scanQuery]);
 
   const handleFileSelect = useCallback(async (file: File) => {
     if (!file || !user || !selectedType) return;
@@ -119,6 +140,10 @@ export default function VisionScanner() {
       setStage('saved');
       toast.success(t('visionScanner.saved_to_wallet'));
       void loadRecentScans();
+      // F52: indexa semanticamente + sugere produtos com preços reais (mPharma)
+      if (scan.id) void embedAndSaveScan(scan.id, buildScanText(scan));
+      const firstName = scan.detected_medications?.[0]?.name;
+      if (firstName) void findSimilarProducts(firstName).then(setSimilarMeds);
     } catch (err) {
       logger.error('Save failed:', { error: err });
       toast.error(t('common.error'));
@@ -132,6 +157,9 @@ export default function VisionScanner() {
     setScanResult(null);
     setSavedScan(null);
     setCorrections({});
+    setSimilarMeds([]);
+    setScanQuery('');
+    setScanHits([]);
   };
 
   return (
@@ -203,16 +231,28 @@ export default function VisionScanner() {
               ))}
             </div>
 
-            {/* Recent scans */}
-            {recentScans.length > 0 && (
+            {/* Recent scans + busca semântica F52 */}
+            {(recentScans.length > 0 || scanHits.length > 0) && (
               <div className="mt-6">
                 <h3 className="font-bold text-sm mb-2 flex items-center gap-2">
                   <ImageIcon className="h-4 w-4" aria-hidden="true" />
-                  {t('visionScanner.recent_scans')}
+                  {scanQuery.trim().length >= 3 ? 'Resultados da busca' : t('visionScanner.recent_scans')}
                 </h3>
+                <Input
+                  value={scanQuery}
+                  onChange={e => setScanQuery(e.target.value)}
+                  placeholder="Buscar nas digitalizações… (ex.: malária, Dr. Amade, paracetamol)"
+                  className="mb-2 h-9 text-sm"
+                  aria-label="Busca semântica nas digitalizações"
+                />
+                {scanSearchLoading && (
+                  <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1.5">
+                    <Sparkles className="h-3 w-3 animate-pulse text-emerald-500" aria-hidden="true" /> A pesquisar semânticamente…
+                  </p>
+                )}
                 <div className="space-y-2">
-                  {recentScans.slice(0, 5).map(scan => (
-                    <Card key={scan.id} className="hover:shadow-sm transition-shadow">
+                  {(scanQuery.trim().length >= 3 ? scanHits : recentScans.slice(0, 5)).map((scan, idx) => (
+                    <Card key={scan.id ?? idx} className="hover:shadow-sm transition-shadow">
                       <CardContent className="p-3 flex items-center gap-3">
                         <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                           {scan.image_url && <img src={scan.image_url} alt="" className="w-full h-full object-cover" aria-hidden="true" />}
@@ -224,17 +264,23 @@ export default function VisionScanner() {
                             {scan.scan_type === 'medicine_label' && t('visionScanner.type_medicine_label')}
                             {scan.scan_type === 'doctor_note' && t('visionScanner.type_doctor_note')}
                             {scan.scan_type === 'vaccine_card' && t('visionScanner.type_vaccine_card')}
+                            {!scan.scan_type && 'Digitalização'}
                           </p>
                           <p className="text-[10px] text-muted-foreground">
                             {scan.created_at && new Date(scan.created_at).toLocaleDateString()}
                           </p>
                         </div>
                         <Badge variant="outline" className="text-[10px]">
-                          {scan.detected_medications?.length || scan.detected_results?.length || 0} itens
+                          {scanQuery.trim().length >= 3 && (scan as SemanticScanHit).similarity != null
+                            ? `${Math.round((scan as SemanticScanHit).similarity * 100)}%`
+                            : `${scan.detected_medications?.length || scan.detected_results?.length || 0} itens`}
                         </Badge>
                       </CardContent>
                     </Card>
                   ))}
+                  {scanQuery.trim().length >= 3 && !scanSearchLoading && scanHits.length === 0 && (
+                    <p className="text-xs text-muted-foreground">Nada encontrado — tenta outra palavra (o motor é semântico, não exacto).</p>
+                  )}
                 </div>
               </div>
             )}
@@ -308,6 +354,26 @@ export default function VisionScanner() {
                       </div>
                     </div>
                   ))}
+                  {/* F52 — produtos semelhantes com preços reais (mPharma + NVIDIA embeddings) */}
+                  {similarMeds.length > 0 && (
+                    <div className="pt-1">
+                      <p className="text-xs font-bold text-muted-foreground mb-2 flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />
+                        Onde comprar (preços reais de farmácias)
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {similarMeds.map(m => (
+                          <button
+                            key={m.product_name}
+                            onClick={() => navigate(`/health/meds-availability?q=${encodeURIComponent(m.product_name)}`)}
+                            className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 transition-colors"
+                          >
+                            {m.product_name}{m.price != null ? ` · ${m.price} MT` : ''}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
