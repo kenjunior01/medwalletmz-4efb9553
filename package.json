@@ -80,7 +80,7 @@
     "@daily-co/daily-js": "^0.91.0",
     "@eslint/js": "^9.14.0",
     "@lovable.dev/vite-plugin-dev-server-bridge": "^1.0.2",
-    "@lovable.dev/vite-plugin-hmr-gate": "^1.8.0",
+    "@lovable.dev/vite-plugin-hmr-gate": "^1.8.3",
     "@swc/core": "^1.7.26",
     "@tailwindcss/typography": "^0.5.15",
     "@testing-library/jest-dom": "^6.6.2",
