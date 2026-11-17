@@ -25,9 +25,10 @@ import {
 import { useCountry } from '@/contexts/CountryContext';
 import {
   FacilityWithDistance, GeoPoint, RouteResult,
-  computeDistances, getRoute, getCurrentLocation, getEmbedMapUrl,
+  computeDistances, getRoute, getCurrentLocation,
   openInExternalMaps, reverseGeocode, isMapsConfigured, fetchRealFacilities,
 } from '@/services/mapsPremium';
+import { LeafletMap, type MapPoint } from '@/components/health/LeafletMap';
 
 type FacilityTypeKey = 'hospital' | 'clinic' | 'pharmacy' | 'lab' | 'maternity';
 
@@ -266,24 +267,31 @@ export default function MapsPremium() {
 
           {/* Map + route */}
           <div className="lg:sticky lg:top-24 lg:self-start space-y-4">
-            {/* Map embed */}
+            {/* Mapa interativo (F54): Leaflet/OSM grátis, Google opcional via VITE_GOOGLE_MAPS_API_KEY */}
             <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-              {selectedFacility ? (
-                <iframe
-                  title={selectedFacility.name}
-                  src={getEmbedMapUrl(selectedFacility.geo, 14)}
-                  className="w-full h-72"
-                  loading="lazy"
-                />
-              ) : origin ? (
-                <iframe
-                  title="map"
-                  src={getEmbedMapUrl(origin, 12)}
-                  className="w-full h-72"
-                  loading="lazy"
+              {origin || filtered.length > 0 ? (
+                <LeafletMap
+                  center={selectedFacility?.geo ?? origin ?? { lat: -25.9692, lng: 32.5732, label: 'Maputo' }}
+                  zoom={selectedFacility ? 14 : 12}
+                  points={filtered.map(
+                    (f): MapPoint => ({
+                      id: f.id,
+                      name: f.name,
+                      geo: f.geo,
+                      type: f.type,
+                      subtitle:
+                        f.distance_km != null
+                          ? `${f.distance_km.toFixed(1)} km${f.is_24h ? ' · 24h' : ''}`
+                          : f.is_24h ? 'Aberto 24h' : f.address,
+                    }),
+                  )}
+                  selectedId={selectedId}
+                  userPos={origin}
+                  onSelect={(id) => void handleSelect(id)}
+                  className="h-80 w-full"
                 />
               ) : (
-                <div className="w-full h-72 bg-slate-100 flex items-center justify-center">
+                <div className="w-full h-80 bg-slate-100 flex items-center justify-center">
                   <MapPin className="w-8 h-8 text-slate-300" />
                 </div>
               )}
