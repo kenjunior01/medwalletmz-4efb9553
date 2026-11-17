@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   Pill, Flame, BellRing, CheckCircle2, XCircle, Plus, Trash2,
-  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff, TrendingUp, Trophy, Share2, BarChart3, FileText,
+  Clock, Loader2, ArrowLeft, RefreshCw, X, Check, BellOff, TrendingUp, Trophy, Share2, BarChart3, FileText, Sparkles,
 } from '@/components/icons/lucide-compat';
 import { MedsHeatmap } from '@/components/health/MedsHeatmap';
 import { MedsReport } from '@/components/health/MedsReport';
@@ -26,6 +26,10 @@ import {
   isTaken, removeAdHoc, skipPlanned, toggleAdHoc, togglePlanned,
   todayKey, weekAdherence, type MedicationLog, type PlannedMedication,
 } from '@/services/meds/medsService';
+import {
+  checkInteractions, explainMedication, weeklyHealthInsights,
+  type InteractionsResult, type InsightsResult,
+} from '@/services/meds/medIntelligence';
 import {
   frequencyLabel, hoursForFrequency, nextDoses, notificationPermission,
   refreshSchedulerMeds, remindersEnabled, requestPermission,
@@ -430,6 +434,17 @@ export default function MedsTracker() {
 
           {/* Mapa de adesão: 12 semanas */}
           {!empty && <MedsHeatmap logs={recent} weeks={12} />}
+
+          {/* F53 — Inteligência NVIDIA: interações, explicar, insights da semana */}
+          {!empty && planned.length > 0 && (
+            <MedIntel
+              planned={planned}
+              adherence={adherence}
+              streak={streak}
+              bestStreak={bestStreak}
+              recent={recent}
+            />
+          )}
 
           {/* Lembretes */}
           <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
@@ -896,5 +911,201 @@ export default function MedsTracker() {
         </div>
       )}
     </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * F53 — MedIntel: interações, explicar medicamento e insights da semana
+ * (modos 'interactions' / 'explain_rx' / 'health_insights' do gateway
+ * nemotron-ai). Degradação silenciosa: se o gateway falhar, a UI mostra erro
+ * toast e mantém o resto da página intacta. NÃO substitui médico/farmacêutico.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+const RISK_BADGE: Record<string, { label: string; cls: string }> = {
+  none:     { label: 'Sem interações conhecidas', cls: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300' },
+  low:      { label: 'Risco baixo',              cls: 'bg-sky-500/15 border-sky-500/30 text-sky-300' },
+  moderate: { label: 'Risco moderado',           cls: 'bg-amber-500/15 border-amber-500/30 text-amber-300' },
+  high:     { label: 'Risco alto — fala com o farmacêutico', cls: 'bg-red-500/15 border-red-500/30 text-red-300' },
+};
+
+const TONE_BADGE: Record<string, { cls: string; icon: typeof TrendingUp }> = {
+  positive:  { cls: 'border-emerald-500/30 bg-emerald-500/10', icon: Trophy },
+  neutral:   { cls: 'border-sky-500/30 bg-sky-500/10', icon: TrendingUp },
+  attention: { cls: 'border-amber-500/30 bg-amber-500/10', icon: Flame },
+};
+
+function MedIntel({
+  planned,
+  adherence,
+  streak,
+  bestStreak,
+  recent,
+}: {
+  planned: PlannedMedication[];
+  adherence: { pct: number | null; taken: number; planned: number };
+  streak: number;
+  bestStreak: number;
+  recent: MedicationLog[];
+}) {
+  const [tab, setTab] = useState<'none' | 'inter' | 'insights' | 'explain'>('none');
+  const [interLoading, setInterLoading] = useState(false);
+  const [inter, setInter] = useState<InteractionsResult | null>(null);
+  const [insLoading, setInsLoading] = useState(false);
+  const [ins, setIns] = useState<InsightsResult | null>(null);
+  const [explLoading, setExplLoading] = useState<string | null>(null);
+  const [expl, setExpl] = useState<{ name: string; text: string } | null>(null);
+
+  const missedReasons = useMemo(() => {
+    const seen = new Set<string>();
+    for (const l of recent) if (l.skipped && l.skippedReason) seen.add(l.skippedReason);
+    return [...seen];
+  }, [recent]);
+
+  const runInteractions = async () => {
+    setTab('inter');
+    if (inter || interLoading) return;
+    setInterLoading(true);
+    const r = await checkInteractions(planned.map((p) => ({ name: p.name, dosage: p.dosage })));
+    setInter(r);
+    setInterLoading(false);
+    if (!r) toast.error('IA temporariamente indisponível — tenta mais tarde.');
+  };
+
+  const runInsights = async () => {
+    setTab('insights');
+    if (ins || insLoading) return;
+    setInsLoading(true);
+    const r = await weeklyHealthInsights({
+      adherencePct: adherence.pct,
+      taken: adherence.taken,
+      planned: adherence.planned,
+      streak,
+      bestStreak,
+      meds: planned.map((p) => p.name),
+      missedReasons,
+    });
+    setIns(r);
+    setInsLoading(false);
+    if (!r) toast.error('IA temporariamente indisponível — tenta mais tarde.');
+  };
+
+  const runExplain = async (name: string, dosage?: string | null) => {
+    setTab('explain');
+    setExplLoading(name);
+    const text = await explainMedication(name, dosage);
+    setExplLoading(null);
+    if (text) setExpl({ name, text });
+    else toast.error('IA temporariamente indisponível — tenta mais tarde.');
+  };
+
+  const chipCls = (active: boolean) =>
+    cn(
+      'rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors',
+      active
+        ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300'
+        : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10',
+    );
+
+  return (
+    <section className="rounded-2xl border border-white/10 bg-white/5 p-5" aria-label="Inteligência da medicação">
+      <div className="flex items-center gap-2">
+        <Sparkles className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+        <h2 className="font-semibold">Inteligência da medicação</h2>
+        <span className="ml-auto rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-slate-400">
+          NVIDIA Nemotron · não substitui o médico
+        </span>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button onClick={() => void runInteractions()} className={chipCls(tab === 'inter')} disabled={interLoading}>
+          {interLoading ? <Loader2 className="mr-1 inline h-3 w-3 animate-spin" /> : <Pill className="mr-1 inline h-3 w-3" />}
+          Analisar interações ({planned.length})
+        </button>
+        <button onClick={() => void runInsights()} className={chipCls(tab === 'insights')} disabled={insLoading}>
+          {insLoading ? <Loader2 className="mr-1 inline h-3 w-3 animate-spin" /> : <TrendingUp className="mr-1 inline h-3 w-3" />}
+          Insights da semana
+        </button>
+        <button onClick={() => setTab('explain')} className={chipCls(tab === 'explain')}>
+          <FileText className="mr-1 inline h-3 w-3" /> Explicar medicamento
+        </button>
+      </div>
+
+      {tab === 'inter' && (
+        <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          {interLoading && <p className="text-sm text-slate-400">A analisar as tuas {planned.length} medicações…</p>}
+          {!interLoading && inter && (
+            <>
+              <span className={cn('inline-block rounded-full border px-3 py-1 text-xs font-bold', RISK_BADGE[inter.risk]?.cls)}>
+                {RISK_BADGE[inter.risk]?.label ?? inter.risk}
+              </span>
+              {inter.pairs.length > 0 && (
+                <ul className="mt-3 space-y-2">
+                  {inter.pairs.map((p, i) => (
+                    <li key={i} className="text-sm text-slate-300">
+                      <span className="font-bold text-white">{p.a} + {p.b}</span>
+                      <span className="ml-2 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase">{p.severity}</span>
+                      <p className="mt-0.5 text-xs text-slate-400">{p.note}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {inter.note && <p className="mt-3 text-xs italic text-slate-500">{inter.note}</p>}
+            </>
+          )}
+        </div>
+      )}
+
+      {tab === 'insights' && (
+        <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          {insLoading && <p className="text-sm text-slate-400">A gerar os insights da tua semana…</p>}
+          {!insLoading && ins && (
+            <>
+              <p className="text-sm font-semibold text-white">{ins.summary}</p>
+              <ul className="mt-3 space-y-3">
+                {ins.insights.map((i, idx) => {
+                  const tone = TONE_BADGE[ins.tone] ?? TONE_BADGE.neutral;
+                  return (
+                    <li key={idx} className={cn('rounded-xl border p-3', tone.cls)}>
+                      <p className="text-sm font-bold text-white">{i.title}</p>
+                      <p className="mt-0.5 text-xs text-slate-300">{i.body}</p>
+                      {i.action && (
+                        <p className="mt-1 text-xs font-semibold text-emerald-300">→ {i.action}</p>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+              <button onClick={() => { setIns(null); void runInsights(); }} className="mt-3 text-xs text-slate-400 underline hover:text-slate-200">
+                Gerar novamente
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {tab === 'explain' && (
+        <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="flex flex-wrap gap-2">
+            {planned.map((p) => (
+              <button
+                key={p.prescriptionItemId}
+                onClick={() => void runExplain(p.name, p.dosage)}
+                className={cn(chipCls(expl?.name === p.name), 'disabled:opacity-60')}
+                disabled={explLoading !== null}
+              >
+                {explLoading === p.name && <Loader2 className="mr-1 inline h-3 w-3 animate-spin" />}
+                {p.name}{p.dosage ? ` ${p.dosage}` : ''}
+              </button>
+            ))}
+          </div>
+          {expl && (
+            <div className="mt-3 border-t border-white/10 pt-3">
+              <p className="text-sm font-bold text-white">{expl.name}</p>
+              <p className="mt-1 whitespace-pre-line text-sm text-slate-300">{expl.text}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </section>
   );
 }
