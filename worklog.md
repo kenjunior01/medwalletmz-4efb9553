@@ -67,3 +67,11 @@ Stage Summary:
 - btoa safety: chunked to 8KB segments
 - All prior tasks (Fase 1, 2a, 2b, 2d, 3a-e, 4a-b) were already implemented
 - Remaining: index.css split (deferred — high risk, needs careful testing)
+
+---
+Task: F55 — Assistente IA de saúde (NVIDIA Nemotron): function ai-assistant reescrita + página /assistente-ia
+- supabase/functions/ai-assistant/index.ts: substituída a versão F20 (MoçambiApp entregas, sem NVIDIA) pelo gateway NVIDIA NIM — chat streaming SSE (reasoning_content separado do conteúdo), ping, embeddings (nemotron-3.5-embed-8b, 4096d), visão (nano-omni-30b); auth JWT de utilizador; sessões/histórico em ai_chat_sessions/ai_chat_messages; quota diária 60 (não fatal); FALLBACK_NVIDIA_KEY embutido TEMPORARIAMENTE — apagar a linha quando o secret NVIDIA_API_KEY estiver definido
+- src/pages/AiAssistant.tsx: nova — chat com streaming token-a-token, «pensamento» recolhível, botão Diagnóstico da API, exporta ExplicarComIABotao (botão «Explicar com IA» para cartões de medicamentos/exames)
+- src/App.tsx: import lazy + rota /assistente-ia dentro de AppLayout (protegida pela sessão)
+- Menu (BottomNav/AppSidebar) não tocado — adicionar entrada via Lovable com verificação visual
+- Modelos validados na conta NVIDIA em 2026-11-18 (32 disponíveis); embeddings testados ao vivo (4096 dims)

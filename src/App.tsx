@@ -53,6 +53,7 @@ const Vouchers = lazy(() => import("./pages/Vouchers"));
 const Savings = lazy(() => import("./pages/Savings"));
 const OrderTracking = lazy(() => import("./pages/OrderTracking"));
 const Settings = lazy(() => import("./pages/Settings"));
+const AiAssistant = lazy(() => import("./pages/AiAssistant"));
 
 // ---- Admin Pages ----
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -346,6 +347,7 @@ const App = () => {
                     <Route path="/addresses" element={<Addresses />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/help" element={<Help />} />
+                    <Route path="/assistente-ia" element={<AiAssistant />} />
                     <Route path="/rewards" element={<Rewards />} />
                     <Route path="/vouchers" element={<Vouchers />} />
                     <Route path="/savings" element={<Savings />} />
