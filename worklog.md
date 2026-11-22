@@ -75,3 +75,12 @@ Task: F55 — Assistente IA de saúde (NVIDIA Nemotron): function ai-assistant r
 - src/App.tsx: import lazy + rota /assistente-ia dentro de AppLayout (protegida pela sessão)
 - Menu (BottomNav/AppSidebar) não tocado — adicionar entrada via Lovable com verificação visual
 - Modelos validados na conta NVIDIA em 2026-11-18 (32 disponíveis); embeddings testados ao vivo (4096 dims)
+
+---
+Task: F56 — Segurança da IA de saúde (regras do utilizador incorporadas)
+- Regras fixas de urgência FORA da IA (determinísticas, no servidor): 10 regras regex PT-MZ (respirar, peito, inconsciência, convulsões, hemorragia, AVC, gravidez+sangramento, bebé/criança+febre, suicídio) → interrompem a conversa e devolvem evento SSE «emergency» com texto fixo de urgência (119 Moçambique) — nunca depende do modelo; testes: 12/12 casos (scripts/test_emergencia.mjs, 0 falsos positivos nos casos normais)
+- Prompt reescrito para triagem assistida: perguntas estruturadas, proibido diagnóstico definitivo («tens X»), hipóteses só educativas, resumo para o médico, orientação à especialidade/serviço
+- RAG — contexto aprovado: body.context[] injetado como «CONTEXTO APROVADO» com regra de grounding (só responde com o aprovado) + recuperação automática de medicamentos via match_ai_meds (RPC F49; não fatal se ausente)
+- Visão: prompt-padrão como apoio informativo, nunca confirmação de diagnóstico
+- Frontend: cartão vermelho de emergência (role=alert, sinais detetados, fechar) + rodapé fixo «não substitui avaliação médica» na página /assistente-ia
+- Dados sensíveis: mensagens continuam por sessão user_id com RLS; consentimento/legal (Moçambique) ficam para fase própria

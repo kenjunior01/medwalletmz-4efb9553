@@ -33,6 +33,7 @@ async function streamChat(
   onReasoning: (t: string) => void,
   onContent: (t: string) => void,
   onError: (t: string) => void,
+  onEmergency: (instrucao: string, sinais: string[]) => void,
 ) {
   const resp = await callAI("chat", { message, sessionId });
   if (!resp.body) { onError("Sem corpo de resposta"); return; }
@@ -56,6 +57,7 @@ async function streamChat(
         else if (ev.type === "reasoning") onReasoning(ev.text);
         else if (ev.type === "content") onContent(ev.text);
         else if (ev.type === "error") onError(ev.text);
+        else if (ev.type === "emergency") onEmergency(String(ev.instrucao ?? ""), Array.isArray(ev.sinais) ? ev.sinais.map(String) : []);
       } catch { /* ignora linhas parciais */ }
     }
   }
@@ -75,7 +77,7 @@ export function ExplicarComIABotao({ pergunta, label = "Explicar com IA" }: { pe
     try {
       await streamChat(pergunta, null,
         () => {}, (t) => setReasoning((r) => r + t),
-        (t) => setContent((c) => c + t), (t) => setError(t));
+        (t) => setContent((c) => c + t), (t) => setError(t), () => {});
     } catch (e: any) { setError(String(e.message ?? e)); }
     setLoading(false);
   };
@@ -112,6 +114,7 @@ export default function AiAssistant() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [diagnostico, setDiagnostico] = useState("");
+  const [emergency, setEmergency] = useState<{ instrucao: string; sinais: string[] } | null>(null);
   const [mostrarPensamento, setMostrarPensamento] = useState(false);
 
   const diagnosticar = async () => {
@@ -128,7 +131,7 @@ export default function AiAssistant() {
   const enviar = async () => {
     const message = input.trim();
     if (!message || busy) return;
-    setInput(""); setBusy(true); setError("");
+    setInput(""); setBusy(true); setError(""); setEmergency(null);
     setMessages((m) => [...m, { role: "user", content: message }, { role: "assistant", content: "" }]);
     const upd = (fn: (m: Msg) => Msg) =>
       setMessages((m) => [...m.slice(0, -1), fn(m[m.length - 1])]);
@@ -137,7 +140,8 @@ export default function AiAssistant() {
         (sid) => setSessionId(sid),
         (t) => upd((m) => ({ ...m, reasoning: (m.reasoning ?? "") + t })),
         (t) => upd((m) => ({ ...m, content: m.content + t })),
-        (t) => setError(t));
+        (t) => setError(t),
+        (instr, sinais) => setEmergency({ instrucao: instr, sinais }));
     } catch (e: any) { setError(String(e.message ?? e)); }
     setBusy(false);
   };
@@ -147,6 +151,16 @@ export default function AiAssistant() {
       <h1 className="text-xl font-bold">Assistente de Saúde — IA</h1>
       <Button variant="outline" size="sm" onClick={diagnosticar}>Diagnóstico da API</Button>
       {diagnostico && <p className="text-xs whitespace-pre-wrap rounded border p-2">{diagnostico}</p>}
+
+      {emergency && (
+        <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800" role="alert">
+          <p className="whitespace-pre-wrap">{emergency.instrucao}</p>
+          {emergency.sinais.length > 0 && (
+            <p className="mt-2 text-xs text-red-700">Sinais detetados: {emergency.sinais.join(" · ")}</p>
+          )}
+          <button className="mt-2 text-xs underline" onClick={() => setEmergency(null)}>Fechar</button>
+        </div>
+      )}
 
       <div className="space-y-3 min-h-[200px]">
         {messages.length === 0 && <p className="text-sm text-muted-foreground">Pergunta sobre medicamentos, sintomas ou prevenção (malária, VIH, cólera...).</p>}
@@ -180,6 +194,10 @@ export default function AiAssistant() {
         />
         <Button onClick={enviar} disabled={busy || !input.trim()}>Enviar</Button>
       </div>
+
+      <p className="text-center text-[11px] text-muted-foreground">
+        Informação educativa — não substitui avaliação médica. Em emergência, procure o serviço de saúde mais próximo.
+      </p>
     </div>
   );
 }

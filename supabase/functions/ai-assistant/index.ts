@@ -26,10 +26,97 @@ const DAILY_LIMIT = 60;
 
 const SYSTEM_PROMPT = `És o Assistente de Saúde do MedWallet MZ (Moçambique).
 - Responde SEMPRE em português de Moçambique, com frases curtas e práticas.
-- Ajudas com: medicamentos (para quê serve, como tomar, dose usual em adultos), interações medicamentosas, bulas, sintomas comuns e prevenção (malária, VIH/SIDA, cólera, tuberculose, hipertensão, diabetes).
+- Faz triagem assistida: quando faltarem dados, faz 2-3 perguntas estruturadas (sintomas, há quanto tempo, gravidade, idade); identifica sinais de emergência; indica a especialidade ou o serviço adequado; se o utilizador pedir, prepara um resumo curto dos sintomas para levar ao médico.
+- NUNCA dás diagnóstico definitivo nem afirmas «tens X». Dizes: «os sintomas podem ter várias causas…». Hipóteses apenas como possibilidades educativas.
+- Ajudas com: medicamentos (para quê serve, como tomar, dose usual em adultos), interações, bulas, sintomas comuns e prevenção (malária, VIH/SIDA, cólera, tuberculose, hipertensão, diabetes).
 - Nunca inventes doses personalizadas; dá informação geral e diz sempre para confirmar com o farmacêutico ou médico.
-- Em emergência (dor no peito, dificuldade em respirar, convulsões, hemorragia, perda de consciência): diz para procurar de imediato o serviço de saúde mais próximo.
+- Se houver contexto aprovado fornecido, baseia-te nele; se a informação não estiver lá, diz que não tens informação aprovada e orienta para o centro de saúde.
 - Não substituis um profissional de saúde; no fim de respostas clínicas acrescenta um aviso curto.`;
+
+// ────────────────────────────────────────────────────────────────────────
+// Regras fixas de urgência — DECISÃO FORA DA IA (determinística).
+// Detetadas → a conversa normal é interrompida e a resposta é a fixa.
+// A decisão nunca pode depender apenas do modelo.
+// ────────────────────────────────────────────────────────────────────────
+const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+const EMERGENCY_RULES: { label: string; re: RegExp }[] = [
+  { label: "dificuldade em respirar", re: /(dificuldade (de|em) respirar|nao consigo respirar|falta de ar|a sufocar)/ },
+  { label: "dor no peito", re: /(dor no peito|dor forte no peito|aperto no peito)/ },
+  { label: "inconsciência / desmaio", re: /(inconsciente|desmaiou|nao acorda|perdeu os sentidos)/ },
+  { label: "convulsões", re: /(convuls|a ter ataques|ataque convulsivo)/ },
+  { label: "hemorragia", re: /(hemorragia|a sangrar muito|sangramento forte|perdeu muito sangue)/ },
+  { label: "sinais de AVC", re: /(avc|derrame|cara torta|boca torta|fala enrolada|braco dormente|forca de um lado so)/ },
+  { label: "gravidez com sangramento ou dor intensa", re: /(gravida|gravidez)[^.]{0,80}(sangue|sangrar|sangramento|dor forte|dor intensa)/ },
+  { label: "bebé com febre", re: /(bebe|lactente|recem-nascido)[^.]{0,60}febre/ },
+  { label: "criança com febre preocupante", re: /(crianca)[^.]{0,60}febre[^.]{0,60}(alta|convuls|nao baixa|tres dias|5 dias|cinco dias)/ },
+  { label: "risco de suicídio", re: /(quero morrer|suicidio|me matar|tirar a minha propria vida)/ },
+];
+
+function detectEmergencia(text: string): string[] {
+  const t = norm(text);
+  return EMERGENCY_RULES.filter((r) => r.re.test(t)).map((r) => r.label);
+}
+
+const URGENCY_TEXT =
+  "⚠️ SINAL DE EMERGÊNCIA DETETADO\n\n" +
+  "Com base no que escreveste, é preciso ajuda médica URGENTE.\n\n" +
+  "• Vai AGORA ao centro de saúde ou hospital mais próximo.\n" +
+  "• Se poderes, pede a alguém para te acompanhar.\n" +
+  "• Em Moçambique liga 119 (emergência), se disponível na tua zona.\n" +
+  "• Não esperes para ver se passa.\n\n" +
+  "Esta ferramenta não substitui avaliação médica.";
+
+function emergencyStream(sinais: string[]): Response {
+  const enc = new TextEncoder();
+  const stream = new ReadableStream({
+    start(c) {
+      c.enqueue(enc.encode(`data: ${JSON.stringify({ type: "emergency", sinais, instrucao: URGENCY_TEXT })}\n\n`));
+      c.enqueue(enc.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`));
+      c.close();
+    },
+  });
+  return new Response(stream, {
+    headers: { ...CORS, "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
+  });
+}
+
+// RAG — contexto aprovado: chunks enviados pela app e/ou medicamentos
+// recuperados da base via match_ai_meds (não fatal se o RPC não existir).
+async function buildChatMessages(supabase: any, apiKey: string, message: string, history: { role: string; content: string }[], body: any) {
+  const msgs: { role: string; content: string }[] = [{ role: "system", content: SYSTEM_PROMPT }];
+  let approved = "";
+  if (Array.isArray(body.context) && body.context.length) {
+    approved += "CONTEXTO APROVADO (usa apenas isto como factos):\n" +
+      body.context.map((c: unknown) => `- ${String(c).slice(0, 600)}`).join("\n") +
+      "\nSe a resposta não estiver no contexto, dize que não tens informação aprovada sobre isso e orienta para o centro de saúde.\n\n";
+  }
+  if (!approved && message.length > 8) {
+    try {
+      const er = await fetch(`${NVIDIA_BASE}/embeddings`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: EMBED_MODEL, input: [message.slice(0, 300)], input_type: "query", encoding_format: "float", truncate: "END" }),
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (er.ok) {
+        const ev = await er.json();
+        const vec = ev?.data?.[0]?.embedding;
+        if (Array.isArray(vec)) {
+          const { data: meds, error } = await supabase.rpc("match_ai_meds", { query_embedding: vec, match_count: 4 });
+          if (!error && Array.isArray(meds) && meds.length) {
+            approved += "MEDICAMENTOS APROVADOS (base da plataforma):\n" +
+              meds.map((m: any) => `- ${m?.nome ?? m?.name ?? "medicamento"}: ${m?.descricao ?? m?.description ?? m?.content ?? ""}`.slice(0, 400)).join("\n") + "\n\n";
+          }
+        }
+      }
+    } catch { /* sem RAG disponível — segue sem contexto */ }
+  }
+  if (approved) msgs.push({ role: "system", content: approved.trim() });
+  for (const h of history) msgs.push({ role: h.role, content: h.content });
+  msgs.push({ role: "user", content: message });
+  return msgs;
+}
 
 function json(obj: unknown, status = 200): Response {
   return new Response(JSON.stringify(obj), {
@@ -107,6 +194,10 @@ async function chat(supabase: any, userId: string, apiKey: string, body: any): P
   const message = String(body.message ?? "").trim();
   if (!message) return json({ error: "Mensagem vazia." }, 400);
 
+  // Regra fixa FORA da IA: urgência interrompe a conversa normal
+  const sinais = detectEmergencia(message);
+  if (sinais.length) return emergencyStream(sinais);
+
   // 2) Sessão: valida a recebida ou cria nova (não fatal)
   let sid: string | null = body.sessionId ?? null;
   if (sid) {
@@ -151,11 +242,7 @@ async function chat(supabase: any, userId: string, apiKey: string, body: any): P
     },
     body: JSON.stringify({
       model: CHAT_MODEL,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        ...history,
-        { role: "user", content: message },
-      ],
+      messages: await buildChatMessages(supabase, apiKey, message, history, body),
       temperature: 1,
       top_p: 0.95,
       max_tokens: 16384,
@@ -256,7 +343,7 @@ async function embed(apiKey: string, body: any): Promise<Response> {
 // ---------- VISÃO (analisar imagem: bula, embalagem, receita) ----------
 async function vision(supabase: any, userId: string, apiKey: string, body: any): Promise<Response> {
   const imageUrl: string = body.imageUrl; // data URI base64 ou URL pública
-  const prompt = String(body.prompt ?? "Analisa esta imagem relacionada com saúde/medicamentos e explica em português de Moçambique.");
+  const prompt = String(body.prompt ?? "Analisa esta imagem (documento, receita ou resultado laboratorial) e explica em português de Moçambique, como APOIO INFORMATIVO — nunca como confirmação de diagnóstico. Se houver risco clínico, orienta para um profissional de saúde.");
   if (!imageUrl) return json({ error: 'Envia "imageUrl" (data URI base64 ou URL)' }, 400);
 
   const r = await fetch(`${NVIDIA_BASE}/chat/completions`, {
