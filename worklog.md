@@ -1,3 +1,9 @@
+Task: F57 — Assistente IA v2: urgência em duas camadas + completude da página
+- supabase/functions/ai-assistant/index.ts: regras de urgência expandidas 10 → 19 (vómito com sangue, sangue nas fezes, engasgamento, envenenamento/overdose, ferida grave, incapaz de falar/mover, olhos revirados/corpo mole, parto urgente, auto-agressão); ping deixa de exigir login (diagnóstico da API testável sem sessão, usa chave pública); vision também passa pela detecção de urgência antes do modelo; URGENCY_TEXT com orientação presencial completa (119 + centro de saúde + não ficar sózinho)
+- src/pages/AiAssistant.tsx: CAMADA 1 client-side — regras locais (espelho do servidor) interrompem a conversa ANTES de chamar a IA e funcionam sem sessão; banner fixo de disclaimer no topo; acções rápidas (explicar receita, preparação para exames, perguntas para a consulta, prevenção, farmácias/serviços); botão Validar embeddings (compara dimensão real com 4096 do RPC match_ai_meds); botão Nova conversa; cartão de emergência com botão Ligar 119 (tel:) + Voltar + Nova conversa; quando sem sessão mostra cartão com link Entrar para /auth (dados médicos continuam por conta/RLS); ExplicarComIABotao mantém assinatura e contrato SSE (meta/reasoning/content/error/emergency/done) — nada quebra
+- scripts/test_emergencia.mjs: novo — 19 casos urgentes + 6 casos normais (falsos positivos), espelho exacto das regex do servidor; correr com node scripts/test_emergencia.mjs (exit 0 = OK)
+- Contrato da função mantido (ping|chat|embed|vision; auth JWT para chat/embed/vision; quota 60/dia; FALLBACK_NVIDIA_KEY continua TEMPORÁRIO — apagar quando o secret NVIDIA_API_KEY estiver definido)
+
 ---
 Task ID: 1
 Agent: Super Z (main)

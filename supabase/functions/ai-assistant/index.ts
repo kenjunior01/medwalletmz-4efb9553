@@ -1,5 +1,12 @@
-// supabase/functions/ai-assistant/index.ts — MedWallet MZ (versão Lovable)
+// supabase/functions/ai-assistant/index.ts — MedWallet MZ (v2)
 // Ação: chat (streaming com "pensamento") · embed · vision · ping
+// v2 (F57):
+//   1. ping deixou de exigir login → "Diagnóstico da API" testável sem sessão
+//   2. Regras de urgência expandidas de 10 → 19 categorias (vómito com sangue,
+//      sangue nas fezes, engasgamento, envenenamento/overdose, ferida grave,
+//      incapaz de falar/mover, olhos revirados/corpo mole, parto urgente,
+//      auto-agressão)
+//   3. vision também passa pela detecção de urgência antes do modelo
 // A chave NVIDIA lê PRIMEIRO o secret NVIDIA_API_KEY; se não existir, usa
 // o FALLBACK abaixo → funciona já, sem configurar secrets.
 // ⚠️ QUANDO O SECRET ESTIVER DEFINIDO: apaga a linha FALLBACK_NVIDIA_KEY
@@ -37,20 +44,33 @@ const SYSTEM_PROMPT = `És o Assistente de Saúde do MedWallet MZ (Moçambique).
 // Regras fixas de urgência — DECISÃO FORA DA IA (determinística).
 // Detetadas → a conversa normal é interrompida e a resposta é a fixa.
 // A decisão nunca pode depender apenas do modelo.
+// v2: expandidas de 10 para 19 categorias (mantém as originais do F56).
+// O frontend espelha estas regras (camada 1) — aqui é a fonte de verdade.
 // ────────────────────────────────────────────────────────────────────────
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 const EMERGENCY_RULES: { label: string; re: RegExp }[] = [
-  { label: "dificuldade em respirar", re: /(dificuldade (de|em) respirar|nao consigo respirar|falta de ar|a sufocar)/ },
-  { label: "dor no peito", re: /(dor no peito|dor forte no peito|aperto no peito)/ },
-  { label: "inconsciência / desmaio", re: /(inconsciente|desmaiou|nao acorda|perdeu os sentidos)/ },
-  { label: "convulsões", re: /(convuls|a ter ataques|ataque convulsivo)/ },
-  { label: "hemorragia", re: /(hemorragia|a sangrar muito|sangramento forte|perdeu muito sangue)/ },
-  { label: "sinais de AVC", re: /(avc|derrame|cara torta|boca torta|fala enrolada|braco dormente|forca de um lado so)/ },
+  // ---- Originais (F56) ----
+  { label: "dificuldade em respirar", re: /(dificuldade (de|em) respirar|nao consigo respirar|falta de ar|a sufocar|sufocando)/ },
+  { label: "dor no peito", re: /(dor no peito|dor forte no peito|dor intensa no peito|aperto no peito)/ },
+  { label: "inconsciência / desmaio", re: /(inconsciente|desmaiou|desmaiada|desmaiado|nao acorda|perdeu os sentidos)/ },
+  { label: "convulsões", re: /(convuls|a ter ataques|ataque convulsivo|ataque epileptico|crise epileptica)/ },
+  { label: "hemorragia", re: /(hemorragia|a sangrar muito|sangramento forte|sangramento intenso|perdeu muito sangue|nao para de sangrar)/ },
+  { label: "sinais de AVC", re: /(avc|derrame|cara torta|boca torta|fala enrolada|fala embolada|braco dormente|forca de um lado so|perdi a fala|visao dupla)/ },
   { label: "gravidez com sangramento ou dor intensa", re: /(gravida|gravidez)[^.]{0,80}(sangue|sangrar|sangramento|dor forte|dor intensa)/ },
-  { label: "bebé com febre", re: /(bebe|lactente|recem-nascido)[^.]{0,60}febre/ },
+  { label: "bebé com febre", re: /\b(bebe|lactente|recem-nascido)\b[^.]{0,60}febre/ },
   { label: "criança com febre preocupante", re: /(crianca)[^.]{0,60}febre[^.]{0,60}(alta|convuls|nao baixa|tres dias|5 dias|cinco dias)/ },
   { label: "risco de suicídio", re: /(quero morrer|suicidio|me matar|tirar a minha propria vida)/ },
+  // ---- Novas (F57) ----
+  { label: "vómito com sangue", re: /(vomit\w* (com )?sangue|hematemese)/ },
+  { label: "sangue nas fezes", re: /(fezes com sangue|sangue nas fezes|sangue no cu)/ },
+  { label: "engasgamento", re: /(engasgado|engasgada|engasgou|a engasgar|algo preso na garganta)/ },
+  { label: "envenenamento / overdose", re: /(envenenamento|envenenou|engoli veneno|bebeu veneno|tomou veneno|overdose|tomou todos os comprimidos|tomou todos os remedios)/ },
+  { label: "ferida grave", re: /(ferida profunda|ferimento grave|corte profundo|osso (a )?atravessar a pele)/ },
+  { label: "incapaz de falar ou mover", re: /(nao consigo falar|nao consigo mover|perdi a fala|paralisad|paralisi)/ },
+  { label: "olhos revirados / corpo mole", re: /(olhos revirados|corpo mole|crianca mole)/ },
+  { label: "parto urgente", re: /(contraccoes muito fort|contracoes muito fort|vou ter (o )?bebe agora|bebe esta a nascer|rompeu (o )?saco|rompeu aguas)/ },
+  { label: "auto-agressão", re: /(me cortar|quero cortar-me|vou cortar-me|quero machucar-me)/ },
 ];
 
 function detectEmergencia(text: string): string[] {
@@ -59,13 +79,13 @@ function detectEmergencia(text: string): string[] {
 }
 
 const URGENCY_TEXT =
-  "⚠️ SINAL DE EMERGÊNCIA DETETADO\n\n" +
+  "SINAL DE EMERGÊNCIA DETETADO\n\n" +
   "Com base no que escreveste, é preciso ajuda médica URGENTE.\n\n" +
   "• Vai AGORA ao centro de saúde ou hospital mais próximo.\n" +
   "• Se poderes, pede a alguém para te acompanhar.\n" +
   "• Em Moçambique liga 119 (emergência), se disponível na tua zona.\n" +
   "• Não esperes para ver se passa.\n\n" +
-  "Esta ferramenta não substitui avaliação médica.";
+  "Os sintomas podem ter várias causas e só uma avaliação presencial pode identificar o problema. Esta ferramenta não substitui avaliação médica.";
 
 function emergencyStream(sinais: string[]): Response {
   const enc = new TextEncoder();
@@ -130,6 +150,14 @@ Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return json({ error: "Usa POST" }, 405);
 
   try {
+    const body = await req.json().catch(() => ({}));
+    const action = body.action ?? "chat";
+    const apiKey = Deno.env.get("NVIDIA_API_KEY") || FALLBACK_NVIDIA_KEY;
+
+    // v2: ping NÃO exige login — serve apenas para diagnóstico da ligação
+    // NVIDIA, não acede a dados de utilizador (frontend usa a chave pública).
+    if (action === "ping") return await ping(apiKey);
+
     const auth = req.headers.get("Authorization") ?? "";
     if (!auth.startsWith("Bearer ")) return json({ error: "Falta o token de autenticação." }, 401);
 
@@ -142,12 +170,6 @@ Deno.serve(async (req: Request) => {
     if (userError || !userData?.user) return json({ error: "Sessão inválida. Entra de novo na app." }, 401);
     const userId = userData.user.id;
 
-    const apiKey = Deno.env.get("NVIDIA_API_KEY") || FALLBACK_NVIDIA_KEY;
-
-    const body = await req.json().catch(() => ({}));
-    const action = body.action ?? "chat";
-
-    if (action === "ping") return await ping(apiKey);
     if (action === "chat") return await chat(supabase, userId, apiKey, body);
     if (action === "embed") return await embed(apiKey, body);
     if (action === "vision") return await vision(supabase, userId, apiKey, body);
@@ -157,7 +179,7 @@ Deno.serve(async (req: Request) => {
   }
 });
 
-// ---------- PING: testar se a chave NVIDIA funciona ----------
+// ---------- PING: testar se a chave NVIDIA funciona (sem login, v2) ----------
 async function ping(apiKey: string): Promise<Response> {
   try {
     const r = await fetch(`${NVIDIA_BASE}/chat/completions`, {
@@ -345,6 +367,10 @@ async function vision(supabase: any, userId: string, apiKey: string, body: any):
   const imageUrl: string = body.imageUrl; // data URI base64 ou URL pública
   const prompt = String(body.prompt ?? "Analisa esta imagem (documento, receita ou resultado laboratorial) e explica em português de Moçambique, como APOIO INFORMATIVO — nunca como confirmação de diagnóstico. Se houver risco clínico, orienta para um profissional de saúde.");
   if (!imageUrl) return json({ error: 'Envia "imageUrl" (data URI base64 ou URL)' }, 400);
+
+  // v2: urgência no pedido também interrompe ANTES do modelo
+  const sinais = detectEmergencia(prompt);
+  if (sinais.length) return json({ emergency: true, sinais, instrucao: URGENCY_TEXT });
 
   const r = await fetch(`${NVIDIA_BASE}/chat/completions`, {
     method: "POST",
