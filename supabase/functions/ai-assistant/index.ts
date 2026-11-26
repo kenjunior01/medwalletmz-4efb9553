@@ -7,10 +7,12 @@
 //      incapaz de falar/mover, olhos revirados/corpo mole, parto urgente,
 //      auto-agressão)
 //   3. vision também passa pela detecção de urgência antes do modelo
-// A chave NVIDIA lê PRIMEIRO o secret NVIDIA_API_KEY; se não existir, usa
-// o FALLBACK abaixo → funciona já, sem configurar secrets.
-// ⚠️ QUANDO O SECRET ESTIVER DEFINIDO: apaga a linha FALLBACK_NVIDIA_KEY
-//    e roda a chave em build.nvidia.com (ficou exposta numa conversa).
+// A chave NVIDIA lê-se EXCLUSIVAMENTE do secret NVIDIA_API_KEY.
+// NÃO existe qualquer chave no código (segurança). Se o secret não estiver
+// definido, todas as ações devolvem um erro claro com instruções.
+// ⚠️ Se uma chave NVIDIA já foi exposta (chat, commit antigo), roda-a em
+//    build.nvidia.com e define a nova como secret:
+//    supabase secrets set NVIDIA_API_KEY=nvapi-...
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const CORS = {
@@ -18,12 +20,6 @@ const CORS = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
-
-// ============================================================
-// FALLBACK TEMPORÁRIO da chave (último recurso para funcionar
-// sem secrets). Apagar esta linha assim que o secret existir.
-// ============================================================
-const FALLBACK_NVIDIA_KEY = "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";
 
 const NVIDIA_BASE = "https://integrate.api.nvidia.com/v1";
 const CHAT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b";
@@ -152,7 +148,15 @@ Deno.serve(async (req: Request) => {
   try {
     const body = await req.json().catch(() => ({}));
     const action = body.action ?? "chat";
-    const apiKey = Deno.env.get("NVIDIA_API_KEY") || FALLBACK_NVIDIA_KEY;
+
+    // A chave vem SEMPRE do secret NVIDIA_API_KEY — nunca do código.
+    const apiKey = Deno.env.get("NVIDIA_API_KEY");
+    if (!apiKey) {
+      return json({
+        error: "A chave NVIDIA não está configurada no servidor.",
+        dica: "Define o secret NVIDIA_API_KEY (ex.: supabase secrets set NVIDIA_API_KEY=nvapi-...) e volta a testar.",
+      }, 500);
+    }
 
     // v2: ping NÃO exige login — serve apenas para diagnóstico da ligação
     // NVIDIA, não acede a dados de utilizador (frontend usa a chave pública).
